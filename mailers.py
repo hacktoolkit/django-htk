@@ -6,6 +6,7 @@ from django.template.loader import get_template
 
 from htk.constants.defaults import *
 from htk.utils import htk_setting
+from htk.utils.general import resolve_method_dynamically
 
 def simple_email(
     subject='',
@@ -14,12 +15,36 @@ def simple_email(
     to=None,
     fail_silently=False
     ):
+    """Sends a simple email
+    """
     sender = sender or htk_setting('HTK_DEFAULT_EMAIL_SENDER', HTK_DEFAULT_EMAIL_SENDER)
     to = to or htk_setting('HTK_DEFAULT_EMAIL_RECIPIENTS', HTK_DEFAULT_EMAIL_RECIPIENTS)
     if settings.ENV_DEV:
         fail_silently = True
         subject = '[hacktoolkit-dev] %s' % subject
     send_mail(subject, message, sender, to, fail_silently = fail_silently)
+
+def email_context_generator():
+    """Dummy email context generator
+    Returns a dictionary
+    """
+    context = {}
+    return context
+
+def get_email_context():
+    """Get the email context dictionary for templated emails
+    """
+    email_context_generator = htk_setting('HTK_EMAIL_CONTEXT_GENERATOR', None)
+    context = {}
+    if email_context_generator:
+        method = resolve_method_dynamically(email_context_generator)
+        if method:
+            context = method()
+        else:
+            pass
+    else:
+        pass
+    return context
 
 def send_email(
     template=None,
@@ -31,12 +56,15 @@ def send_email(
     context=None,
     text_only=False
     ):
+    """Sends a templated email w/ text and HTML
+    """
     template = template or 'base'
     sender = sender or htk_setting('HTK_DEFAULT_EMAIL_SENDER', HTK_DEFAULT_EMAIL_SENDER)
     to = to or htk_setting('HTK_DEFAULT_EMAIL_RECIPIENTS', HTK_DEFAULT_EMAIL_RECIPIENTS)
     bcc = bcc or []
     cc = cc or []
-    context = context or {}
+
+    context = context or get_email_context()
     c = Context(context)
     if settings.ENV_DEV:
         subject = '[hacktoolkit-dev] %s' % subject
