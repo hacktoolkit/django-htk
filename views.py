@@ -7,34 +7,32 @@ from django.template import RequestContext
 from django.template import TemplateDoesNotExist
 from django.template import loader
 
-from htk.view_helpers import render_to_response_custom as _r
-
-def google_site_verification(request, code):
-    template_name = 'google_site_verification/google%s.html' % code
+def generic_template_view(request, template_name, mimetype='text/html'):
     try:
-        response = _r(template_name)
+        template = loader.get_template(template_name)
+        context = RequestContext(request, {})
+        response = HttpResponse(template.render(context), mimetype=mimetype)
     except TemplateDoesNotExist:
         response = None
         raise Http404
     return response
 
-def bing_site_auth(request):
-    template = loader.get_template('BingSiteAuth.xml')
-    context = RequestContext(request, {})
-    response = HttpResponse(template.render(context), mimetype="text/xml")
+def google_site_verification(request, code):
+    template_name = 'site_verification/google%s.html' % code
+    response = generic_template_view(request, template_name)
     return response
 
 def html_site_verification(request, code):
-    template_name = 'html_site_verification/%s--.html' % code
-    try:
-        response = _r(template_name)
-    except TemplateDoesNotExist:
-        response = None
-        raise Http404
+    template_name = 'site_verification/%s--.html' % code
+    response = generic_template_view(request, template_name)
+    return response
+
+def bing_site_auth(request):
+    template_name = 'site_verification/BingSiteAuth.xml'
+    response = generic_template_view(request, template_name, mimetype='text/xml')
     return response
 
 def robots(request):
-    template = loader.get_template('robots.txt')
-    context = RequestContext(request, {})
-    response = HttpResponse(template.render(context), mimetype="text/plain")
+    template_name = 'robots.txt'
+    response = generic_template_view(request, template_name, mimetype='text/plain')
     return response
