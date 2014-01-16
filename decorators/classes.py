@@ -1,7 +1,7 @@
 import rollbar
 
 from htk.middleware import GlobalRequestMiddleware
-from htk.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
+from htk.decorators.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
 
 def deprecated(func):
     """Decorator for reporting deprecated function calls

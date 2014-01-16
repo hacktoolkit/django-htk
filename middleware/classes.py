@@ -5,8 +5,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.utils import timezone
 
-from htk.constants import *
-from htk.session_keys import *
+from htk.middleware.session_keys import *
+from htk.utils import htk_setting
 
 class GlobalRequestMiddleware(object):
     """Stores the request object so that it is accessible globally
@@ -40,7 +40,7 @@ class GlobalRequestMiddleware(object):
 class AllowedHostsMiddleware(object):
     """Checks that host is inside ALLOWED_HOST_REGEXPS
 
-    If not, will redirect to DEFAULT_DOMAIN
+    If not, will redirect to HTK_DEFAULT_DOMAIN
 
     If host ends with '.', will redirect to host with '.' stripped
     """
@@ -50,7 +50,7 @@ class AllowedHostsMiddleware(object):
         redirect_uri = None
         https_prefix = 's' if request.is_secure() else ''
         if not(self._is_allowed_host(host)):
-            redirect_uri = 'http%s://%s%s' % (https_prefix, DEFAULT_DOMAIN, path,)
+            redirect_uri = 'http%s://%s%s' % (https_prefix, htk_setting('HTK_DEFAULT_DOMAIN'), path,)
         elif len(host) > 1 and host[-1] == '.':
             redirect_uri = 'http%s://%s%s' % (https_prefix, host[:-1], path,)
 
@@ -62,7 +62,8 @@ class AllowedHostsMiddleware(object):
         if settings.TEST:
             allowed = True
         else:
-            for host_re in ALLOWED_HOST_REGEXPS:
+            allowed_host_regexps = htk_setting('HTK_ALLOWED_HOST_REGEXPS')
+            for host_re in allowed_host_regexps:
                 allowed = bool(re.match(host_re, host))
                 if allowed:
                     break

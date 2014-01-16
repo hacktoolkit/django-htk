@@ -1,7 +1,16 @@
 from django.conf import settings
 
+import htk.constants
+
 def htk_setting(key, default=None):
-    value = getattr(settings, key) if hasattr(settings, key) else default
+    if hasattr(settings, key):
+        value = getattr(settings, key)
+    elif default is not None:
+        value = default
+    elif hasattr(htk.constants.defaults, key):
+        value = getattr(htk.constants.defaults, key)
+    else:
+        value = None
     return value
 
 def resolve_method_dynamically(module_method_str):

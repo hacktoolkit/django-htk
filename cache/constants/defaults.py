@@ -1,0 +1,1 @@
+HTK_CACHE_KEY_PREFIX = 'htk'
