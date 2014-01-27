@@ -8,6 +8,7 @@ from django.core.validators import email_re
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.apps.accounts.models import UserEmail
+from htk.utils import htk_setting
 
 ##
 # login and registration

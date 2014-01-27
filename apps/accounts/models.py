@@ -12,10 +12,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from social.apps.django_app.default.models import UserSocialAuth
 
-from libraries.geoip.helpers import get_geoip_city
-from libraries.geoip.helpers import get_geoip_country
-
 from htk.apps.accounts.constants import *
+from htk.lib.geoip.utils import get_geoip_city
+from htk.lib.geoip.utils import get_geoip_country
 from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
