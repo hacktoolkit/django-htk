@@ -69,6 +69,23 @@ class AllowedHostsMiddleware(object):
                     break
         return allowed
 
+class RewriteJsonResponseContentTypeMiddleware(object):
+    """This middleware exists because IE is a stupid browser and tries to download application/json content type from XHR responses as file
+    """
+    def process_response(self, request, response):
+        if self._is_response_json(response) and self._is_user_agent_msie(request):
+            response['Content-Type'] = 'text/plain'
+        return response
+
+    def _is_response_json(self, response):
+        is_json = response.get('Content-Type', '') == 'application/json'
+        return is_json
+
+    def _is_user_agent_msie(self, request):
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        is_msie = bool(re.match('.*MSIE.*', user_agent))
+        return is_msie
+
 class TimezoneMiddleware(object):
     def process_request(self, request):
         django_timezone = request.session.get(DJANGO_TIMEZONE, None)
