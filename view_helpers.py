@@ -1,3 +1,5 @@
+import re
+
 from django.shortcuts import render_to_response
 from django.template import loader
 from django.template import TemplateDoesNotExist
@@ -25,7 +27,11 @@ def get_javascripts(template_name):
     """
     javascripts = []
 
-    js_fragment_filename = 'fragments/js/%s' % template_name
+    admin_template_match = re.match('([a-z]*admin)/(.*)', template_name)
+    if admin_template_match:
+        js_fragment_filename = '%s/fragments/js/%s' % (admin_template_match.group(1), admin_template_match.group(2),)
+    else:
+        js_fragment_filename = 'fragments/js/%s' % template_name
     #if template_name in SOME_DICTIONARY_MAPPING_JAVASCRIPTS:
     #    javascript.append(SOME_DICTIONARY_MAPPING_JAVASCR
 
