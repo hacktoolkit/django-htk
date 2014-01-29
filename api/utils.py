@@ -1,16 +1,23 @@
 import datetime
 import json
+import rollbar
 
 from django.core import serializers
 from django.http import HttpResponse
 
 from htk.api.constants import *
 
-class MyEncoder(json.JSONEncoder):
+class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
-            return int(mktime(obj.timetuple()))
-        return json.JSONEncoder.default(self, obj)
+            value = int(mktime(obj.timetuple()))
+        else:
+            try:
+                value = json.JSONEncoder.default(self, obj)
+            except:
+                rollbar.report_exc(extra_data={'obj': obj,})
+                value = -3.14159 # return an absurd value so that we no the object wasn't serializable
+        return value
 
 def to_json(obj):
     if hasattr(obj, '_meta'):
@@ -19,7 +26,7 @@ def to_json(obj):
         else:
             return serializers.serialize('json', [ obj ])
     else:
-        return json.dumps(obj, cls=MyEncoder)
+        return json.dumps(obj, cls=CustomEncoder)
 
 def json_okay():
     return { HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_OKAY }
