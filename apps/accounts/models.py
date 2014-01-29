@@ -3,7 +3,6 @@ import datetime
 import pytz
 import random
 import rollbar
-import sys
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -211,7 +210,7 @@ class AbstractUserProfile(models.Model):
                 self.detected_timezone = gi_city.time_zone_by_addr(ip)
                 self.save()
         except:
-            #rollbar.report_exc_info(sys.exc_info(), request)
+            #rollbar.report_exc_info(request=request)
             pass
 
 class UserEmail(models.Model):
