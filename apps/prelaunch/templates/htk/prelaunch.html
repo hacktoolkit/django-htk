@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div id="home_splash">
+  Hacktoolkit
+</div>
+
+<div id="prelaunch_signup">
+  {% if success %}
+  Thanks for signing up! We'll let you know when the site launches.
+  {% else %}
+  We're almost ready to launch. Please sign up to receive updates.
+  {% include 'fragments/prelaunch_signup_form.html' %}
+  {% endif %}
+</div>
+
+{% endblock %}
