@@ -1,3 +1,4 @@
 from django.db import models
 
-from htk.constants import *
+# import models here for convenience
+from htk.lib.aws.s3.models import S3MediaAsset
