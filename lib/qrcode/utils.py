@@ -1,11 +1,17 @@
+import hashlib
 import qrcode
 
 from PIL import Image
 
 from django.http import HttpResponse
 
+from htk.utils import htk_setting
+
 def qrcode_image_response(data=''):
     """Returns a QR Code image as an HTTP response
+
+    This method is unrestricted (i.e. you wouldn't want anyone on the web generating QR codes automatically)
+    For restricted access, see: restricted_qrcode_image_response
 
     TODO: Possible improvements: Cache (for a short period) requests for the same QR Code data-payload?
     """
@@ -14,6 +20,25 @@ def qrcode_image_response(data=''):
 
     response = HttpResponse(mimetype='image/png')
     img.save(response, 'png')
+    return response
+
+def restricted_qrcode_image_response(data='', key=None, require_key=True):
+    is_valid = False
+
+    if require_key and key:
+        key_check = generate_qr_key(data)
+        if key_check == key:
+            is_valid = True
+        else:
+            pass
+    else:
+        is_valid = True
+
+    if is_valid:
+        response = qrcode_image_response(data)
+    else:
+        response = None
+
     return response
 
 def make_qr_code_image(data='',
@@ -65,3 +90,7 @@ def solid_color_image(width=1, height=1, r=0, g=0, b=0, a=0):
     img = Image.new('RGBA', (width, height,), color=(r, g, b,))
 #    img = Image.new('RGBA', (width, height,), color=(r, g, b,a,))
     return img
+
+def generate_qr_key(data):
+    key = hashlib.md5('%s|%s' % (htk_setting('HTK_QR_SECRET'), data,)).hexdigest()[:5]
+    return key
