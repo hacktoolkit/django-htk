@@ -92,6 +92,7 @@ class TimezoneMiddleware(object):
         if not django_timezone and request.user.is_authenticated():
             user = request.user
             django_timezone = user.profile.get_django_timezone()
-            request.session[DJANGO_TIMEZONE] = django_timezone
+            # <DstTzInfo 'America/Los_Angeles' PST-1 day, 16:00:00 STD> is not JSON serializable
+            #request.session[DJANGO_TIMEZONE] = django_timezone
         if django_timezone:
             timezone.activate(django_timezone)

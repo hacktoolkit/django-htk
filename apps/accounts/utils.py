@@ -3,7 +3,7 @@ import hashlib
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
-from django.core.validators import email_re
+from django.core.validators import validate_email
 
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
@@ -40,7 +40,8 @@ def get_user_by_email(email, auth=False):
     """Gets a User by `email`
     Returns None if not found
     """
-    if email_re.search(email):
+    try:
+        validate_email(email)
         # check for confirmed email addresses
         user_emails = UserEmail.objects.filter(email=email, is_confirmed=True)
         num_results = user_emails.count()
@@ -57,7 +58,7 @@ def get_user_by_email(email, auth=False):
         else:
             # nope
             user = None
-    else:
+    except:
         user = None
     return user
 
@@ -105,10 +106,11 @@ def authenticate_user_by_email(email, password):
     return auth_user
 
 def authenticate_user_by_username_email(username_email, password):
-    if email_re.search(username_email):
+    try:
+        validate_email(username_email)
         email = username_email
         auth_user = authenticate_user_by_email(email, password)
-    else:
+    except:
         username = username_email
         auth_user = authenticate_user(username, password)
     return auth_user
