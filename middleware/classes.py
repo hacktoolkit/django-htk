@@ -88,10 +88,14 @@ class RewriteJsonResponseContentTypeMiddleware(object):
 
 class TimezoneMiddleware(object):
     def process_request(self, request):
-        django_timezone = request.session.get(DJANGO_TIMEZONE, None)
-        if not django_timezone and request.user.is_authenticated():
+        #django_timezone = request.session.get(DJANGO_TIMEZONE, None)
+        #if not django_timezone and request.user.is_authenticated():
+        if request.user.is_authenticated():
             user = request.user
             django_timezone = user.profile.get_django_timezone()
-            request.session[DJANGO_TIMEZONE] = django_timezone
+            # <DstTzInfo 'America/Los_Angeles' PST-1 day, 16:00:00 STD> is not JSON serializable
+            #request.session[DJANGO_TIMEZONE] = django_timezone
+        else:
+            django_timezone = None
         if django_timezone:
             timezone.activate(django_timezone)
