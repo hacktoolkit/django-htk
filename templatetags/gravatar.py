@@ -35,7 +35,7 @@ def gravatar_for_email(email, size=80):
         }
     )
     url = escape(url)
-    return 
+    return url
 
 def gravatar_for_user(user, size=80):
     user = get_user(user)
@@ -44,7 +44,7 @@ def gravatar_for_user(user, size=80):
 
 def gravatar_img_for_email(email, size=80):
     url = gravatar_for_email(email, size)
-    img = '<img src="%s" height="%s" width="%s"/>' % (
+    img = '<img src="%s" height="%s" width="%s" />' % (
         escape(url),
         size,
         size,
@@ -54,7 +54,7 @@ def gravatar_img_for_email(email, size=80):
 def gravatar_img_for_user(user, size=80):
     user = get_user(user)
     url = gravatar_for_user(user)
-    img = '<img src="%s" alt="Avatar for %s" height="%s" width="%s"/>' % (
+    img = '<img src="%s" alt="Gravatar for %s" height="%s" width="%s" />' % (
         escape(url),
         user.username,
         size,
