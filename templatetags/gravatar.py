@@ -2,13 +2,12 @@ import hashlib
 import urllib
 
 from django import template
-from django.utils.html import escape
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.utils.html import escape
 
-from accounts.models import User
-
-GRAVATAR_URL_PREFIX = getattr(settings, "GRAVATAR_URL_PREFIX", "http://www.gravatar.com/")
-GRAVATAR_DEFAULT_IMAGE = getattr(settings, "GRAVATAR_DEFAULT_IMAGE", "")
+GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com/')
+GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', '')
 
 register = template.Library()
 
@@ -18,38 +17,55 @@ def get_user(user):
             user = User.objects.get(username=user)
         except User.DoesNotExist:
             # TODO: make better? smarter? strong? maybe give it wheaties?
-            raise Exception, "Bad user for gravatar."
+            raise Exception, 'Bad user for gravatar.'
     return user
 
 def gravatar_for_email(email, size=80):
     """
     https://en.gravatar.com/site/implement/images/
     """
-    url = "%savatar/%s?" % (GRAVATAR_URL_PREFIX, hashlib.md5(email).hexdigest())
+    url = '%savatar/%s?' % (
+        GRAVATAR_URL_PREFIX,
+        hashlib.md5(email).hexdigest(),
+    )
     url += urllib.urlencode(
         {
-            "s": str(size),
-            #"default": GRAVATAR_DEFAULT_IMAGE,
+            's': str(size),
+            #'default': GRAVATAR_DEFAULT_IMAGE,
         }
     )
-    return escape(url)
+    url = escape(url)
+    return 
 
 def gravatar_for_user(user, size=80):
     user = get_user(user)
-    return gravatar_for_email(user.email, size)
+    url = gravatar_for_email(user.email, size)
+    return url
 
 def gravatar_img_for_email(email, size=80):
     url = gravatar_for_email(email, size)
-    return """<img src="%s" height="%s" width="%s"/>""" % (escape(url), size, size)
+    img = '<img src="%s" height="%s" width="%s"/>' % (
+        escape(url),
+        size,
+        size,
+    )
+    return img
 
 def gravatar_img_for_user(user, size=80):
     user = get_user(user)
     url = gravatar_for_user(user)
-    return """<img src="%s" alt="Avatar for %s" height="%s" width="%s"/>""" % (escape(url), user.username, size, size)
+    img = '<img src="%s" alt="Avatar for %s" height="%s" width="%s"/>' % (
+        escape(url),
+        user.username,
+        size,
+        size,
+    )
+    return img
 
 def gravatar(user, size=80):
     # backward compatibility
-    return gravatar_img_for_user(user, size)
+    img = gravatar_img_for_user(user, size)
+    return img
 
 register.simple_tag(gravatar)
 register.simple_tag(gravatar_for_user)
