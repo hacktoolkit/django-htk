@@ -1,7 +1,9 @@
 import datetime
 
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.core.urlresolvers import reverse
 from django.db import models
 
 class Feedback(models.Model):
@@ -27,3 +29,8 @@ class Feedback(models.Model):
             self.comment[:50] + '...' if len(self.comment) > 50 else self.comment
         )
         return s
+
+    def get_admin_url(self):
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        url = reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
+        return url

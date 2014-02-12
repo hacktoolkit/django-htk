@@ -19,10 +19,14 @@ class FeedbackForm(forms.ModelForm):
             'user' : forms.HiddenInput,
         }
 
-    def save(self, site, uri='', commit=True):
+    def save(self, site, request, commit=True):
+        domain = request.get_host()
+        uri = request.META.get('HTTP_REFERER', '')
+
         feedback = super(FeedbackForm, self).save(commit=False)
         feedback.site = site
         feedback.uri = uri
         feedback.save()
-        feedback_email(feedback)
+
+        feedback_email(feedback, domain=domain)
         return feedback

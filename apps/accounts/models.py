@@ -12,14 +12,13 @@ from django.utils.translation import ugettext_lazy as _
 from social.apps.django_app.default.models import UserSocialAuth
 
 from htk.apps.accounts.constants import *
+from htk.apps.accounts.emails import activation_email
+from htk.apps.accounts.emails import welcome_email
 from htk.lib.geoip.utils import get_geoip_city
 from htk.lib.geoip.utils import get_geoip_country
 from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
-
-from accounts.emails import activation_email
-from accounts.emails import welcome_email
 
 class AbstractUserProfile(models.Model):
     """
