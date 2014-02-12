@@ -1,0 +1,11 @@
+{% extends 'emails/base.txt' %}
+
+{% block content %}
+Hello {{ user.email }},
+
+You recently entered a new contact email address into Pkkup.
+
+To confirm your contact email, please folow the link below:
+
+{{ activation_uri }}
+{% endblock %}

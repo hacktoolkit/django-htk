@@ -16,8 +16,7 @@ def submit(request):
     if antispam and feedback_form.is_valid():
         site = get_current_site(request)
         success = True
-        uri = request.META['HTTP_REFERER']
-        feedback = feedback_form.save(site, uri)
+        feedback = feedback_form.save(site, request)
     data = {}
     if success:
         response = json_response_okay()

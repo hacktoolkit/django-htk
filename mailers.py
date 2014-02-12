@@ -21,7 +21,7 @@ def simple_email(
     to = to or htk_setting('HTK_DEFAULT_EMAIL_RECIPIENTS', HTK_DEFAULT_EMAIL_RECIPIENTS)
     if settings.ENV_DEV:
         fail_silently = True
-        subject = '[hacktoolkit-dev] %s' % subject
+        subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_NAME'), subject,)
     send_mail(subject, message, sender, to, fail_silently = fail_silently)
 
 def email_context_generator():
@@ -67,7 +67,7 @@ def send_email(
     context = context or get_email_context()
     c = Context(context)
     if settings.ENV_DEV:
-        subject = '[hacktoolkit-dev] %s' % subject
+        subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
     text_template = get_template("emails/%s.txt" % template)
     text_content = text_template.render(c)
     msg = EmailMultiAlternatives(subject=subject,

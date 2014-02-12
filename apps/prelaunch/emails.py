@@ -9,6 +9,7 @@ def prelaunch_email(prelaunch_signup):
 
     context = {
         'prelaunch_signup': prelaunch_signup,
+        'site_name': htk_setting('HTK_SITE_NAME')
     }
     send_email(
         template=template,

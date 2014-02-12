@@ -8,6 +8,11 @@ HTK_ALLOWED_HOST_REGEXPS = (
 )
 
 ##
+# Miscellaneous settings
+HTK_SITE_NAME = 'Hacktoolkit'
+HTK_SYMBOLIC_SITE_NAME = 'hacktoolkit'
+
+##
 # Email settings
 HTK_DEFAULT_EMAIL_SENDING_DOMAIN = 'hacktoolkit.com'
 HTK_DEFAULT_EMAIL_SENDER = 'Hacktoolkit <no-reply@hacktoolkit.com>'

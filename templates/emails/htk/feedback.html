@@ -1,0 +1,14 @@
+{% extends 'emails/base.html' %}
+{% block content %}
+Hello,<br/>
+<br/>
+{% if feedback.user %}
+User: {{ feedback.user }}<br/>
+{% endif %}
+From: {{ feedback.name }}{% if feedback.email %} &lt;<a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a>&gt;{% endif %}<br/>
+<br/>
+Comment:<br/>
+{{ feedback.comment }}<br/>
+<br/>
+Go to <a href="http://{{ domain }}{{ feedback.get_admin_url }}">http://{{ domain }}{{ feedback.get_admin_url }}</a> to administer the message.
+{% endblock %}

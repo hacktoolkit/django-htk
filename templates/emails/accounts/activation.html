@@ -1,0 +1,10 @@
+{% extends 'emails/base.html' %}
+{% block content %}
+Hello {{ email }},<br/>
+<br/>
+You recently entered a new contact email address into Pkkup.<br/>
+<br/>
+To confirm your contact email, please folow the link below:<br/>
+<br/>
+<a href="{{ activation_uri }}">{{ activation_uri }}</a>
+{% endblock %}
