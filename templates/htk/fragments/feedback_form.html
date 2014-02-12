@@ -1,0 +1,14 @@
+<h3>Feedback, suggestions...</h3>
+<form id="feedback_form" action="{% url 'htk_feedback_submit' %}" class="pure-form">
+  {% for hidden in feedback_form.hidden_fields %}
+  {{ hidden }}
+  {% endfor %}
+  {% for field in feedback_form.visible_fields %}
+  <b>{{ field.label }}</b><br/>
+  {{ field }}
+  <br/><br/>
+  {% endfor %}
+  <div style="text-align: right;">
+    <button id="feedback_submit" class="pure-button pure-button-primary">Send feedback</button>
+  </div>
+</form>
