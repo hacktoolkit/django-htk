@@ -7,3 +7,4 @@ from htk.constants import *
 ####################
 # Finally, import tests from subdirectories last to prevent circular import
 from htk.lib.tests import *
+from htk.scripts.tests import *

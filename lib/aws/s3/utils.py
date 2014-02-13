@@ -6,9 +6,6 @@ from boto.s3.connection import S3Connection
 from boto.s3.bucket import Bucket
 from boto.s3.key import Key
 
-# AWSCredentials should be available in settings.CREDENTIALS_DIR
-import AWSCredentials
-
 from htk.lib.aws.s3.cachekeys import S3UrlCache
 from htk.constants.time import *
 
@@ -16,9 +13,14 @@ class S3Manager(object):
     """S3Manager is an interface/wrapper for boto to Amazon S3
     """
     def __init__(self):
-        self.access_key = AWSCredentials.HEADLESS_S3_ACCESS_KEY
-        self.secret_key = AWSCredentials.HEADLESS_S3_SECRET_KEY
-        self._connect()
+        try:
+            # AWSCredentials should be available in settings.CREDENTIALS_DIR
+            import AWSCredentials
+            self.access_key = AWSCredentials.HEADLESS_S3_ACCESS_KEY
+            self.secret_key = AWSCredentials.HEADLESS_S3_SECRET_KEY
+            self._connect()
+        except:
+            print 'Unable to connect to AWS or missing AWSCredentials'
 
     def _connect(self):
         self.conn = S3Connection(self.access_key, self.secret_key)
