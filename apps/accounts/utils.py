@@ -3,11 +3,11 @@ import hashlib
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
-from django.core.validators import validate_email
 
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.apps.accounts.models import UserEmail
+from htk.validators import is_valid_email
 from htk.utils import htk_setting
 
 ##
@@ -180,11 +180,3 @@ def extract_user_email(username_email):
         user = get_user_by_username(username)
 
     return (user, email,)
-
-def is_valid_email(email):
-    try:
-        validate_email(email)
-        is_valid = True
-    except:
-        is_valid = False
-    return is_valid
