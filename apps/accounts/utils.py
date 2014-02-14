@@ -40,8 +40,7 @@ def get_user_by_email(email, auth=False):
     """Gets a User by `email`
     Returns None if not found
     """
-    try:
-        validate_email(email)
+    if is_valid_email(email):
         # check for confirmed email addresses
         user_emails = UserEmail.objects.filter(email=email, is_confirmed=True)
         num_results = user_emails.count()
@@ -58,7 +57,7 @@ def get_user_by_email(email, auth=False):
         else:
             # nope
             user = None
-    except:
+    else:
         user = None
     return user
 
@@ -106,11 +105,10 @@ def authenticate_user_by_email(email, password):
     return auth_user
 
 def authenticate_user_by_username_email(username_email, password):
-    try:
-        validate_email(username_email)
+    if is_valid_email(username_email):
         email = username_email
         auth_user = authenticate_user_by_email(email, password)
-    except:
+    else:
         username = username_email
         auth_user = authenticate_user(username, password)
     return auth_user
@@ -174,7 +172,7 @@ def extract_user_email(username_email):
     `username_email` is a string that could be either a username OR an email
     """
     email = None
-    if email_re.search(username_email):
+    if is_valid_email(username_email):
         email = username_email
         user = get_user_by_email(email)
     else:
@@ -182,3 +180,11 @@ def extract_user_email(username_email):
         user = get_user_by_username(username)
 
     return (user, email,)
+
+def is_valid_email(email):
+    try:
+        validate_email(email)
+        is_valid = True
+    except:
+        is_valid = False
+    return is_valid
