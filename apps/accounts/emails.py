@@ -20,6 +20,7 @@ def activation_email(user_email, use_https=False, domain=None):
         'email': email,
         'protocol': use_https and 'https' or 'http', 
         'domain': domain,
+        'site_name': htk_setting('HTK_SITE_NAME'),
         'confirm_email_path': reverse('account_confirm_email', args=(user_email.activation_key,)),
     }
 
