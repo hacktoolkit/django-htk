@@ -1,7 +1,9 @@
 import random
 from uuid import uuid4
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+UserModel = get_user_model()
 
 # I was feeling Latin
 TEST_DISPLAY_NAMES = ['Jose Sanchez', 'Don Juan', 'Miles George', 'Pablo Sandoval', 'Leonardo Davinci', 'Tom Hanks', 'Ricardo Lopez', 'Ernesto Guerillo', 'Michaelangelo Turtle', 'Rafael Donatello']
@@ -12,7 +14,7 @@ def create_test_user():
     If two randomly assigned usernames overlap, it will fail
     """
     username = '%s_%s' % ('test', uuid4().get_hex()[:10],)
-    user = User.objects.create(username=username)
+    user = UserModel.objects.create(username=username)
     return user
 
 def create_test_email():

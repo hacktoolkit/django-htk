@@ -1,4 +1,7 @@
+import sys
+
 from django.conf import settings
+from django.db.models.loading import get_model
 
 import htk.constants
 
@@ -13,20 +16,33 @@ def htk_setting(key, default=None):
         value = None
     return value
 
-def resolve_method_dynamically(module_method_str):
-    """Returns the method for a module
-
-    `module_method_str` in the form of module.submodule.method
+def get_module_name_parts(module_str):
+    """Gets the name parts of a module string
+    `module_str` in the form of module.submodule.method or module.submodule.class
     """
-    method = None
-    if module_method_str:
-        module_name = '.'.join(module_method_str.split('.')[:-1])
-        method_name = module_method_str.split('.')[-1]
-        if module_name and method_name:
-            import sys
-            method = getattr(sys.modules[module_name], method_name)
-        else:
-            pass
+    if module_str:
+        parts = module_str.split('.')
+        app_name = '.'.join(parts[:-1])
+        attr_name = parts[-1]
+        values = (app_name, attr_name,)
     else:
-        pass
+        values = (None, None,)
+    return values
+
+def resolve_method_dynamically(module_str):
+    """Returns the method for a module
+    """
+    (app_name, attr_name,) = get_module_name_parts(module_str)
+    if app_name and attr_name:
+        method = getattr(sys.modules[app_name], attr_name)
+    else:
+        method = None
     return method
+
+def resolve_model_dynamically(module_str):
+    (app_name, attr_name,) = get_module_name_parts(module_str)
+    if app_name and attr_name:
+        model = get_model(app_name, attr_name)
+    else:
+        model = None
+    return model

@@ -1,14 +1,16 @@
 import base64
 import hashlib
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.apps.accounts.models import UserEmail
 from htk.validators import is_valid_email
 from htk.utils import htk_setting
+
+UserModel = get_user_model()
 
 ##
 # login and registration
@@ -31,8 +33,8 @@ def get_user_by_username(username):
     Returns None if not found
     """
     try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
+        user = UserModel.objects.get(username=username)
+    except UserModel.DoesNotExist:
         user = None
     return user
 
@@ -76,8 +78,8 @@ def get_incomplete_signup_user_by_email(email):
         raise NonUniqueEmail(email)
     else:
         try:
-            user = User.objects.get(email=email, is_active=False)
-        except User.DoesNotExist:
+            user = UserModel.objects.get(email=email, is_active=False)
+        except UserModel.DoesNotExist:
             user = None
     return user
 

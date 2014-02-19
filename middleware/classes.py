@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 
 from htk.middleware.session_keys import *
+from htk.session_keys import *
 from htk.utils import htk_setting
 
 class GlobalRequestMiddleware(object):
