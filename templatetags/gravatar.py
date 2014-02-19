@@ -3,8 +3,10 @@ import urllib
 
 from django import template
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.html import escape
+
+UserModel = get_user_model()
 
 GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com/')
 GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', '')
@@ -12,10 +14,10 @@ GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', '')
 register = template.Library()
 
 def get_user(user):
-    if not isinstance(user, User):
+    if not isinstance(user, UserModel):
         try:
-            user = User.objects.get(username=user)
-        except User.DoesNotExist:
+            user = UserModel.objects.get(username=user)
+        except UserModel.DoesNotExist:
             # TODO: make better? smarter? strong? maybe give it wheaties?
             raise Exception, 'Bad user for gravatar.'
     return user
