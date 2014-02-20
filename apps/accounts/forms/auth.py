@@ -5,17 +5,31 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.translation import ugettext_lazy as _
 
+from htk.apps.accounts.emails import password_reset_email
+from htk.apps.accounts.models import UserEmail
+from htk.apps.accounts.session_keys import *
+from htk.apps.accounts.utils import associate_user_email
 from htk.apps.accounts.utils import authenticate_user_by_username_email
 from htk.apps.accounts.utils import email_to_username_hash
 from htk.apps.accounts.utils import get_user_by_email
+from htk.forms.utils import set_input_attrs
+from htk.forms.utils import set_input_placeholder_labels
 from htk.utils import htk_setting
-from htk.apps.accounts.emails import password_reset_email
-from htk.apps.accounts.session_keys import *
 
 UserModel = get_user_model()
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(label=_('Email'))
+
+    error_messages = {
+        'duplicate_username': _('A user with that username already exists.'),
+        'password_mismatch': _("The two password fields didn't match."),
+        'email_already_associated': _(
+            'That email is already associated with a %s account. If you are trying to login to an existing account, click the "Login" button.' % htk_setting('HTK_SITE_NAME')
+         ),
+        'invalid_email': _('Invalid email. Please enter a valid email.'),
+        'empty_password': _("The password can't be empty."),
+    }
 
     class Meta:
         model = UserModel
@@ -25,12 +39,38 @@ class UserRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
+        self.cascaded_errors = []
         del self.fields['username']
         self.fields['password2'].label = 'Confirm Password'
-        for name, field in self.fields.items():
-            if field.widget.__class__ in (forms.TextInput, forms.PasswordInput,):
-                field.widget.attrs['class'] = 'pure-input-1'
-                field.widget.attrs['placeholder'] = field.label
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
+
+    def clean(self):
+        """We are using cascaded_errors to bubble up any field-level errors to form-wide
+        """
+        cleaned_data = super(UserRegistrationForm, self).clean()
+        if 'email' in self._errors:
+            # display all the errors at once?
+            #raise forms.ValidationError()
+            email_error = self._errors['email']
+            if email_error[0] == self.error_messages['email_already_associated']:
+                # email already associated
+                self.cascaded_errors.append(self.error_messages['email_already_associated'])
+            else:
+                # generic invalid email
+                self.cascaded_errors.append(self.error_messages['invalid_email'])
+        # TODO: see clean_password1
+        if 'password1' in self._errors:
+            self.cascaded_errors.append(self._errors['password1'][0])
+        if 'password2' in self._errors:
+            self.cascaded_errors.append(self._errors['password2'][0])
+            # syndicate error to first password field also, so that it would get the error styling
+            self._errors['password1'] = [self._errors['password2'][0]]
+
+        if len(self.cascaded_errors) > 0:
+            raise forms.ValidationError(self.cascaded_errors)
+
+        return cleaned_data
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -38,10 +78,16 @@ class UserRegistrationForm(UserCreationForm):
         user = get_user_by_email(email)
         if user is not None:
             self.email = None
-            raise forms.ValidationError(_("A user with that email already exists."))
+            raise forms.ValidationError(self.error_messages['email_already_associated'])
         else:
             self.email = email
         return email
+
+    def clean_password1(self):
+        password1 = self.cleaned_data['password1']
+        if password1 == '':
+            raise forms.ValidationError(self.error_messages['empty_password'])
+        return password1
 
     def save(self, domain=None, commit=True):
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
@@ -64,7 +110,8 @@ class ResendConfirmationForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ResendConfirmationForm, self).__init__(*args, **kwargs)
-        self.fields['email'].widget.attrs['placeholder'] = 'Email'
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -77,6 +124,10 @@ class ResendConfirmationForm(forms.Form):
 class PasswordResetFormHtmlEmail(PasswordResetForm):
     """Modeled after django.contrib.auth.forms.PasswordResetForm
     """
+    def __init__(self, *args, **kwargs):
+        super(PasswordResetFormHtmlEmail, self).__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs['placeholder'] = 'Email'
+
     def clean(self):
         cleaned_data = self.cleaned_data
         email = self.cleaned_data['email']
@@ -113,9 +164,7 @@ class UsernameEmailAuthenticationForm(forms.Form):
     password = forms.CharField(label=_('Password'), widget=forms.PasswordInput)
 
     error_messages = {
-        'invalid_login': _("Please enter the correct credentials. Note that password is case-sensitive."),
-        'no_cookies': _("Your Web browser doesn't appear to have cookies "
-                        "enabled. Cookies are required for logging in."),
+        'invalid_login': _('Please enter a correct %(username_email)s and password. Note that password is case-sensitive.'),
         'inactive': _("This account is inactive."),
     }
 
@@ -129,10 +178,8 @@ class UsernameEmailAuthenticationForm(forms.Form):
         self.request = request
         self.user_cache = None
         super(UsernameEmailAuthenticationForm, self).__init__(*args, **kwargs)
-        for name, field in self.fields.items():
-            if field.widget.__class__ in (forms.TextInput, forms.PasswordInput,):
-                field.widget.attrs['class'] = 'pure-input-1'
-                field.widget.attrs['placeholder'] = field.label
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
 
     def clean(self, username_email=None, password=None):
         """Clean the form and try to get user
@@ -149,19 +196,23 @@ class UsernameEmailAuthenticationForm(forms.Form):
             self.user_cache = None
 
         if self.user_cache is None:
-            raise forms.ValidationError(self.error_messages['invalid_login'])
+            raise forms.ValidationError(
+                self.error_messages['invalid_login'],
+                code='invalid_login',
+                params={
+                    'username_email': self.username_email_field.verbose_name,
+                },
+            )
         elif not self.user_cache.is_active:
-            raise forms.ValidationError(self.error_messages['inactive'])
+            raise forms.ValidationError(
+                self.error_messages['inactive'],
+                code='inactive',
+            )
         else:
             # all good, do nothing
             pass
 
-        self.check_for_test_cookie()
         return self.cleaned_data
-
-    def check_for_test_cookie(self):
-        if self.request and not self.request.session.test_cookie_worked():
-            raise forms.ValidationError(self.error_messages['no_cookies'])
 
     def get_user_id(self):
         if self.user_cache:
@@ -179,10 +230,25 @@ class SocialRegistrationEmailForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(SocialRegistrationEmailForm, self).__init__(*args, **kwargs)
-        for name, field in self.fields.items():
-            if field.widget.__class__ in (forms.TextInput, forms.PasswordInput,):
-                field.widget.attrs['class'] = 'pure-input-1'
-                field.widget.attrs['placeholder'] = field.label
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
+        self.cascaded_errors = []
+
+    def clean(self):
+        """We are using cascaded_errors to bubble up any field-level errors to form-wide
+        """
+        cleaned_data = self.cleaned_data
+        for field_name in self.fields:
+            if field_name in self._errors:
+                errors = self._errors[field_name]
+                error_msg = errors[0]
+                if error_msg == 'This field is required.':
+                    error_msg = 'Email address cannot be blank.'
+                self.cascaded_errors.append(error_msg)
+        # raise all the cascaded errors now
+        if len(self.cascaded_errors) > 0:
+            raise forms.ValidationError(self.cascaded_errors)
+        return cleaned_data
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -195,7 +261,7 @@ class SocialRegistrationEmailForm(forms.Form):
         return email
 
 class SocialRegistrationAuthenticationForm(UsernameEmailAuthenticationForm):
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password',}))
 
     def __init__(self, email, *args, **kwargs):
         super(SocialRegistrationAuthenticationForm, self).__init__(None, *args, **kwargs)
@@ -205,4 +271,5 @@ class SocialRegistrationAuthenticationForm(UsernameEmailAuthenticationForm):
     def clean(self):
         email = self.email
         password = self.cleaned_data.get('password')
-        return super(SocialRegistrationAuthenticationForm, self).clean(username_email=email, password=password)
+        cleaned_data = super(SocialRegistrationAuthenticationForm, self).clean(username_email=email, password=password)
+        return cleaned_data

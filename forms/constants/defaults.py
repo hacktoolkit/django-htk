@@ -1,0 +1,1 @@
+HTK_DEFAULT_FORM_INPUT_CLASS = 'pure-input-1'

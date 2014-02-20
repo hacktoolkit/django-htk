@@ -25,4 +25,5 @@ HTK_DEFAULT_TIMEZONE = 'America/Los_Angeles'
 
 from htk.apps.accounts.constants.defaults import *
 from htk.cache.constants.defaults import *
+from htk.forms.constants.defaults import *
 from htk.lib.qrcode.constants.defaults import *

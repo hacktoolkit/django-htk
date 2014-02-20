@@ -38,7 +38,7 @@ def get_user_by_username(username):
         user = None
     return user
 
-def get_user_by_email(email, auth=False):
+def get_user_by_email(email):
     """Gets a User by `email`
     Returns None if not found
     """
@@ -52,13 +52,11 @@ def get_user_by_email(email, auth=False):
             # there should only be one User with this email...
             # if there are more, we have a data error!
             raise NonUniqueEmail(email)
-        elif not auth:
-            # num_results == 0
-            # also check newly registered accounts if not performing authentication
-            user = get_incomplete_signup_user_by_email(email)
         else:
-            # nope
-            user = None
+            # num_results == 0
+            # also check newly registered accounts
+            # if not user.is_active, handling will get passed downstream
+            user = get_incomplete_signup_user_by_email(email)
     else:
         user = None
     return user
@@ -98,7 +96,7 @@ def authenticate_user(username, password):
     return auth_user
 
 def authenticate_user_by_email(email, password):
-    existing_user = get_user_by_email(email, auth=True)
+    existing_user = get_user_by_email(email)
     if existing_user is not None:
         username = existing_user.username
         auth_user = authenticate_user(username, password)
@@ -160,9 +158,6 @@ def associate_user_email(user, email, domain=None, confirmed=False):
             # a) already confirmed on another account
             # b) not already confirmed, and not a new registration
             pass
-
-            # email already associated with user
-            pass
     else:
         # invalid user or email
         pass
@@ -182,3 +177,20 @@ def extract_user_email(username_email):
         user = get_user_by_username(username)
 
     return (user, email,)
+
+def get_users_by_id(user_ids, strict=False):
+    """Gets a list of Users by user ids
+    If `strict`, all user_ids must exist, or None is returned
+    For non `strict`, returns a partial list of users with valid ids
+    """
+    if strict:
+        users = [UserModel.objects.get(id=user_id) for user_id in user_ids]
+    else:
+        users = []
+        for user_id in user_ids:
+            try:
+                user = UserModel.objects.get(id=user_id)
+                users.append(user)
+            except UserModel.DoesNotExist:
+                pass
+    return users

@@ -1,4 +1,7 @@
+from django.shortcuts import redirect
+
 from htk.apps.accounts.constants import *
+from htk.apps.accounts.session_keys import *
 
 def get_social_auths_status(user):
     user_social_auths = user.profile.get_social_auths()
