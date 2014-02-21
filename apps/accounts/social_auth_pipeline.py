@@ -100,7 +100,10 @@ def check_incomplete_signup(request, details, user=None, *args, **kwargs):
     if user is None:
         social_email = details.get('email')
         user = get_incomplete_signup_user_by_email(social_email)
-        response = { 'user' : user, }
+        response = {
+            'user' : user,
+            'is_new' : False,
+        }
     return response
 
 def associate_email(request, details, user, social, *args, **kwargs):
@@ -113,13 +116,16 @@ def associate_email(request, details, user, social, *args, **kwargs):
 
     email = details.get('email')
     domain = request.get_host()
-    # automatically confirm if the email was provided by the social auth provider
+    # Should confirm if the email was provided by the social auth provider, not the user
+    # i.e. SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL was False
     confirmed = not(request.session.get(SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL, False))
     user_email = associate_user_email(user, email, domain, confirmed=confirmed)
 
     if user_email:
         # need to update the User with the activated one, so that it doesn't get overwritten later on
-        response = { 'user': user_email.user }
+        response = {
+            'user': user_email.user,
+        }
     return response
 
 def handle_new_user(request, user, is_new, *args, **kwargs):
