@@ -273,3 +273,29 @@ class SocialRegistrationAuthenticationForm(UsernameEmailAuthenticationForm):
         password = self.cleaned_data.get('password')
         cleaned_data = super(SocialRegistrationAuthenticationForm, self).clean(username_email=email, password=password)
         return cleaned_data
+
+class SocialRegistrationTermsAgreementForm(forms.Form):
+    agreed_to_terms = forms.BooleanField(required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(SocialRegistrationTermsAgreementForm, self).__init__(*args, **kwargs)
+        self.cascaded_errors = []
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        for field_name in self.fields:
+            if field_name in self._errors:
+                errors = self._errors[field_name]
+                error_msg = errors[0]
+                if error_msg == 'This field is required.':
+                    error_msg = "Please check the box indicating that you agree with %s's Privacy Policy and Terms of Service." % htk_setting('HTK_SITE_NAME')
+                self.cascaded_errors.append(error_msg)
+        # raise all the cascaded errors now
+        if len(self.cascaded_errors) > 0:
+            raise forms.ValidationError(self.cascaded_errors)
+        return cleaned_data
+
+    def save(self, request):
+        agreed_to_terms = self.cleaned_data['agreed_to_terms']
+        request.session[SOCIAL_REGISTRATION_SETTING_AGREED_TO_TERMS] = agreed_to_terms
+        return agreed_to_terms
