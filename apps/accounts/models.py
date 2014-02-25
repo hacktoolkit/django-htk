@@ -200,7 +200,7 @@ class BaseAbstractUserProfile(models.Model):
         - user has multiple connected social auths
         """
         can_disconnect = False
-        if self.user.has_usable_password() and self.user.emails.filter(is_confirmed=True).count() > 1:
+        if self.user.has_usable_password() and self.user.emails.filter(is_confirmed=True).count() > 0:
             can_disconnect = True
         else:
             social_auths = self.get_social_auths()
