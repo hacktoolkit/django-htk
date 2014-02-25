@@ -61,3 +61,9 @@ def get_asset_version():
         now = utcnow()
         asset_version = now.strftime('%Y%m%d')
     return asset_version
+
+def wrap_data(request, data=None):
+    if data is None:
+        data = {}
+        data['errors'] = []
+    return data

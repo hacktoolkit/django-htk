@@ -21,7 +21,10 @@ def activation_email(user_email, use_https=False, domain=None):
         'protocol': use_https and 'https' or 'http', 
         'domain': domain,
         'site_name': htk_setting('HTK_SITE_NAME'),
-        'confirm_email_path': reverse('account_confirm_email', args=(user_email.activation_key,)),
+        'confirm_email_path': reverse(
+            htk_setting('HTK_ACCOUNTS_CONFIRM_EMAIL_URL_NAME'),
+            args=(user_email.activation_key,)
+        ),
     }
 
     activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % context

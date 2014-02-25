@@ -164,8 +164,8 @@ class UsernameEmailAuthenticationForm(forms.Form):
     password = forms.CharField(label=_('Password'), widget=forms.PasswordInput)
 
     error_messages = {
-        'invalid_login': _('Please enter a correct %(username_email)s and password. Note that password is case-sensitive.'),
-        'inactive': _("This account is inactive."),
+        'invalid_login': _('Please enter a correct %(username_email)s and %(password)s. Note that password is case-sensitive.'),
+        'inactive': _('This account is inactive.'),
     }
 
     def __init__(self, request=None, *args, **kwargs):
@@ -200,7 +200,8 @@ class UsernameEmailAuthenticationForm(forms.Form):
                 self.error_messages['invalid_login'],
                 code='invalid_login',
                 params={
-                    'username_email': self.username_email_field.verbose_name,
+                    'username_email': self.fields['username_email'].label,
+                    'password': self.fields['password'].label,
                 },
             )
         elif not self.user_cache.is_active:
