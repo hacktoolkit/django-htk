@@ -1,11 +1,17 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth import logout
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.views import password_reset
 from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.utils.http import base36_to_int
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 
@@ -20,6 +26,8 @@ from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
 from htk.utils import utcnow
 from htk.view_helpers import render_to_response_custom as _r
 from htk.view_helpers import wrap_data
+
+UserModel = get_user_model()
 
 ################################################################################
 # login and logout
@@ -261,7 +269,6 @@ def forgot_password(
 
     data.update(csrf(request))
     if request.method == 'POST':
-        from django.contrib.auth.tokens import default_token_generator
         form = PasswordResetFormHtmlEmail(request.POST)
         if form.is_valid():
             opts = {
@@ -325,8 +332,8 @@ def reset_password(
     if uidb36 and token:
         try:
             uid_int = base36_to_int(uidb36)
-            user = User.objects.get(id=uid_int)
-        except (ValueError, User.DoesNotExist):
+            user = UserModel.objects.get(id=uid_int)
+        except (ValueError, UserModel.DoesNotExist):
             user = None
 
         if user is not None and token_generator.check_token(user, token):
