@@ -22,39 +22,22 @@ from htk.utils import utcnow
 
 UserModel = get_user_model()
 
-class AbstractUserProfile(models.Model):
+class BaseAbstractUserProfile(models.Model):
     """
     django.contrib.auth.models.User does not have a unique email
     """
     # TODO: related_name="%(app_label)s_%(class)s_related"
     user = models.OneToOneField(UserModel, related_name='profile')
-
-    share_name = models.BooleanField(default=False)
     has_username_set = models.BooleanField(default=False)
 
     timezone = models.CharField(max_length=64, choices=[(tz, tz,) for tz in pytz.common_timezones], blank=True, default='America/Los_Angeles')
-
-    # location info
-    address = models.CharField(max_length=64, blank=True)
-    city = models.CharField(max_length=64, blank=True)
-    state = models.CharField(max_length=2, blank=True)
-    zipcode = models.CharField(max_length=5, blank=True)
-    share_location = models.BooleanField(default=False)
-
-    # links and social
-    website = models.CharField(max_length=128, blank=True)
-    facebook = models.CharField(max_length=32, blank=True)
-    twitter = models.CharField(max_length=32, blank=True)
-    biography = models.TextField(max_length=2000, blank=True)
-
-    # community
-    following = models.ManyToManyField(UserModel, related_name='followers', blank=True)
 
     # tracking
     last_login_ip = models.CharField(max_length=15, blank=True)
     # http://en.wikipedia.org/wiki/ISO_3166-2
     detected_country = models.CharField(max_length=2, blank=True)
     detected_timezone = models.CharField(max_length=36, blank=True)
+
     # meta
     timestamp = models.DateTimeField(auto_now=True)
 
@@ -69,26 +52,33 @@ class AbstractUserProfile(models.Model):
     ##
     # name
     def get_full_name(self):
-        full_name = ' '.join([self.user.first_name, self.user.last_name,]).strip()
+        name_parts = [
+            self.user.first_name.strip(),
+            self.user.last_name.strip(),
+        ]
+        full_name = ' '.join(name_parts).strip()
         return full_name
 
     def get_display_name(self):
         display_name = self.user.username if self.has_username_set else htk_setting('HTK_ACCOUNTS_DEFAULT_DISPLAY_NAME')
 
-        if self.share_name:
-            full_name = self.get_full_name()
-            if full_name:
-                display_name = full_name
-
         return display_name
 
     def get_nav_display_name(self):
-        display_name = self.user.username if self.has_username_set else self.user.email
-
+        display_name = self.get_display_name()
+        if display_name.strip() == '':
+            display_name = self.user.username if self.has_username_set else self.user.email
         return display_name
 
     ##
     # emails
+
+    def has_email(self, email):
+        """Determine whether this User owns `email`
+        """
+        user_email = get_user_email(self.user, email)
+        has_email = user_email and user_email.is_confirmed
+        return has_email
 
     def set_primary_email(self, email):
         """Set the primary email address for `self.user`
@@ -97,16 +87,37 @@ class AbstractUserProfile(models.Model):
         Assumes that there is no other auth.User with this email, so doesn't check
         """
         user = self.user
-        user.email = email
-        user.save()
+        if self.has_email(email):
+            user.email = email
+            user.save()
+        else:
+            pass
         return user
 
-    def has_email(self, email):
-        """Determine whether this User owns `email`
+    def get_primary_email(self):
+        email = self.user.email
+        if email and self.has_email(email):
+            primary_email = email
+        else:
+            primary_email = None
+        return primary_email
+
+    def get_nonprimary_emails(self):
+        """Returns a list of UserEmail objects associated with `self.user`, besides the primary email
+        We can just get primary email from self.get_primary_email()
         """
-        user_email = get_user_email(self.user, email)
-        has_email = user_email and user_email.is_confirmed
-        return has_email
+        # TODO: cache this
+        primary_email = self.get_primary_email()
+        if primary_email:
+            user_emails = self.user.emails.exclude(email=primary_email).order_by('-is_confirmed')
+        else:
+            user_emails = self.user.emails.order_by('-is_confirmed')
+        return user_emails
+
+    def get_confirmed_emails(self):
+        user = self.user
+        user_emails = user.emails.filter(is_confirmed=True)
+        return user_emails
 
     ##
     # social auth stuff
@@ -156,6 +167,45 @@ class AbstractUserProfile(models.Model):
         if social_user:
             twid = social_user.uid
         return twid
+
+    def get_social_auth_linkedin(self):
+        from social.apps.django_app.default.models import UserSocialAuth
+        social_auth = UserSocialAuth.objects.get(user__id=self.user.id, provider=SOCIAL_AUTH_PROVIDER_LINKEDIN)
+        return social_auth
+
+    def has_social_auth_connected(self, provider):
+        social_auths = self.get_social_auths()
+        has_connected = social_auths.filter(provider=provider).count() > 0
+        return has_connected
+
+    def has_social_auth_facebook(self):
+        # TODO: cache this
+        has_facebook = self.has_social_auth_connected(SOCIAL_AUTH_PROVIDER_FACEBOOK)
+        return has_facebook
+
+    def has_social_auth_linkedin(self):
+        # TODO: cache this
+        has_linkedin = self.has_social_auth_connected(SOCIAL_AUTH_PROVIDER_LINKEDIN)
+        return has_linkedin
+
+    def has_social_auth_twitter(self):
+        # TODO: cache this
+        has_twitter = self.has_social_auth_connected(SOCIAL_AUTH_PROVIDER_TWITTER)
+        return has_twitter
+
+    def can_disconnect_social_auth(self):
+        """Returns whether the user can disconnect at least one social auth
+        True if:
+        - user has (a usuable password set + confirmed email)
+        - user has multiple connected social auths
+        """
+        can_disconnect = False
+        if self.user.has_usable_password() and self.user.emails.filter(is_confirmed=True).count() > 0:
+            can_disconnect = True
+        else:
+            social_auths = self.get_social_auths()
+            can_disconnect = social_auths.count() > 1
+        return can_disconnect
 
     ##
     # meta stuff
@@ -211,8 +261,41 @@ class AbstractUserProfile(models.Model):
                 self.detected_timezone = gi_city.time_zone_by_addr(ip)
                 self.save()
         except:
+            # couldn't find geoip records for ip, just be quiet for now
             #rollbar.report_exc_info(request=request)
             pass
+
+class AbstractUserProfile(BaseAbstractUserProfile):
+    share_name = models.BooleanField(default=False)
+
+    # location info
+    address = models.CharField(max_length=64, blank=True)
+    city = models.CharField(max_length=64, blank=True)
+    state = models.CharField(max_length=2, blank=True)
+    zipcode = models.CharField(max_length=5, blank=True)
+    share_location = models.BooleanField(default=False)
+
+    # links and social
+    website = models.CharField(max_length=128, blank=True)
+    facebook = models.CharField(max_length=32, blank=True)
+    twitter = models.CharField(max_length=32, blank=True)
+    biography = models.TextField(max_length=2000, blank=True)
+
+    # community
+    following = models.ManyToManyField(UserModel, related_name='followers', blank=True)
+
+    class Meta:
+        abstract = True
+
+    def get_display_name(self):
+        display_name = super(AbstractUserProfile, self).get_display_name()
+
+        if self.share_name:
+            full_name = self.get_full_name()
+            if full_name:
+                display_name = full_name
+
+        return display_name
 
 class UserEmail(models.Model):
     """A User can have multiple email addresses using this table

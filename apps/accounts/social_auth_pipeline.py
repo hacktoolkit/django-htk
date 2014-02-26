@@ -37,7 +37,6 @@ def python_social_auth_shim(pipeline_func):
         return pipeline_func(*args, **kwargs)
     return wrapped
 
-@python_social_auth_shim
 def reset_session_keys(request, *args, **kwargs):
     """Reset a bunch of keys used as part of the social auth flow
     This is to prevent partially-completed values from a previous flow from affecting a new social auth flow
@@ -76,6 +75,24 @@ def check_email(request, details, user=None, *args, **kwargs):
 
     return response
 
+@partial
+def check_terms_agreement(request, details, user=None, *args, **kwargs):
+    """
+    Ask the user to agree to Privacy Policy and Terms of Service
+    """
+    response = None
+    if user is None:
+        agreed_to_terms = request.session.get(SOCIAL_REGISTRATION_SETTING_AGREED_TO_TERMS, False)
+        if not agreed_to_terms:
+            email = details.get('email')
+            request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = email
+            response = redirect('account_register_social_email_and_terms')
+        else:
+            pass
+    else:
+        pass
+    return response
+
 def check_incomplete_signup(request, details, user=None, *args, **kwargs):
     """Checks for an incomplete signup, and sets that User instead
     """
@@ -83,7 +100,10 @@ def check_incomplete_signup(request, details, user=None, *args, **kwargs):
     if user is None:
         social_email = details.get('email')
         user = get_incomplete_signup_user_by_email(social_email)
-        response = { 'user' : user, }
+        response = {
+            'user' : user,
+            'is_new' : False,
+        }
     return response
 
 def associate_email(request, details, user, social, *args, **kwargs):
@@ -96,13 +116,16 @@ def associate_email(request, details, user, social, *args, **kwargs):
 
     email = details.get('email')
     domain = request.get_host()
-    # automatically confirm if the email was provided by the social auth provider
+    # Should confirm if the email was provided by the social auth provider, not the user
+    # i.e. SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL was False
     confirmed = not(request.session.get(SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL, False))
     user_email = associate_user_email(user, email, domain, confirmed=confirmed)
 
     if user_email:
         # need to update the User with the activated one, so that it doesn't get overwritten later on
-        response = { 'user': user_email.user }
+        response = {
+            'user': user_email.user,
+        }
     return response
 
 def handle_new_user(request, user, is_new, *args, **kwargs):
@@ -114,3 +137,7 @@ def handle_new_user(request, user, is_new, *args, **kwargs):
     if is_new:
         # send a welcome email to the user, regardless of email confirmation status
         welcome_email(user)
+
+def post_connect(request, user, social, *args, **kwargs):
+    response = None
+    return response
