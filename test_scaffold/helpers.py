@@ -3,8 +3,6 @@ from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 
-UserModel = get_user_model()
-
 # I was feeling Latin
 TEST_DISPLAY_NAMES = ['Jose Sanchez', 'Don Juan', 'Miles George', 'Pablo Sandoval', 'Leonardo Davinci', 'Tom Hanks', 'Ricardo Lopez', 'Ernesto Guerillo', 'Michaelangelo Turtle', 'Rafael Donatello']
 TEST_USERNAMES = ['graffiti4evr', 'captobvious', 'mrfoo', 'mrbar']
@@ -13,6 +11,7 @@ def create_test_user():
     """Creates a new user with random username for testing
     If two randomly assigned usernames overlap, it will fail
     """
+    UserModel = get_user_model()
     username = '%s_%s' % ('test', uuid4().get_hex()[:10],)
     user = UserModel.objects.create(username=username)
     return user

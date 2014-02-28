@@ -4,7 +4,7 @@ import pytz
 import random
 import rollbar
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -22,14 +22,12 @@ from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
 
-UserModel = get_user_model()
-
 class BaseAbstractUserProfile(models.Model):
     """
     django.contrib.auth.models.User does not have a unique email
     """
     # TODO: related_name="%(app_label)s_%(class)s_related"
-    user = models.OneToOneField(UserModel, related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
     has_username_set = models.BooleanField(default=False)
 
     timezone = models.CharField(max_length=64, choices=[(tz, tz,) for tz in pytz.common_timezones], blank=True, default='America/Los_Angeles')
@@ -284,7 +282,7 @@ class AbstractUserProfile(BaseAbstractUserProfile):
     biography = models.TextField(max_length=2000, blank=True)
 
     # community
-    following = models.ManyToManyField(UserModel, related_name='followers', blank=True)
+    following = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followers', blank=True)
 
     class Meta:
         abstract = True
@@ -328,7 +326,7 @@ class UserEmail(models.Model):
     """A User can have multiple email addresses using this table
 
     """
-    user = models.ForeignKey(UserModel, related_name='emails')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='emails')
     email = models.EmailField(_('email address'))
     # set in self._reset_activation_key()
     activation_key = models.CharField(max_length=40, blank=True)

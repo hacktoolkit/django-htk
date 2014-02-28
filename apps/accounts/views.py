@@ -27,8 +27,6 @@ from htk.utils import utcnow
 from htk.view_helpers import render_to_response_custom as _r
 from htk.view_helpers import wrap_data
 
-UserModel = get_user_model()
-
 ################################################################################
 # login and logout
 
@@ -330,6 +328,7 @@ def reset_password(
     success = False
     response = None
     if uidb36 and token:
+        UserModel = get_user_model()
         try:
             uid_int = base36_to_int(uidb36)
             user = UserModel.objects.get(id=uid_int)
