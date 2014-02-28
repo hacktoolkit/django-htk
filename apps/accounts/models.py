@@ -11,6 +11,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from social.apps.django_app.default.models import UserSocialAuth
 
+from htk.apps.accounts.cachekeys import FollowersCache
+from htk.apps.accounts.cachekeys import FollowingCache
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.emails import activation_email
 from htk.apps.accounts.emails import welcome_email
@@ -296,6 +298,31 @@ class AbstractUserProfile(BaseAbstractUserProfile):
                 display_name = full_name
 
         return display_name
+
+    def get_following(self):
+        """Gets User following
+        Returns a list of User objects
+        """
+        prekey = [self.user.id,]
+        c = FollowingCache(prekey)
+        following = c.get()
+        if following is None:
+            following = self.following.all()
+            c.cache_store(following)
+        return following
+
+    def get_followers(self):
+        """Gets User followers
+        Returns a list of User objects
+        """
+        prekey = [self.user.id,]
+        c = FollowersCache(prekey)
+        followers = c.get()
+        if followers is None:
+            follower_profiles = self.user.followers.all()
+            followers = [profile.user for profile in follower_profiles]
+            c.cache_store(followers)
+        return followers
 
 class UserEmail(models.Model):
     """A User can have multiple email addresses using this table
