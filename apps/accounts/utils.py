@@ -10,8 +10,6 @@ from htk.apps.accounts.models import UserEmail
 from htk.validators import is_valid_email
 from htk.utils import htk_setting
 
-UserModel = get_user_model()
-
 ##
 # login and registration
 
@@ -32,6 +30,7 @@ def get_user_by_username(username):
     """Gets a user by `username`
     Returns None if not found
     """
+    UserModel = get_user_model()
     try:
         user = UserModel.objects.get(username=username)
     except UserModel.DoesNotExist:
@@ -65,6 +64,7 @@ def get_incomplete_signup_user_by_email(email):
     """Gets an incomplete signup User by `email`
     Returns None if not found
     """
+    UserModel = get_user_model()
     user_emails = UserEmail.objects.filter(email=email, is_confirmed=False)
     num_results = user_emails.count()
     user = None
@@ -183,6 +183,7 @@ def get_users_by_id(user_ids, strict=False):
     If `strict`, all user_ids must exist, or None is returned
     For non `strict`, returns a partial list of users with valid ids
     """
+    UserModel = get_user_model()
     if strict:
         users = [UserModel.objects.get(id=user_id) for user_id in user_ids]
     else:
