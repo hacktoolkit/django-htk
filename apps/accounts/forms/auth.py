@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 from htk.apps.accounts.emails import password_reset_email
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
-from htk.apps.accounts.utils import associate_user_email
 from htk.apps.accounts.utils import authenticate_user_by_username_email
 from htk.apps.accounts.utils import email_to_username_hash
 from htk.apps.accounts.utils import get_user_by_email
@@ -102,6 +101,7 @@ class UserRegistrationForm(UserCreationForm):
         user.is_active = False
         if commit:
             user.save()
+            from htk.apps.accounts.utils import associate_user_email
             user_email = associate_user_email(user, email, domain)
         return user
 

@@ -6,7 +6,6 @@ from django.contrib.auth.forms import AuthenticationForm
 
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
-from htk.apps.accounts.models import UserEmail
 from htk.validators import is_valid_email
 from htk.utils import htk_setting
 
@@ -41,6 +40,7 @@ def get_user_by_email(email):
     """Gets a User by `email`
     Returns None if not found
     """
+    from htk.apps.accounts.models import UserEmail
     if is_valid_email(email):
         # check for confirmed email addresses
         user_emails = UserEmail.objects.filter(email=email, is_confirmed=True)
@@ -64,6 +64,7 @@ def get_incomplete_signup_user_by_email(email):
     """Gets an incomplete signup User by `email`
     Returns None if not found
     """
+    from htk.apps.accounts.models import UserEmail
     UserModel = get_user_model()
     user_emails = UserEmail.objects.filter(email=email, is_confirmed=False)
     num_results = user_emails.count()
@@ -117,6 +118,7 @@ def authenticate_user_by_username_email(username_email, password):
 # email management
 
 def get_user_email(user, email):
+    from htk.apps.accounts.models import UserEmail
     try:
         user_email = UserEmail.objects.get(user=user, email=email)
     except UserEmail.DoesNotExist:
@@ -135,6 +137,7 @@ def associate_user_email(user, email, domain=None, confirmed=False):
     `email` cannot be confirmed by any other user
     `email` cannot already be associated with THIS `user`
     """
+    from htk.apps.accounts.models import UserEmail
     user_email = None
     if user and email:
         existing_user = get_user_by_email(email)
