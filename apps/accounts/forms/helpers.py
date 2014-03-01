@@ -22,7 +22,7 @@ USER_UPDATE_FORMS = {
     'update_user_state_form' : UpdateUserStateForm,
     'update_user_share_location_form' : UpdateUserShareLocationForm,
     'update_user_biography_form' : UpdateUserBiographyForm,
-    }
+}
 
 def get_user_update_form(request):
     update_type = request.POST.get('update_form_type', False)

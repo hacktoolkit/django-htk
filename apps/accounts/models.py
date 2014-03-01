@@ -335,7 +335,10 @@ class UserEmail(models.Model):
 
     class Meta:
         verbose_name = 'User Email'
-        unique_together = ('user', 'email',)
+        unique_together = (
+            ('user', 'email',),
+            ('email', 'is_confirmed',),
+        )
 
     def __unicode__(self):
         s = '%s, %s' % (self.user, self.email,)

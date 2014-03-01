@@ -130,32 +130,49 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        email = self.cleaned_data['email']
-        active_users = UserModel._default_manager.filter(
-            email__iexact=email,
-            is_active=True
-        )
-        self.active_users = active_users
+        email = self.cleaned_data.get('email', None)
+        if email:
+            try:
+                user_email = UserEmail.objects.get(
+                    email__iexact=email,
+                    is_confirmed=True,
+                    user__is_active=True
+                )
+                user = user_email.user
+            except UserEmail.DoesNotExist:
+                from htk.apps.accounts.utils import get_incomplete_signup_user_by_email
+                user = get_incomplete_signup_user_by_email(email)
+                if user:
+                    self.inactive_user = True
+                    raise forms.ValidationError("That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"javascript:void(0);\">Resend email confirmation &gt;</a>")
+        else:
+            user = None
+
+        if user is None:
+            raise forms.ValidationError("That email address doesn't have an associated user account. Are you sure you've registered?")
+        else:
+            self.user_cache = user
         return cleaned_data
 
-    def save(self,
-             domain_override=None,
-             subject_template_name='', # not used
-             email_template_name='', # not used
-             use_https=False,
-             token_generator=default_token_generator,
-             from_email=None,
-             request=None):
+    def save(
+        self,
+        domain_override=None,
+        subject_template_name='', # not used
+        email_template_name='', # not used
+        use_https=False,
+        token_generator=default_token_generator,
+        from_email=None,
+        request=None
+    ):
         """Generates a one-use only link for resetting password and sends to the user
         """
         domain = request.get_host()
-        for user in self.active_users:
-            password_reset_email(
-                user,
-                token_generator,
-                use_https=use_https,
-                domain=domain
-            )
+        password_reset_email(
+            self.user_cache,
+            token_generator,
+            use_https=use_https,
+            domain=domain
+        )
 
 class UsernameEmailAuthenticationForm(forms.Form):
     """Based on django.contrib.auth.forms.AuthenticationForm

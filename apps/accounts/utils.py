@@ -43,7 +43,7 @@ def get_user_by_email(email):
     from htk.apps.accounts.models import UserEmail
     if is_valid_email(email):
         # check for confirmed email addresses
-        user_emails = UserEmail.objects.filter(email=email, is_confirmed=True)
+        user_emails = UserEmail.objects.filter(email__iexact=email, is_confirmed=True)
         num_results = user_emails.count()
         if num_results == 1:
             user = user_emails[0].user
@@ -63,10 +63,16 @@ def get_user_by_email(email):
 def get_incomplete_signup_user_by_email(email):
     """Gets an incomplete signup User by `email`
     Returns None if not found
+
+    User MUST NOT be active
     """
     from htk.apps.accounts.models import UserEmail
     UserModel = get_user_model()
-    user_emails = UserEmail.objects.filter(email=email, is_confirmed=False)
+    user_emails = UserEmail.objects.filter(
+        email__iexact=email,
+        is_confirmed=False,
+        user__is_active=False,
+    )
     num_results = user_emails.count()
     user = None
     if num_results == 1:
@@ -77,7 +83,7 @@ def get_incomplete_signup_user_by_email(email):
         raise NonUniqueEmail(email)
     else:
         try:
-            user = UserModel.objects.get(email=email, is_active=False)
+            user = UserModel.objects.get(email__iexact=email, is_active=False)
         except UserModel.DoesNotExist:
             user = None
     return user
@@ -120,7 +126,7 @@ def authenticate_user_by_username_email(username_email, password):
 def get_user_email(user, email):
     from htk.apps.accounts.models import UserEmail
     try:
-        user_email = UserEmail.objects.get(user=user, email=email)
+        user_email = UserEmail.objects.get(user=user, email__iexact=email)
     except UserEmail.DoesNotExist:
         user_email = None
     return user_email

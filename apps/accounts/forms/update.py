@@ -2,6 +2,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
+from htk.apps.accounts.models import AbstractUserProfile
 from htk.utils import resolve_model_dynamically
 from htk.utils.geo import get_us_state_abbreviation_choices
 
@@ -62,42 +63,50 @@ class UpdateUserLastNameForm(AbstractUpdateUserForm):
 class UpdateUserShareNameForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('share_name',)
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('share_name',)
 
 class UpdateUserCityForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('city',)
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('city',)
 
 class UpdateUserStateForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('state',)
-        widgets = {
-            'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
-        }
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('state',)
+            widgets = {
+                'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
+            }
 
 class UpdateUserWebsiteForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('website',)
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('website',)
 
 class UpdateUserFacebookForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('facebook',)
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('facebook',)
 
 class UpdateUserTwitterForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('twitter',)
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('twitter',)
 
 class UpdateUserBiographyForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('biography',)
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('biography',)
 
 class UpdateUserShareLocationForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('share_location',)
+        if isinstance(UserProfile(), AbstractUserProfile):
+            fields = ('share_location',)
