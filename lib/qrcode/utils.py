@@ -18,7 +18,7 @@ def qrcode_image_response(data=''):
     img = make_qr_code_image(data)
     #img = solid_color_image(width=200, height=200)
 
-    response = HttpResponse(mimetype='image/png')
+    response = HttpResponse(content_type='image/png')
     img.save(response, 'png')
     return response
 
