@@ -27,8 +27,6 @@ from htk.utils import utcnow
 from htk.view_helpers import render_to_response_custom as _r
 from htk.view_helpers import wrap_data
 
-UserModel = get_user_model()
-
 ################################################################################
 # login and logout
 
@@ -277,14 +275,8 @@ def forgot_password(
             form.save(**opts)
             response = redirect(redirect_url_name)
         else:
-            if hasattr(form, 'users_cache') and len(form.users_cache) > 0 and not any(user.is_active for user in form.users_cache):
-                # users_cache non-empty but inactive users
-                data['errors'].append("That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"javascript:void(0);\">Resend email confirmation &gt;</a>")
-                # remove the field error
-                del form._errors['email']
-            else:
-                # no users found, or users with unusable password
-                pass
+            for error in form.non_field_errors():
+                data['errors'].append(error)
             data['form'] = form
             response = renderer(template, data)
     else:
@@ -330,6 +322,7 @@ def reset_password(
     success = False
     response = None
     if uidb36 and token:
+        UserModel = get_user_model()
         try:
             uid_int = base36_to_int(uidb36)
             user = UserModel.objects.get(id=uid_int)

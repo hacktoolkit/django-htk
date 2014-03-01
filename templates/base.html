@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+
+  <body>
+    <div id="wrap">
+      <header>
+      </header>
+      <div id="main">
+	{% block content %}{% endblock %}
+      </div>
+    </div>
+    <footer>
+    </footer>
+  </body>
+</html>
+{% include 'fragments/server_info.html' %}

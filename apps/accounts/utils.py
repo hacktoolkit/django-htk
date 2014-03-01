@@ -6,11 +6,8 @@ from django.contrib.auth.forms import AuthenticationForm
 
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
-from htk.apps.accounts.models import UserEmail
 from htk.validators import is_valid_email
 from htk.utils import htk_setting
-
-UserModel = get_user_model()
 
 ##
 # login and registration
@@ -32,6 +29,7 @@ def get_user_by_username(username):
     """Gets a user by `username`
     Returns None if not found
     """
+    UserModel = get_user_model()
     try:
         user = UserModel.objects.get(username=username)
     except UserModel.DoesNotExist:
@@ -42,9 +40,10 @@ def get_user_by_email(email):
     """Gets a User by `email`
     Returns None if not found
     """
+    from htk.apps.accounts.models import UserEmail
     if is_valid_email(email):
         # check for confirmed email addresses
-        user_emails = UserEmail.objects.filter(email=email, is_confirmed=True)
+        user_emails = UserEmail.objects.filter(email__iexact=email, is_confirmed=True)
         num_results = user_emails.count()
         if num_results == 1:
             user = user_emails[0].user
@@ -64,8 +63,16 @@ def get_user_by_email(email):
 def get_incomplete_signup_user_by_email(email):
     """Gets an incomplete signup User by `email`
     Returns None if not found
+
+    User MUST NOT be active
     """
-    user_emails = UserEmail.objects.filter(email=email, is_confirmed=False)
+    from htk.apps.accounts.models import UserEmail
+    UserModel = get_user_model()
+    user_emails = UserEmail.objects.filter(
+        email__iexact=email,
+        is_confirmed=False,
+        user__is_active=False,
+    )
     num_results = user_emails.count()
     user = None
     if num_results == 1:
@@ -76,7 +83,7 @@ def get_incomplete_signup_user_by_email(email):
         raise NonUniqueEmail(email)
     else:
         try:
-            user = UserModel.objects.get(email=email, is_active=False)
+            user = UserModel.objects.get(email__iexact=email, is_active=False)
         except UserModel.DoesNotExist:
             user = None
     return user
@@ -117,8 +124,9 @@ def authenticate_user_by_username_email(username_email, password):
 # email management
 
 def get_user_email(user, email):
+    from htk.apps.accounts.models import UserEmail
     try:
-        user_email = UserEmail.objects.get(user=user, email=email)
+        user_email = UserEmail.objects.get(user=user, email__iexact=email)
     except UserEmail.DoesNotExist:
         user_email = None
     return user_email
@@ -135,6 +143,7 @@ def associate_user_email(user, email, domain=None, confirmed=False):
     `email` cannot be confirmed by any other user
     `email` cannot already be associated with THIS `user`
     """
+    from htk.apps.accounts.models import UserEmail
     user_email = None
     if user and email:
         existing_user = get_user_by_email(email)
@@ -183,6 +192,7 @@ def get_users_by_id(user_ids, strict=False):
     If `strict`, all user_ids must exist, or None is returned
     For non `strict`, returns a partial list of users with valid ids
     """
+    UserModel = get_user_model()
     if strict:
         users = [UserModel.objects.get(id=user_id) for user_id in user_ids]
     else:

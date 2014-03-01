@@ -41,7 +41,7 @@ def json_error_str():
     return to_json(json_error())
 
 def json_response(obj):
-    return HttpResponse(to_json(obj), mimetype='application/json')    
+    return HttpResponse(to_json(obj), content_type='application/json')    
 
 def json_response_okay():
     return json_response(json_okay())

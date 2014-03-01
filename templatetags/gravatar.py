@@ -6,14 +6,13 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.html import escape
 
-UserModel = get_user_model()
-
 GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com/')
 GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', '')
 
 register = template.Library()
 
 def get_user(user):
+    UserModel = get_user_model()
     if not isinstance(user, UserModel):
         try:
             user = UserModel.objects.get(username=user)

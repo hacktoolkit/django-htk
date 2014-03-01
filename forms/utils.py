@@ -2,6 +2,12 @@ from django import forms
 
 from htk.utils import htk_setting
 
+TEXT_STYLE_INPUTS = (
+    forms.TextInput,
+    forms.EmailInput,
+    forms.PasswordInput,
+)
+
 def clean_model_instance_field(form_obj, field_name, cls):
     """Called from within the clean method of a ModelInstanceField or CharField
     `form_obj` is the instance of the Form
@@ -16,12 +22,6 @@ def clean_model_instance_field(form_obj, field_name, cls):
     except cls.DoesNotExist:
         raise forms.ValidationError()
     return instance
-
-TEXT_STYLE_INPUTS = (
-    forms.TextInput,
-    forms.EmailInput,
-    forms.PasswordInput,
-)
 
 def set_input_attrs(form, attrs=None):
     """Set various attributes on form input fields

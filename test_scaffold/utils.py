@@ -3,16 +3,13 @@ from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 
-UserModel = get_user_model()
-
-# I was feeling Latin
-TEST_DISPLAY_NAMES = ['Jose Sanchez', 'Don Juan', 'Miles George', 'Pablo Sandoval', 'Leonardo Davinci', 'Tom Hanks', 'Ricardo Lopez', 'Ernesto Guerillo', 'Michaelangelo Turtle', 'Rafael Donatello']
-TEST_USERNAMES = ['graffiti4evr', 'captobvious', 'mrfoo', 'mrbar']
+from htk.test_scaffold.test_data import *
 
 def create_test_user():
     """Creates a new user with random username for testing
     If two randomly assigned usernames overlap, it will fail
     """
+    UserModel = get_user_model()
     username = '%s_%s' % ('test', uuid4().get_hex()[:10],)
     user = UserModel.objects.create(username=username)
     return user
@@ -23,6 +20,12 @@ def create_test_email():
         'hacktoolkit.com',
     )
     return email
+
+def create_test_username():
+    """Generates a random username
+    """
+    username = '%s_%s' % ('test', uuid4().get_hex()[:10],)
+    return username
 
 def create_test_password():
     password = uuid4().get_hex()
@@ -44,3 +47,9 @@ def get_test_display_name():
 def get_test_username():
     username = random.choice(TEST_USERNAMES) + str(random.randint(1, 1000000))
     return username
+
+def get_random_string(max_length=0):
+    s = 'randstr%s' % uuid4().get_hex()
+    if max_length > 0:
+        s = s[:max_length]
+    return s
