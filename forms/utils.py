@@ -6,6 +6,8 @@ TEXT_STYLE_INPUTS = (
     forms.TextInput,
     forms.EmailInput,
     forms.PasswordInput,
+    forms.Textarea,
+    forms.URLInput,
 )
 
 def clean_model_instance_field(form_obj, field_name, cls):
