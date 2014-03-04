@@ -1,0 +1,7 @@
+<ul{% if id %} id="{{ id }}"{% endif %}>
+  {% for link in links %}
+  <li>
+    <a href="{{ link.uri }}"{% if link.selected %} class="selected"{% endif %}>{{ link.text }}</a>
+  </li>
+  {% endfor %}
+</ul>

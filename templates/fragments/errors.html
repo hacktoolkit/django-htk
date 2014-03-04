@@ -1,0 +1,10 @@
+{% if errors %}
+<div id="errors">
+  The following error(s) occured:
+  <ul>
+    {% for error in errors %}
+    <li>{{ error|safe }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

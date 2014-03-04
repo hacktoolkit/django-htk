@@ -40,7 +40,7 @@ def gravatar_for_email(email, size=80):
 
 def gravatar_for_user(user, size=80):
     user = get_user(user)
-    url = gravatar_for_email(user.email, size)
+    url = gravatar_for_email(user.email, size=size)
     return url
 
 def gravatar_img_for_email(email, size=80):
@@ -54,7 +54,7 @@ def gravatar_img_for_email(email, size=80):
 
 def gravatar_img_for_user(user, size=80):
     user = get_user(user)
-    url = gravatar_for_user(user)
+    url = gravatar_for_user(user, size=size)
     img = '<img src="%s" alt="Gravatar for %s" height="%s" width="%s" />' % (
         escape(url),
         user.username,
@@ -65,7 +65,7 @@ def gravatar_img_for_user(user, size=80):
 
 def gravatar(user, size=80):
     # backward compatibility
-    img = gravatar_img_for_user(user, size)
+    img = gravatar_img_for_user(user, size=size)
     return img
 
 register.simple_tag(gravatar)

@@ -1,0 +1,18 @@
+<form method="POST"{% if action_view %} action="{% url action_view %}"{% endif %} class="pure-form pure-form-aligned">
+  <fieldset>
+  {% csrf_token %}
+  {% for hidden in form.hidden_fields %}
+  {{ hidden }}
+  {% endfor %}
+  {% for field in form.visible_fields %}
+  <div class="pure-control-group">
+    {{ field.label_tag}}
+    {{ field }}
+    {% if field.errors %}
+    <span class="pure-form-message form-error">{{ field.errors }}</span>
+    {% endif %}
+  </div>
+  {% endfor %}
+  <button type="submit" class="pure-button pure-button-primary">{{ submit_label|default:'Submit' }}</button>
+  </fieldset>
+</form>
