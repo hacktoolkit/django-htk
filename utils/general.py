@@ -1,5 +1,7 @@
 import sys
 
+from importlib import import_module
+
 from django.conf import settings
 from django.db.models.loading import get_model
 
@@ -22,9 +24,9 @@ def get_module_name_parts(module_str):
     """
     if module_str:
         parts = module_str.split('.')
-        app_name = '.'.join(parts[:-1])
+        module_name = '.'.join(parts[:-1])
         attr_name = parts[-1]
-        values = (app_name, attr_name,)
+        values = (module_name, attr_name,)
     else:
         values = (None, None,)
     return values
@@ -32,17 +34,18 @@ def get_module_name_parts(module_str):
 def resolve_method_dynamically(module_str):
     """Returns the method for a module
     """
-    (app_name, attr_name,) = get_module_name_parts(module_str)
-    if app_name and attr_name:
-        method = getattr(sys.modules[app_name], attr_name)
+    (module_name, attr_name,) = get_module_name_parts(module_str)
+    if module_name and attr_name:
+        module = import_module(module_name)
+        method = getattr(module, attr_name)
     else:
         method = None
     return method
 
 def resolve_model_dynamically(module_str):
-    (app_name, attr_name,) = get_module_name_parts(module_str)
-    if app_name and attr_name:
-        model = get_model(app_name, attr_name)
+    (module_name, attr_name,) = get_module_name_parts(module_str)
+    if module_name and attr_name:
+        model = get_model(module_name, attr_name)
     else:
         model = None
     return model
