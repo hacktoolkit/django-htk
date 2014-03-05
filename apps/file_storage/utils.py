@@ -3,7 +3,7 @@ import os
 
 from django.conf import settings
 
-from htk.apps.file_storage.constants import *
+from htk.utils import htk_setting
 
 def get_filesystem_path(file_name, file_type, file_id):
     # MEDIA_ROOT = os.path.join(BASEDIR, 'uploads')
