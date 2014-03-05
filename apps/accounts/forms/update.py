@@ -63,50 +63,42 @@ class UpdateUserLastNameForm(AbstractUpdateUserForm):
 class UpdateUserShareNameForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('share_name',)
+        fields = ('share_name',)
 
 class UpdateUserCityForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('city',)
+        fields = ('city',)
 
 class UpdateUserStateForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('state',)
-            widgets = {
-                'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
-            }
+        fields = ('state',)
+        widgets = {
+            'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
+        }
 
 class UpdateUserWebsiteForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('website',)
+        fields = ('website',)
 
 class UpdateUserFacebookForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('facebook',)
+        fields = ('facebook',)
 
 class UpdateUserTwitterForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('twitter',)
+        fields = ('twitter',)
 
 class UpdateUserBiographyForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('biography',)
+        fields = ('biography',)
 
 class UpdateUserShareLocationForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if isinstance(UserProfile(), AbstractUserProfile):
-            fields = ('share_location',)
+        fields = ('share_location',)
