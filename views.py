@@ -1,3 +1,5 @@
+import re
+
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.http import HttpResponse
@@ -35,4 +37,16 @@ def bing_site_auth(request):
 def robots(request):
     template_name = 'robots.txt'
     response = generic_template_view(request, template_name, content_type='text/plain')
+    return response
+
+def redir(request):
+    url = request.GET.get('url', None)
+    if url:
+        if not re.match('^https?://', url):
+            url = 'http://%s' % url
+        else:
+            pass
+        response = redirect(url)
+    else:
+        response = redirect('/')
     return response
