@@ -63,50 +63,66 @@ class UpdateUserLastNameForm(AbstractUpdateUserForm):
 class UpdateUserShareNameForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('share_name',)
+        else:
+            fields = ()
 
 class UpdateUserCityForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('city',)
+        else:
+            fields = ()
 
 class UpdateUserStateForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('state',)
             widgets = {
                 'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
             }
+        else:
+            fields = ()
 
 class UpdateUserWebsiteForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('website',)
+        else:
+            fields = ()
 
 class UpdateUserFacebookForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('facebook',)
+        else:
+            fields = ()
 
 class UpdateUserTwitterForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('twitter',)
+        else:
+            fields = ()
 
 class UpdateUserBiographyForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('biography',)
+        else:
+            fields = ()
 
 class UpdateUserShareLocationForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        if issubclass(AbstractUserProfile, UserProfile):
+        if issubclass(UserProfile, AbstractUserProfile):
             fields = ('share_location',)
+        else:
+            fields = ()
