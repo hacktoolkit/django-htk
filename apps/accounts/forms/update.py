@@ -63,42 +63,50 @@ class UpdateUserLastNameForm(AbstractUpdateUserForm):
 class UpdateUserShareNameForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('share_name',)
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('share_name',)
 
 class UpdateUserCityForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('city',)
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('city',)
 
 class UpdateUserStateForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('state',)
-        widgets = {
-            'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
-        }
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('state',)
+            widgets = {
+                'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
+            }
 
 class UpdateUserWebsiteForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('website',)
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('website',)
 
 class UpdateUserFacebookForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('facebook',)
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('facebook',)
 
 class UpdateUserTwitterForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('twitter',)
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('twitter',)
 
 class UpdateUserBiographyForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('biography',)
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('biography',)
 
 class UpdateUserShareLocationForm(AbstractUpdateUserProfileForm):
     class Meta:
         model = UserProfile
-        fields = ('share_location',)
+        if issubclass(AbstractUserProfile, UserProfile):
+            fields = ('share_location',)
