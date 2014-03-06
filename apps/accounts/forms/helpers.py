@@ -12,7 +12,7 @@ USER_UPDATE_FORMS = {
     'update_user_last_name_form' : update_forms.UpdateUserLastNameForm,
 }
 
-if issubclass(AbstractUserProfile, UserProfile):
+if issubclass(UserProfile, AbstractUserProfile):
     USER_UPDATE_FORMS.update({
             'update_user_share_name_form' : update_forms.UpdateUserShareNameForm,
             'update_user_website_form' : update_forms.UpdateUserWebsiteForm,
