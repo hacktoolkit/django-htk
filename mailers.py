@@ -66,9 +66,10 @@ def send_email(
 
     base_context = get_email_context()
     if context:
-        context = base_context.update(context)
+        base_context.update(context)
     else:
-        context = base_context
+        pass
+    context = base_context
     c = Context(context)
     if settings.ENV_DEV:
         subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
