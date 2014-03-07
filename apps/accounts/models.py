@@ -5,19 +5,22 @@ import random
 import rollbar
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from social.apps.django_app.default.models import UserSocialAuth
 
-from htk.apps.accounts.cachekeys import FollowersCache
-from htk.apps.accounts.cachekeys import FollowingCache
+from htk.apps.accounts.cachekeys import UserFollowersCache
+from htk.apps.accounts.cachekeys import UserFollowingCache
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.emails import activation_email
 from htk.apps.accounts.emails import welcome_email
+from htk.apps.accounts.utils import encrypt_uid
 from htk.lib.geoip.utils import get_geoip_city
 from htk.lib.geoip.utils import get_geoip_country
+from htk.middleware import GlobalRequestMiddleware
 from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
@@ -175,7 +178,7 @@ class BaseAbstractUserProfile(models.Model):
 
     def has_social_auth_connected(self, provider):
         social_auths = self.get_social_auths()
-        has_connected = social_auths.filter(provider=provider).count() > 0
+        has_connected = social_auths.filter(provider=provider).exists()
         return has_connected
 
     def has_social_auth_facebook(self):
@@ -200,7 +203,7 @@ class BaseAbstractUserProfile(models.Model):
         - user has multiple connected social auths
         """
         can_disconnect = False
-        if self.user.has_usable_password() and self.user.emails.filter(is_confirmed=True).count() > 0:
+        if self.user.has_usable_password() and self.user.emails.filter(is_confirmed=True).exists():
             can_disconnect = True
         else:
             social_auths = self.get_social_auths()
@@ -297,12 +300,28 @@ class AbstractUserProfile(BaseAbstractUserProfile):
 
         return display_name
 
+    # followers/following
+    def follow_user(self, user):
+        self.following.add(user)
+        # invalidate caches
+        following_cache = UserFollowingCache(prekey=self.user.id)
+        following_cache.invalidate_cache()
+        followers_cache = UserFollowersCache(prekey=user.id)
+        followers_cache.invalidate_cache()
+
+    def unfollow_user(self, user):
+        self.following.remove(user)
+        # invalidate caches
+        following_cache = UserFollowingCache(prekey=self.user.id)
+        following_cache.invalidate_cache()
+        followers_cache = UserFollowersCache(prekey=user.id)
+        followers_cache.invalidate_cache()
+
     def get_following(self):
         """Gets User following
         Returns a list of User objects
         """
-        prekey = [self.user.id,]
-        c = FollowingCache(prekey)
+        c = UserFollowingCache(prekey=self.user.id)
         following = c.get()
         if following is None:
             following = self.following.all()
@@ -314,13 +333,37 @@ class AbstractUserProfile(BaseAbstractUserProfile):
         Returns a list of User objects
         """
         prekey = [self.user.id,]
-        c = FollowersCache(prekey)
+        c = UserFollowersCache(prekey=self.user.id)
         followers = c.get()
         if followers is None:
             follower_profiles = self.user.followers.all()
             followers = [profile.user for profile in follower_profiles]
             c.cache_store(followers)
         return followers
+
+    def has_follower(self, user=None):
+        """Check if the currently logged-in user is following self.user
+        """
+        if user is None:
+            request = GlobalRequestMiddleware.get_current_request()
+            user = request.user
+        else:
+            pass
+        if user:
+            value = user.profile.get_following().filter(id=self.user.id).exists()
+        else:
+            value = False
+        return value
+
+    def get_follow_uri(self):
+        follow_user_url_name = htk_setting('HTK_API_USERS_FOLLOW_URL_NAME')
+        follow_uri = reverse(follow_user_url_name, args=(encrypt_uid(self.user),))
+        return follow_uri
+
+    def get_unfollow_uri(self):
+        unfollow_user_url_name = htk_setting('HTK_API_USERS_UNFOLLOW_URL_NAME')
+        unfollow_uri = reverse(unfollow_user_url_name, args=(encrypt_uid(self.user),))
+        return unfollow_uri
 
 class UserEmail(models.Model):
     """A User can have multiple email addresses using this table

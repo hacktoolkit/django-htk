@@ -3,6 +3,8 @@ import hashlib
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
+from django.utils.http import base36_to_int
+from django.utils.http import int_to_base36
 
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
@@ -204,3 +206,28 @@ def get_users_by_id(user_ids, strict=False):
             except UserModel.DoesNotExist:
                 pass
     return users
+
+##
+# user id manipulation
+def encrypt_uid(user):
+    """Encrypts the User id for plain
+    """
+    crypt_uid = int_to_base36(user.id ^ UID_XOR)
+    return crypt_uid
+
+def decrypt_uid(encrypted_uid):
+    user_id = base36_to_int(encrypted_uid) ^ UID_XOR
+    return user_id
+
+def resolve_encrypted_uid(encrypted_uid):
+    """Returns the User for this `encrypted_uid`
+    """
+    UserModel = get_user_model()
+    try:
+        user_id = decrypt_uid(encrypted_uid)
+        user = UserModel.objects.get(id=user_id)
+    except ValueError:
+        user = None
+    except UserModel.DoesNotExist:
+        user = None
+    return user
