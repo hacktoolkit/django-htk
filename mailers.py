@@ -14,7 +14,7 @@ def simple_email(
     sender=None,
     to=None,
     fail_silently=False
-    ):
+):
     """Sends a simple email
     """
     sender = sender or htk_setting('HTK_DEFAULT_EMAIL_SENDER', HTK_DEFAULT_EMAIL_SENDER)
@@ -55,7 +55,7 @@ def send_email(
     bcc=None,
     context=None,
     text_only=False
-    ):
+):
     """Sends a templated email w/ text and HTML
     """
     template = template or 'base'
@@ -64,7 +64,12 @@ def send_email(
     bcc = bcc or []
     cc = cc or []
 
-    context = context or get_email_context()
+    base_context = get_email_context()
+    if context:
+        base_context.update(context)
+    else:
+        pass
+    context = base_context
     c = Context(context)
     if settings.ENV_DEV:
         subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
