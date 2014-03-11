@@ -12,6 +12,8 @@ HTK_ALLOWED_HOST_REGEXPS = (
 HTK_SITE_NAME = 'Hacktoolkit'
 HTK_SYMBOLIC_SITE_NAME = 'hacktoolkit'
 
+HTK_REDIRECT_URL_NAME = 'redir'
+
 ##
 # Email settings
 HTK_DEFAULT_EMAIL_SENDING_DOMAIN = 'hacktoolkit.com'

@@ -1,7 +1,7 @@
 from htk.cache import CustomCacheScheme
 from htk.constants.time import *
 
-class FollowingCache(CustomCacheScheme):
+class UserFollowingCache(CustomCacheScheme):
     """Cache management object for user following,
     e.g. user.profile.get_following()
 
@@ -11,7 +11,7 @@ class FollowingCache(CustomCacheScheme):
         duration = TIMEOUT_1_HOUR
         return duration
 
-class FollowersCache(CustomCacheScheme):
+class UserFollowersCache(CustomCacheScheme):
     """Cache management object for user followers,
     e.g. user.profile.get_followers()
 

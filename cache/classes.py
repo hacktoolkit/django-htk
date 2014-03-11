@@ -154,8 +154,14 @@ class CustomCacheScheme(object):
              Similar to a prehash -> hash
     """
     def __init__(self, prekey=None):
-        prekey = prekey if prekey is not None else ['default',]
-        self.prekey = prekey
+        if prekey is not None:
+            if hasattr(prekey, '__iter__'):
+                # a list or tuple
+                self.prekey = prekey
+            else:
+                self.prekey = [prekey,]
+        else:
+            self.prekey = ['default',]
         self._cache_key = None
 
     def get_cache_key_suffix(self):
