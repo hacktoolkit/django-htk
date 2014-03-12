@@ -9,10 +9,11 @@ from django.template import RequestContext
 from django.template import TemplateDoesNotExist
 from django.template import loader
 
-def generic_template_view(request, template_name, content_type='text/html'):
+def generic_template_view(request, template_name, context_dict=None, content_type='text/html'):
     try:
         template = loader.get_template(template_name)
-        context = RequestContext(request, {})
+        context_dict = context_dict or {}
+        context = RequestContext(request, context_dict)
         response = HttpResponse(template.render(context), content_type=content_type)
     except TemplateDoesNotExist:
         response = None
@@ -26,17 +27,32 @@ def google_site_verification(request, code):
 
 def html_site_verification(request, code):
     template_name = 'site_verification/%s--.html' % code
-    response = generic_template_view(request, template_name)
+    response = generic_template_view(
+        request,
+        template_name
+    )
     return response
 
 def bing_site_auth(request):
     template_name = 'site_verification/BingSiteAuth.xml'
-    response = generic_template_view(request, template_name, content_type='text/xml')
+    response = generic_template_view(
+        request,
+        template_name,
+        content_type='text/xml'
+    )
     return response
 
 def robots(request):
     template_name = 'robots.txt'
-    response = generic_template_view(request, template_name, content_type='text/plain')
+    context_dict = {
+        'host' : request.get_host()
+    }
+    response = generic_template_view(
+        request,
+        template_name,
+        context_dict=context_dict,
+        content_type='text/plain'
+    )
     return response
 
 def redir(request):
