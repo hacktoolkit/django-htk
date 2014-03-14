@@ -62,10 +62,25 @@ class BaseAbstractUserProfile(models.Model):
         full_name = ' '.join(name_parts).strip()
         return full_name
 
-    def get_display_name(self):
-        display_name = self.user.username if self.has_username_set else htk_setting('HTK_ACCOUNTS_DEFAULT_DISPLAY_NAME')
+    def get_first_name_last_initial(self):
+        first_name_part = self.user.first_name.strip()
+        last_name_part = self.user.last_name.strip()[:1]
+        last_name_part += '.' if last_name_part else ''
 
+        name_parts = [
+            first_name_part,
+            last_name_part,
+        ]
+        name = ' '.join(name_parts).strip()
+        return name
+
+    def get_display_name(self):
+        display_name = self.get_display_username()
         return display_name
+
+    def get_display_username(self):
+        display_username = self.user.username if self.has_username_set else htk_setting('HTK_ACCOUNTS_DEFAULT_DISPLAY_NAME')
+        return display_username
 
     def get_nav_display_name(self):
         display_name = self.get_display_name()
