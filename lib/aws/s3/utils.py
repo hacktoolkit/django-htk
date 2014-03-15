@@ -55,6 +55,12 @@ class S3Manager(object):
             bytes_written = 0
         return bytes_written
 
+    def copy_file(self, src_bucket_id, src_key_id, dest_bucket_id, dest_key_id):
+        """Copies a file
+        """
+        src_key = self._get_key(src_bucket_id, src_key_id)
+        new_key = src_key.copy(dest_bucket_id, dest_key_id)
+
     def delete_file(self, bucket_id, key_id):
         """Deletes a file
         """
