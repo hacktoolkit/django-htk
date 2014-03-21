@@ -38,3 +38,18 @@ def set_input_placeholder_labels(form):
     for name, field in form.fields.items():
         if field.widget.__class__ in TEXT_STYLE_INPUTS:
             field.widget.attrs['placeholder'] = field.label
+
+def get_form_errors(form):
+    """Return a list of errors on the form
+
+    `form` is already known to be invalid,
+    e.g. form.is_valid() == False
+    """
+    errors = []
+    for error in form.non_field_errors():
+        errors.append(error)
+    for field in form:
+        if field.errors:
+            field_errors = (field.name, field.errors,)
+            errors.append(field_errors)
+    return errors
