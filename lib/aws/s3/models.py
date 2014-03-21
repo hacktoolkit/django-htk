@@ -62,6 +62,24 @@ class S3MediaAsset(models.Model):
 #        self.s3_bytes = bytes_written
         self.save()
 
+    def copy_stored_file_to(self, dest_obj):
+        """Copies the stored file on S3 into the `dest_obj`'s bucket/key
+        """
+        src_bucket_id = self.get_s3_bucket()
+        src_key_id = self.get_s3_key()
+        dest_bucket_id = dest_obj.get_s3_bucket()
+        dest_key_id = dest_obj.get_s3_key()
+        s3 = S3Manager()
+        s3.copy_file(src_bucket_id, src_key_id, dest_bucket_id, dest_key_id)
+
     def delete_stored_file(self):
+        # TODO: not implemented yet
         s3 = S3Manager()
         pass
+
+    def clone(self):
+        """Makes a clone of this S3MediaAsset with a copied file on S3
+        """
+        cloned_obj = self.__class__.objects.create()
+        self.copy_stored_file_to(cloned_obj)
+        return cloned_obj
