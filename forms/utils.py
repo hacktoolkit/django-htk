@@ -45,11 +45,12 @@ def get_form_errors(form):
     `form` is already known to be invalid,
     e.g. form.is_valid() == False
     """
-    errors = []
+    all_errors = []
+    all_field_errors = []
     for error in form.non_field_errors():
         errors.append(error)
     for field in form:
         if field.errors:
             field_errors = (field.name, field.errors,)
-            errors.append(field_errors)
-    return errors
+            all_field_errors.append(field_errors)
+    return (all_errors, all_field_errors,)
