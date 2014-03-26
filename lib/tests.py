@@ -19,3 +19,4 @@ class SimpleTest(TestCase):
 # Finally, import tests from subdirectories last to prevent circular import
 from htk.lib.geoip.tests import *
 from htk.lib.google.tests import *
+from htk.lib.qrcode.tests import *
