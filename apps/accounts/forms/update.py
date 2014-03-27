@@ -14,8 +14,17 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
         model = UserModel
 
     def __init__(self, instance, *args, **kwargs):
-        super(UserUpdateForm, self).__init__(instance, *args, **kwargs)
-        self.profile_form = UserProfileUpdateForm(self.instance.profile, *args, **kwargs)
+        user = instance
+        user_profile = user.profile
+        if not args and not kwargs:
+            # override the displayed username value if not set by the user yet
+            # only do this for rendering a blank form (no request.POST)
+            username_field_display_value = user.username if user_profile.has_username_set else ''
+            user.username = username_field_display_value
+        else:
+            pass
+        super(UserUpdateForm, self).__init__(user, *args, **kwargs)
+        self.profile_form = UserProfileUpdateForm(user_profile, *args, **kwargs)
 
     def get_profile_form(self):
         profile_form = self.profile_form
