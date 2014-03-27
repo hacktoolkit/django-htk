@@ -20,6 +20,17 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
     def get_profile_form(self):
         profile_form = self.profile_form
         return profile_form
+
+    def save(self, *args, **kwargs):
+        user = super(UserUpdateForm, self).save(*args, **kwargs)
+        if 'username' in self.save_fields:
+            user_profile = user.profile
+            user_profile.has_username_set = True
+            user_profile.save(update_fields=['has_username_set',])
+            user = user_profile.user
+        else:
+            pass
+        return user
         
 class UserProfileUpdateForm(AbstractModelInstanceUpdateForm):
     class Meta:
