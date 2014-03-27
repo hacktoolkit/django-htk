@@ -28,20 +28,3 @@ class AddEmailForm(forms.Form):
             email = self.email
             user_email = associate_user_email(user, email, domain)
         return user_email
-
-class TimezoneForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = (
-            'timezone',
-        )
-
-    def save(self, user, request, commit=True):
-        tz = self.cleaned_data['timezone']
-        profile = user.profile
-        profile.timezone = tz
-        profile.save()
-        django_timezone = pytz.timezone(tz)
-        # <DstTzInfo 'America/Los_Angeles' PST-1 day, 16:00:00 STD> is not JSON serializable
-#        request.session[DJANGO_TIMEZONE] = django_timezone
-        return tz
