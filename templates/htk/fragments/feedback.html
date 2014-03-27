@@ -1,5 +1,6 @@
 {% if feedback_form %}
-<script type="text/javascript" src="/static/htk/js/feedback_overlay.js?v={{ asset_version }}"></script>
+{% load htk %}
+{% loadjs '/static/htk/js/feedback_overlay.js' %}
 
 <div class="feedback-tab feedback-tab-left no-highlight">
   <div class="feedback-button rounded-bottom">
