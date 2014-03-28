@@ -48,6 +48,9 @@ class S3Manager(object):
     def put_file(self, bucket_id, key_id, f):
         """Stores a file
         """
+        prekey = [bucket_id, key_id,]
+        c = S3UrlCache(prekey)
+        c.invalidate_cache()
         key = self._get_key(bucket_id, key_id)
         if key:
             bytes_written = key.set_contents_from_file(f)
