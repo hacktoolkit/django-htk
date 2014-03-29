@@ -1,8 +1,11 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import SetPasswordForm
 
 from htk.forms import AbstractModelInstanceUpdateForm
+from htk.forms.utils import set_input_attrs
+from htk.forms.utils import set_input_placeholder_labels
 from htk.utils import resolve_model_dynamically
 from htk.utils.geo import get_us_state_abbreviation_choices
 
@@ -47,3 +50,10 @@ class UserProfileUpdateForm(AbstractModelInstanceUpdateForm):
         widgets = {
             'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
         }
+
+class ChangePasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+        self.fields['new_password2'].label = 'Confirm new password'
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
