@@ -18,7 +18,7 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
         user_profile = user.profile
         if not args and not kwargs:
             # override the displayed username value if not set by the user yet
-            # only do this for rendering a blank form (no request.POST)
+            # only do this for rendering a form initially (i.e. no request.POST)
             username_field_display_value = user.username if user_profile.has_username_set else ''
             user.username = username_field_display_value
         else:

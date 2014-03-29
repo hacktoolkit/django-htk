@@ -1,5 +1,6 @@
 from django import forms
 
+from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
 
 class AbstractModelInstanceUpdateForm(forms.ModelForm):
@@ -33,10 +34,17 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         self.save_fields = save_fields
         save_fields_dict = dict(zip(save_fields, [True] * len(save_fields)))
         super(AbstractModelInstanceUpdateForm, self).__init__(instance=instance, *args, **kwargs)
-        # make all non-save fields optional
-        for name, field in self.fields.items():
-            if name not in save_fields_dict:
-                field.required = False
+        if args or kwargs:
+            # make all non-save fields optional
+            for name, field in self.fields.items():
+                if name not in save_fields_dict:
+                    field.required = False
+                else:
+                    pass
+        else:
+            # leave the fields the way they are for rendering a form initially
+            pass
+        set_input_attrs(self)
         set_input_placeholder_labels(self)
 
     def save(self, commit=True):
