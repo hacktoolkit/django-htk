@@ -17,6 +17,7 @@ from htk.apps.accounts.cachekeys import UserFollowingCache
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.emails import activation_email
 from htk.apps.accounts.emails import welcome_email
+from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.utils import encrypt_uid
 from htk.lib.geoip.utils import get_geoip_city
 from htk.lib.geoip.utils import get_geoip_country
@@ -127,9 +128,9 @@ class BaseAbstractUserProfile(models.Model):
         # TODO: cache this
         primary_email = self.get_primary_email()
         if primary_email:
-            user_emails = self.user.emails.exclude(email=primary_email).order_by('-is_confirmed')
+            user_emails = self.user.emails.exclude(email=primary_email).order_by('-is_confirmed', 'id')
         else:
-            user_emails = self.user.emails.order_by('-is_confirmed')
+            user_emails = self.user.emails.order_by('-is_confirmed', 'id')
         return user_emails
 
     def get_confirmed_emails(self):
@@ -293,7 +294,8 @@ class AbstractUserProfile(BaseAbstractUserProfile):
     zipcode = models.CharField(max_length=5, blank=True)
     share_location = models.BooleanField(default=False)
 
-    # links and social
+    # profile, links, and social
+    avatar = models.PositiveIntegerField(default=ProfileAvatarType.GRAVATAR.value)
     website = models.CharField(max_length=128, blank=True)
     facebook = models.CharField(max_length=32, blank=True)
     twitter = models.CharField(max_length=32, blank=True)
@@ -314,6 +316,10 @@ class AbstractUserProfile(BaseAbstractUserProfile):
                 display_name = full_name
 
         return display_name
+
+    def get_avatar_type(self):
+        avatar_type = ProfileAvatarType(self.avatar).name
+        return avatar_type
 
     # followers/following
     def follow_user(self, user):

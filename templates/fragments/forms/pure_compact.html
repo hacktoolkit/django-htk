@@ -5,14 +5,15 @@
   {{ hidden }}
   {% endfor %}
   {% for field in form.visible_fields %}
-  <div class="pure-control-group">
-    {{ field.label_tag }}
-    {{ field }}
-    {% if field.errors %}
-    <span class="pure-form-message form-error">{{ field.errors }}</span>
+  {{ field }}
+  {% if field.errors %}
+  <span class="pure-form-message form-error">{{ field.errors }}</span>
     {% endif %}
-  </div>
   {% endfor %}
-  <button type="submit" class="pure-button pure-button-primary">{{ submit_label|default:'Submit' }}</button>
+  {% if anchor_buttons %}
+  {% include 'fragments/forms/pure_anchor_buttons.html' %}
+  {% else %}
+  {% include 'fragments/forms/pure_buttons.html' %}
+  {% endif %}
   </fieldset>
 </form>
