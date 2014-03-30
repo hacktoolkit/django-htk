@@ -1,0 +1,21 @@
+<div class="pure-g-r email-row">
+  <div class="pure-u-3-8">
+    {{ email }}
+  </div>
+  <div class="pure-u-3-8 align-right">
+    {% if is_primary %}
+    Primary
+    {% else %}
+    <div class="right">
+      {% include 'fragments/accounts/settings/forms/email/delete.html' %}
+    </div>
+    {% if is_confirmed %}
+    <div class="right">
+      {% include 'fragments/accounts/settings/forms/email/set_primary.html' %}
+    </div>
+    {% else %}
+    (Not verified)
+    {% endif %} {# is_confirmed #}
+    {% endif %} {# is_primary #}
+  </div>
+</div>
