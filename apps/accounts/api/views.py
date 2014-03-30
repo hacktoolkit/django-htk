@@ -2,6 +2,7 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 
 from htk.api.constants import *
@@ -14,6 +15,7 @@ from htk.api.utils import json_response_okay
 from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.forms.settings import AddEmailForm
 from htk.apps.accounts.forms.update import ChangePasswordForm
+from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.utils import resolve_encrypted_uid
 from htk.forms.utils import get_form_errors
 
