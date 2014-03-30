@@ -81,7 +81,7 @@ def password(request):
     user = request.user
     password_form = ChangePasswordForm(user, request.POST)
     if password_form.is_valid():
-        password_form.save()
+        password_form.save(user)
         response = json_response_okay()
     else:
         response = json_response_error()

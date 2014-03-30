@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm
 
+from htk.apps.accounts.emails import password_changed_email
 from htk.forms import AbstractModelInstanceUpdateForm
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
@@ -57,3 +58,7 @@ class ChangePasswordForm(SetPasswordForm):
         self.fields['new_password2'].label = 'Confirm new password'
         set_input_attrs(self)
         set_input_placeholder_labels(self)
+
+    def save(self, user, *args, **kwargs):
+        super(ChangePasswordForm, self).save(*args, **kwargs)
+        password_changed_email(user)

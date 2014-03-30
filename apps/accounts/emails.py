@@ -72,3 +72,17 @@ def password_reset_email(user, token_generator, use_https=False, domain=None):
         to=[context['email']],
         context=context
     )
+
+def password_changed_email(user):
+    context = {
+        'user': user,
+        'email': user.email,
+        'domain': htk_setting('HTK_DEFAULT_DOMAIN'),
+        'site_name': htk_setting('HTK_SITE_NAME'),
+    }
+    send_email(
+        template='accounts/password_changed',
+        subject='Password changed on %s' % context['site_name'],
+        to=[user.email],
+        context=context
+    )
