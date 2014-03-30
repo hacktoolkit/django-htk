@@ -12,6 +12,7 @@ from htk.api.utils import json_response_error
 from htk.api.utils import json_response_okay
 from htk.api.utils import json_response_okay
 from htk.apps.accounts.enums import ProfileAvatarType
+from htk.apps.accounts.forms.settings import AddEmailForm
 from htk.apps.accounts.forms.update import ChangePasswordForm
 from htk.apps.accounts.utils import resolve_encrypted_uid
 from htk.forms.utils import get_form_errors
@@ -133,6 +134,54 @@ def unfollow(request, encrypted_uid):
     other_user = resolve_encrypted_uid(encrypted_uid)
     if other_user:
         user.profile.unfollow_user(other_user)
+        response = json_response_okay()
+    else:
+        response = json_response_error()
+    return response
+
+##################################################
+# Emails
+
+@require_POST
+@login_required
+def email_add(request):
+    user = request.user
+    add_email_form = AddEmailForm(user, request.POST)
+    if add_email_form.is_valid():
+        domain = request.get_host()
+        user_email = add_email_form.save(domain=domain)
+        response = json_response_okay()
+    else:
+        errors = []
+        for error in add_email_form.non_field_errors():
+            errors.append(error)
+        obj = {
+            HTK_API_JSON_KEY_STATUS: HTK_API_JSON_VALUE_ERROR,
+            'errors': errors,
+        }
+        response = json_response(obj)
+    return response
+
+@require_POST
+@login_required
+def email_set_primary(request):
+    user = request.user
+    email = request.POST.get('primary_email')
+    user_email = get_object_or_404(UserEmail, user=user, email=email)
+    user = user_email.set_primary_email()
+    if user:
+        response = json_response_okay()
+    else:
+        response = json_response_error()
+    return response
+
+@require_POST
+@login_required
+def email_delete(request):
+    user = request.user
+    email = request.POST.get('delete_email')
+    user_email = get_object_or_404(UserEmail, user=user, email=email)
+    if user_email.delete():
         response = json_response_okay()
     else:
         response = json_response_error()

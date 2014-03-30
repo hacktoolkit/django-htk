@@ -128,9 +128,9 @@ class BaseAbstractUserProfile(models.Model):
         # TODO: cache this
         primary_email = self.get_primary_email()
         if primary_email:
-            user_emails = self.user.emails.exclude(email=primary_email).order_by('-is_confirmed')
+            user_emails = self.user.emails.exclude(email=primary_email).order_by('-is_confirmed', 'id')
         else:
-            user_emails = self.user.emails.order_by('-is_confirmed')
+            user_emails = self.user.emails.order_by('-is_confirmed', 'id')
         return user_emails
 
     def get_confirmed_emails(self):
