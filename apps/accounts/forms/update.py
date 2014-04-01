@@ -16,6 +16,11 @@ UserProfile = resolve_model_dynamically(settings.AUTH_PROFILE_MODULE)
 class UserUpdateForm(AbstractModelInstanceUpdateForm):
     class Meta:
         model = UserModel
+        exclude = (
+            # these fields should never be manipultated from this form
+            'email', # managed by UserEmail objects
+            'password',
+        )
 
     def __init__(self, instance, *args, **kwargs):
         user = instance
@@ -48,6 +53,9 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
 class UserProfileUpdateForm(AbstractModelInstanceUpdateForm):
     class Meta:
         model = UserProfile
+        exclude = (
+            'has_username_set',
+        )
         widgets = {
             'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
         }
