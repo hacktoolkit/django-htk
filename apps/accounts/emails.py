@@ -41,6 +41,7 @@ def activation_email(user_email, use_https=False, domain=None):
 def welcome_email(user):
     context = {
         'user': user,
+        'site_name': htk_setting('HTK_SITE_NAME'),
     }
     bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
     send_email(

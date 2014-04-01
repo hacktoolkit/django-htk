@@ -28,7 +28,9 @@ def email_context_generator():
     """Dummy email context generator
     Returns a dictionary
     """
-    context = {}
+    context = {
+        'site_name': htk_setting('HTK_SITE_NAME'),
+    }
     return context
 
 def get_email_context():
