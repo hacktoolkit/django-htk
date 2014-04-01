@@ -14,6 +14,7 @@ from htk.api.utils import json_response_okay
 from htk.api.utils import json_response_okay
 from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.forms.settings import AddEmailForm
+from htk.apps.accounts.forms.update import ChangeUsernameForm
 from htk.apps.accounts.forms.update import ChangePasswordForm
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.utils import resolve_encrypted_uid
@@ -56,39 +57,6 @@ def suggest(request):
 
 @login_required
 @require_POST
-def avatar(request):
-    """Update a User's avatar to the specified type
-    """
-    json_data = json.loads(request.body)
-
-    avatar_type_name = json_data['type']
-    if avatar_type_name in ProfileAvatarType.__members__:
-        user = request.user
-        profile = user.profile
-        profile.avatar = ProfileAvatarType[avatar_type_name].value
-        profile.save(update_fields=['avatar',])
-        response = json_response_okay()
-    else:
-        response = json_response_error()
-
-    return response
-
-@login_required
-@require_POST
-def password(request):
-    """Update a User's password
-    """
-    user = request.user
-    password_form = ChangePasswordForm(user, request.POST)
-    if password_form.is_valid():
-        password_form.save(user)
-        response = json_response_okay()
-    else:
-        response = json_response_error()
-    return response
-
-@login_required
-@require_POST
 def update(request):
     """Updates a User or UserProfile
 
@@ -111,6 +79,53 @@ def update(request):
             'field_errors' : field_errors + profile_field_errors,
         }
         response = json_response(obj)
+    return response
+
+@login_required
+@require_POST
+def username(request):
+    """Update a User's username
+    """
+    user = request.user
+    username_form = ChangeUsernameForm(user, request.POST)
+    if username_form.is_valid():
+        username_form.save(user)
+        response = json_response_okay()
+    else:
+        response = json_response_error()
+    return response
+
+@login_required
+@require_POST
+def password(request):
+    """Update a User's password
+    """
+    user = request.user
+    password_form = ChangePasswordForm(user, request.POST)
+    if password_form.is_valid():
+        password_form.save(user)
+        response = json_response_okay()
+    else:
+        response = json_response_error()
+    return response
+
+@login_required
+@require_POST
+def avatar(request):
+    """Update a User's avatar to the specified type
+    """
+    json_data = json.loads(request.body)
+
+    avatar_type_name = json_data['type']
+    if avatar_type_name in ProfileAvatarType.__members__:
+        user = request.user
+        profile = user.profile
+        profile.avatar = ProfileAvatarType[avatar_type_name].value
+        profile.save(update_fields=['avatar',])
+        response = json_response_okay()
+    else:
+        response = json_response_error()
+
     return response
 
 @require_POST

@@ -60,6 +60,13 @@ class UserProfileUpdateForm(AbstractModelInstanceUpdateForm):
             'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
         }
 
+class ChangeUsernameForm(UserUpdateForm):
+    class Meta:
+        model = UserModel
+        fields = (
+            'username',
+        )
+
 class ChangePasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super(ChangePasswordForm, self).__init__(*args, **kwargs)

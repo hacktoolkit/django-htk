@@ -17,7 +17,6 @@ function (Y) {
     var CSS_CLASS_MESSAGE = 'message';
     var CSS_CLASS_SUBMIT_BUTTON = 'submit-button';
     var CSS_CLASS_CANCEL_BUTTON = 'cancel-button';
-    var CSS_CLASS_DELETE = 'delete';
     var CSS_CLASS_SET_PRIMARY = 'set-primary';
 
     // password
@@ -40,8 +39,9 @@ function (Y) {
     // App variables
     var SETTINGS_FIELD_CACHE = {};
     var IO_TRANSACTION_DATA = {};
-    var URI_SET_AVATAR = '/api/account/avatar';
-    var S_CONFIRM_DELETE_EMAIL = 'Are you sure you want to delete this email address, ';
+
+    var S_CHANGE_PASSWORD_SUCCESS_MESSAGE = 'Password changed successfully.';
+    var S_CHANGE_PASSWORD_ERROR_MESSAGE = 'An error occurred while trying to change the password.';
 
     /* End YUI "Local" Globals */
     /* -------------------------------------------------- */
@@ -61,6 +61,18 @@ function (Y) {
 
     function hidePasswordForm() {
         passwordFormContainer.setHTML();
+    }
+
+    function displayChangePasswordSuccessMessage() {
+        passwordMessageContainer.addClass(CSS_CLASS_UPDATE_SUCCESS);
+        passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_ERROR);
+        passwordMessageContainer.setHTML(S_CHANGE_PASSWORD_SUCCESS_MESSAGE);
+    }
+
+    function displayChangePasswordErrorMessage() {
+        passwordMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
+        passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
+        passwordMessageContainer.setHTML(S_CHANGE_PASSWORD_ERROR_MESSAGE);
     }
 
     function clearPasswordMessage() {
@@ -104,13 +116,9 @@ function (Y) {
             var status = responseData['status'];
             if (status === 'okay') {
                 hidePasswordForm();
-                passwordMessageContainer.addClass(CSS_CLASS_UPDATE_SUCCESS);
-                passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_ERROR);
-                passwordMessageContainer.setHTML('Password changed successfully.');
+                displayChangePasswordSuccessMessage();
             } else if (status === 'error') {
-                passwordMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
-                passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
-                passwordMessageContainer.setHTML('An error occurred while trying to change the password.');
+                displayChangePasswordErrorMessage();
             } else {
                 // impossible case, do nothing
             }
