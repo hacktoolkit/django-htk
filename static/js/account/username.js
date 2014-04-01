@@ -17,8 +17,6 @@ function (Y) {
     var CSS_CLASS_MESSAGE = 'message';
     var CSS_CLASS_SUBMIT_BUTTON = 'submit-button';
     var CSS_CLASS_CANCEL_BUTTON = 'cancel-button';
-    var CSS_CLASS_DELETE = 'delete';
-    var CSS_CLASS_SET_PRIMARY = 'set-primary';
 
     // username
     var CSS_ID_INPUT_USERNAME = 'input#id_username';
@@ -43,8 +41,9 @@ function (Y) {
     // App variables
     var SETTINGS_FIELD_CACHE = {};
     var IO_TRANSACTION_DATA = {};
-    var URI_SET_AVATAR = '/api/account/avatar';
-    var S_CONFIRM_DELETE_EMAIL = 'Are you sure you want to delete this email address, ';
+
+    var S_CHANGE_USERNAME_SUCCESS_MESSAGE = 'Username changed successfully.';
+    var S_CHANGE_USERNAME_ERROR_MESSAGE = 'An error occurred while trying to change the username.';
 
     /* End YUI "Local" Globals */
     /* -------------------------------------------------- */
@@ -66,6 +65,18 @@ function (Y) {
 
     function hideUsernameForm() {
         usernameFormContainer.setHTML();
+    }
+
+    function displayChangeUsernameSuccessMessage() {
+        usernameMessageContainer.addClass(CSS_CLASS_UPDATE_SUCCESS);
+        usernameMessageContainer.removeClass(CSS_CLASS_UPDATE_ERROR);
+        usernameMessageContainer.setHTML(S_CHANGE_USERNAME_SUCCESS_MESSAGE);
+    }
+
+    function displayChangeUsernameErrorMessage() {
+        usernameMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
+        usernameMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
+        usernameMessageContainer.setHTML(S_CHANGE_USERNAME_ERROR_MESSAGE);
     }
 
     function clearUsernameMessage() {
@@ -114,13 +125,9 @@ function (Y) {
                 var transactionData = IO_TRANSACTION_DATA[transactionId];
                 var username = transactionData['username'];
                 currentUsernameContainer.setHTML(username);
-                usernameMessageContainer.addClass(CSS_CLASS_UPDATE_SUCCESS);
-                usernameMessageContainer.removeClass(CSS_CLASS_UPDATE_ERROR);
-                usernameMessageContainer.setHTML('Username changed successfully.');
+                displayChangeUsernameSuccessMessage();
             } else if (status === 'error') {
-                usernameMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
-                usernameMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
-                usernameMessageContainer.setHTML('An error occurred while trying to change the username.');
+                displayChangeUsernameErrorMessage();
             } else {
                 // impossible case, do nothing
             }

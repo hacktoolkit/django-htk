@@ -40,6 +40,9 @@ function (Y) {
     var SETTINGS_FIELD_CACHE = {};
     var IO_TRANSACTION_DATA = {};
 
+    var S_CHANGE_PASSWORD_SUCCESS_MESSAGE = 'Password changed successfully.';
+    var S_CHANGE_PASSWORD_ERROR_MESSAGE = 'An error occurred while trying to change the password.';
+
     /* End YUI "Local" Globals */
     /* -------------------------------------------------- */
 
@@ -58,6 +61,18 @@ function (Y) {
 
     function hidePasswordForm() {
         passwordFormContainer.setHTML();
+    }
+
+    function displayChangePasswordSuccessMessage() {
+        passwordMessageContainer.addClass(CSS_CLASS_UPDATE_SUCCESS);
+        passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_ERROR);
+        passwordMessageContainer.setHTML(S_CHANGE_PASSWORD_SUCCESS_MESSAGE);
+    }
+
+    function displayChangePasswordErrorMessage() {
+        passwordMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
+        passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
+        passwordMessageContainer.setHTML(S_CHANGE_PASSWORD_ERROR_MESSAGE);
     }
 
     function clearPasswordMessage() {
@@ -101,13 +116,9 @@ function (Y) {
             var status = responseData['status'];
             if (status === 'okay') {
                 hidePasswordForm();
-                passwordMessageContainer.addClass(CSS_CLASS_UPDATE_SUCCESS);
-                passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_ERROR);
-                passwordMessageContainer.setHTML('Password changed successfully.');
+                displayChangePasswordSuccessMessage();
             } else if (status === 'error') {
-                passwordMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
-                passwordMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
-                passwordMessageContainer.setHTML('An error occurred while trying to change the password.');
+                displayChangePasswordErrorMessage();
             } else {
                 // impossible case, do nothing
             }

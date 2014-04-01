@@ -24,10 +24,13 @@ function (Y) {
     // emails
     var CSS_CLASS_EMAILS_LIST = 'emails-list';
     var CSS_CLASS_EMAIL_ROW = 'email-row';
+    var CSS_CLASS_ADD_EMAIL = 'add-email';
     var CSS_CLASS_ADD_EMAIL_FORM_CONTAINER = 'add-email-form-container';
+    var CSS_CLASS_ADD_EMAIL_MESSAGE_CONTAINER = 'add-email-message-container';
 
     var CSS_ID_PAGE_ACCOUNT_SETTINGS = 'page_account_settings';
     var CSS_ID_EMAIL_ROW_TEMPLATE = 'email_row_template';
+    var CSS_ID_ADD_EMAIL_FORM_TEMPLATE = 'add_email_form_template';
 
     // ----------
     // Nodes
@@ -36,12 +39,16 @@ function (Y) {
     // emails
     var emailsList = settings.one('.' + CSS_CLASS_EMAILS_LIST);
     var addEmailFormContainer = settings.one('.' + CSS_CLASS_ADD_EMAIL_FORM_CONTAINER);
+    var addEmailFormTemplate = settings.one('#' + CSS_ID_ADD_EMAIL_FORM_TEMPLATE);
+    var addEmailMessageContainer = settings.one('.' + CSS_CLASS_ADD_EMAIL_MESSAGE_CONTAINER);
 
     // App variables
     var SETTINGS_FIELD_CACHE = {};
     var IO_TRANSACTION_DATA = {};
 
     var S_CONFIRM_DELETE_EMAIL = 'Are you sure you want to delete this email address, ';
+    var S_ADD_EMAIL_SUCCESS_MESSAGE = 'Email added successfully';
+    var S_ADD_EMAIL_ERROR_MESSAGE = 'Could not add the email.';
 
     /* End YUI "Local" Globals */
     /* -------------------------------------------------- */
@@ -53,9 +60,33 @@ function (Y) {
 
     // Update Email functions
 
-    function handleAddEmailSubmitPressed(e) {
-        var button = this;
-        var form = button.ancestor('form');
+    function showAddEmailForm() {
+        var addEmailForm = Y.Node.create(addEmailFormTemplate.getHTML());
+        addEmailFormContainer.setHTML(addEmailForm);
+    }
+
+    function hideAddEmailForm() {
+        addEmailFormContainer.setHTML();
+    }
+
+    function displayAddEmailSuccessMessage() {
+        addEmailMessageContainer.addClass(CSS_CLASS_UPDATE_SUCCESS);
+        addEmailMessageContainer.removeClass(CSS_CLASS_UPDATE_ERROR);
+        addEmailMessageContainer.setHTML(S_ADD_EMAIL_SUCCESS_MESSAGE);
+    }
+
+    function displayAddEmailErrorMessage() {
+        addEmailMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
+        addEmailMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
+        addEmailMessageContainer.setHTML(S_ADD_EMAIL_ERROR_MESSAGE);
+    }
+
+    function clearAddEmailMessage() {
+        addEmailMessageContainer.setHTML();
+    }
+
+    function submitAddEmailForm() {
+        var form = addEmailFormContainer.one('form');
         var uri = form.get('action');
         var csrftoken = Y.Cookie.get('csrftoken');
         var cfg = {
@@ -96,14 +127,14 @@ function (Y) {
             var status = responseData['status'];
             var email = transactionData['email'];
             if (status === 'okay') {
-                // reset the field values
-                form.all('input').each(function(input) {
-                    input.set('value', '');
-                });
+                hideAddEmailForm();
                 displayAddedEmail(email);
-                showAddEmailSuccessMessage();
+                displayAddEmailSuccessMessage();
+            } else if (status === 'error') {
+                hideAddEmailForm();
+                displayAddEmailErrorMessage();
             } else {
-                showAddEmailErrorMessage();
+                // impossible case, do nothing
             }
         }
     }
@@ -116,24 +147,6 @@ function (Y) {
         };
         var html = template(data);
         emailsList.append(html);
-    }
-
-    function showAddEmailSuccessMessage() {
-        var successMessage = addEmailFormContainer.one('.' + CSS_CLASS_UPDATE_SUCCESS);
-        successMessage.removeClass(CSS_CLASS_HIDDEN);
-        successMessage.show();
-        var errorMessage = addEmailFormContainer.one('.' + CSS_CLASS_UPDATE_ERROR);
-        errorMessage.removeClass(CSS_CLASS_HIDDEN);
-        errorMessage.hide();
-    }
-
-    function showAddEmailErrorMessage(form) {
-        var errorMessage = addEmailFormContainer.one('.' + CSS_CLASS_UPDATE_ERROR);
-        errorMessage.removeClass(CSS_CLASS_HIDDEN);
-        errorMessage.show();
-        var successMessage = addEmailFormContainer.one('.' + CSS_CLASS_UPDATE_SUCCESS);
-        successMessage.removeClass(CSS_CLASS_HIDDEN);
-        successMessage.hide();
     }
 
     function handleDeleteEmailPressed(e) {
@@ -237,14 +250,30 @@ function (Y) {
         }
     }
 
+    function handleAddEmailPressed(e) {
+        showAddEmailForm();
+        clearAddEmailMessage();
+    }
+
+    function handleAddEmailSubmitPressed(e) {
+        submitAddEmailForm();
+    }
+
+    function handleAddEmailCancelPressed(e) {
+        hideAddEmailForm();
+        clearAddEmailMessage();
+    }
+
     // App Initializers
     function initEventHandlers() {
         // settings field forms
         settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
         // emails
+        settings.delegate('tap', handleAddEmailPressed, 'a.' + CSS_CLASS_ADD_EMAIL);
         settings.delegate('tap', handleAddEmailSubmitPressed, '.' + CSS_CLASS_ADD_EMAIL_FORM_CONTAINER + ' a.' + CSS_CLASS_SUBMIT_BUTTON);
         settings.delegate('tap', handleDeleteEmailPressed, '.' + CSS_CLASS_EMAIL_ROW + ' a.' + CSS_CLASS_DELETE);
         settings.delegate('tap', handleSetPrimaryEmailPressed, '.' + CSS_CLASS_EMAIL_ROW + ' a.' + CSS_CLASS_SET_PRIMARY);
+        settings.delegate('tap', handleAddEmailCancelPressed, '.' + CSS_CLASS_ADD_EMAIL_FORM_CONTAINER + ' a.' + CSS_CLASS_CANCEL_BUTTON);
     }
 
     function init() {
