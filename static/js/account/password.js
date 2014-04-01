@@ -17,7 +17,6 @@ function (Y) {
     var CSS_CLASS_MESSAGE = 'message';
     var CSS_CLASS_SUBMIT_BUTTON = 'submit-button';
     var CSS_CLASS_CANCEL_BUTTON = 'cancel-button';
-    var CSS_CLASS_DELETE = 'delete';
     var CSS_CLASS_SET_PRIMARY = 'set-primary';
 
     // password
@@ -40,8 +39,6 @@ function (Y) {
     // App variables
     var SETTINGS_FIELD_CACHE = {};
     var IO_TRANSACTION_DATA = {};
-    var URI_SET_AVATAR = '/api/account/avatar';
-    var S_CONFIRM_DELETE_EMAIL = 'Are you sure you want to delete this email address, ';
 
     /* End YUI "Local" Globals */
     /* -------------------------------------------------- */

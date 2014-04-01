@@ -17,8 +17,6 @@ function (Y) {
     var CSS_CLASS_MESSAGE = 'message';
     var CSS_CLASS_SUBMIT_BUTTON = 'submit-button';
     var CSS_CLASS_CANCEL_BUTTON = 'cancel-button';
-    var CSS_CLASS_DELETE = 'delete';
-    var CSS_CLASS_SET_PRIMARY = 'set-primary';
 
     var CSS_CLASS_SETTINGS_FIELD_FORM = 'settings-field-form';
 
@@ -39,8 +37,6 @@ function (Y) {
     // App variables
     var SETTINGS_FIELD_CACHE = {};
     var IO_TRANSACTION_DATA = {};
-    var URI_SET_AVATAR = '/api/account/avatar';
-    var S_CONFIRM_DELETE_EMAIL = 'Are you sure you want to delete this email address, ';
 
     /* End YUI "Local" Globals */
     /* -------------------------------------------------- */
@@ -155,39 +151,6 @@ function (Y) {
         e.preventDefault();
     }
 
-    function handleAvatarSelected(e) {
-        var clickedAvatar = this;
-
-        // visual update
-        var avatars = settingsAvatar.all('.' + CSS_CLASS_SETTINGS_AVATAR_BOX);
-        avatars.each(function (node) {
-            if (node === clickedAvatar) {
-                node.removeClass(CSS_CLASS_DESELECTED);
-            } else {
-                node.addClass(CSS_CLASS_DESELECTED);
-            }
-        });
-
-        // build request payload
-        var avatarType = clickedAvatar.one('.' + CSS_CLASS_AVATAR_TYPE);
-        var avatarTypeValue = avatarType.get('text').trim().toUpperCase();
-
-        var data = {
-            'type' : avatarTypeValue
-        };
-
-        var csrftoken = Y.Cookie.get('csrftoken');
-        var cfg = {
-            method: 'POST',
-            data: Y.JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
-            }
-        };
-        Y.io(URI_SET_AVATAR, cfg);
-    }
-
     // App Initializers
     function initEventHandlers() {
         // settings field forms
@@ -198,9 +161,6 @@ function (Y) {
         settings.delegate('blur', handleSettingsFieldBlurred, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' textarea' );
         settings.delegate('change', handleSettingsFieldChanged, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' select');
 //        settings.delegate('change', handleSettingsFieldChanged, 'form' + ' input');
-
-        // avatar
-        settingsAvatar.delegate('tap', handleAvatarSelected, '.' + CSS_CLASS_SETTINGS_AVATAR_BOX);
     }
 
     function init() {
