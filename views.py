@@ -66,3 +66,14 @@ def redir(request):
     else:
         response = redirect('/')
     return response
+
+##################################################
+# error pages
+
+def error_view(request):
+    path_no_slash = request.path[1:]
+    response = generic_template_view(
+        request,
+        '%s.html' % path_no_slash
+    )
+    return response
