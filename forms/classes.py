@@ -19,21 +19,9 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         Unlike forms.ModelForm, instance is required
         """
         self.instance = instance
-        save_fields = []
-        for arg in args:
-            if hasattr(arg, '__iter__'):
-                # arg is an iterable
-                # e.g. QueryDict from request.POST or request.FILES
-                for key, value in arg.items():
-                    if hasattr(instance, key):
-                        save_fields.append(key)
-                    else:
-                        pass
-            else:
-                pass
-        self.save_fields = save_fields
-        save_fields_dict = dict(zip(save_fields, [True] * len(save_fields)))
         super(AbstractModelInstanceUpdateForm, self).__init__(instance=instance, *args, **kwargs)
+        self._set_save_fields(*args)
+        save_fields_dict = dict(zip(self.save_fields, [True] * len(self.save_fields)))
         if args or kwargs:
             # make all non-save fields optional
             for name, field in self.fields.items():
@@ -46,6 +34,26 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
             pass
         set_input_attrs(self)
         set_input_placeholder_labels(self)
+
+    def _set_save_fields(self, *args):
+        """Determine the subset of fields that we want to save
+
+        Called by self.__init__()
+        """
+        save_fields = []
+        for arg in args:
+            if hasattr(arg, '__iter__'):
+                # arg is an iterable
+                # e.g. QueryDict from request.POST or request.FILES
+                for key, value in arg.items():
+                    # only save this field if it is recognized in both this form and the model instance
+                    if key in self.fields and hasattr(self.instance, key):
+                        save_fields.append(key)
+                    else:
+                        pass
+            else:
+                pass
+        self.save_fields = save_fields
 
     def save(self, commit=True):
         """Saves this form
