@@ -113,7 +113,16 @@ class BaseAbstractUserProfile(models.Model):
             pass
         return user
 
+    def has_primary_email(self):
+        """Determines whether this `User` has a primary email set
+        """
+        primary_email = self.get_primary_email()
+        value = primary_email is not None
+        return value
+
     def get_primary_email(self):
+        """Retrieve this `User`'s primary email
+        """
         email = self.user.email
         if email and self.has_email(email):
             primary_email = email
