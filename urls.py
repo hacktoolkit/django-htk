@@ -14,7 +14,7 @@ urlpatterns = patterns(
     url(r'^redir$', views.redir, name='redir'),
 )
 
-if settings.ENV_DEV:
+if settings.TEST or settings.ENV_DEV:
     urlpatterns += patterns(
         '',
         url(r'^403$', views.error_view, name='error_403'),
