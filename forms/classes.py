@@ -59,6 +59,14 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         """Saves this form
 
         Returns an updated instance
+
+        Caveat emptor! instance returned will be a limited instance
+        Subsequently calling save() on the returned instance could clear out other fields if not called with update_fields
+
+        It is recommended to refresh the instance to get the entire object, not one with limited fields in memory
+
+        The instance can be refreshed by doing such:
+        instance = instance.__class__.objects.get(id=instance.id)
         """
         instance = self.instance
         for field in self.save_fields:
