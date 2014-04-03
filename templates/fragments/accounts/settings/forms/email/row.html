@@ -1,28 +1,21 @@
-<div class="pure-g-r email-row{% if is_primary %} email-row-primary{% endif %}">
-  <div class="pure-u-1-8">
-    {% if is_primary %}
-    <span>
-      Primary
-    </span>
-    {% endif %}
-  </div>
-  <div class="pure-u-7-12 email">
+<div class="pure-g-r email-row">
+  <div class="pure-u-3-8">
     {{ email }}
   </div>
-  <div class="pure-u-7-24">
-    {% if not is_primary %}
+  <div class="pure-u-3-8 align-right">
+    {% if is_primary %}
+    Primary
+    {% else %}
+    <div class="right">
+      {% include 'fragments/accounts/settings/forms/email/delete.html' %}
+    </div>
     {% if is_confirmed %}
-    <div class="email-action-link float-right">
+    <div class="right">
       {% include 'fragments/accounts/settings/forms/email/set_primary.html' %}
     </div>
     {% else %}
-    <div class="email-action-link float-right">
-      (Not verified)
-    </div>
+    (Not verified)
     {% endif %} {# is_confirmed #}
-    <div class="email-action-link float-right">
-      {% include 'fragments/accounts/settings/forms/email/delete.html' %}
-    </div>
-    {% endif %} {# not is_primary #}
+    {% endif %} {# is_primary #}
   </div>
 </div>
