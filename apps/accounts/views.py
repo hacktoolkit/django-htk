@@ -129,6 +129,7 @@ def register(
     request,
     data=None,
     reg_form_model=UserRegistrationForm,
+    reg_form_kwargs=None,
     auth_form_model=UsernameEmailAuthenticationForm,
     success_url_name='account_register_done',
     template='account/register.html',
@@ -140,7 +141,9 @@ def register(
     data.update(csrf(request))
     success = False
     if request.method == 'POST':
-        reg_form = reg_form_model(request.POST)
+        if reg_form_kwargs is None:
+            reg_form_kwargs = {}
+        reg_form = reg_form_model(request.POST, **reg_form_kwargs)
         if reg_form.is_valid():
             domain = request.get_host()
             new_user = reg_form.save(domain)
