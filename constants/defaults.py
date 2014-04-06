@@ -25,6 +25,15 @@ HTK_DEFAULT_EMAIL_RECIPIENTS = ['info@hacktoolkit.com',]
 HTK_DEFAULT_COUNTRY = 'US'
 HTK_DEFAULT_TIMEZONE = 'America/Los_Angeles'
 
+##
+# Domain Verification URLs
+HTK_DOMAIN_META_URL_NAMES = (
+    'robots',
+    'google_site_verification',
+    'bing_site_auth',
+    'sitemap',
+)
+
 from htk.apps.accounts.constants.defaults import *
 from htk.apps.file_storage.constants.defaults import *
 from htk.cache.constants.defaults import *
