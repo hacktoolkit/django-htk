@@ -1,5 +1,8 @@
 import re
+from socket import gethostname
 
+from django.conf import settings
+from django.core.context_processors import csrf
 from django.shortcuts import render_to_response
 from django.template import loader
 from django.template import TemplateDoesNotExist
@@ -63,7 +66,51 @@ def get_asset_version():
     return asset_version
 
 def wrap_data(request, data=None):
+    """Puts commonly used values into the template context dictionary, `data`
+    """
     if data is None:
         data = {}
-        data['errors'] = []
+
+    data.update(csrf(request))
+
+    ##
+    # meta, server, request info
+    path = request.path
+    host = request.get_host()
+    is_secure = request.is_secure()
+    full_uri = '%s://%s%s' % ('http' + ('s' if is_secure else ''), host, path,)
+    data['request'] = {
+        'request' : request,
+        'is_secure' : is_secure,
+        'host' : host,
+        'path' : path,
+        'full_uri' : full_uri,
+    }
+    data['server'] = {
+        'hostname' : gethostname(),
+    }
+
+    ##
+    # Rollbar
+    data['rollbar_env'] = settings.ROLLBAR_ENV
+
+    # LESS http://lesscss.org/#usage
+    asset_version = get_asset_version()
+    useless = settings.ENV_DEV and request.GET.get('useless', False)
+    data['css_rel'] = 'stylesheet/less' if useless else 'stylesheet'
+    data['css_ext'] = 'less' if useless else 'css?v=%s' % asset_version
+    data['asset_version'] = asset_version
+
+    ##
+    # user
+    if request.user.is_authenticated():
+        user = request.user
+    else:
+        user = None
+    data['user'] = user
+
+    ##
+    # errors
+    data['errors'] = []
+
     return data

@@ -33,7 +33,7 @@ You will receive a password and account designation when you have completed the 
 Any conduct by you that in our sole discretion restricts or inhibits any other user from using or enjoying the Site will not be permitted. You agree to use the Site only for lawful purposes. You are prohibited from posting on or transmitting through the Site any unlawful, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, sexually explicit, profane, hateful, fraudulent, or racially, ethnically, or otherwise objectionable material of any kind, including but not limited to any material that encourages conduct that would constitute a criminal offense, give rise to civil liability, or otherwise violate any applicable local, state, national, or international law.<br/>
 <br/>
 
-You agree that your use of robots, spiders, crawlers, wanderers, Web agents and other such automated processes on the Site will be Standard for Robot Exclusion (SRE) -compliant robots ("robots") and when connecting to the Site, prior to downloading or indexing any pages on the Site, such robots will immediately visit <a href="{% url 'robots' %}">http://{{ host }}{% url 'robots' %}</a> ("the robot.txt file"). You understand that the robots.txt file is the only means by which robots are authorized to access the Site. You agree not to violate any of the robot access policies and acknowledge that any violation of the policies may result in termination of your access to the Site, deactivation or deletion of your account and all related information and files in your account, and preclusion of any further access to such files or the Site, without prior notice.<br/>
+You agree that your use of robots, spiders, crawlers, wanderers, Web agents and other such automated processes on the Site will be Standard for Robot Exclusion (SRE) -compliant robots ("robots") and when connecting to the Site, prior to downloading or indexing any pages on the Site, such robots will immediately visit <a href="{% url 'robots' %}">http://{{ request.host }}{% url 'robots' %}</a> ("the robot.txt file"). You understand that the robots.txt file is the only means by which robots are authorized to access the Site. You agree not to violate any of the robot access policies and acknowledge that any violation of the policies may result in termination of your access to the Site, deactivation or deletion of your account and all related information and files in your account, and preclusion of any further access to such files or the Site, without prior notice.<br/>
 <br/>
 
 You agree not to reproduce, duplicate, copy, sell, resell or exploit for any commercial purposes, any information from the Site, any portion of the Site, use of the Site, or access to the Site. You agree not to access the Site by any means other than through the interface that is provided by us for use in accessing the Site.<br/>
@@ -237,7 +237,7 @@ IN NO EVENT SHALL {{ constants.legal.service_common_name }}, ITS OFFICERS, DIREC
 
 <h4>12. PRIVACY.</h4>
 <br/>
-{{ constants.legal.service_common_name }}'s current privacy policy is available at <a href="http://{{ host }}{% url 'privacy' %}">http://{{ host }}{% url 'privacy' %}</a> (the "Privacy Policy"), which is incorporated by this reference.<br/>
+{{ constants.legal.service_common_name }}'s current privacy policy is available at <a href="http://{{ request.host }}{% url 'privacy' %}">http://{{ request.host }}{% url 'privacy' %}</a> (the "Privacy Policy"), which is incorporated by this reference.<br/>
 <br/>
 
 <h4>13. MISCELLANEOUS.</h4>
