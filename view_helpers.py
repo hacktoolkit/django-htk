@@ -30,9 +30,9 @@ def get_javascripts(template_name, template_prefix=''):
     """
     javascripts = []
 
-    admin_template_match = re.match('(admintools)/(.*)', template_name)
+    admin_template_match = re.match('%sadmintools/(.*)' % template_prefix, template_name)
     if admin_template_match:
-        js_fragment_filename = '%s/fragments/js/%s' % (admin_template_match.group(1), admin_template_match.group(2),)
+        js_fragment_filename = '%sadmintools/fragments/js/%s' % (template_prefix, admin_template_match.group(1),)
     else:
         template_prefix_match = re.match('%s(.*)' % template_prefix, template_name)
         if template_prefix_match:
