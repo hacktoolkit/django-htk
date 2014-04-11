@@ -39,7 +39,7 @@ def rollbar_record_deploy(access_token, env='other'):
     else:
         print "Error recording deploy:", resp.text
 
-class FabricTaskManager(object):
+class AbstractFabricTaskManager(object):
     def deploy(self):
         """Default deploy task
         """
