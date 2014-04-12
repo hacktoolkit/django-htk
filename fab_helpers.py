@@ -13,7 +13,7 @@ def tag_deploy():
     """Automatically create a tag whenever we deploy, so that we can roll-back to it at a future date
     """
     commit_timestamp = local('git log -n 1 --pretty=format:"%ct" master', capture=True)
-    commit_datetimestr = datetime.datetime.utcfromtimestamp(float(commit_timestamp)).strftime('%Y%m%d%H%M%S')
+    commit_datetimestr = datetime.datetime.utcfromtimestamp(float(commit_timestamp)).strftime('%Y%m%d.%H%M%S')
     revision = local('git log -n 1 --pretty=format:"%H" master', capture=True)
     local('git tag -a deploy-%s master -m "Auto-tagged deploy %s %s"' % (commit_datetimestr, commit_datetimestr, revision,))
     local('git push --tags')
