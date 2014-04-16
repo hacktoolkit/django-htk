@@ -1,10 +1,11 @@
-import hashlib
 import urllib
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.template.base import Library
 from django.utils.html import escape
+
+from htk.lib.gravatar.utils import get_gravatar_hash
 
 GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com/')
 GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', '')
@@ -28,7 +29,7 @@ def gravatar_for_email(email, size=80):
     """
     url = '%savatar/%s?' % (
         GRAVATAR_URL_PREFIX,
-        hashlib.md5(email).hexdigest(),
+        get_gravatar_hash(email),
     )
     url += urllib.urlencode(
         {
