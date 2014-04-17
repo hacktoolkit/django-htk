@@ -26,24 +26,17 @@ from htk.forms.utils import get_form_errors
 @login_required
 def suggest(request):
     """This API endpoint supports User autocomplete
-
-    TODO:
-    First retrieve from followers and following, then search all users
     """
-    UserModel = get_user_model()
+    from htk.apps.accounts.formatters import DEFAULT_USER_SUGGEST_FORMATTER
+    from htk.apps.accounts.search import search_by_username_name
     query = request.GET.get('q')
     if query:
         query = query.strip()
-        user_results = UserModel.objects.filter(username__istartswith=query)
-        results = [
-            {
-                'username' : user.username,
-            }
-            for user in user_results
-        ]
+        user_results = search_by_username_name(query)
+        formatted_results = [DEFAULT_USER_SUGGEST_FORMATTER(user) for user in user_results]
         obj = {
             'data' : {
-                'results' : results,
+                'results' : formatted_results,
             },
         }
         response = json_response(obj)
