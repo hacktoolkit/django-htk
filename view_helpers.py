@@ -92,7 +92,12 @@ def wrap_data(request, data=None):
 
     ##
     # Rollbar
-    data['rollbar_env'] = settings.ROLLBAR_ENV
+    data['rollbar'] = {
+        'env' : settings.ROLLBAR_ENV,
+        'tokens' : {
+            'post_client_item' : settings.ROLLBAR_TOKEN_POST_CLIENT_ITEM,
+        },
+    }
 
     # LESS http://lesscss.org/#usage
     asset_version = get_asset_version()
