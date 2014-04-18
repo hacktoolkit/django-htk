@@ -3,3 +3,5 @@ HTK_ACCOUNTS_CONFIRM_EMAIL_URL_NAME = 'account_confirm_email'
 
 HTK_API_USERS_FOLLOW_URL_NAME = 'api_users_follow'
 HTK_API_USERS_UNFOLLOW_URL_NAME = 'api_users_unfollow'
+
+HTK_DEFAULT_LOGGED_IN_ACCOUNT_HOME = 'account_index'
