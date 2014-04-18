@@ -150,12 +150,14 @@ function (Y) {
 
     // App Initializers
     function initEventHandlers() {
-        // settings field forms
-        settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
-        // username
-        settings.delegate('tap', handleChangeUsernamePressed, 'a.' + CSS_CLASS_USERNAME_CHANGE);
-        settings.delegate('tap', handleChangeUsernameSubmitPressed, '.' + CSS_CLASS_USERNAME_FORM_CONTAINER + ' a.' + CSS_CLASS_SUBMIT_BUTTON);
-        settings.delegate('tap', handleChangeUsernameCancelPressed, '.' + CSS_CLASS_USERNAME_FORM_CONTAINER + ' a.' + CSS_CLASS_CANCEL_BUTTON);
+        if (settings) {
+            // settings field forms
+            settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
+            // username
+            settings.delegate('tap', handleChangeUsernamePressed, 'a.' + CSS_CLASS_USERNAME_CHANGE);
+            settings.delegate('tap', handleChangeUsernameSubmitPressed, '.' + CSS_CLASS_USERNAME_FORM_CONTAINER + ' a.' + CSS_CLASS_SUBMIT_BUTTON);
+            settings.delegate('tap', handleChangeUsernameCancelPressed, '.' + CSS_CLASS_USERNAME_FORM_CONTAINER + ' a.' + CSS_CLASS_CANCEL_BUTTON);
+        }
     }
 
     function init() {

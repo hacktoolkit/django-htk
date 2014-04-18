@@ -89,6 +89,24 @@ class BaseAbstractUserProfile(models.Model):
             display_name = self.user.username if self.has_username_set else self.user.email
         return display_name
 
+    def has_completed_account_setup(self, require_name=False):
+        """Determines whether this User has completed the minimum account setup:
+        - has a primary email address set
+        - has username set
+
+        Optional:
+        - has first and last name set
+        """
+        # TODO: cache this, perhaps?
+        # the tricky part is figuring out all the places where we should invalidate the cache
+        user = self.user
+        value = self.has_primary_email() and self.has_username_set
+        if require_name:
+            value = value and user.first_name and user.last_name
+        else:
+            pass
+        return value
+
     ##
     # emails
 

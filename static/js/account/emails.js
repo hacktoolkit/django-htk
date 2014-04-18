@@ -266,14 +266,16 @@ function (Y) {
 
     // App Initializers
     function initEventHandlers() {
-        // settings field forms
-        settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
-        // emails
-        settings.delegate('tap', handleAddEmailPressed, 'a.' + CSS_CLASS_ADD_EMAIL);
-        settings.delegate('tap', handleAddEmailSubmitPressed, '.' + CSS_CLASS_ADD_EMAIL_FORM_CONTAINER + ' a.' + CSS_CLASS_SUBMIT_BUTTON);
-        settings.delegate('tap', handleDeleteEmailPressed, '.' + CSS_CLASS_EMAIL_ROW + ' a.' + CSS_CLASS_DELETE);
-        settings.delegate('tap', handleSetPrimaryEmailPressed, '.' + CSS_CLASS_EMAIL_ROW + ' a.' + CSS_CLASS_SET_PRIMARY);
-        settings.delegate('tap', handleAddEmailCancelPressed, '.' + CSS_CLASS_ADD_EMAIL_FORM_CONTAINER + ' a.' + CSS_CLASS_CANCEL_BUTTON);
+        if (settings) {
+            // settings field forms
+            settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
+            // emails
+            settings.delegate('tap', handleAddEmailPressed, 'a.' + CSS_CLASS_ADD_EMAIL);
+            settings.delegate('tap', handleAddEmailSubmitPressed, '.' + CSS_CLASS_ADD_EMAIL_FORM_CONTAINER + ' a.' + CSS_CLASS_SUBMIT_BUTTON);
+            settings.delegate('tap', handleDeleteEmailPressed, '.' + CSS_CLASS_EMAIL_ROW + ' a.' + CSS_CLASS_DELETE);
+            settings.delegate('tap', handleSetPrimaryEmailPressed, '.' + CSS_CLASS_EMAIL_ROW + ' a.' + CSS_CLASS_SET_PRIMARY);
+            settings.delegate('tap', handleAddEmailCancelPressed, '.' + CSS_CLASS_ADD_EMAIL_FORM_CONTAINER + ' a.' + CSS_CLASS_CANCEL_BUTTON);
+        }
     }
 
     function init() {
