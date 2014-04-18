@@ -22,11 +22,6 @@ function(Y) {
 
     var userAutoCompleteResultTemplate = '{display_name} ({username})';
 
-    function userAutoCompleteTextLocator(result) {
-        var user = result;
-        var text = Y.Lang.sub(userAutoCompleteResultTemplate, user);
-        return text;
-    }
     function userAutoCompleteResultFormatter(query, results) {
         // Iterate over the array of result objects and return an
         // array of HTML strings
@@ -45,6 +40,14 @@ function(Y) {
         });
     }
 
+    function userAutoCompleteResultHighlighter(query, results) {
+        return Y.Array.map(results, function(result) {
+            var user = result.raw;
+            var formatted = Y.Lang.sub(userAutoCompleteResultTemplate, user);
+            var highlighted = Y.Highlight.all(formatted, query);
+            return highlighted;
+        });
+    }
     // --------------------------------------------------
     // Public functions
 
@@ -54,14 +57,10 @@ function(Y) {
             queryDelay: 300,
             resultFilters: [userAutoCompleteFilterHasUsernameAndName],
 //            resultFormatter: userAutoCompleteResultFormatter,
-            //resultHighlighter: 'phraseMatch',
-            resultHighlighter: function(query, results) {
-                return Y.Array.map(results, function(result) {
-                    return Y.Highlight.all(result.text, query);
-                });
-            },
+//            resultHighlighter: 'phraseMatch',
+            resultHighlighter: userAutoCompleteResultHighlighter,
             resultListLocator: userAutoCompleteResultListLocator,
-            resultTextLocator: userAutoCompleteTextLocator,
+            resultTextLocator: 'username',
             source: source
         });
     }
