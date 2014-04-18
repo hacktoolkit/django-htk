@@ -80,7 +80,9 @@ function (Y) {
     // App Initializers
     function initEventHandlers() {
         // avatar
-        settingsAvatar.delegate('tap', handleAvatarSelected, '.' + CSS_CLASS_SETTINGS_AVATAR_BOX);
+        if (settingsAvatar) {
+            settingsAvatar.delegate('tap', handleAvatarSelected, '.' + CSS_CLASS_SETTINGS_AVATAR_BOX);
+        }
     }
 
     function init() {

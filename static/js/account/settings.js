@@ -153,14 +153,16 @@ function (Y) {
 
     // App Initializers
     function initEventHandlers() {
-        // settings field forms
-        settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
-        settings.delegate('focus', handleSettingsFieldFocused, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' input' );
-        settings.delegate('focus', handleSettingsFieldFocused, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' textarea' );
-        settings.delegate('blur', handleSettingsFieldBlurred, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' input' );
-        settings.delegate('blur', handleSettingsFieldBlurred, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' textarea' );
-        settings.delegate('change', handleSettingsFieldChanged, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' select');
-//        settings.delegate('change', handleSettingsFieldChanged, 'form' + ' input');
+        if (settings) {
+            // settings field forms
+            settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
+            settings.delegate('focus', handleSettingsFieldFocused, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' input' );
+            settings.delegate('focus', handleSettingsFieldFocused, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' textarea' );
+            settings.delegate('blur', handleSettingsFieldBlurred, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' input' );
+            settings.delegate('blur', handleSettingsFieldBlurred, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' textarea' );
+            settings.delegate('change', handleSettingsFieldChanged, 'form.' + CSS_CLASS_SETTINGS_FIELD_FORM + ' select');
+            //        settings.delegate('change', handleSettingsFieldChanged, 'form' + ' input');
+        }
     }
 
     function init() {

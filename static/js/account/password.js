@@ -141,12 +141,14 @@ function (Y) {
 
     // App Initializers
     function initEventHandlers() {
-        // settings field forms
-        settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
-        // password
-        settings.delegate('tap', handleChangePasswordPressed, 'a.' + CSS_CLASS_PASSWORD_CHANGE);
-        settings.delegate('tap', handleChangePasswordSubmitPressed, '.' + CSS_CLASS_PASSWORD_FORM_CONTAINER + ' a.' + CSS_CLASS_SUBMIT_BUTTON);
-        settings.delegate('tap', handleChangePasswordCancelPressed, '.' + CSS_CLASS_PASSWORD_FORM_CONTAINER + ' a.' + CSS_CLASS_CANCEL_BUTTON);
+        if (settings) {
+            // settings field forms
+            settings.delegate('key', handleEnterKeyPressed, 'down:enter', 'input');
+            // password
+            settings.delegate('tap', handleChangePasswordPressed, 'a.' + CSS_CLASS_PASSWORD_CHANGE);
+            settings.delegate('tap', handleChangePasswordSubmitPressed, '.' + CSS_CLASS_PASSWORD_FORM_CONTAINER + ' a.' + CSS_CLASS_SUBMIT_BUTTON);
+            settings.delegate('tap', handleChangePasswordCancelPressed, '.' + CSS_CLASS_PASSWORD_FORM_CONTAINER + ' a.' + CSS_CLASS_CANCEL_BUTTON);
+        }
     }
 
     function init() {
