@@ -16,8 +16,8 @@ class CustomEncoder(json.JSONEncoder):
             try:
                 value = json.JSONEncoder.default(self, obj)
             except:
-                rollbar.report_exc(extra_data={'obj': obj,})
-                value = -3.14159 # return an absurd value so that we no the object wasn't serializable
+                rollbar.report_exc_info(extra_data={'obj': obj,})
+                value = -3.14159 # return an absurd value so that we know the object wasn't serializable
         return value
 
 def to_json(obj):
