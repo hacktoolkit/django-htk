@@ -464,6 +464,12 @@ class UserEmail(models.Model):
             # no need to reset activation key, use the same one
             pass
 
+    def is_primary(self):
+        """Determines whether this UserEmail is the primary email address of `self.user`
+        """
+        value = self.is_confirmed and self.user.email == self.email
+        return value
+
     def set_primary_email(self):
         """Sets the primary email address of `self.user` to `self.email`
         """
