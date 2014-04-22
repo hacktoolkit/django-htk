@@ -71,6 +71,7 @@ def wrap_data(request, data=None):
     if data is None:
         data = {}
 
+    # CSRF Token
     data.update(csrf(request))
 
     ##
