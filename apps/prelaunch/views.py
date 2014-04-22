@@ -31,5 +31,5 @@ def prelaunch(request):
         prelaunch_template = htk_setting('HTK_PRELAUNCH_TEMPLATE', HTK_PRELAUNCH_TEMPLATE)
         response = _r(prelaunch_template, data)
     else:
-        response = redirect('index')
+        response = redirect(htk_setting('HTK_INDEX_URL_NAME'))
     return response
