@@ -196,7 +196,10 @@ def get_users_by_id(user_ids, strict=False):
     """
     UserModel = get_user_model()
     if strict:
-        users = [UserModel.objects.get(id=user_id) for user_id in user_ids]
+        try:
+            users = [UserModel.objects.get(id=user_id) for user_id in user_ids]
+        except UserModel.DoesNotExist:
+            users = None
     else:
         users = []
         for user_id in user_ids:
@@ -206,6 +209,27 @@ def get_users_by_id(user_ids, strict=False):
             except UserModel.DoesNotExist:
                 pass
     return users
+
+def get_user_emails_by_id(user_email_ids, strict=False):
+    """Gets a list of UserEmails by ids
+    If `strict`, all user_email_ids must exist, or None is returned
+    For non `strict`, returns a partial list of UserEmails with valid ids
+    """
+    from htk.apps.accounts.models import UserEmail
+    if strict:
+        try:
+            user_emails = [UserEmail.objects.get(id=user_email_id) for user_email_id in user_email_ids]
+        except UserEmail.DoesNotExist:
+            user_emails = None
+    else:
+        user_emails = []
+        for user_email_id in user_email_ids:
+            try:
+                user_email = UserEmail.objects.get(id=user_email_id)
+                user_emails.append(user_email)
+            except UserEmail.DoesNotExist:
+                pass
+    return user_emails
 
 ##
 # user id manipulation
