@@ -50,6 +50,9 @@ function (Y) {
     var S_ADD_EMAIL_SUCCESS_MESSAGE = 'Email added successfully';
     var S_ADD_EMAIL_ERROR_MESSAGE = 'Could not add the email.';
 
+    var ATTR_DATA_API = 'data:api';
+    var ATTR_DATA_EMAIL = 'data:email';
+
     /* End YUI "Local" Globals */
     /* -------------------------------------------------- */
 
@@ -150,26 +153,24 @@ function (Y) {
     }
 
     function handleDeleteEmailPressed(e) {
-        var emailField = this.previous('input');
-        var email = emailField.get('value');
+        var button = this;
+        var email = button.getAttribute(ATTR_DATA_EMAIL);
         if (confirm(S_CONFIRM_DELETE_EMAIL + email + '?')) {
-            var form = this.ancestor('form');
-            submitDeleteEmailForm(form);
+            callApiDeleteEmail(button);
         }
     }
 
-    function submitDeleteEmailForm(form) {
-        var uri = form.get('action');
+    function callApiDeleteEmail(button) {
+        var uri = button.getAttribute(ATTR_DATA_API);
+        var email = button.getAttribute(ATTR_DATA_EMAIL);
         var csrftoken = Y.Cookie.get('csrftoken');
         var cfg = {
             method: 'POST',
-            data: null,
+            data: {
+                email : email
+            },
             headers: {
                 'X-CSRFToken': csrftoken
-            },
-            form: {
-                id: form,
-                useDisabled: false
             },
             on: {
                 complete: handleDeleteEmailResponse
@@ -178,8 +179,9 @@ function (Y) {
         var request = Y.io(uri, cfg);
         var transactionId = request.id;
         var transactionData = {
-            uri: uri,
-            form: form
+            uri : uri,
+            email : email,
+            button : button
         };
         IO_TRANSACTION_DATA[transactionId] = transactionData;
     }
@@ -193,10 +195,11 @@ function (Y) {
         }
         if (responseData) {
             var transactionData = IO_TRANSACTION_DATA[transactionId];
-            var form = transactionData['form'];
+            var button = transactionData['button'];
+            var email = transactionData['email'];
             var status = responseData['status'];
             if (status === 'okay') {
-                var emailRow = form.ancestor('.' + CSS_CLASS_EMAIL_ROW);
+                var emailRow = button.ancestor('.' + CSS_CLASS_EMAIL_ROW);
                 emailRow.remove();
             } else {
             }
@@ -205,18 +208,16 @@ function (Y) {
 
     function handleSetPrimaryEmailPressed(e) {
         var button = this;
-        var form = button.ancestor('form');
-        var uri = form.get('action');
+        var uri = button.getAttribute(ATTR_DATA_API);
+        var email = button.getAttribute(ATTR_DATA_EMAIL);
         var csrftoken = Y.Cookie.get('csrftoken');
         var cfg = {
             method: 'POST',
-            data: null,
+            data: {
+                email : email
+            },
             headers: {
                 'X-CSRFToken': csrftoken
-            },
-            form: {
-                id: form,
-                useDisabled: false
             },
             on: {
                 complete: handleSetPrimaryEmailResponse
@@ -225,8 +226,7 @@ function (Y) {
         var request = Y.io(uri, cfg);
         var transactionId = request.id;
         var transactionData = {
-            uri: uri,
-            form: form
+            uri: uri
         };
         IO_TRANSACTION_DATA[transactionId] = transactionData;
     }
@@ -240,7 +240,6 @@ function (Y) {
         }
         if (responseData) {
             var transactionData = IO_TRANSACTION_DATA[transactionId];
-            var form = transactionData['form'];
             var status = responseData['status'];
             if (status === 'okay') {
                 // TODO: update inline without refreshing

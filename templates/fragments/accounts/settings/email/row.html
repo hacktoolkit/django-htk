@@ -7,11 +7,12 @@
     Primary
     {% else %}
     <div class="right">
-      {% include 'fragments/accounts/settings/forms/email/delete.html' %}
+      {% include 'fragments/accounts/settings/email/delete.html' %}
     </div>
     {% if is_confirmed %}
     <div class="right">
-      {% include 'fragments/accounts/settings/forms/email/set_primary.html' %}
+      {% include 'fragments/accounts/settings/email/set_primary.html' %}
+      &nbsp;
     </div>
     {% else %}
     (Not verified)

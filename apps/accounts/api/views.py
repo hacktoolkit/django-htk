@@ -176,7 +176,7 @@ def email_add(request):
 @login_required
 def email_set_primary(request):
     user = request.user
-    email = request.POST.get('primary_email')
+    email = request.POST.get('email')
     user_email = get_object_or_404(UserEmail, user=user, email=email)
     user = user_email.set_primary_email()
     if user:
@@ -189,7 +189,7 @@ def email_set_primary(request):
 @login_required
 def email_delete(request):
     user = request.user
-    email = request.POST.get('delete_email')
+    email = request.POST.get('email')
     user_email = get_object_or_404(UserEmail, user=user, email=email)
     if user_email.delete():
         response = json_response_okay()
