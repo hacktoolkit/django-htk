@@ -45,7 +45,10 @@ def bing_site_auth(request):
 def robots(request):
     template_name = 'robots.txt'
     context_dict = {
-        'host' : request.get_host()
+        'request' : {
+            'request' : request,
+            'host' : request.get_host(),
+         },
     }
     response = generic_template_view(
         request,
