@@ -62,13 +62,14 @@ class BaseWebTestCase(BaseTestCase):
         self.assertTrue(success)
         return (user, password, client,)
 
-    def _get_user_session_with_email(self):
+    def _get_user_session_with_primary_email(self):
         """Returns an authenticated user, its primary email, password, and authenticated client
         """
         (user, password, client,) = self._get_user_session()
         from htk.apps.accounts.utils import associate_user_email
         email = create_test_email()
-        associate_user_email(user, email, confirmed=True)
+        user_email = associate_user_email(user, email, confirmed=True)
+        user_email.set_primary_email()
         return (user, email, password, client,)
 
     def _get(self, view_name, client=None, params=None, follow=False, view_args=None, view_kwargs=None, **extra):
