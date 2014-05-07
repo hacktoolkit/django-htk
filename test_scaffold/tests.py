@@ -10,6 +10,7 @@ from django.utils.http import urlencode
 
 from htk.test_scaffold.constants import *
 from htk.test_scaffold.models import TestScaffold
+from htk.test_scaffold.utils import create_test_email
 from htk.test_scaffold.utils import create_test_password
 from htk.test_scaffold.utils import create_test_user
 
@@ -60,6 +61,15 @@ class BaseWebTestCase(BaseTestCase):
         success = client.login(username=user.username, password=password)
         self.assertTrue(success)
         return (user, password, client,)
+
+    def _get_user_session_with_email(self):
+        """Returns an authenticated user, its primary email, password, and authenticated client
+        """
+        (user, password, client,) = self._get_user_session()
+        from htk.apps.accounts.utils import associate_user_email
+        email = create_test_email()
+        associate_user_email(user, email, confirmed=True)
+        return (user, email, password, client,)
 
     def _get(self, view_name, client=None, params=None, follow=False, view_args=None, view_kwargs=None, **extra):
         """Wrapper for performing an HTTP GET request
