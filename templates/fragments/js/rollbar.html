@@ -12,7 +12,7 @@ var _rollbarParams = {
     },
 {% endif %}
     "server.environment": "{{ rollbar.env|default:'production' }}",
-    "server.host": "{{ server.hostname|default:default_host }}"
+    "server.host": "{{ server.hostname|default:'' }}"
 };
 _rollbarParams["notifier.snippet_version"] = "2"; var
 _rollbar=["{{ rollbar.tokens.post_client_item }}", _rollbarParams]; var
