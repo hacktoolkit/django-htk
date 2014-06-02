@@ -8,6 +8,14 @@ def concat(value, arg):
     result = str(value) + str(arg)
     return result
 
+@register.filter()
+def phonenumber(value, country='US'):
+    """Formats a phone number for a country
+    """
+    import phonenumbers
+    formatted = phonenumbers.format_number(phonenumbers.parse(value, country), phonenumbers.PhoneNumberFormat.NATIONAL)
+    return formatted
+
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base):
     values = {
