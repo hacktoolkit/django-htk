@@ -20,7 +20,7 @@ def render_to_response_custom(template_name, data=None, template_prefix=''):
 
     # pre-render
     data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
-    _prepare_meta_content(data)
+    _build_meta_content(data)
 
     # render
     response = render_to_response(template_name, data)
@@ -96,13 +96,20 @@ def wrap_data(request, data=None):
     }
 
     data['meta'] = {
+        'title' : {
+            'content' : '',
+            'inverted' : [],
+            'join_value' : ' | ',
+        },
         'description' : {
             'content' : '',
             'inverted' : [],
+            'join_value' : ' ',
          },
         'keywords' : {
             'content' : '',
             'inverted' : [],
+            'join_value' : ',',
          },
     }
 
@@ -136,25 +143,61 @@ def wrap_data(request, data=None):
 
     return data
 
-def _prepare_meta_content(data):
-    """Prepare META keywords and desciption before rendering
+def _build_meta_content(data):
+    """Build page title and META description and keywords before rendering
     """
-    inverted_description = data['meta']['description']['inverted']
-    data['meta']['description']['content'] = ' '.join(inverted_description[::-1])
+    for meta_type, config in data['meta'].items():
+        inverted_content = config['inverted']
+        config['content'] = config['join_value'].join(inverted_content[::-1])
 
-    inverted_keywords = data['meta']['keywords']['inverted']
-    data['meta']['keywords']['content'] = ','.join(inverted_keywords[::-1])
+def _set_meta_content(meta_type, value, data):
+    if hasattr(value, '__iter__'):
+        values_list = value
+    else:
+        values_list = [value,]
+    data['meta'][meta_type]['inverted'] = values_list
+
+def _add_meta_content(meta_type, value, data):
+    if hasattr(value, '__iter__'):
+        values_list = value
+    else:
+        values_list = [value,]
+    data['meta'][meta_type]['inverted'] += values_list
+
+def set_page_title(title, data):
+    """Sets the page title
+
+    Overwrites any previously set or added title
+    """
+    _set_meta_content('title', title, data)
+
+def add_page_title(title, data):
+    """Adds an additioanl phrase to page title
+    """
+    _add_meta_content('title', title, data)
+
+def set_meta_description(description, data):
+    """Sets the META description
+
+    Overwrites any previously set or added META description
+    """
+    _set_meta_content('description', description, data)
 
 def add_meta_description(description, data):
     """Adds an additional sentence or phrase to META description
     """
-    inverted_description = data['meta']['description']['inverted']
-    inverted_description.append(description)
+    _add_meta_content('description', description, data)
+
+def set_meta_keywords(keywords, data):
+    """Sets the META keywords
+
+    Overwrites any previously set or added META keywords
+    """
+    _set_meta_content('keywords', keywords, data)
 
 def add_meta_keywords(keywords, data):
     """Adds an additional keyword to META keywords
 
     `keywords` must be a list in order of least significant to most significant terms
     """
-    inverted_keywords = data['meta']['keywords']['inverted']
-    inverted_keywords += keywords
+    _add_meta_content('keywords', keywords, data)
