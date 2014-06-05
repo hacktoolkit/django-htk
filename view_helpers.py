@@ -18,7 +18,11 @@ def render_to_response_custom(template_name, data=None, template_prefix=''):
     if data is None:
         data = {}
 
+    # pre-render
     data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
+    _prepare_meta_content(data)
+
+    # render
     response = render_to_response(template_name, data)
     return response
 
@@ -91,6 +95,17 @@ def wrap_data(request, data=None):
         'hostname' : gethostname(),
     }
 
+    data['meta'] = {
+        'description' : {
+            'content' : '',
+            'inverted' : [],
+         },
+        'keywords' : {
+            'content' : '',
+            'inverted' : [],
+         },
+    }
+
     ##
     # Rollbar
     data['rollbar'] = {
@@ -120,3 +135,26 @@ def wrap_data(request, data=None):
     data['errors'] = []
 
     return data
+
+def _prepare_meta_content(data):
+    """Prepare META keywords and desciption before rendering
+    """
+    inverted_description = data['meta']['description']['inverted']
+    data['meta']['description']['content'] = ' '.join(inverted_description[::-1])
+
+    inverted_keywords = data['meta']['keywords']['inverted']
+    data['meta']['keywords']['content'] = ','.join(inverted_keywords[::-1])
+
+def add_meta_description(description, data):
+    """Adds an additional sentence or phrase to META description
+    """
+    inverted_description = data['meta']['description']['inverted']
+    inverted_description.append(description)
+
+def add_meta_keywords(keywords, data):
+    """Adds an additional keyword to META keywords
+
+    `keywords` must be a list in order of least significant to most significant terms
+    """
+    inverted_keywords = data['meta']['keywords']['inverted']
+    inverted_keywords += keywords
