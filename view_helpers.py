@@ -146,9 +146,10 @@ def wrap_data(request, data=None):
 def _build_meta_content(data):
     """Build page title and META description and keywords before rendering
     """
-    for meta_type, config in data['meta'].items():
-        inverted_content = config['inverted']
-        config['content'] = config['join_value'].join(inverted_content[::-1])
+    if type(data.get('meta')) == dict:
+        for meta_type, config in data['meta'].items():
+            inverted_content = config['inverted']
+            config['content'] = config['join_value'].join(inverted_content[::-1])
 
 def _set_meta_content(meta_type, value, data):
     if hasattr(value, '__iter__'):
