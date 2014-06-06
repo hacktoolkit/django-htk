@@ -15,6 +15,8 @@ HTK_SYMBOLIC_SITE_NAME = 'hacktoolkit'
 HTK_INDEX_URL_NAME = 'index'
 HTK_REDIRECT_URL_NAME = 'redir'
 
+HTK_STATIC_PAGE_TITLES = {}
+
 ##
 # Email settings
 HTK_DEFAULT_EMAIL_SENDING_DOMAIN = 'hacktoolkit.com'
