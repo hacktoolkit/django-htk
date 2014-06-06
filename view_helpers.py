@@ -8,6 +8,7 @@ from django.template import loader
 from django.template import TemplateDoesNotExist
 
 from htk.cachekeys import StaticAssetVersionCache
+from htk.utils import htk_setting
 from htk.utils import utcnow
 
 def render_to_response_custom(template_name, data=None, template_prefix=''):
@@ -81,6 +82,7 @@ def wrap_data(request, data=None):
     ##
     # meta, server, request info
     path = request.path
+    url_name = request.resolver_match.url_name
     host = request.get_host()
     is_secure = request.is_secure()
     full_uri = '%s://%s%s' % ('http' + ('s' if is_secure else ''), host, path,)
@@ -89,6 +91,7 @@ def wrap_data(request, data=None):
         'is_secure' : is_secure,
         'host' : host,
         'path' : path,
+        'url_name' : url_name,
         'full_uri' : full_uri,
     }
     data['server'] = {
@@ -147,23 +150,47 @@ def _build_meta_content(data):
     """Build page title and META description and keywords before rendering
     """
     if type(data.get('meta')) == dict:
+        add_static_page_title(data)
         for meta_type, config in data['meta'].items():
             inverted_content = config['inverted']
             config['content'] = config['join_value'].join(inverted_content[::-1])
 
 def _set_meta_content(meta_type, value, data):
-    if hasattr(value, '__iter__'):
-        values_list = value
+    meta = data.get('meta', {}).get(meta_type)
+    if meta:
+        if hasattr(value, '__iter__'):
+            values_list = value
+        else:
+            values_list = [value,]
+        meta['inverted'] = values_list
     else:
-        values_list = [value,]
-    data['meta'][meta_type]['inverted'] = values_list
+        pass
 
 def _add_meta_content(meta_type, value, data):
-    if hasattr(value, '__iter__'):
-        values_list = value
+    meta = data.get('meta', {}).get(meta_type)
+    if meta:
+        if hasattr(value, '__iter__'):
+            values_list = value
+        else:
+            values_list = [value,]
+        meta['inverted'] += values_list
     else:
-        values_list = [value,]
-    data['meta'][meta_type]['inverted'] += values_list
+        pass
+
+def add_static_page_title(data):
+    """Tries to add a static page title
+    """
+    request = data.get('request', {}).get('request')
+    if request:
+        url_name = request.resolver_match.url_name
+        static_page_titles = htk_setting('HTK_STATIC_PAGE_TITLES')
+        if url_name in static_page_titles:
+            title = static_page_titles[url_name]
+            add_page_title(title, data)
+        else:
+            pass
+    else:
+        pass
 
 def set_page_title(title, data):
     """Sets the page title
@@ -173,7 +200,7 @@ def set_page_title(title, data):
     _set_meta_content('title', title, data)
 
 def add_page_title(title, data):
-    """Adds an additioanl phrase to page title
+    """Adds an additional phrase to page title
     """
     _add_meta_content('title', title, data)
 
