@@ -183,7 +183,8 @@ def add_static_page_title(data):
     request = data.get('request', {}).get('request')
     if request:
         url_name = request.resolver_match.url_name
-        static_page_titles = htk_setting('HTK_STATIC_PAGE_TITLES')
+        default_static_page_titles = data.get('meta', {}).get('title', {}).get('static_page_titles', None)
+        static_page_titles = htk_setting('HTK_STATIC_PAGE_TITLES', default=default_static_page_titles)
         if url_name in static_page_titles:
             title = static_page_titles[url_name]
             add_page_title(title, data)
