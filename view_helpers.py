@@ -177,13 +177,13 @@ def _add_meta_content(meta_type, value, data):
     else:
         pass
 
-def add_static_page_title(data):
+def add_static_page_title(data, default=None):
     """Tries to add a static page title
     """
     request = data.get('request', {}).get('request')
     if request:
         url_name = request.resolver_match.url_name
-        static_page_titles = htk_setting('HTK_STATIC_PAGE_TITLES')
+        static_page_titles = htk_setting('HTK_STATIC_PAGE_TITLES', default)
         if url_name in static_page_titles:
             title = static_page_titles[url_name]
             add_page_title(title, data)
