@@ -151,6 +151,7 @@ def _build_meta_content(data):
     """
     if type(data.get('meta')) == dict:
         add_static_page_title(data)
+        add_static_meta_description(data)
         for meta_type, config in data['meta'].items():
             inverted_content = config['inverted']
             config['content'] = config['join_value'].join(inverted_content[::-1])
@@ -204,6 +205,22 @@ def add_page_title(title, data):
     """Adds an additional phrase to page title
     """
     _add_meta_content('title', title, data)
+
+def add_static_meta_description(data):
+    """Tries to add a static meta description
+    """
+    request = data.get('request', {}).get('request')
+    if request:
+        url_name = request.resolver_match.url_name
+        default_static_meta_descriptions = data.get('meta', {}).get('description', {}).get('static_meta_descriptions', None)
+        static_meta_descriptions = htk_setting('HTK_STATIC_META_DESCRIPTIONS', default=default_static_meta_descriptions)
+        if url_name in static_meta_descriptions:
+            description = static_meta_descriptions[url_name]
+            add_meta_description(description, data)
+        else:
+            pass
+    else:
+        pass
 
 def set_meta_description(description, data):
     """Sets the META description
