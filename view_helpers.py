@@ -103,11 +103,13 @@ def wrap_data(request, data=None):
             'content' : '',
             'inverted' : [],
             'join_value' : ' | ',
+            'static_page_titles' : {},
         },
         'description' : {
             'content' : '',
             'inverted' : [],
             'join_value' : ' ',
+            'static_meta_descriptions' : {},
          },
         'keywords' : {
             'content' : '',
