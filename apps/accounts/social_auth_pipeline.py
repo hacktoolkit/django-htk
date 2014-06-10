@@ -63,7 +63,8 @@ def check_email(request, details, user=None, *args, **kwargs):
                 # a user is already associated with this email
                 # TODO: there is an error with linking accounts...
                 request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = social_email
-                response = redirect('account_register_social_login')
+                url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME')
+                response = redirect(url_name)
         elif collected_email:
             # email provided by user
             details['email'] = collected_email
@@ -71,7 +72,8 @@ def check_email(request, details, user=None, *args, **kwargs):
         else:
             # no email provided from social auth
             request.session[SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL] = True
-            response = redirect('account_register_social_email')
+            url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_URL_NAME')
+            response = redirect(url_name)
 
     return response
 
@@ -86,7 +88,8 @@ def check_terms_agreement(request, details, user=None, *args, **kwargs):
         if not agreed_to_terms:
             email = details.get('email')
             request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = email
-            response = redirect('account_register_social_email_and_terms')
+            url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_AND_TERMS_URL_NAME')
+            response = redirect(url_name)
         else:
             pass
     else:
