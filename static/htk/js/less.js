@@ -1,1 +1,1 @@
-less-1.6.0.min.js
+less-1.7.0.min.js
