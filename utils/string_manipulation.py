@@ -27,7 +27,7 @@ def summarize(paragraph, num_sentences=SUMMARY_NUM_SENTENCES):
     paragraph_num_sentences = len(sentences)
     limit = min(paragraph_num_sentences, num_sentences)
     summary_sentences = sentences[:limit]
-    if num_sentences < paragraph_num_sentences:
+    if paragraph_num_sentences < num_sentences:
         # the original was already short enough, so just display the original
         summary = paragraph
     else:
