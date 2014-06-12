@@ -1,4 +1,5 @@
 import re
+import rollbar
 from socket import gethostname
 
 from django.conf import settings
@@ -103,18 +104,19 @@ def wrap_data(request, data=None):
             'content' : '',
             'inverted' : [],
             'join_value' : ' | ',
-            'static_page_titles' : {},
+            'static_values' : {},
         },
         'description' : {
             'content' : '',
             'inverted' : [],
             'join_value' : ' ',
-            'static_meta_descriptions' : {},
+            'static_values' : {},
          },
         'keywords' : {
             'content' : '',
             'inverted' : [],
             'join_value' : ',',
+            'static_values' : {},
          },
     }
 
@@ -148,104 +150,98 @@ def wrap_data(request, data=None):
 
     return data
 
-def _build_meta_content(data):
+def _build_meta_content(data=None):
     """Build page title and META description and keywords before rendering
     """
-    if type(data.get('meta')) == dict:
-        add_static_page_title(data)
-        add_static_meta_description(data)
-        for meta_type, config in data['meta'].items():
-            inverted_content = config['inverted']
-            config['content'] = config['join_value'].join(inverted_content[::-1])
+    if data is None:
+        data = {}
+    meta = data.get('meta', {})
+    if meta and type(meta) == dict:
+        for meta_type, config in meta.items():
+            _add_static_meta_content(meta_type, data)
+            try:
+                inverted_content = config.get('inverted', [])
+                config['content'] = config.get('join_value', '').join(inverted_content[::-1])
+            except:
+                request = data.get('request', {}).get('request')
+                rollbar.report_exc_info(request=request)
 
-def _set_meta_content(meta_type, value, data):
+def _update_meta_content(meta_type, value, update_type='set', data=None):
+    if data is None:
+        data = {}
     meta = data.get('meta', {}).get(meta_type)
     if meta:
         if hasattr(value, '__iter__'):
             values_list = value
         else:
             values_list = [value,]
-        meta['inverted'] = values_list
-    else:
-        pass
-
-def _add_meta_content(meta_type, value, data):
-    meta = data.get('meta', {}).get(meta_type)
-    if meta:
-        if hasattr(value, '__iter__'):
-            values_list = value
+        if update_type == 'set':
+            meta['inverted'] = values_list
+        elif update_type == 'add':
+            meta['inverted'] += values_list
         else:
-            values_list = [value,]
-        meta['inverted'] += values_list
+            # unknown update_type
+            pass
     else:
         pass
 
-def add_static_page_title(data):
-    """Tries to add a static page title
+def _add_static_meta_content(meta_type, data=None):
+    """Tries to add static meta content
+
+    Currently handles:
+    - page titles
+    - meta description
+
+    Could handle meta keywords as well, but doesn't make sense for those to be static?
     """
+    meta = data.get('meta', {}).get(meta_type, {})
+    default_static_values = meta.get('static_values', None)
+    static_values = htk_setting('HTK_STATIC_META_%s_VALUES' % meta_type.upper(), default=default_static_values)
     request = data.get('request', {}).get('request')
-    if request:
+    if meta and static_values and request:
         url_name = request.resolver_match.url_name
-        default_static_page_titles = data.get('meta', {}).get('title', {}).get('static_page_titles', None)
-        static_page_titles = htk_setting('HTK_STATIC_PAGE_TITLES', default=default_static_page_titles)
-        if url_name in static_page_titles:
-            title = static_page_titles[url_name]
-            add_page_title(title, data)
+        static_value = static_values.get(url_name, None)
+        if static_value:
+            _update_meta_content(meta_type, static_value, update_type='add', data=data)
         else:
             pass
     else:
         pass
 
-def set_page_title(title, data):
+def set_page_title(title, data=None):
     """Sets the page title
 
     Overwrites any previously set or added title
     """
-    _set_meta_content('title', title, data)
+    _update_meta_content('title', title, update_type='set', data=data)
 
-def add_page_title(title, data):
+def add_page_title(title, data=None):
     """Adds an additional phrase to page title
     """
-    _add_meta_content('title', title, data)
+    _update_meta_content('title', title, update_type='add', data=data)
 
-def add_static_meta_description(data):
-    """Tries to add a static meta description
-    """
-    request = data.get('request', {}).get('request')
-    if request:
-        url_name = request.resolver_match.url_name
-        default_static_meta_descriptions = data.get('meta', {}).get('description', {}).get('static_meta_descriptions', None)
-        static_meta_descriptions = htk_setting('HTK_STATIC_META_DESCRIPTIONS', default=default_static_meta_descriptions)
-        if url_name in static_meta_descriptions:
-            description = static_meta_descriptions[url_name]
-            add_meta_description(description, data)
-        else:
-            pass
-    else:
-        pass
-
-def set_meta_description(description, data):
+def set_meta_description(description, data=None):
     """Sets the META description
 
     Overwrites any previously set or added META description
     """
-    _set_meta_content('description', description, data)
+    _update_meta_content('description', description, update_type='set', data=data)
 
-def add_meta_description(description, data):
+def add_meta_description(description, data=None):
     """Adds an additional sentence or phrase to META description
     """
-    _add_meta_content('description', description, data)
+    _update_meta_content('description', description, update_type='add', data=data)
 
-def set_meta_keywords(keywords, data):
+def set_meta_keywords(keywords, data=None):
     """Sets the META keywords
 
     Overwrites any previously set or added META keywords
     """
-    _set_meta_content('keywords', keywords, data)
+    _update_meta_content('keywords', keywords, update_type='set', data=data)
 
-def add_meta_keywords(keywords, data):
+def add_meta_keywords(keywords, data=None):
     """Adds an additional keyword to META keywords
 
     `keywords` must be a list in order of least significant to most significant terms
     """
-    _add_meta_content('keywords', keywords, data)
+    _update_meta_content('keywords', keywords, update_type='add', data=data)
