@@ -194,9 +194,9 @@ def _add_static_meta_content(meta_type, data=None):
 
     Could handle meta keywords as well, but doesn't make sense for those to be static?
     """
-    meta = data.get('meta', {}).get(meta_type)
-    default_static_values = meta.get('static_values')
-    static_values = htk_setting('HTK_STATIC_META_%s_VALUES' % meta_type.upper(), default_static_values)
+    meta = data.get('meta', {}).get(meta_type, {})
+    default_static_values = meta.get('static_values', None)
+    static_values = htk_setting('HTK_STATIC_META_%s_VALUES' % meta_type.upper(), default=default_static_values)
     request = data.get('request', {}).get('request')
     if meta and static_values and request:
         url_name = request.resolver_match.url_name
