@@ -200,7 +200,8 @@ def _add_static_meta_content(meta_type, data=None):
     request = data.get('request', {}).get('request')
     if meta and static_values and request:
         url_name = request.resolver_match.url_name
-        static_value = static_values.get(url_name, None)
+        path = request.path
+        static_value = static_values.get(url_name, static_values.get(path, None))
         if static_value:
             _update_meta_content(meta_type, static_value, update_type='add', data=data)
         else:
