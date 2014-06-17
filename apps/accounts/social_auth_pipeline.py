@@ -115,6 +115,22 @@ def check_incomplete_signup(request, details, user=None, *args, **kwargs):
         }
     return response
 
+def set_username(request, details, user, social, *args, **kwargs):
+    """This pipeline function can be used to set UserProfile.has_username_set = True
+
+    Normally not used if the auto-generated username is ugly
+    """
+    if not user:
+        return None
+
+    response = None
+    if hasattr(user, 'profile'):
+        user_profile = user.profile
+        if hasattr(user_profile, 'has_username_set'):
+            user_profile.has_username_set = True
+            user_profile.save()
+    return response
+
 def associate_email(request, details, user, social, *args, **kwargs):
     """Associate email with the user
     """
