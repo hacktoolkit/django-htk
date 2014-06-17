@@ -22,7 +22,9 @@ from htk.apps.accounts.forms.auth import UserRegistrationForm
 from htk.apps.accounts.forms.auth import UsernameEmailAuthenticationForm
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
+from htk.apps.accounts.utils import get_user_by_email
 from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
+from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.view_helpers import render_to_response_custom as _r
 from htk.view_helpers import wrap_data
@@ -84,6 +86,47 @@ def logout_view(
 ################################################################################
 # registration and activation
 
+def register_social_email(
+    request,
+    data=None,
+    template='account/register_social_email.html',
+    renderer=_r
+):
+    from htk.apps.accounts.forms.auth import SocialRegistrationEmailForm
+
+    if data is None:
+        data = wrap_data(request)
+    email = None
+    success = False
+    if request.method == 'POST':
+        email_form = SocialRegistrationEmailForm(request.POST)
+        if email_form.is_valid():
+            email = email_form.save(request)
+            success = True
+        else:
+            for error in email_form.non_field_errors():
+                data['errors'].append(error)
+    else:
+        email_form = SocialRegistrationEmailForm(None)
+
+    if success:
+        user = get_user_by_email(email)
+        if user:
+            # a user is already associated with this email
+            if user.has_usable_password():
+                # user should log into the existing account with a password
+                url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME')
+            else:
+                # no password was set, so user must log in with another social auth account
+                url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_ALREADY_LINKED_URL_NAME')
+            response = redirect(url_name)
+        else:
+            response = redirect_to_social_auth_complete(request)
+    else:
+        data['email_form'] = email_form
+        response = _r('account/register_social_email.html', data)
+    return response
+
 def register_social_login(
     request,
     data=None,
@@ -91,7 +134,7 @@ def register_social_login(
     template='account/register_social_login.html',
     renderer=_r
 ):
-    """For when a user is already associated with this email
+    """For when a user is already associated with this email and has a usable password set
     """
     from htk.apps.accounts.forms.auth import SocialRegistrationAuthenticationForm
 
@@ -123,6 +166,22 @@ def register_social_login(
     else:
         data['auth_form'] = auth_form
         response = renderer(template, data)
+    return response
+
+def register_social_already_linked(
+    request,
+    data=None,
+    template='account/register_social_login.html',
+    renderer=_r
+):
+    """For when a user is already associated with this email only through social auth and no password set
+    """
+    if data is None:
+        data = wrap_data(request)
+
+    email = request.session.get(SOCIAL_REGISTRATION_SETTING_EMAIL)
+    data['email'] = email
+    response = renderer(template, data)
     return response
 
 def register(

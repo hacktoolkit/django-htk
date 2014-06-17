@@ -64,7 +64,12 @@ def check_email(request, details, user=None, *args, **kwargs):
                 # a user is already associated with this email
                 # TODO: there is an error with linking accounts...
                 request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = social_email
-                url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME')
+                if user.has_usable_password():
+                    # user should log into the existing account with a password
+                    url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME')
+                else:
+                    # no password was set, so user must log in with another social auth account
+                    url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_ALREADY_LINKED_URL_NAME')
                 response = redirect(url_name)
         elif collected_email:
             # email provided by user
@@ -108,6 +113,22 @@ def check_incomplete_signup(request, details, user=None, *args, **kwargs):
             'user' : user,
             'is_new' : False,
         }
+    return response
+
+def set_username(request, details, user, social, *args, **kwargs):
+    """This pipeline function can be used to set UserProfile.has_username_set = True
+
+    Normally not used if the auto-generated username is ugly
+    """
+    if not user:
+        return None
+
+    response = None
+    if hasattr(user, 'profile'):
+        user_profile = user.profile
+        if hasattr(user_profile, 'has_username_set'):
+            user_profile.has_username_set = True
+            user_profile.save()
     return response
 
 def associate_email(request, details, user, social, *args, **kwargs):
