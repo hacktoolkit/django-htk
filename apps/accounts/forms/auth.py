@@ -41,6 +41,7 @@ class UserRegistrationForm(UserCreationForm):
         self.cascaded_errors = []
         del self.fields['username']
         self.fields['password2'].label = 'Confirm Password'
+        self.label_suffix = ''
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
@@ -182,6 +183,7 @@ class UsernameEmailAuthenticationForm(forms.Form):
 
     error_messages = {
         'invalid_login': _('Please enter a correct %(username_email)s and %(password)s. Note that password is case-sensitive.'),
+        'invalid_password': _('Please enter a correct %(password)s. Note that password is case-sensitive.'),
         'inactive': _('This account is inactive.'),
     }
 
@@ -213,14 +215,23 @@ class UsernameEmailAuthenticationForm(forms.Form):
             self.user_cache = None
 
         if self.user_cache is None:
-            raise forms.ValidationError(
-                self.error_messages['invalid_login'],
-                code='invalid_login',
-                params={
-                    'username_email': self.fields['username_email'].label,
-                    'password': self.fields['password'].label,
-                },
-            )
+            if 'username_email' in self.fields:
+                raise forms.ValidationError(
+                    self.error_messages['invalid_login'],
+                    code='invalid_login',
+                    params={
+                        'username_email': self.fields['username_email'].label,
+                        'password': self.fields['password'].label,
+                    },
+                )
+            else:
+                raise forms.ValidationError(
+                    self.error_messages['invalid_password'],
+                    code='invalid_password',
+                    params={
+                        'password': self.fields['password'].label,
+                    },
+                )
         elif not self.user_cache.is_active:
             raise forms.ValidationError(
                 self.error_messages['inactive'],
@@ -248,6 +259,7 @@ class SocialRegistrationEmailForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(SocialRegistrationEmailForm, self).__init__(*args, **kwargs)
+        self.label_suffix = ''
         set_input_attrs(self)
         set_input_placeholder_labels(self)
         self.cascaded_errors = []
@@ -279,7 +291,7 @@ class SocialRegistrationEmailForm(forms.Form):
         return email
 
 class SocialRegistrationAuthenticationForm(UsernameEmailAuthenticationForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password',}))
+    password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder': 'Password',}))
 
     def __init__(self, email, *args, **kwargs):
         super(SocialRegistrationAuthenticationForm, self).__init__(None, *args, **kwargs)
