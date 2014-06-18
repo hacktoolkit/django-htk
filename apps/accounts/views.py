@@ -124,7 +124,7 @@ def register_social_email(
             response = redirect_to_social_auth_complete(request)
     else:
         data['email_form'] = email_form
-        response = _r('account/register_social_email.html', data)
+        response = _r(template, data)
     return response
 
 def register_social_login(
