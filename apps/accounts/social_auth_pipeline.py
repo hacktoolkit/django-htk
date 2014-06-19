@@ -111,7 +111,7 @@ def check_incomplete_signup(request, details, user=None, *args, **kwargs):
         user = get_incomplete_signup_user_by_email(social_email)
         response = {
             'user' : user,
-            'is_new' : False,
+            'is_new' : user is None,
         }
     return response
 
