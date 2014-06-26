@@ -1,10 +1,10 @@
-import datetime
-
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
+
+from htk.utils import utcnow
 
 class Feedback(models.Model):
     site = models.ForeignKey(Site)
@@ -15,7 +15,7 @@ class Feedback(models.Model):
     uri = models.CharField(max_length=200, null=True, blank=True)
     processed = models.BooleanField(default=False)
     needs_followup = models.BooleanField(default=True)
-    date_created = models.DateTimeField(default=datetime.datetime.now)
+    created_on = models.DateTimeField(auto_now_add=True, default=utcnow)
 
     class Meta:
         app_label = 'htk'
@@ -24,7 +24,7 @@ class Feedback(models.Model):
 
     def __unicode__(self):
         s = '%s, %s, [%s]' % (
-            self.date_created.strftime('%Y-%m-%d %H:%M:%S'),
+            self.created_on.strftime('%Y-%m-%d %H:%M:%S'),
             self.uri,
             self.comment[:50] + '...' if len(self.comment) > 50 else self.comment
         )

@@ -6,7 +6,7 @@ class PrelaunchSignupAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'site',
-        'date_created',
+        'created_on',
         'email',
     )
 
