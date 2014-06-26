@@ -6,7 +6,7 @@ class FeedbackAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'site',
-        'date_created',
+        'created_on',
         'user',
         'name',
         'email',
@@ -23,7 +23,7 @@ class FeedbackAdmin(admin.ModelAdmin):
 
     list_filter = (
         'site',
-        'date_created',
+        'created_on',
         'processed',
         'needs_followup',
     )
@@ -36,11 +36,11 @@ class FeedbackAdmin(admin.ModelAdmin):
     )
 
     fieldsets = [
-        ('Date Information', {'fields': ['date_created']}),
+        ('Date Information', {'fields': ['created_on']}),
         ('Page Viewing', {'fields': ['uri']}),
         ('Submitted Feedback', {'fields': ['name', 'email', 'comment']}),
         ]
 
-    date_hierarchy = 'date_created'
+    date_hierarchy = 'created_on'
 
 admin.site.register(Feedback, FeedbackAdmin)
