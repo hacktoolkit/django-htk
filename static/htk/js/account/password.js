@@ -1,3 +1,5 @@
+var REQUIRE_PASSWORD_FUNCTION = null;
+
 YUI().use(
     'node',
     'event',
@@ -40,6 +42,7 @@ function (Y) {
     var SETTINGS_FIELD_CACHE = {};
     var IO_TRANSACTION_DATA = {};
 
+    var S_PASSWORD_REQUIRED_MESSAGE = 'Please set a password to complete your account settings.';
     var S_CHANGE_PASSWORD_SUCCESS_MESSAGE = 'Password changed successfully.';
     var S_CHANGE_PASSWORD_ERROR_MESSAGE = 'An error occurred while trying to change the password.';
 
@@ -58,6 +61,16 @@ function (Y) {
     function showPasswordForm() {
         passwordFormContainer.setHTML(passwordFormTemplate.getHTML());
     }
+
+    function requirePassword(focus) {
+        showPasswordForm();
+        passwordMessageContainer.setHTML(S_PASSWORD_REQUIRED_MESSAGE);
+        if (focus) {
+            var input = passwordFormContainer.one('.pure-input-1');
+            input.focus();
+        }
+    }
+    REQUIRE_PASSWORD_FUNCTION = requirePassword;
 
     function hidePasswordForm() {
         passwordFormContainer.setHTML();
@@ -117,6 +130,7 @@ function (Y) {
             if (status === 'okay') {
                 hidePasswordForm();
                 displayChangePasswordSuccessMessage();
+                HAS_PASSWORD_SET = true;
             } else if (status === 'error') {
                 displayChangePasswordErrorMessage();
             } else {
@@ -152,6 +166,9 @@ function (Y) {
     }
 
     function init() {
+        if (PASSWORD_REQUIRED && !HAS_PASSWORD_SET) {
+            requirePassword();
+        }
     }
     initEventHandlers();
     init();
