@@ -16,6 +16,33 @@ def phonenumber(value, country='US'):
     formatted = phonenumbers.format_number(phonenumbers.parse(value, country), phonenumbers.PhoneNumberFormat.NATIONAL)
     return formatted
 
+@register.filter(is_safe=True)
+def obfuscate(value):
+    """Obfuscates a string
+    """
+    from htk.utils.obfuscate import html_obfuscate_string
+    result = html_obfuscate_string(value)
+    return result
+
+@register.filter(is_safe=True)
+def obfuscate_mailto(value, text=False):
+    """Obfuscates a mailto link
+    """
+    from htk.utils.obfuscate import html_obfuscate_string
+    email = html_obfuscate_string(value)
+
+    if text:
+        link_text = text
+    else:
+        link_text = email
+
+    result = '<a href="%s%s">%s</a>' % (
+        html_obfuscate_string('mailto:'),
+        email,
+        link_text,
+    )
+    return result
+
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base):
     values = {
