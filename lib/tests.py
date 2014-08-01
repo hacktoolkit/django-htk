@@ -20,3 +20,4 @@ class SimpleTest(TestCase):
 from htk.lib.geoip.tests import *
 from htk.lib.google.tests import *
 from htk.lib.qrcode.tests import *
+from htk.lib.stripe_lib.tests import *

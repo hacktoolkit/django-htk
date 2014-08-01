@@ -3,8 +3,9 @@ import stripe
 from django.db import models
 
 from htk.lib.stripe_lib.utils import _initialize_stripe
+from htk.lib.stripe_lib.utils import safe_stripe_call
 
-class StripeCustomer(models.Model):
+class BaseStripeCustomer(models.Model):
     stripe_id = models.CharField(max_length=255)
 
     class Meta:
@@ -14,10 +15,13 @@ class StripeCustomer(models.Model):
         """Charges a Customer
         """
         _initialize_stripe()
-        ch = stripe.Charge.create(
-            amount=amount,
-            currency=currency,
-            customer=self.stripe_id
+        ch = safe_stripe_call(
+            stripe.Charge.create,
+            **{
+                'amount' : amount,
+                'currency' : currency,
+                'customer' : self.stripe_id,
+            }
         )
         return ch
 
@@ -27,16 +31,29 @@ class StripeCustomer(models.Model):
         https://stripe.com/docs/api/python#retrieve_customer
         """
         _initialize_stripe()
-        cu = stripe.Customer.retrieve(stripe_id)
-        return cu
+        stripe_customer = safe_stripe_call(
+            stripe.Customer.retrieve,
+            *(
+                self.stripe_id,
+            )
+        )
+        return stripe_customer
 
     def add_card(self, card):
         """Add an additional credit card to the customer
 
         https://stripe.com/docs/api/python#create_card
         """
-        cu = self.retrieve()
-        cu.cards.create(card=card)
+        stripe_customer = self.retrieve()
+        if stripe_customer:
+            safe_stripe_call(
+                stripe_customer.cards.create,
+                **{
+                    'card' : card,
+                }
+            )
+        else:
+            pass
 
     def update_card(self, card):
         """Updates the customer's credit card and deletes the old one
@@ -45,15 +62,20 @@ class StripeCustomer(models.Model):
 
         https://stripe.com/docs/api/python#update_customer
         """
-        cu = self.retrieve()
-        cu.card = card
-        cu.save()
+        stripe_customer = self.retrieve()
+        stripe_customer.card = card
+        stripe_customer.save()
 
     def delete(self):
         """Deletes a customer
 
         https://stripe.com/docs/api/python#delete_customer
         """
-        cu = self.retrieve()
-        cu.delete()
-        super(StripeCustomer, self).delete()
+        stripe_customer = self.retrieve()
+        obj = safe_stripe_call(
+            stripe_customer.delete
+        )
+        if obj:
+            super(BaseStripeCustomer, self).delete()
+        else:
+            pass

@@ -1,46 +1,109 @@
+import rollbar
 import stripe
+
+from django.conf import settings
 
 from htk.utils import htk_setting
 
 def _initialize_stripe():
-    stripe.api_key = htk_setting('HTK_STRIPE_API_SECRET_KEY')
+    if settings.TEST:
+        secret_key_name = 'HTK_STRIPE_API_SECRET_KEY_TEST'
+    else:
+        secret_key_name = 'HTK_STRIPE_API_SECRET_KEY_LIVE'
+    stripe.api_key = htk_setting(secret_key_name)
     stripe.api_version = htk_setting('HTK_STRIPE_API_VERSION')
+    return stripe
 
-def charge_card(stripe_token, amount, description=''):
+def get_stripe_customer_model():
+    from htk.utils.general import resolve_model_dynamically
+    StripeCustomerModel = resolve_model_dynamically(settings.HTK_STRIPE_CUSTOMER_MODEL)
+    return StripeCustomerModel
+
+def safe_stripe_call(func, *args, **kwargs):
+    """Wrapper function for calling Stripe API
+
+    Handles all the possible errors
+    https://stripe.com/docs/api/python#errors
+    """
+    result = None
+    try:
+        result = func(*args, **kwargs)
+    except stripe.error.CardError, e:
+        # Since it's a decline, stripe.error.CardError will be caught
+        body = e.json_body
+        err  = body['error']
+
+        print "Status is: %s" % e.http_status
+        print "Type is: %s" % err['type']
+        print "Code is: %s" % err['code']
+        # param is '' in this case
+        print "Param is: %s" % err['param']
+        print "Message is: %s" % err['message']
+        rollbar.report_exc_info()
+    except stripe.error.InvalidRequestError, e:
+        # Invalid parameters were supplied to Stripe's API
+        rollbar.report_exc_info()
+    except stripe.error.AuthenticationError, e:
+        # Authentication with Stripe's API failed
+        # (maybe you changed API keys recently)
+        rollbar.report_exc_info()
+    except stripe.error.APIConnectionError, e:
+        # Network communication with Stripe failed
+        rollbar.report_exc_info()
+    except stripe.error.StripeError, e:
+        # Display a very generic error to the user, and maybe send
+        # yourself an email
+        rollbar.report_exc_info()
+    except Exception, e:
+        # Something else happened, completely unrelated to Stripe
+        rollbar.report_exc_info()
+    return result
+
+def charge_card(card, amount, description=''):
     """Charges a card, one time
 
+    https://stripe.com/docs/api/python#create_charge
     https://stripe.com/docs/tutorials/charges
     https://stripe.com/docs/api/python#charges
     """
     _initialize_stripe()
-    try:
-        charge = stripe.Charge.create(
-            amount=amount, # amount in cents
-            currency='usd',
-            card=stripe_token,
-            description=''
-        )
-    except stripe.CardError, e:
-        # The card has been declined
-        charge = None
+    charge = safe_stripe_call(
+        stripe.Charge.create,
+        **{
+            'amount' : amount, # amount in cents
+            'currency' : 'usd',
+            'card' : card,
+            'description' : '',
+        }
+    )
     return charge
 
-def create_customer(stripe_token, description=''):
+def create_customer(card, description=''):
     """Create a Customer
 
     https://stripe.com/docs/tutorials/charges#saving-credit-card-details-for-later
     https://stripe.com/docs/api/python#create_customer
     """
     _initialize_stripe()
-    stripe_customer = stripe.Customer.create(
-        card=stripe_token,
-        description=description
+
+    stripe_customer = safe_stripe_call(
+        stripe.Customer.create,
+        **{
+            'card' : card,
+            'description' : description,
+        }
     )
-    customer = StripeCustomer.objects.create(
-        stripe_id=stripe_customer.id
-    )
-    return customer
+    if stripe_customer:
+        StripeCustomerModel = get_stripe_customer_model()
+        if StripeCustomerModel:
+            customer = StripeCustomerModel.objects.create(
+                stripe_id=stripe_customer.id
+            )
+        else:
+            customer = None
+    else:
+        customer = None
+    return customer, stripe_customer
 
 ####################
 # Import these last to prevent circular import
-from htk.lib.stripe_lib.models import StripeCustomer
