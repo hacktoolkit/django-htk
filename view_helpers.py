@@ -124,6 +124,7 @@ def wrap_data(request, data=None):
     # Rollbar
     data['rollbar'] = {
         'env' : settings.ROLLBAR_ENV,
+        'branch' : settings.ROLLBAR.branch,
         'tokens' : {
             'post_client_item' : settings.ROLLBAR_TOKEN_POST_CLIENT_ITEM,
         },
