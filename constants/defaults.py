@@ -43,3 +43,4 @@ from htk.apps.file_storage.constants.defaults import *
 from htk.cache.constants.defaults import *
 from htk.forms.constants.defaults import *
 from htk.lib.qrcode.constants.defaults import *
+from htk.lib.stripe_lib.constants.defaults import *
