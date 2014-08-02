@@ -4,6 +4,10 @@ import stripe
 from django.conf import settings
 
 from htk.utils import htk_setting
+from htk.utils.general import resolve_model_dynamically
+
+##
+# general helpers
 
 def _initialize_stripe():
     stripe.api_key = get_stripe_secret_key()
@@ -69,6 +73,9 @@ def safe_stripe_call(func, *args, **kwargs):
         rollbar.report_exc_info()
     return result
 
+##
+# stripe API
+
 def create_token(card_dict):
     _initialize_stripe()
     token = safe_stripe_call(
@@ -126,6 +133,42 @@ def create_customer(card, description=''):
     else:
         customer = None
     return customer, stripe_customer
+
+##
+# events and webhooks
+
+def retrieve_event(event_id):
+    _initialize_stripe()
+    event = safe_stripe_call(
+        stripe.Event.retrieve,
+        *(
+            event_id,
+        )
+    )
+    return event
+
+def get_event_handler(event):
+    """Gets the event handler for a Stripe webhook event, if available
+    """
+    event_handlers = htk_setting('HTK_STRIPE_EVENT_HANDLERS', {})
+    event_type = event.type
+    event_handler_module_str = event_handlers.get(event_type)
+    if event_handler_module_str:
+        event_handler = resolve_method_dynamically(event_handler_module_str)
+    else:
+        event_handler = None
+    return event_handler
+
+def handle_event(event):
+    """Handles a Stripe webhook event
+
+    https://stripe.com/docs/api#event_types
+    """
+    event_handler = get_event_handler(event)
+    if event_handler:
+        event_handler(event)
+    else:
+        pass
 
 ####################
 # Import these last to prevent circular import
