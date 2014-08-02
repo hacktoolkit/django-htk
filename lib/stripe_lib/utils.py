@@ -62,6 +62,8 @@ def safe_stripe_call(func, *args, **kwargs):
 def charge_card(card, amount, description=''):
     """Charges a card, one time
 
+    It is preferred to create a customer and charge the customer
+
     https://stripe.com/docs/api/python#create_charge
     https://stripe.com/docs/tutorials/charges
     https://stripe.com/docs/api/python#charges
