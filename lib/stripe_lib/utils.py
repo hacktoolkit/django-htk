@@ -11,14 +11,14 @@ def _initialize_stripe():
     return stripe
 
 def get_stripe_public_key():
-    if settings.TEST or htk_setting('HTK_STRIPE_MODE') == 'test':
+    if settings.TEST or htk_setting('HTK_STRIPE_LIVE_MODE', True):
         public_key = htk_setting('HTK_STRIPE_API_PUBLIC_KEY_TEST')
     else:
         public_key = htk_setting('HTK_STRIPE_API_PUBLIC_KEY_LIVE')
     return public_key
 
 def get_stripe_secret_key():
-    if settings.TEST or htk_setting('HTK_STRIPE_MODE') == 'test':
+    if settings.TEST or htk_setting('HTK_STRIPE_LIVE_MODE', True):
         secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_TEST')
     else:
         secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_LIVE')
