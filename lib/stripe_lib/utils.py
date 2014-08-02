@@ -6,13 +6,23 @@ from django.conf import settings
 from htk.utils import htk_setting
 
 def _initialize_stripe():
-    if settings.TEST:
-        secret_key_name = 'HTK_STRIPE_API_SECRET_KEY_TEST'
-    else:
-        secret_key_name = 'HTK_STRIPE_API_SECRET_KEY_LIVE'
-    stripe.api_key = htk_setting(secret_key_name)
+    stripe.api_key = get_stripe_secret_key()
     stripe.api_version = htk_setting('HTK_STRIPE_API_VERSION')
     return stripe
+
+def get_stripe_public_key():
+    if settings.TEST or htk_setting('HTK_STRIPE_MODE') == 'test':
+        public_key = htk_setting('HTK_STRIPE_API_PUBLIC_KEY_TEST')
+    else:
+        public_key = htk_setting('HTK_STRIPE_API_PUBLIC_KEY_LIVE')
+    return public_key
+
+def get_stripe_secret_key():
+    if settings.TEST or htk_setting('HTK_STRIPE_MODE') == 'test':
+        secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_TEST')
+    else:
+        secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_LIVE')
+    return secret_key
 
 def get_stripe_customer_model():
     from htk.utils.general import resolve_model_dynamically
@@ -58,6 +68,16 @@ def safe_stripe_call(func, *args, **kwargs):
         # Something else happened, completely unrelated to Stripe
         rollbar.report_exc_info()
     return result
+
+def create_token(card_dict):
+    _initialize_stripe()
+    token = safe_stripe_call(
+        stripe.Token.create,
+        **{
+            'card' : card_dict,
+        }
+    )
+    return token
 
 def charge_card(card, amount, description=''):
     """Charges a card, one time

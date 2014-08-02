@@ -7,6 +7,7 @@ from htk.lib.stripe_lib.constants import *
 from htk.lib.stripe_lib.utils import _initialize_stripe
 from htk.lib.stripe_lib.utils import charge_card
 from htk.lib.stripe_lib.utils import create_customer
+from htk.lib.stripe_lib.utils import create_token
 from htk.lib.stripe_lib.utils import safe_stripe_call
 
 class StripeLibTestCase(TestCase):
@@ -46,6 +47,11 @@ class StripeLibTestCase(TestCase):
         customer, stripe_customer = create_customer(card_dict, description='Test creating a customer with card')
         self.assertEqual(STRIPE_ID_PREFIX_CUSTOMER, stripe_customer.id[:len(STRIPE_ID_PREFIX_CUSTOMER)])
         return customer
+
+    def test_create_token(self):
+        card_dict = self._get_card_dict()
+        token = create_token(card_dict)
+        self.assertEqual(STRIPE_ID_PREFIX_TOKEN, token.id[:len(STRIPE_ID_PREFIX_TOKEN)])
 
     def test_create_recipient_with_card(self):
         recipient = self._create_recipient()
