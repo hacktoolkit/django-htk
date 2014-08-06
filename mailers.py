@@ -84,7 +84,7 @@ def send_email(
                                  bcc=bcc,
                                  cc=cc)
     if not text_only:
-        html_template = get_template("emails/%s.html" % template)
+        html_template = get_template('emails/%s.html' % template)
         html_content = html_template.render(c)
         msg.attach_alternative(html_content, 'text/html')
     msg.send()
