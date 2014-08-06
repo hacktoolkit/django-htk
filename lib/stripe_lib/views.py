@@ -26,11 +26,12 @@ def stripe_webhook_view(request):
     invoice.payment_succeeded
     """
     # Retrieve the request's body and parse it as JSON
-    event_json = json.load(request.body)
+    event_json = json.loads(request.body)
 
-    event_id = event_json['id']
+    event_id = event_json.get('id', None)
+    live_mode = event_json.get('livemode', False)
 
-    event = retrieve_event(event_id)
+    event = retrieve_event(event_id, live_mode=live_mode)
 
     if event:
         # Do something with event or event_json

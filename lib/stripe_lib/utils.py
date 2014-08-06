@@ -9,20 +9,20 @@ from htk.utils.general import resolve_model_dynamically
 ##
 # general helpers
 
-def _initialize_stripe():
-    stripe.api_key = get_stripe_secret_key()
+def _initialize_stripe(live_mode=False):
+    stripe.api_key = get_stripe_secret_key(live_mode=live_mode)
     stripe.api_version = htk_setting('HTK_STRIPE_API_VERSION')
     return stripe
 
-def get_stripe_public_key():
-    if settings.TEST or htk_setting('HTK_STRIPE_LIVE_MODE', True):
+def get_stripe_public_key(live_mode=False):
+    if not live_mode or settings.TEST or not htk_setting('HTK_STRIPE_LIVE_MODE'):
         public_key = htk_setting('HTK_STRIPE_API_PUBLIC_KEY_TEST')
     else:
         public_key = htk_setting('HTK_STRIPE_API_PUBLIC_KEY_LIVE')
     return public_key
 
-def get_stripe_secret_key():
-    if settings.TEST or htk_setting('HTK_STRIPE_LIVE_MODE', True):
+def get_stripe_secret_key(live_mode=False):
+    if not live_mode or settings.TEST or not htk_setting('HTK_STRIPE_LIVE_MODE'):
         secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_TEST')
     else:
         secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_LIVE')
@@ -74,10 +74,10 @@ def safe_stripe_call(func, *args, **kwargs):
     return result
 
 ##
-# stripe API
+# Stripe API
 
-def create_token(card_dict):
-    _initialize_stripe()
+def create_token(card_dict, live_mode=False):
+    _initialize_stripe(live_mode=live_mode)
     token = safe_stripe_call(
         stripe.Token.create,
         **{
@@ -86,7 +86,7 @@ def create_token(card_dict):
     )
     return token
 
-def charge_card(card, amount, description=''):
+def charge_card(card, amount, description='', live_mode=False):
     """Charges a card, one time
 
     It is preferred to create a customer and charge the customer
@@ -95,7 +95,7 @@ def charge_card(card, amount, description=''):
     https://stripe.com/docs/tutorials/charges
     https://stripe.com/docs/api/python#charges
     """
-    _initialize_stripe()
+    _initialize_stripe(live_mode=live_mode)
     charge = safe_stripe_call(
         stripe.Charge.create,
         **{
@@ -107,13 +107,13 @@ def charge_card(card, amount, description=''):
     )
     return charge
 
-def create_customer(card, description=''):
+def create_customer(card, description='', live_mode=False):
     """Create a Customer
 
     https://stripe.com/docs/tutorials/charges#saving-credit-card-details-for-later
     https://stripe.com/docs/api/python#create_customer
     """
-    _initialize_stripe()
+    _initialize_stripe(live_mode=live_mode)
 
     stripe_customer = safe_stripe_call(
         stripe.Customer.create,
@@ -137,8 +137,8 @@ def create_customer(card, description=''):
 ##
 # events and webhooks
 
-def retrieve_event(event_id):
-    _initialize_stripe()
+def retrieve_event(event_id, live_mode=False):
+    _initialize_stripe(live_mode=live_mode)
     event = safe_stripe_call(
         stripe.Event.retrieve,
         *(

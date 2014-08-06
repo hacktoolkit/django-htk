@@ -7,6 +7,7 @@ from htk.lib.stripe_lib.utils import safe_stripe_call
 
 class BaseStripeCustomer(models.Model):
     stripe_id = models.CharField(max_length=255)
+    live_mode = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
@@ -14,7 +15,7 @@ class BaseStripeCustomer(models.Model):
     def charge(self, amount=0, currency='usd'):
         """Charges a Customer
         """
-        _initialize_stripe()
+        _initialize_stripe(live_mode=self.live_mode)
         ch = safe_stripe_call(
             stripe.Charge.create,
             **{
@@ -30,7 +31,7 @@ class BaseStripeCustomer(models.Model):
 
         https://stripe.com/docs/api/python#retrieve_customer
         """
-        _initialize_stripe()
+        _initialize_stripe(live_mode=self.live_mode)
         stripe_customer = safe_stripe_call(
             stripe.Customer.retrieve,
             *(
