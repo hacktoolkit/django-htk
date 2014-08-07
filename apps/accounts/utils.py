@@ -189,25 +189,27 @@ def extract_user_email(username_email):
 
     return (user, email,)
 
+def get_user_by_id(user_id):
+    """Gets a User by user id
+    """
+    UserModel = get_user_model()
+    try:
+        user = UserModel.objects.get(id=user_id)
+    except UserModel.DoesNotExist:
+        user = None
+    return user
+
 def get_users_by_id(user_ids, strict=False):
     """Gets a list of Users by user ids
     If `strict`, all user_ids must exist, or None is returned
-    For non `strict`, returns a partial list of users with valid ids
+    For non `strict`, returns a partial list of Users with matching ids
     """
     UserModel = get_user_model()
-    if strict:
-        try:
-            users = [UserModel.objects.get(id=user_id) for user_id in user_ids]
-        except UserModel.DoesNotExist:
-            users = None
+    users_qs = UserModel.objects.filter(id__in=user_ids)
+    if strict and users_qs.count() < len(user_ids):
+        users = None
     else:
-        users = []
-        for user_id in user_ids:
-            try:
-                user = UserModel.objects.get(id=user_id)
-                users.append(user)
-            except UserModel.DoesNotExist:
-                pass
+        users = list(users_qs)
     return users
 
 def get_user_emails_by_id(user_email_ids, strict=False):
