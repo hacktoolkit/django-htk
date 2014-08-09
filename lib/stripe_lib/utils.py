@@ -169,6 +169,3 @@ def handle_event(event):
         event_handler(event)
     else:
         pass
-
-####################
-# Import these last to prevent circular import
