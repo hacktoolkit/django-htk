@@ -1,0 +1,12 @@
+Django==1.6.2
+Fabric==1.6.1
+South==0.8.4
+django-grappelli==2.5.3
+pygeoip==0.2.6
+redis==2.7.5
+reportlab==3.1.8
+requests==2.3.0
+requests-oauthlib==0.4.1
+rollbar==0.8.2
+stripe==1.19.0
+xhtml2pdf==0.0.6
