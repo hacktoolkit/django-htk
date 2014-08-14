@@ -44,13 +44,15 @@ def obfuscate_mailto(value, text=False):
     return result
 
 @register.simple_tag(takes_context=True)
-def lesscss(context, css_file_path_base):
+def lesscss(context, css_file_path_base, media=None):
+    media = 'media="%s" ' % media if media else ''
     values = {
         'css_rel' : context.get('css_rel', 'stylesheet'),
         'css_ext' : context.get('css_ext', 'css'),
         'css_file_path_base' : css_file_path_base,
+        'media' : media,
     }
-    html = '<link type="text/css" rel="%(css_rel)s" href="%(css_file_path_base)s.%(css_ext)s" />' % values
+    html = '<link type="text/css" rel="%(css_rel)s" href="%(css_file_path_base)s.%(css_ext)s" %(media)s/>' % values
     return html
 
 @register.simple_tag(takes_context=True)
