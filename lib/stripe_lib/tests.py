@@ -1,6 +1,8 @@
 import datetime
 import random
+import unittest
 
+from django.conf import settings
 from django.test import TestCase
 
 from htk.lib.stripe_lib.constants import *
@@ -10,6 +12,7 @@ from htk.lib.stripe_lib.utils import create_customer
 from htk.lib.stripe_lib.utils import create_token
 from htk.lib.stripe_lib.utils import safe_stripe_call
 
+@unittest.skipIf(not hasattr(settings, 'HTK_STRIPE_API_SECRET_KEY_TEST') or not hasattr(settings, 'HTK_STRIPE_API_PUBLIC_KEY_TEST'), 'requires a Stripe secret/public test key to be set')
 class StripeLibTestCase(TestCase):
     def _get_test_card_number(self, card_type):
         cards = STRIPE_TEST_CARDS[card_type]
