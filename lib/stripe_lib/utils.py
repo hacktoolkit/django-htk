@@ -30,7 +30,10 @@ def get_stripe_secret_key(live_mode=False):
 
 def get_stripe_customer_model():
     from htk.utils.general import resolve_model_dynamically
-    StripeCustomerModel = resolve_model_dynamically(settings.HTK_STRIPE_CUSTOMER_MODEL)
+    if hasattr(settings, 'HTK_STRIPE_CUSTOMER_MODEL'):
+        StripeCustomerModel = resolve_model_dynamically(settings.HTK_STRIPE_CUSTOMER_MODEL)
+    else:
+        StripeCustomerModel = None
     return StripeCustomerModel
 
 def safe_stripe_call(func, *args, **kwargs):

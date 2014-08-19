@@ -14,6 +14,10 @@ class BaseStripeCustomer(models.Model):
     class Meta:
         abstract = True
 
+    def __unicode__(self):
+        value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
+        return value
+
     def retrieve(self):
         """Retrieves an existing customer
 
@@ -69,6 +73,27 @@ class BaseStripeCustomer(models.Model):
         stripe_customer.card = card
         stripe_customer.save()
 
+    def get_card(self):
+        stripe_customer = self.retrieve()
+        cards = safe_stripe_call(
+            stripe_customer.cards.all,
+            **{
+                'limit' : 1,
+            }
+         )
+        card = cards.get('data')[0]
+        return card
+
+    def create_subscription(self, plan):
+        stripe_customer = self.retrieve()
+        subscription = safe_stripe_call(
+            stripe_customer.subscriptions.create,
+            **{
+                'plan' : plan,
+            }
+        )
+        return subscription
+
     def delete(self):
         """Deletes a customer
 
@@ -97,6 +122,10 @@ class BaseStripePlan(models.Model):
     class Meta:
         abstract = True
 
+    def __unicode__(self):
+        value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
+        return value
+
     def retrieve(self):
         """Retrieves an existing Plan
         """
@@ -120,6 +149,7 @@ class BaseStripePlan(models.Model):
             **{
                 'id' : self.stripe_id,
                 'amount' : self.amount,
+                'currency' : self.currency,
                 'interval' : StripePlanInterval(self.interval).name,
                 'interval_count' : self.interval_count,
                 'name' : self.name,

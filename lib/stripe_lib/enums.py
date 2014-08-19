@@ -1,6 +1,6 @@
 from enum import Enum
 
-class StripePlanInterval:
+class StripePlanInterval(Enum):
     day = 1
     week = 2
     month = 3

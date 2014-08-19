@@ -11,6 +11,7 @@ class StripePlanAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'stripe_id',
+        'live_mode',
         'amount',
         'currency',
         'interval',
@@ -18,4 +19,7 @@ class StripePlanAdmin(admin.ModelAdmin):
         'name',
         'trial_period_days',
         'statement_description',
+    )
+    list_filter = (
+        'live_mode',
     )

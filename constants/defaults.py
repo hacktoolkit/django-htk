@@ -38,6 +38,10 @@ HTK_DOMAIN_META_URL_NAMES = (
     'sitemap',
 )
 
+##
+# Enums
+HTK_ENUM_SYMBOLIC_NAME_OVERRIDES = {}
+
 from htk.apps.accounts.constants.defaults import *
 from htk.apps.file_storage.constants.defaults import *
 from htk.cache.constants.defaults import *
