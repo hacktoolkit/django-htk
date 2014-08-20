@@ -1,4 +1,5 @@
 from htk.utils.general import htk_setting
+from htk.utils.general import refresh
 from htk.utils.general import resolve_method_dynamically
 from htk.utils.general import resolve_model_dynamically
 
