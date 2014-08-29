@@ -199,7 +199,7 @@ def get_user_by_id(user_id):
         user = None
     return user
 
-def get_users_by_id(user_ids, strict=False):
+def get_users_by_id(user_ids, strict=False, preserve_ordering=False):
     """Gets a list of Users by user ids
     If `strict`, all user_ids must exist, or None is returned
     For non `strict`, returns a partial list of Users with matching ids
@@ -210,6 +210,10 @@ def get_users_by_id(user_ids, strict=False):
         users = None
     else:
         users = list(users_qs)
+    if users and preserve_ordering:
+        users = sorted(users, key=lambda user: user_ids.index(user.id))
+    else:
+        pass
     return users
 
 def get_user_emails_by_id(user_email_ids, strict=False):
