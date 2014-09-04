@@ -16,6 +16,13 @@ def phonenumber(value, country='US'):
     formatted = phonenumbers.format_number(phonenumbers.parse(value, country), phonenumbers.PhoneNumberFormat.NATIONAL)
     return formatted
 
+@register.filter()
+def zeropad(value, num_digits):
+    """
+    """
+    padded = str(value).zfill(num_digits)
+    return padded
+
 @register.filter(is_safe=True)
 def obfuscate(value):
     """Obfuscates a string
