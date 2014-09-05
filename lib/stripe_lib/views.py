@@ -4,8 +4,6 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from htk.lib.stripe_lib.utils import retrieve_event
-
 @require_POST
 @csrf_exempt
 def stripe_webhook_view(request):
@@ -31,11 +29,18 @@ def stripe_webhook_view(request):
     event_id = event_json.get('id', None)
     live_mode = event_json.get('livemode', False)
 
-    event = retrieve_event(event_id, live_mode=live_mode)
+    if event_id:
+        if live_mode:
+            from htk.lib.stripe_lib.utils import retrieve_event
+            event = retrieve_event(event_id, live_mode=live_mode)
+        else:
+            event = event_json
+    else:
+        event = None
 
     if event:
-        # Do something with event or event_json
-        pass
+        from htk.lib.stripe_lib.utils import handle_event
+        handle_event(event, request=request)
     else:
         pass
 

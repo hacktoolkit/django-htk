@@ -141,6 +141,10 @@ def create_customer(card, description='', live_mode=False):
 # events and webhooks
 
 def retrieve_event(event_id, live_mode=False):
+    """Retrieve the Stripe event
+
+    Only works when `live_mode=True`
+    """
     _initialize_stripe(live_mode=live_mode)
     event = safe_stripe_call(
         stripe.Event.retrieve,
@@ -150,11 +154,22 @@ def retrieve_event(event_id, live_mode=False):
     )
     return event
 
+def get_event_type(event):
+    """Gets the event type
+
+    `event` can either be a StripeEvent object or just a JSON dictionary
+    """
+    if type(event) == dict:
+        event_type = event.get('type', None)
+    else:
+        event_type = event.type
+    return event_type
+
 def get_event_handler(event):
     """Gets the event handler for a Stripe webhook event, if available
     """
     event_handlers = htk_setting('HTK_STRIPE_EVENT_HANDLERS', {})
-    event_type = event.type
+    event_type = get_event_type(event)
     event_handler_module_str = event_handlers.get(event_type)
     if event_handler_module_str:
         event_handler = resolve_method_dynamically(event_handler_module_str)
@@ -162,7 +177,7 @@ def get_event_handler(event):
         event_handler = None
     return event_handler
 
-def handle_event(event):
+def handle_event(event, request=None):
     """Handles a Stripe webhook event
 
     https://stripe.com/docs/api#event_types
@@ -170,5 +185,7 @@ def handle_event(event):
     event_handler = get_event_handler(event)
     if event_handler:
         event_handler(event)
+    elif htk_setting('HTK_STRIPE_LOG_UNHANDLED_EVENTS_ROLLBAR'):
+        rollbar.report_message('Stripe Event: %s' % get_event_type(event), 'info', request)
     else:
         pass
