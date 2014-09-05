@@ -184,8 +184,13 @@ def handle_event(event, request=None):
     """
     event_handler = get_event_handler(event)
     if event_handler:
-        event_handler(event)
+        event_handler(event, request=request)
     elif htk_setting('HTK_STRIPE_LOG_UNHANDLED_EVENTS_ROLLBAR'):
-        rollbar.report_message('Stripe Event: %s' % get_event_type(event), 'info', request)
+        rollbar_log_event(event, request=request)
     else:
         pass
+
+def rollbar_log_event(event, request=None):
+    """Log the Stripe event `event` to Rollbar
+    """
+    rollbar.report_message('Stripe Event: %s' % get_event_type(event), 'info', request)
