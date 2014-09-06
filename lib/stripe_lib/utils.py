@@ -4,7 +4,6 @@ import stripe
 from django.conf import settings
 
 from htk.utils import htk_setting
-from htk.utils.general import resolve_model_dynamically
 
 ##
 # general helpers
@@ -29,12 +28,25 @@ def get_stripe_secret_key(live_mode=False):
     return secret_key
 
 def get_stripe_customer_model():
-    from htk.utils.general import resolve_model_dynamically
     if hasattr(settings, 'HTK_STRIPE_CUSTOMER_MODEL'):
+        from htk.utils.general import resolve_model_dynamically
         StripeCustomerModel = resolve_model_dynamically(settings.HTK_STRIPE_CUSTOMER_MODEL)
     else:
         StripeCustomerModel = None
     return StripeCustomerModel
+
+def get_stripe_customer_model_instance(customer_id, live_mode=False):
+    """Gets the StripeCustomerModel object for `customer_id` if available
+    """
+    StripeCustomerModel = get_stripe_customer_model()
+    try:
+        customer = StripeCustomerModel.objects.get(
+            stripe_id=customer_id,
+            live_mode=live_mode
+        )
+    except StripeCustomerModel.DoesNotExist:
+        customer = None
+    return customer
 
 def safe_stripe_call(func, *args, **kwargs):
     """Wrapper function for calling Stripe API
@@ -172,6 +184,7 @@ def get_event_handler(event):
     event_type = get_event_type(event)
     event_handler_module_str = event_handlers.get(event_type)
     if event_handler_module_str:
+        from htk.utils.general import resolve_method_dynamically
         event_handler = resolve_method_dynamically(event_handler_module_str)
     else:
         event_handler = None
