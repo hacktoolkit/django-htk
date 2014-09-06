@@ -29,18 +29,16 @@ def stripe_webhook_view(request):
     event_id = event_json.get('id', None)
     live_mode = event_json.get('livemode', False)
 
-    if event_id:
-        if live_mode:
-            from htk.lib.stripe_lib.utils import retrieve_event
-            event = retrieve_event(event_id, live_mode=live_mode)
-        else:
-            event = event_json
-    else:
-        event = None
+    from htk.lib.stripe_lib.utils import retrieve_event
+    event = retrieve_event(event_id, live_mode=live_mode)
 
     if event:
         from htk.lib.stripe_lib.utils import handle_event
         handle_event(event, request=request)
+    elif event_id and not live_mode:
+        # handle the Stripe dashboard webhook test case
+        from htk.lib.stripe_lib.utils import rollbar_log_event
+        rollbar_log_event(event_json, request=request)
     else:
         pass
 

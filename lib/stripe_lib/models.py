@@ -81,7 +81,11 @@ class BaseStripeCustomer(models.Model):
                 'limit' : 1,
             }
          )
-        card = cards.get('data')[0]
+        cards = cards.get('data')
+        if len(cards) > 0:
+            card = cards[0]
+        else:
+            card = None
         return card
 
     def create_subscription(self, plan):
@@ -141,7 +145,7 @@ class BaseStripePlan(models.Model):
     def create(self):
         """Tries to create a plan
 
-        Will if plan with the same Stripe id already exists
+        Will fail if plan with the same Stripe id already exists
         """
         _initialize_stripe(live_mode=self.live_mode)
         stripe_plan = safe_stripe_call(
