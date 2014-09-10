@@ -32,6 +32,9 @@ class BaseStripeCustomer(models.Model):
         )
         return stripe_customer
 
+    ##
+    # payments
+
     def charge(self, amount=0, currency=DEFAULT_STRIPE_CURRENCY):
         """Charges a Customer
         """
@@ -45,6 +48,32 @@ class BaseStripeCustomer(models.Model):
             }
         )
         return ch
+
+    def create_invoice(self):
+        """Create an Invoice for this Customer to pay any outstanding invoice items such as when upgrading plans
+
+        https://stripe.com/docs/api#create_invoice
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+        invoice = safe_stripe_call(
+            stripe.Invoice.create,
+            **{
+                'customer' : self.stripe_id,
+            }
+        )
+        return invoice
+
+    def create_invoice_and_pay(self):
+        """
+        After creating the Invoice, have the Customer immediately pay it
+
+        https://stripe.com/docs/api#pay_invoice
+        """
+        invoice = self.create_invoice()
+        invoice.pay()
+
+    ##
+    # cards
 
     def add_card(self, card):
         """Add an additional credit card to the customer
@@ -88,7 +117,14 @@ class BaseStripeCustomer(models.Model):
             card = None
         return card
 
+    ##
+    # subscriptions
+
     def create_subscription(self, plan):
+        """Creates a new Subscription for this Customer
+
+        https://stripe.com/docs/api#create_subscription
+        """
         stripe_customer = self.retrieve()
         subscription = safe_stripe_call(
             stripe_customer.subscriptions.create,
@@ -97,6 +133,46 @@ class BaseStripeCustomer(models.Model):
             }
         )
         return subscription
+
+    def retrieve_subscription(self, subscription_id):
+        """Retrieves a Subscription for this Customer
+
+        https://stripe.com/docs/api#retrieve_subscription
+        """
+        stripe_customer = self.retrieve()
+        subscription = safe_stripe_call(
+            stripe_customer.subscriptions.retrieve,
+            **{
+                'id' : subscription_id,
+            }
+        )
+        return subscription
+
+    def change_subscription_plan(self, subscription_id, new_plan):
+        """Changes the plan on a Subscription for this Customer
+
+        https://stripe.com/docs/api#update_subscription
+        """
+        subscription = self.retrieve_subscription(subscription_id)
+        subscription.plan = new_plan
+        #subscription.prorate = True
+        subscription.save()
+
+        # if the new plan is more expensive, pay right away
+        # pro-ration is the default behavior
+        # or, just naively create the invoice every time and trust that Stripe handles it correctly
+        self.create_invoice_and_pay()
+
+    def cancel_subscription(self, subscription_id):
+        """Cancels a Subscription for this Customer
+
+        https://stripe.com/docs/api#cancel_subscription
+        """
+        subscription = self.retrieve_subscription(subscription_id)
+        subscription.delete()
+
+    ##
+    # delete
 
     def delete(self):
         """Deletes a customer
