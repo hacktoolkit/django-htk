@@ -82,25 +82,35 @@ class BaseStripeCustomer(models.Model):
         """
         stripe_customer = self.retrieve()
         if stripe_customer:
-            safe_stripe_call(
+            stripe_card = safe_stripe_call(
                 stripe_customer.cards.create,
                 **{
                     'card' : card,
                 }
             )
         else:
-            pass
+            stripe_card = None
+        was_added = stripe_card is not None
+        return was_added
 
-    def update_card(self, card):
-        """Updates the customer's credit card and deletes the old one
+    def replace_card(self, card):
+        """Adds a new credit card and delete this Customer's old one
 
         WARNING: This deletes the old card. Use `add_card` instead to just add a card without deleting
 
         https://stripe.com/docs/api/python#update_customer
         """
         stripe_customer = self.retrieve()
-        stripe_customer.card = card
-        stripe_customer.save()
+        if stripe_customer:
+            stripe_customer.card = card
+            cu = safe_stripe_call(
+                stripe_customer.save,
+                **{}
+            )
+        else:
+            cu = None
+        was_replaced = cu is not None
+        return was_replaced
 
     def get_card(self):
         stripe_customer = self.retrieve()
