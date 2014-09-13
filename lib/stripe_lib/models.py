@@ -164,14 +164,18 @@ class BaseStripeCustomer(models.Model):
         https://stripe.com/docs/api#update_subscription
         """
         subscription = self.retrieve_subscription(subscription_id)
-        subscription.plan = new_plan
-        #subscription.prorate = True
-        subscription.save()
+        if subscription:
+            subscription.plan = new_plan
+            #subscription.prorate = True
+            subscription.save()
 
-        # if the new plan is more expensive, pay right away
-        # pro-ration is the default behavior
-        # or, just naively create the invoice every time and trust that Stripe handles it correctly
-        self.create_invoice_and_pay()
+            # if the new plan is more expensive, pay right away
+            # pro-ration is the default behavior
+            # or, just naively create the invoice every time and trust that Stripe handles it correctly
+            self.create_invoice_and_pay()
+        else:
+            pass
+        return subscription
 
     def cancel_subscription(self, subscription_id):
         """Cancels a Subscription for this Customer
@@ -180,6 +184,8 @@ class BaseStripeCustomer(models.Model):
         """
         subscription = self.retrieve_subscription(subscription_id)
         subscription.delete()
+        was_deleted = True
+        return was_deleted
 
     ##
     # delete
