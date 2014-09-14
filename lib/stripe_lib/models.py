@@ -70,7 +70,10 @@ class BaseStripeCustomer(models.Model):
         https://stripe.com/docs/api#pay_invoice
         """
         invoice = self.create_invoice()
-        invoice.pay()
+        if invoice:
+            invoice.pay()
+        else:
+            rollbar.report_message('Could not create invoice for Customer %s' % self.stripe_id, 'error')
 
     ##
     # cards
