@@ -203,7 +203,11 @@ def handle_event(event, request=None):
     else:
         pass
 
-def rollbar_log_event(event, request=None):
+def rollbar_log_event(event, request=None, log_level='info', message=None):
     """Log the Stripe event `event` to Rollbar
     """
-    rollbar.report_message('Stripe Event: %s' % get_event_type(event), 'info', request)
+    if message:
+        message = '%s - Stripe Event: %s' % (message, get_event_type(event),)
+    else:
+        message = 'Stripe Event: %s' % get_event_type(event)
+    rollbar.report_message(message, log_level, request)
