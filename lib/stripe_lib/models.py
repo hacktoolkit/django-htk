@@ -1,3 +1,4 @@
+import rollbar
 import stripe
 
 from django.db import models
