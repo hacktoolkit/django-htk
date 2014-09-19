@@ -1,3 +1,5 @@
+import datetime
+
 from django.template.base import Library
 from django.template.defaultfilters import stringfilter
 
@@ -7,6 +9,14 @@ register = Library()
 def concat(value, arg):
     result = str(value) + str(arg)
     return result
+
+@register.filter()
+def timestamp(value):
+    try:
+        formatted = datetime.datetime.fromtimestamp(value)
+    except AttributeError:
+        formatted = ''
+    return formatted
 
 @register.filter()
 def phonenumber(value, country='US'):
