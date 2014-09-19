@@ -59,15 +59,15 @@ def safe_stripe_call(func, *args, **kwargs):
         result = func(*args, **kwargs)
     except stripe.error.CardError, e:
         # Since it's a decline, stripe.error.CardError will be caught
-        body = e.json_body
-        err  = body['error']
+        #body = e.json_body
+        #err  = body['error']
 
-        print "Status is: %s" % e.http_status
-        print "Type is: %s" % err['type']
-        print "Code is: %s" % err['code']
-        # param is '' in this case
-        print "Param is: %s" % err['param']
-        print "Message is: %s" % err['message']
+        #print "Status is: %s" % e.http_status
+        #print "Type is: %s" % err.get('type')
+        #print "Code is: %s" % err.get('code')
+        ## param is '' in this case
+        #print "Param is: %s" % err.get('param')
+        #print "Message is: %s" % err.get('message')
         rollbar.report_exc_info()
     except stripe.error.InvalidRequestError, e:
         # Invalid parameters were supplied to Stripe's API
@@ -122,12 +122,13 @@ def charge_card(card, amount, description='', live_mode=False):
     )
     return charge
 
-def create_customer(card, description='', live_mode=False):
+def create_customer(card, description=''):
     """Create a Customer
 
     https://stripe.com/docs/tutorials/charges#saving-credit-card-details-for-later
     https://stripe.com/docs/api/python#create_customer
     """
+    live_mode = (settings.ENV_STAGE or settings.ENV_PROD) and htk_setting('HTK_STRIPE_LIVE_MODE')
     _initialize_stripe(live_mode=live_mode)
 
     stripe_customer = safe_stripe_call(
@@ -141,7 +142,8 @@ def create_customer(card, description='', live_mode=False):
         StripeCustomerModel = get_stripe_customer_model()
         if StripeCustomerModel:
             customer = StripeCustomerModel.objects.create(
-                stripe_id=stripe_customer.id
+                stripe_id=stripe_customer.id,
+                live_mode=live_mode
             )
         else:
             customer = None
