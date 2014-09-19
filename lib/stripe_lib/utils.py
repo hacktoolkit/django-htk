@@ -122,12 +122,13 @@ def charge_card(card, amount, description='', live_mode=False):
     )
     return charge
 
-def create_customer(card, description='', live_mode=False):
+def create_customer(card, description=''):
     """Create a Customer
 
     https://stripe.com/docs/tutorials/charges#saving-credit-card-details-for-later
     https://stripe.com/docs/api/python#create_customer
     """
+    live_mode = (settings.ENV_STAGE or settings.ENV_PROD) and htk_setting('HTK_STRIPE_LIVE_MODE')
     _initialize_stripe(live_mode=live_mode)
 
     stripe_customer = safe_stripe_call(
@@ -141,7 +142,8 @@ def create_customer(card, description='', live_mode=False):
         StripeCustomerModel = get_stripe_customer_model()
         if StripeCustomerModel:
             customer = StripeCustomerModel.objects.create(
-                stripe_id=stripe_customer.id
+                stripe_id=stripe_customer.id,
+                live_mode=live_mode
             )
         else:
             customer = None
