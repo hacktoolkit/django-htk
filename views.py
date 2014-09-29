@@ -9,6 +9,10 @@ from django.template import RequestContext
 from django.template import TemplateDoesNotExist
 from django.template import loader
 
+def health_check(request):
+    response = HttpResponse(status=200)
+    return response
+
 def generic_template_view(request, template_name, context_dict=None, content_type='text/html'):
     try:
         template = loader.get_template(template_name)
