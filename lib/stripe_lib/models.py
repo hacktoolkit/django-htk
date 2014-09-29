@@ -123,13 +123,26 @@ class BaseStripeCustomer(models.Model):
             **{
                 'limit' : 1,
             }
-         )
+        )
         cards = cards.get('data')
         if len(cards) > 0:
             card = cards[0]
         else:
             card = None
         return card
+
+    def has_card(self):
+        """Determines whether this StripeCustomer has a card
+        """
+        stripe_customer = self.retrieve()
+        cards = safe_stripe_call(
+            stripe_customer.cards.all,
+            **{
+                'limit' : 1,
+            }
+        )
+        value = len(cards) > 0
+        return value
 
     ##
     # subscriptions
