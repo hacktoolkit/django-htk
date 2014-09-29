@@ -1,8 +1,8 @@
-from hashlib import sha1
 import datetime
 import pytz
 import random
 import rollbar
+from hashlib import sha1
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
