@@ -106,7 +106,7 @@ function (Y) {
         var transactionId = request.id;
         var transactionData = {
             uri: uri,
-            username: username,
+            username: username
         };
         IO_TRANSACTION_DATA[transactionId] = transactionData;
     }

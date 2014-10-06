@@ -113,7 +113,7 @@ function (Y) {
         var request = Y.io(uri, cfg);
         var transactionId = request.id;
         var transactionData = {
-            uri: uri,
+            uri: uri
         };
         IO_TRANSACTION_DATA[transactionId] = transactionData;
     }
