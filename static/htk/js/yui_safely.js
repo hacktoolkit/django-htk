@@ -30,7 +30,7 @@ var _safe_params = document.location.search;
 if (_safe_params.indexOf(P_YUI_RELOAD) > 0) {
     var params = _safe_params.substring(1).split('&');
     var cleanedParams = [];
-    for (var i=0; i < params.length; ++i ) {
+    for (var i=0; i < params.length; ++i) {
         var param = params[i];
         if (param.indexOf(P_YUI_RELOAD) >= 0) {
             // ignore this, don't copy it over
