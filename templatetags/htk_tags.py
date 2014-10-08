@@ -5,10 +5,24 @@ from django.template.defaultfilters import stringfilter
 
 register = Library()
 
+##################################################
+# Filters
+
+# String Utilities
+
 @register.filter(is_safe=True)
 def concat(value, arg):
     result = str(value) + str(arg)
     return result
+
+@register.filter()
+def zeropad(value, num_digits):
+    """
+    """
+    padded = str(value).zfill(num_digits)
+    return padded
+
+# Formatters
 
 @register.filter()
 def timestamp(value):
@@ -25,13 +39,6 @@ def phonenumber(value, country='US'):
     import phonenumbers
     formatted = phonenumbers.format_number(phonenumbers.parse(value, country), phonenumbers.PhoneNumberFormat.NATIONAL)
     return formatted
-
-@register.filter()
-def zeropad(value, num_digits):
-    """
-    """
-    padded = str(value).zfill(num_digits)
-    return padded
 
 @register.filter(is_safe=True)
 def obfuscate(value):
@@ -59,6 +66,16 @@ def obfuscate_mailto(value, text=False):
         link_text,
     )
     return result
+
+# Javascript-related
+
+@register.filter()
+def jsbool(value):
+    js_value = 'true' if bool(value) else 'false'
+    return js_value
+
+##################################################
+# Tags
 
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base, media=None):
