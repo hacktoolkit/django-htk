@@ -5,7 +5,7 @@ var P_YUI_RELOAD = 'yui_reload';
 
 if (typeof(YUI) === 'undefined') {
     if (typeof(YUI_RELOAD_ATTEMPTS) === 'number' && YUI_RELOAD_ATTEMPTS < YUI_RELOAD_MAX_ATTEMPTS) {
-        Rollbar.log('YUI is undefined. Attempting to reload');
+        Rollbar.info('YUI is undefined. Attempting to reload');
         var url = document.location.href;
         var params = document.location.search;
         var paramJoinChar = '';
