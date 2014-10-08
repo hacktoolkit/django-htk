@@ -9,6 +9,7 @@ from django.template import loader
 from django.template import TemplateDoesNotExist
 
 from htk.cachekeys import StaticAssetVersionCache
+from htk.session_keys import *
 from htk.utils import htk_setting
 from htk.utils import utcnow
 
@@ -138,6 +139,10 @@ def wrap_data(request, data=None):
     data['asset_version'] = asset_version
 
     ##
+    # Javascript reloader
+    _javascript_reloader(request, data)
+
+    ##
     # user
     if request.user.is_authenticated():
         user = request.user
@@ -150,6 +155,20 @@ def wrap_data(request, data=None):
     data['errors'] = []
 
     return data
+
+def _javascript_reloader(request, data):
+    """Since pages may depend on JavaScript to function properly,
+    we may receive requests from front-end to force-reload
+
+    Need to keep track of reload attempts to avoid infinite reloads
+    """
+    if request.GET.get(YUI_RELOAD, None):
+        request.session[YUI_RELOAD_ATTEMPTS] = request.session.get(YUI_RELOAD_ATTEMPTS, 0) + 1
+    else:
+        request.session[YUI_RELOAD_ATTEMPTS] = 0
+    data['JS_RELOADS'] = {
+        'yui' : request.session[YUI_RELOAD_ATTEMPTS],
+    }
 
 def _build_meta_content(data=None):
     """Build page title and META description and keywords before rendering
