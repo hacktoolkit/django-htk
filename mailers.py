@@ -21,7 +21,7 @@ def simple_email(
     to = to or htk_setting('HTK_DEFAULT_EMAIL_RECIPIENTS', HTK_DEFAULT_EMAIL_RECIPIENTS)
     if settings.ENV_DEV:
         fail_silently = True
-        subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_NAME'), subject,)
+        subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
     send_mail(subject, message, sender, to, fail_silently = fail_silently)
 
 def email_context_generator():
