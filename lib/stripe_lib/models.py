@@ -34,6 +34,28 @@ class BaseStripeCustomer(models.Model):
         return stripe_customer
 
     ##
+    # customer details
+
+    def update_email(self, email=None):
+        """Updates the email for this Customer
+        """
+        stripe_customer = None
+        if email is not None:
+            stripe_customer = self.retrieve()
+            if stripe_customer.email != email:
+                # TODO: it might make sense to implement some kind of update-if-changed, or perhaps the Stripe library is already smart about it?
+                stripe_customer.email = email
+                stripe_customer = safe_stripe_call(
+                    stripe_customer.save,
+                    **{}
+                )
+            else:
+                pass
+        else:
+            pass
+        return stripe_customer
+
+    ##
     # payments
 
     def charge(self, amount=0, currency=DEFAULT_STRIPE_CURRENCY):
