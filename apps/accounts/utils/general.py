@@ -205,15 +205,8 @@ def get_users_by_id(user_ids, strict=False, preserve_ordering=False):
     For non `strict`, returns a partial list of Users with matching ids
     """
     UserModel = get_user_model()
-    users_qs = UserModel.objects.filter(id__in=user_ids)
-    if strict and users_qs.count() < len(user_ids):
-        users = None
-    else:
-        users = list(users_qs)
-    if users and preserve_ordering:
-        users = sorted(users, key=lambda user: user_ids.index(user.id))
-    else:
-        pass
+    from htk.utils.query import get_objects_by_id
+    users = get_objects_by_id(UserModel, user_ids, strict=strict, preserve_ordering=preserve_ordering)
     return users
 
 def get_user_emails_by_id(user_email_ids, strict=False):
