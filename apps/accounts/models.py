@@ -166,7 +166,7 @@ class BaseAbstractUserProfile(models.Model):
         return user_emails
 
     def get_gravatar_hash(self):
-        primary_email = self.get_primary_email()
+        email = self.get_primary_email()
         from htk.lib.gravatar.utils import get_gravatar_hash
         gravatar_hash = get_gravatar_hash(email)
         return gravatar_hash
