@@ -45,9 +45,14 @@ class StripeLibTestCase(TestCase):
         }
         return card_dict
 
+    # TODO:
+    # - create customer without a card
+    # - create_customer_with and without email
+    # - create_customer_with and without description
+
     def _create_customer_with_card(self):
         card_dict = self._get_card_dict()
-        customer, stripe_customer = create_customer(card_dict, description='Test creating a customer with card')
+        customer, stripe_customer = create_customer(card=card_dict, description='Test creating a customer with card')
         self.assertEqual(STRIPE_ID_PREFIX_CUSTOMER, stripe_customer.id[:len(STRIPE_ID_PREFIX_CUSTOMER)])
         return customer
 
