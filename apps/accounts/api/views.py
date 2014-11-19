@@ -1,7 +1,9 @@
 import json
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.contrib.auth import login
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 
@@ -19,6 +21,26 @@ from htk.apps.accounts.forms.update import ChangePasswordForm
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.utils import resolve_encrypted_uid
 from htk.forms.utils import get_form_errors
+
+##################################################
+# Authentication API views
+
+@require_POST
+def login_view(request):
+    from htk.apps.accounts.forms.auth import UsernameEmailAuthenticationForm
+    auth_form = UsernameEmailAuthenticationForm(None, request.POST)
+    if auth_form.is_valid():
+        user = auth_form.get_user()
+        login(request, user)
+        response = json_response_okay()
+    else:
+        response = json_response_error()
+    return response
+
+def logout_view(request):
+    logout(request)
+    reponse = json_response_okay()
+    return response
 
 ##################################################
 # Read API views
