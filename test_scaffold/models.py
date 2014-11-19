@@ -6,13 +6,13 @@ class TestScaffoldModel(models.Model):
 
 class FakeTime(TestScaffoldModel):
     """FakeTime keeps track of only one timestamp (one record) or none
-    When testing, if there is a record, the next call to talentral.utils.utcnow() returns this timestamp
+    When testing, if there is a record, the next call to htk.utils.utcnow() returns this timestamp
     """
     timestamp = models.DateTimeField()
 
 class FakePrelaunch(TestScaffoldModel):
     """FakePrelaunch keeps track of only one boolean (one record) or none
-    When testing,  if there is a record, the next call to talentral.utils.is_prelaunch_mode() returns this boolean
+    When testing,  if there is a record, the next call to htk.apps.prelaunch.utils.is_prelaunch_mode() returns this boolean
     """
     prelaunch_mode = models.BooleanField(default=False)
     prelaunch_host = models.BooleanField(default=False)
