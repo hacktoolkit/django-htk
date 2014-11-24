@@ -73,10 +73,14 @@ function (Y) {
         usernameMessageContainer.setHTML(S_CHANGE_USERNAME_SUCCESS_MESSAGE);
     }
 
-    function displayChangeUsernameErrorMessage() {
+    function displayChangeUsernameErrorMessage(error) {
         usernameMessageContainer.addClass(CSS_CLASS_UPDATE_ERROR);
         usernameMessageContainer.removeClass(CSS_CLASS_UPDATE_SUCCESS);
-        usernameMessageContainer.setHTML(S_CHANGE_USERNAME_ERROR_MESSAGE);
+        var errorMessage = S_CHANGE_USERNAME_ERROR_MESSAGE;
+        if (typeof(error) !== 'undefined') {
+            errorMessage += ' ' + error;
+        }
+        usernameMessageContainer.setHTML(errorMessage);
     }
 
     function clearUsernameMessage() {
@@ -127,7 +131,8 @@ function (Y) {
                 currentUsernameContainer.setHTML(username);
                 displayChangeUsernameSuccessMessage();
             } else if (status === 'error') {
-                displayChangeUsernameErrorMessage();
+                var error = responseData['error'];
+                displayChangeUsernameErrorMessage(error);
             } else {
                 // impossible case, do nothing
             }
