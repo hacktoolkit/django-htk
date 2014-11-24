@@ -9,10 +9,7 @@ from django.views.decorators.http import require_POST
 
 from htk.api.constants import *
 from htk.api.utils import json_response
-from htk.api.utils import json_response
 from htk.api.utils import json_response_error
-from htk.api.utils import json_response_error
-from htk.api.utils import json_response_okay
 from htk.api.utils import json_response_okay
 from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.forms.settings import AddEmailForm
@@ -20,6 +17,7 @@ from htk.apps.accounts.forms.update import ChangeUsernameForm
 from htk.apps.accounts.forms.update import ChangePasswordForm
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.utils import resolve_encrypted_uid
+from htk.forms.utils import get_form_error
 from htk.forms.utils import get_form_errors
 
 ##################################################
@@ -107,7 +105,11 @@ def username(request):
         username_form.save(user)
         response = json_response_okay()
     else:
-        response = json_response_error()
+        obj = {
+            HTK_API_JSON_KEY_STATUS: HTK_API_JSON_VALUE_ERROR,
+            'error' : get_form_error(username_form)
+        }
+        response = json_response(obj)
     return response
 
 @login_required

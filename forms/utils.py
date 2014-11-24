@@ -51,9 +51,25 @@ def get_form_errors(form):
     all_errors = []
     all_field_errors = []
     for error in form.non_field_errors():
-        errors.append(error)
+        all_errors.append(error)
     for field in form:
         if field.errors:
+            # store the field errors as a tuple
             field_errors = (field.name, field.errors,)
             all_field_errors.append(field_errors)
     return (all_errors, all_field_errors,)
+
+def get_form_error(form):
+    """Return the first error of a form
+
+    `form` is already known to be invalid,
+    e.g. form.is_valid() == False
+    """
+    (all_errors, all_field_errors,) = get_form_errors(form)
+    if len(all_errors):
+        error = all_errors[0]
+    elif len(all_field_errors):
+        error = all_field_errors[0][1]
+    else:
+        error = None
+    return error

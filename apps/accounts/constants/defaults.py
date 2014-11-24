@@ -10,3 +10,5 @@ HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME = 'account_register_social_login'
 HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_URL_NAME = 'account_register_social_email'
 HTK_ACCOUNTS_REGISTER_SOCIAL_ALREADY_LINKED_URL_NAME = 'account_register_social_already_linked'
 HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_AND_TERMS_URL_NAME = 'account_register_social_email_and_terms'
+
+HTK_VALID_USERNAME_REGEX = r'^[A-Za-z0-9_-]{1,30}$'

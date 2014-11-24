@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -7,6 +9,7 @@ from htk.apps.accounts.emails import password_changed_email
 from htk.forms import AbstractModelInstanceUpdateForm
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
+from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
 from htk.utils.geo import get_us_state_abbreviation_choices
 
@@ -35,13 +38,33 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
         super(UserUpdateForm, self).__init__(user, *args, **kwargs)
         self.profile_form = UserProfileUpdateForm(user_profile, *args, **kwargs)
 
+    def has_username_field(self):
+        """Determines whether username is a field in this form instance
+        """
+        result = 'username' in self.save_fields
+        return result
+
+    def clean_username(self):
+        """If username is a field in this form instance, ensure that it satisfies the regular expression
+        """
+        if self.has_username_field():
+            username = self.cleaned_data.get('username', '').strip()
+            matches = re.match(htk_setting('HTK_VALID_USERNAME_REGEX'), username)
+            if matches is None:
+                raise forms.ValidationError('There are invalid characters in the username.')
+            else:
+                pass
+        else:
+            username = None
+        return username
+
     def get_profile_form(self):
         profile_form = self.profile_form
         return profile_form
 
     def save(self, *args, **kwargs):
         user = super(UserUpdateForm, self).save(*args, **kwargs)
-        if 'username' in self.save_fields:
+        if self.has_username_field():
             user_profile = user.profile
             user_profile.has_username_set = True
             user_profile.save(update_fields=['has_username_set',])
@@ -66,6 +89,9 @@ class ChangeUsernameForm(UserUpdateForm):
         fields = (
             'username',
         )
+        help_texts = {
+            'username' : 'Usernames can only contain alphanumerics (letters (a-z) or digits (0-9)), underscores (_), and hyphens (-).',
+        }
 
 class ChangePasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):

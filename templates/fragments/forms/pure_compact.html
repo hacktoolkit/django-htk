@@ -8,7 +8,10 @@
   {{ field }}
   {% if field.errors %}
   <span class="pure-form-message form-error">{{ field.errors }}</span>
-    {% endif %}
+  {% endif %}
+  {% if field.help_text %}
+  <span class="pure-form-message">{{ field.help_text }}</span>
+  {% endif %}
   {% endfor %}
   {% if anchor_buttons %}
   {% include 'fragments/forms/pure_anchor_buttons.html' %}
