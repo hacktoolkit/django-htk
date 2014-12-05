@@ -1,0 +1,10 @@
+{% for link in submenu %}
+<li>
+  <a href="{{ link.uri }}">{{ link.text }}</a>
+  {% if link.submenu %}
+  {% with submenu_template='fragments/submenu.html' %}
+  {% include submenu_template with submenu=link.submenu %}
+  {% endwith %}
+  {% endif %}
+</li>
+{% endfor %}
