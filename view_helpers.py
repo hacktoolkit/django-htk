@@ -4,6 +4,7 @@ from socket import gethostname
 
 from django.conf import settings
 from django.core.context_processors import csrf
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import loader
 from django.template import TemplateDoesNotExist
@@ -266,3 +267,31 @@ def add_meta_keywords(keywords, data=None):
     `keywords` must be a list in order of least significant to most significant terms
     """
     _update_meta_content('keywords', keywords, update_type='add', data=data)
+
+def generate_nav_links(request, nav_links_cfg):
+    """Generate navigation menu links from a configuration dictionary
+
+    Allows for nested submenus
+    """
+    url_name = request.resolver_match.url_name
+    nav_links = []
+    for link_cfg in nav_links_cfg:
+        text = link_cfg['text']
+        submenu = link_cfg.get('submenu', None)
+        cfg_url_name = link_cfg.get('url_name', None)
+        if cfg_url_name:
+            uri = reverse(cfg_url_name)
+        else:
+            uri = link_cfg.get('uri')
+        selected = url_name == cfg_url_name
+        nav_link = {
+            'text' : text,
+            'uri' : uri,
+            'selected' : selected,
+        }
+        if submenu:
+            nav_link['submenu'] = generate_nav_links(request, submenu)
+        else:
+            pass
+        nav_links.append(nav_link)
+    return nav_links
