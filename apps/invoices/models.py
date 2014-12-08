@@ -5,11 +5,13 @@ from django.db import models
 from htk.apps.invoices.constants import *
 from htk.apps.invoices.utils import compute_invoice_code
 from htk.fields import CurrencyField
+from htk.utils.enums import enum_to_str
 
 class BaseInvoice(models.Model):
     customer = models.ForeignKey(settings.HTK_INVOICE_CUSTOMER_MODEL, related_name='invoices')
     date = models.DateField()
     notes = models.TextField(max_length=256, blank=True)
+    invoice_type = models.PositiveIntegerField(default=HTK_INVOICE_DEFAULT_TYPE.value)
     paid = models.BooleanField(default=False)
     payment_terms = models.PositiveIntegerField(default=HTK_INVOICE_DEFAULT_PAYMENT_TERM.value)
 
@@ -35,9 +37,13 @@ class BaseInvoice(models.Model):
             subtotal += line_item.get_amount()
         return subtotal
 
+    def get_invoice_type(self):
+        from htk.apps.invoices.enums import InvoiceType
+        invoice_type = InvoiceType(self.invoice_type)
+        return invoice_type
+
     def get_payment_terms(self):
         from htk.apps.invoices.enums import InvoicePaymentTerm
-        from htk.utils.enums import enum_to_str
         invoice_payment_term = InvoicePaymentTerm(self.payment_terms)
         str_value = enum_to_str(invoice_payment_term)
         return str_value

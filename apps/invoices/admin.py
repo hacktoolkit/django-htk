@@ -19,6 +19,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         'total',
         'date',
         'paid',
+        'invoice_type',
         'payment_terms',
         'view_invoice_link',
     )

@@ -5,7 +5,7 @@
   </div>
   <div class="pure-g">
     <div class="pure-u-1-2">
-      <h1>INVOICE</h1>
+      <h1 class="invoice-heading">{{ invoice.get_invoice_type.name }}</h1>
     </div>
     <div class="pure-u-1-2 align-right">
       {% load gravatar %}
@@ -64,7 +64,7 @@
       </table>
       <br/>
 
-      <h3>BILL TO:</h3>
+      <h3 class="invoice-heading">{% if invoice.get_invoice_type == 'INVOICE' %}Bill To{% else %}Pay To{% endif %}:</h3>
       {% with customer=invoice.customer %}
       {{ customer.name }}<br/>
       {% if customer.attention %}
@@ -165,7 +165,7 @@
   </table>
 
   <div>
-    <h3>NOTES</h3>
+    <h3 class="invoice-heading">Notes</h3>
     {{ invoice.notes|linebreaksbr }}<br/>
     <b>{{ invoice.get_payment_terms }}</b><br/>
     <br/>
