@@ -1,9 +1,9 @@
 from django.conf import settings
 
 from htk.apps.accounts.utils.social_utils import get_social_auth_for_user
-from htk.lib.yahoo.fantasysports.client import YahooFantasySportsAPIClient
+from htk.lib.yahoo.sports.fantasy.client import YahooFantasySportsAPIClient
 
-def get_yahoo_fantasysports_client_for_user(user):
+def get_yahoo_fantasy_sports_client_for_user(user):
     """Gets a YahooFantasySportsAPIClient instance for `user`
     """
     social = get_social_auth_for_user(user, 'yahoo-oauth')
