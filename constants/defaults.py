@@ -39,6 +39,10 @@ HTK_DOMAIN_META_URL_NAMES = (
 )
 
 ##
+# Hostnames
+HTK_DEV_HOST_REGEXPS = []
+
+##
 # Enums
 HTK_ENUM_SYMBOLIC_NAME_OVERRIDES = {}
 
