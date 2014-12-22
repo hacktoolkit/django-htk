@@ -40,7 +40,8 @@ class BaseInvoice(models.Model):
     def get_invoice_type(self):
         from htk.apps.invoices.enums import InvoiceType
         invoice_type = InvoiceType(self.invoice_type)
-        return invoice_type
+        str_value = enum_to_str(invoice_type)
+        return str_value
 
     def get_payment_terms(self):
         from htk.apps.invoices.enums import InvoicePaymentTerm
