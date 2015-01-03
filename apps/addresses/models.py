@@ -14,6 +14,7 @@ class BasePostalAddress(models.Model):
 
     Right now, go with the "good enough" approach
     """
+    name = models.CharField(max_length=64, blank=True)
     street_number = models.CharField(max_length=16, blank=True)
     street = models.CharField(max_length=128, blank=True)
     #unit_type = models.PositiveIntegerField(blank=True, null=True)
