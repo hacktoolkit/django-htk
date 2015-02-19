@@ -38,3 +38,56 @@ def summarize(paragraph, num_sentences=SUMMARY_NUM_SENTENCES):
             # we actually summarized it
             summary = '.'.join(summary_sentences) + '...'
     return summary
+
+def ellipsize(text, max_len=100, truncate=False):
+    """
+    Cut `text` off at `max_len` characters, inserting an ellipsis at the appropriate point so that
+    the total length is at or below the max.
+
+    Attempts to break on a word boundary.
+
+    Algorithm based on https://github.com/mvhenten/ellipsize/blob/master/index.js
+
+    `truncate` whether we may truncate long words if there were no breaks
+      Defaults to `False`
+
+      e.g.
+      ellipsize('abcdefghijklmnop', max_len=6, truncate=True) -> 'abc...'
+      ellipsize('abcdefghijklmnop', max_len=6, truncate=False) -> ''
+    """
+    if not text:
+        return ''
+
+    text = unicode(text)
+    text_len = len(text)
+
+    if text_len <= max_len:
+        return text
+
+    boundary_chars = (
+        ' ',
+        '-',
+    )
+    ellipsis = '...'
+    max_len = max_len - len(ellipsis)
+
+    last_break = 0 # store candidate index for break point
+    for i in xrange(text_len):
+        c = text[i]
+        if c in boundary_chars:
+            last_break = i
+
+        if i < max_len:
+            continue
+        else:
+            # time to shorten the string
+            if last_break == 0:
+                if truncate:
+                    text = text[:max_len] + ellipsis
+                else:
+                    text = ''
+            else:
+                text = text[:last_break] + ellipsis
+            break
+
+    return text
