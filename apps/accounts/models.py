@@ -21,10 +21,10 @@ from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.utils import encrypt_uid
 from htk.lib.geoip.utils import get_geoip_city
 from htk.lib.geoip.utils import get_geoip_country
-from htk.middleware import GlobalRequestMiddleware
 from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
+from htk.utils.request import get_current_request
 
 class BaseAbstractUserProfile(models.Model):
     """
@@ -402,7 +402,7 @@ class AbstractUserProfile(BaseAbstractUserProfile):
         """Check if the currently logged-in user is following self.user
         """
         if user is None:
-            request = GlobalRequestMiddleware.get_current_request()
+            request = get_current_request()
             user = request.user
         else:
             pass

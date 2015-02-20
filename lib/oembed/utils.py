@@ -5,7 +5,7 @@ import urllib
 
 from htk.lib.oembed.cachekeys import OembedResponseCache
 from htk.lib.oembed.constants import *
-from htk.middleware import GlobalRequestMiddleware
+from htk.utils.request import get_current_request
 
 def get_oembed_html(url):
     """Gets the oEmbed HTML for a URL, if it is an oEmbed type
@@ -39,7 +39,7 @@ def get_oembed_html_for_service(url, service):
                 c.cache_store(html)
                 success = True
         except:
-            request = GlobalRequestMiddleware.get_current_request()
+            request = get_current_request()
             rollbar.report_exc_info(request=request)
 
         if success:
@@ -47,7 +47,7 @@ def get_oembed_html_for_service(url, service):
         else:
             html = 'Failed to get oEmbed for URL: %s' % url
             if request is None:
-                request = GlobalRequestMiddleware.get_current_request()
+                request = get_current_request()
             else:
                 pass
             rollbar.report_message('Bad oembed url <%s>' % (url), 'warning', request)

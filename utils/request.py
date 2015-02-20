@@ -1,5 +1,10 @@
 from htk.utils import htk_setting
 
+def get_current_request():
+    from htk.middleware.classes import GlobalRequestMiddleware
+    request = GlobalRequestMiddleware.get_current_request()
+    return request
+
 def extract_request_ip(request):
     # copied from django_ratchet.middleware.py
     # some common things passed by load balancers... will need more of these.
@@ -12,6 +17,20 @@ def extract_request_ip(request):
     if real_ip:
         return real_ip
     return request.environ['REMOTE_ADDR']
+
+def build_dict_from_request(request):
+    """Build a dictionary from `request`
+    """
+    obj = {
+        'request' : {
+            'GET' : request.GET,
+            'POST' : request.POST,
+        },
+        'referrer' : request.META.get('HTTP_REFERER'),
+        'user_agent' : request.META.get('HTTP_USER_AGENT'),
+        'user_ip' : extract_request_ip(request),
+    }
+    return obj
 
 def is_domain_meta_view(request):
     """Determines whether the request is for a domain meta view

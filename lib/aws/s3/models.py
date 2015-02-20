@@ -4,8 +4,8 @@ from django.db import models
 
 from htk.constants import *
 from htk.lib.aws.s3 import S3Manager
-from htk.middleware import GlobalRequestMiddleware
 from htk.utils import htk_setting
+from htk.utils.request import get_current_request
 from htk.utils.s3 import get_env_s3_key_prefix
 
 class S3MediaAsset(models.Model):
@@ -42,7 +42,7 @@ class S3MediaAsset(models.Model):
             s3_key = self.get_s3_key()
             s3_url = s3.get_url(s3_bucket, s3_key, cache=True)
         except:
-            request = GlobalRequestMiddleware.get_current_request()
+            request = get_current_request()
             rollbar.report_exc_info(request=request)
             s3_url = ''
         return s3_url
