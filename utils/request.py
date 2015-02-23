@@ -27,10 +27,10 @@ def build_dict_from_request(request):
             'GET' : request.GET,
             'POST' : request.POST,
         },
-        'referrer' : request.META.get('HTTP_REFERER'),
+        'referrer' : request.META.get('HTTP_REFERER', ''),
         'user' : user,
         'user_id' : user.id if user else '',
-        'user_agent' : request.META.get('HTTP_USER_AGENT'),
+        'user_agent' : request.META.get('HTTP_USER_AGENT', ''),
         'user_ip' : extract_request_ip(request),
     }
     return obj
