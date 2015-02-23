@@ -4,7 +4,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from htk.apps.url_shortener.utils import generate_short_url_code
 from htk.utils import utcnow
 from htk.utils.data_structures import *
 from htk.utils.request import build_dict_from_request
@@ -38,6 +37,7 @@ class HTKShortUrl(models.Model):
         return value
 
     def get_code(self):
+        from htk.apps.url_shortener.utils import generate_short_url_code
         code = generate_short_url_code(self.id)
         return code
 

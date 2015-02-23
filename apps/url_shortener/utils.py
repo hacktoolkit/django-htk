@@ -1,6 +1,7 @@
 from django.db.models import Q
 
 from htk.apps.url_shortener.constants import *
+from htk.apps.url_shortener.models import HTKShortUrl
 from htk.utils.base_converters import base62_encode
 from htk.utils.base_converters import base62_decode
 
@@ -39,7 +40,6 @@ def generate_short_url_code(raw_id):
     return code
 
 def resolve_short_url_code(host, code):
-    from htk.apps.url_shortener.models import HTKShortUrl
     try:
         prepared_id = base62_decode(code)
         raw_id = resolve_raw_id(prepared_id)
@@ -47,3 +47,9 @@ def resolve_short_url_code(host, code):
     except HTKShortUrl.DoesNotExist:
         short_url = None
     return short_url
+
+def get_recently_shortened(user=None):
+    """Get recently shortened URLs
+    """
+    short_urls = HTKShortUrl.objects.all()
+    return short_urls
