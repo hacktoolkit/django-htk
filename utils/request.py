@@ -19,14 +19,17 @@ def extract_request_ip(request):
     return request.environ['REMOTE_ADDR']
 
 def build_dict_from_request(request):
-    """Build a dictionary from `request`
+    """Build a dictionary from `request` that can be serialized to JSON
     """
+    user = request.user if request.user.is_authenticated() else None
     obj = {
         'request' : {
             'GET' : request.GET,
             'POST' : request.POST,
         },
         'referrer' : request.META.get('HTTP_REFERER'),
+        'user' : user,
+        'user_id' : user.id if user else '',
         'user_agent' : request.META.get('HTTP_USER_AGENT'),
         'user_ip' : extract_request_ip(request),
     }
