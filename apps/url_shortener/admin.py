@@ -13,6 +13,7 @@ class HTKShortUrlAdmin(admin.ModelAdmin):
         'code',
         'prepared_id',
         'link',
+        'access_count',
     )
 
     def code(self, obj):
@@ -28,6 +29,10 @@ class HTKShortUrlAdmin(admin.ModelAdmin):
         }
         return shortened_link
     link.allow_tags = True
+
+    def access_count(self, obj):
+        count = obj.get_access_count()
+        return count
 
 class HTKShortUrlAccessAdmin(admin.ModelAdmin):
     list_display = (

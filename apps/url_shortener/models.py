@@ -75,6 +75,10 @@ class HTKShortUrl(models.Model):
             **metadata
         )
 
+    def get_access_count(self):
+        count = self.accesses.count()
+        return count
+
 class HTKShortUrlAccess(models.Model):
     url = models.ForeignKey('htk.HTKShortUrl', related_name='accesses')
     timestamp = models.DateTimeField(auto_now=True)
