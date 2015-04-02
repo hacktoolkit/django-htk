@@ -7,8 +7,9 @@ from django.utils.html import escape
 
 from htk.lib.gravatar.utils import get_gravatar_hash
 
+# http://en.gravatar.com/site/implement/images/
 GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com/')
-GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', '')
+GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', 'mm')
 
 register = Library()
 
@@ -34,7 +35,7 @@ def gravatar_for_email(email, size=80):
     url += urllib.urlencode(
         {
             's': str(size),
-            #'default': GRAVATAR_DEFAULT_IMAGE,
+            'default': GRAVATAR_DEFAULT_IMAGE,
         }
     )
     url = escape(url)
