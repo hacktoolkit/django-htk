@@ -1,5 +1,8 @@
 import rollbar
 
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+
 from htk.middleware import GlobalRequestMiddleware
 from htk.decorators.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
 
@@ -29,3 +32,28 @@ def deprecated(func):
             rollbar.report_message('Deprecated function call warning: %s' % func, 'warning', request)
         return func(*args, **kwargs)
     return wrapped
+
+class restful_obj_seo_redirect(object):
+    """Decorator for redirecting a RESTful object view to its SEO canonical URL
+    if not already using it
+    """
+    def __init__(self, cls, obj_id_key):
+        self.cls = cls
+        self.obj_id_key = obj_id_key
+
+    def __call__(self, view_fn):
+        def wrapped(*args, **kwargs):
+            obj_id = kwargs.get(self.obj_id_key)
+            obj = get_object_or_404(self.cls, id=obj_id)
+            seo_title = kwargs.get('seo_title')
+            if obj.get_seo_title() != seo_title:
+                # prevent tampering of URLs
+                # redirect to the canonical URL for this object
+                response = redirect(obj.get_absolute_url(), permanent=True)
+            else:
+                # store the retrieved object to avoid re-fetching
+                retrieved_key = self.cls.__name__.lower()
+                kwargs[retrieved_key] = obj
+                response = view_fn(*args, **kwargs)
+            return response
+        return wrapped

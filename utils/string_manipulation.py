@@ -1,6 +1,7 @@
 import re
 
 from htk.utils.constants import *
+from htk.utils.unicode import unicode_to_ascii
 
 def get_sentences(paragraph):
     """Returns a list of sentences from a paragraph
@@ -91,3 +92,30 @@ def ellipsize(text, max_len=100, truncate=False):
             break
 
     return text
+
+def seo_tokenize(title, lower=True):
+    """Get SEO-tokenized version of a string, typically a name or title
+
+    `title` the string to tokenize
+    `lower` whether to lowercase the string
+
+    e.g.
+    <- "The World's Greatest Establishment"
+    -> 'the-worlds-greatest-establishment'
+
+    <- 'Recreational Sports Facility, Berkeley, CA', lower=False
+    -> 'Recreational-Sports-Facility-Berkeley-CA'
+    """
+    cleaned_title = title.strip()
+    try:
+        cleaned_title = unicode_to_ascii(cleaned_title)
+    except:
+        pass
+    if lower:
+        cleaned_title = cleaned_title.lower()
+    else:
+        pass
+    # allow only spaces, alpha-numeric
+    cleaned_title = re.sub('[^ A-Za-z0-9]', '', cleaned_title)
+    tokenized_title = '-'.join(cleaned_title.split())
+    return tokenized_title
