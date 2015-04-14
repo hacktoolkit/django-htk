@@ -1,0 +1,17 @@
+<li class="product-tile">
+  <div class="image-container">
+    <div class="hover-container">
+      <div class="image" style="background-image: url('{{ product.get_amazon_image_url }}');"></div>
+      <div class="actions-container">
+      </div>
+      <div class="details">
+        {{ product.name }}
+      </div>
+    </div>
+  </div>
+  <a href="{{ product.get_amazon_url }}" target="_blank">
+    <div class="price-tag">
+      Buy
+    </div>
+  </a>
+</li>
