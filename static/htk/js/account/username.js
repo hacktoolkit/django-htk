@@ -120,7 +120,7 @@ function (Y) {
         try {
             responseData = Y.JSON.parse(response.responseText);
         } catch (e) {
-            _rollbar.push('Bad JSON response received from Update Username API Call');
+            Rollbar.error('Bad JSON response received from Update Username API Call');
         }
         if (responseData) {
             var status = responseData['status'];
