@@ -92,7 +92,7 @@ function (Y) {
         try {
             responseData = Y.JSON.parse(response.responseText);
         } catch (e) {
-            _rollbar.push('Bad JSON response received from Update User Settings API Call');
+            Rollbar.error('Bad JSON response received from Update User Settings API Call');
         }
         if (responseData) {
             var status = responseData['status'];

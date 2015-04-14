@@ -122,7 +122,7 @@ function (Y) {
         try {
             responseData = Y.JSON.parse(response.responseText);
         } catch (e) {
-            _rollbar.push('Bad JSON response received from Add Email API Call');
+            Rollbar.error('Bad JSON response received from Add Email API Call');
         }
         if (responseData) {
             var transactionData = IO_TRANSACTION_DATA[transactionId];
@@ -191,7 +191,7 @@ function (Y) {
         try {
             responseData = Y.JSON.parse(response.responseText);
         } catch (e) {
-            _rollbar.push('Bad JSON response received from Delete Email API Call');
+            Rollbar.error('Bad JSON response received from Delete Email API Call');
         }
         if (responseData) {
             var transactionData = IO_TRANSACTION_DATA[transactionId];
@@ -236,7 +236,7 @@ function (Y) {
         try {
             responseData = Y.JSON.parse(response.responseText);
         } catch (e) {
-            _rollbar.push('Bad JSON response received from Set Primary Email API Call');
+            Rollbar.error('Bad JSON response received from Set Primary Email API Call');
         }
         if (responseData) {
             var transactionData = IO_TRANSACTION_DATA[transactionId];

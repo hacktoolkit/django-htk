@@ -72,7 +72,7 @@ function (Y) {
         try {
             responseData = Y.JSON.parse(response.responseText);
         } catch (e) {
-            _rollbar.push(S_FOLLOW_API_ERROR);
+            Rollbar.error(S_FOLLOW_API_ERROR);
         }
 
         if (responseData) {
