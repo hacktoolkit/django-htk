@@ -132,12 +132,18 @@ def wrap_data(request, data=None):
         },
     }
 
+    ##
     # LESS http://lesscss.org/#usage
     asset_version = get_asset_version()
     useless = settings.ENV_DEV and request.GET.get('useless', False)
     data['css_rel'] = 'stylesheet/less' if useless else 'stylesheet'
     data['css_ext'] = 'less' if useless else 'css?v=%s' % asset_version
     data['asset_version'] = asset_version
+
+    ##
+    # Current Environment
+    data['ENV_DEV'] = settings.ENV_DEV
+    data['ENV_PROD'] = settings.ENV_PROD
 
     ##
     # Javascript reloader
