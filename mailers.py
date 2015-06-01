@@ -2,11 +2,13 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 from django.template import Context
+from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
 from htk.constants.defaults import *
 from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
+from htk.utils.text.converters import html_to_markdown
 
 def simple_email(
     subject='',
@@ -75,16 +77,38 @@ def send_email(
     c = Context(context)
     if settings.ENV_DEV:
         subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
-    text_template = get_template("emails/%s.txt" % template)
-    text_content = text_template.render(c)
+
+    # assume HTML template exists, get that first
+    try:
+        html_template = get_template('emails/%s.html' % template)
+        html_content = html_template.render(c)
+    except TemplateDoesNotExist:
+        html_template = None
+        html_content = ''
+
+    # get text template as fallback
+    if html_template is None:
+        try:
+            text_template = get_template("emails/%s.txt" % template)
+            text_content = text_template.render(c)
+        except TemplateDoesNotExist:
+            text_template = None
+            text_content = ''
+    elif html_content:
+        text_content = html_to_markdown(html_content)
+    else:
+        text_content = ''
+
     msg = EmailMultiAlternatives(subject=subject,
                                  body=text_content,
                                  from_email=sender,
                                  to=to,
                                  bcc=bcc,
                                  cc=cc)
-    if not text_only:
-        html_template = get_template('emails/%s.html' % template)
-        html_content = html_template.render(c)
+
+    if not text_only and html_content:
         msg.attach_alternative(html_content, 'text/html')
+    else:
+        pass
+
     msg.send()
