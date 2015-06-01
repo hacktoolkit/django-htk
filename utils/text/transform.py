@@ -1,7 +1,7 @@
 import re
 
 from htk.utils.constants import *
-from htk.utils.unicode import unicode_to_ascii
+from htk.utils.text.unicode import unicode_to_ascii
 
 def get_sentences(paragraph):
     """Returns a list of sentences from a paragraph
