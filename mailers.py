@@ -8,7 +8,7 @@ from django.template.loader import get_template
 from htk.constants.defaults import *
 from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
-from htk.utils.text.converters import html_to_markdown
+from htk.utils.text.converters import html2markdown
 
 def simple_email(
     subject='',
