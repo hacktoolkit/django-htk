@@ -95,7 +95,7 @@ def send_email(
             text_template = None
             text_content = ''
     elif html_content:
-        text_content = html_to_markdown(html_content)
+        text_content = html2markdown(html_content)
     else:
         text_content = ''
 
