@@ -1,4 +1,5 @@
 from htk.cache import CustomCacheScheme
+from htk.cachekeys import BatchRelationshipEmailCooldown
 from htk.constants.time import *
 
 class UserFollowingCache(CustomCacheScheme):
@@ -19,4 +20,12 @@ class UserFollowersCache(CustomCacheScheme):
     """
     def get_cache_duration(self):
         duration = TIMEOUT_1_HOUR
+        return duration
+
+class AccountActivationReminderEmailCooldown(BatchRelationshipEmailCooldown):
+    """Cache management object for not sending out AccountActivationReminderEmails to the same user more than once every two days
+    prekey = user.id
+    """
+    def get_cache_duration(self):
+        duration = TIMEOUT_48_HOURS
         return duration
