@@ -74,30 +74,34 @@ def send_email(
     else:
         pass
     context = base_context
-    c = Context(context)
+
     if settings.ENV_DEV:
         subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
 
     # assume HTML template exists, get that first
     try:
         html_template = get_template('emails/%s.html' % template)
+        context['base_template'] = htk_setting('HTK_EMAIL_BASE_TEMPLATE_HTML')
+        c = Context(context)
         html_content = html_template.render(c)
     except TemplateDoesNotExist:
         html_template = None
         html_content = ''
 
-    # get text template as fallback
-    if html_template is None:
-        try:
-            text_template = get_template("emails/%s.txt" % template)
-            text_content = text_template.render(c)
-        except TemplateDoesNotExist:
-            text_template = None
+    # if native text template exists, use it
+    try:
+        context['base_template'] = htk_setting('HTK_EMAIL_BASE_TEMPLATE_TEXT')
+        c = Context(context)
+        text_template = get_template('emails/%s.txt' % template)
+        text_content = text_template.render(c)
+    except TemplateDoesNotExist:
+        text_template = None
+        # convert HTML to text
+        if html_template:
+            html_text_content = html_template.render(c)
+            text_content = html2markdown(html_text_content)
+        else:
             text_content = ''
-    elif html_content:
-        text_content = html2markdown(html_content)
-    else:
-        text_content = ''
 
     msg = EmailMultiAlternatives(subject=subject,
                                  body=text_content,
