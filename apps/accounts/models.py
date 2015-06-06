@@ -174,6 +174,10 @@ class BaseAbstractUserProfile(models.Model):
             gravatar_hash = ''
         return gravatar_hash
 
+    def send_activation_reminder_email(self):
+        user_email = get_user_email(self.user, self.user.email)
+        user_email.send_activation_reminder_email()
+
     ##
     # social auth stuff
 
@@ -504,10 +508,21 @@ class UserEmail(models.Model):
             result = False
         return result
 
-    def send_activation_email(self, domain=None, resend=False):
+    def send_activation_email(self, domain=None, resend=False, template=None, subject=None):
+        """Sends an activation email
+        """
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         self._reset_activation_key(resend=resend)
-        activation_email(self, domain=domain)
+        activation_email(self, domain=domain, template=template, subject=subject)
+
+    def send_activation_reminder_email(self):
+        """Sends an account activation reminder email
+
+        Piggybacks off of `self.send_activation_email`
+        """
+        template = htk_setting('HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE')
+        subject = 'Reminder to activate your account on %s' % htk_setting('HTK_SITE_NAME')
+        self.send_activation_email(resend=True, template=template, subject=subject)
 
     def confirm_and_activate_account(self):
         """Confirms the email address, and activates the associated account if not already activated

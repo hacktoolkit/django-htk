@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+{% block content %}
+Hello {{ email }},<br/>
+<br/>
+Thanks for registering for {{ site_name }}. You're one step away from
+getting started!<br/>
+<br/>
+Please follow the link below to confirm your email address and
+activate your account:<br/>
+<br/>
+<a href="{{ activation_uri }}">{{ activation_uri }}</a>
+<br/>
+{% endblock %}

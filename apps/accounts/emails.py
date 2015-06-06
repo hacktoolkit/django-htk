@@ -5,10 +5,35 @@ import random
 from django.core.urlresolvers import reverse
 from django.utils.http import int_to_base36
 
+from htk.emails import BaseBatchRelationshipEmails
 from htk.mailers import send_email
 from htk.utils import htk_setting
+from htk.utils import utcnow
 
-def activation_email(user_email, use_https=False, domain=None):
+class AccountActivationReminderEmails(BaseBatchRelationshipEmails):
+    def __init__(self):
+        from htk.apps.accounts.cachekeys import AccountActivationReminderEmailCooldown
+        template = htk_setting('HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE')
+        super(AccountActivationReminderEmails, self).__init__(
+            cooldown_class=AccountActivationReminderEmailCooldown,
+            template=template
+        )
+
+    def get_recipients(self):
+        from htk.apps.accounts.utils.lookup import get_inactive_users
+        inactive_users = get_inactive_users()
+        account_creation_threshold = utcnow() - datetime.timedelta(days=1)
+        users = inactive_users.filter(
+            date_joined__lte=account_creation_threshold
+        )
+        return users
+
+    def send_email(self, recipient):
+        """Sends an activation reminder email to `recipient`
+        """
+        recipient.profile.send_activation_reminder_email()
+
+def activation_email(user_email, use_https=False, domain=None, template=None, subject=None):
     """Sends an activation/confirmation email for user to confirm email address
     """
     user = user_email.user
@@ -27,12 +52,18 @@ def activation_email(user_email, use_https=False, domain=None):
         ),
     }
 
+    if template is None:
+        template='accounts/activation'
+
+    if subject is None:
+        'Confirm your email address, %s' % email
+
     activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % context
     context['activation_uri'] = activation_uri
     bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
     send_email(
-        template='accounts/activation',
-        subject='Confirm your email address, %s' % email,
+        template=template,
+        subject=subject,
         to=[email,],
         context=context,
         bcc=bcc
