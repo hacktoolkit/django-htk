@@ -20,6 +20,8 @@ HTK_STATIC_META_DESCRIPTION_VALUES = {}
 
 ##
 # Email settings
+HTK_EMAIL_BASE_TEMPLATE_HTML = 'emails/base.html'
+HTK_EMAIL_BASE_TEMPLATE_TEXT = 'emails/base.txt'
 HTK_DEFAULT_EMAIL_SENDING_DOMAIN = 'hacktoolkit.com'
 HTK_DEFAULT_EMAIL_SENDER = 'Hacktoolkit <no-reply@hacktoolkit.com>'
 HTK_DEFAULT_EMAIL_RECIPIENTS = ['info@hacktoolkit.com',]
