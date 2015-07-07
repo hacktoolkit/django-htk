@@ -56,7 +56,7 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
         template='accounts/activation'
 
     if subject is None:
-        'Confirm your email address, %s' % email
+        subject = 'Confirm your email address, %s' % email
 
     activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % context
     context['activation_uri'] = activation_uri
