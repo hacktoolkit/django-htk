@@ -123,6 +123,7 @@ class BaseBatchRelationshipEmails(object):
                 # cooldown has not elapsed yet, don't send mail too frequently
                 pass
             else:
-                # cache right before we send, since each send operation costs a non-zero overhead
-                self.reset_cooldown(recipient)
                 self.send_email(recipient)
+                # cache right after we send, since we want to guarantee
+                # each send operation costs a non-zero overhead,
+                self.reset_cooldown(recipient)
