@@ -1,23 +1,35 @@
 import time
 import tweepy
-import twitter
 
-from django.conf import settings
-
-def get_twitter_api():
-    api = twitter.Api(
-        consumer_key=settings.SOCIAL_AUTH_TWITTER_KEY,
-        consumer_secret=settings.SOCIAL_AUTH_TWITTER_SECRET,
-        access_token_key=settings.SOCIAL_AUTH_TWITTER_ACCESS_TOKEN,
-        access_token_secret=settings.SOCIAL_AUTH_TWITTER_ACCESS_TOKEN_SECRET
-    )
-    return api
-
-def get_tweepy_api():
+def _get_auth_keys():
+    from django.conf import settings
     consumer_key=settings.SOCIAL_AUTH_TWITTER_KEY
     consumer_secret=settings.SOCIAL_AUTH_TWITTER_SECRET
     access_token_key=settings.SOCIAL_AUTH_TWITTER_ACCESS_TOKEN
     access_token_secret=settings.SOCIAL_AUTH_TWITTER_ACCESS_TOKEN_SECRET
+    auth_keys = (
+        consumer_key,
+        consumer_secret,
+        access_token_key,
+        access_token_secret,
+    )
+    return auth_keys
+
+def get_twitter_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
+    import twitter
+    if not(all((consumer_key, consumer_secret, access_token_key, access_token_secret,))):
+        (consumer_key, consumer_secret, access_token_key, access_token_secret,) = _get_auth_keys()
+    api = twitter.Api(
+        consumer_key=consumer_key,
+        consumer_secret=consumer_secret,
+        access_token_key=access_token_key,
+        access_token_secret=access_token_secret
+    )
+    return api
+
+def get_tweepy_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
+    if not(all((consumer_key, consumer_secret, access_token_key, access_token_secret,))):
+        (consumer_key, consumer_secret, access_token_key, access_token_secret,) = _get_auth_keys()
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token_key, access_token_secret)
     api = tweepy.API(auth)
@@ -74,3 +86,15 @@ def get_followers_ids(screen_name):
             is_first = False
         ids.extend(page)
     return ids
+
+def search_tweets(keyword, limit=None, api=None):
+    """Get Tweet search results for `keyword`
+    """
+    if api is None:
+        api = get_tweepy_api()
+    tweet_results = api.search(
+        q=keyword,
+        count=limit,
+        result_type='recent'
+    )
+    return tweet_results
