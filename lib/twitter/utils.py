@@ -40,6 +40,24 @@ def get_user(screen_name):
     twitter_user = api.get_user(screen_name=screen_name)
     return twitter_user
 
+def chunks(l, n):
+    """Yield successive n-sized chunks from l.
+    From: http://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks-in-python
+    """
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]
+
+def lookup_users_by_id(user_ids):
+    """
+    https://dev.twitter.com/rest/reference/get/users/lookup
+    """
+    api = get_tweepy_api()
+    users = []
+    for chunk in chunks(user_ids, 100):
+        users.extend(api.lookup_users(user_ids=chunk))
+        time.sleep(60)
+    return users
+
 def get_lists(screen_name):
     api = get_tweepy_api()
     lists = api.lists_all(screen_name)
@@ -71,9 +89,35 @@ def get_lists_members_deduped(screen_name):
     return members
 
 def get_following(screen_name):
-    api = get_twitter_api()
-    friends = api.GetFriends(screen_name=screen_name)
+    friends = get_friends(screen_name)
     return friends
+
+def get_friends(screen_name):
+    api = get_tweepy_api()
+    friends = []
+    is_first = True
+    for page in tweepy.Cursor(api.friends, screen_name=screen_name, count=200).pages():
+        if not is_first:
+            time.sleep(60)
+        else:
+            is_first = False
+        friends.extend(page)
+    return friends
+#    api = get_twitter_api()
+#    friends = api.GetFriends(screen_name=screen_name, count=200)
+#    return friends
+
+def get_friends_ids(screen_name):
+    api = get_tweepy_api()
+    ids = []
+    is_first = True
+    for page in tweepy.Cursor(api.friends_ids, screen_name=screen_name, count=5000).pages():
+        if not is_first:
+            time.sleep(60)
+        else:
+            is_first = False
+        ids.extend(page)
+    return ids
 
 def get_followers(screen_name):
     api = get_twitter_api()
@@ -84,7 +128,7 @@ def get_followers_ids(screen_name):
     api = get_tweepy_api()
     ids = []
     is_first = True
-    for page in tweepy.Cursor(api.followers_ids, screen_name=screen_name).pages():
+    for page in tweepy.Cursor(api.followers_ids, screen_name=screen_name, count=5000).pages():
         if not is_first:
             time.sleep(60)
         else:
