@@ -5,4 +5,6 @@ class BaseKVStorageAdmin(admin.ModelAdmin):
         'id',
         'key',
         'value',
+        'created_on',
+        'timestamp',
     )
