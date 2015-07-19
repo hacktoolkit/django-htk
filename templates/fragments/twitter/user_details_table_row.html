@@ -1,0 +1,35 @@
+<tr bgcolor="#ffffff">
+  <td width="30"></td>
+  <td width="54" valign="top"
+      style="padding-top:6px;padding-bottom:30px">
+    <a href="http://twitter.com/{{ twitter_user.screen_name }}" style="text-decoration:none" target="_blank">
+      <img width="48" height="48" src="{{ twitter_user.profile_image_url }}" style="border:0px;border-radius:4px;background-color:#f2f2f2">
+    </a>
+  </td>
+  <td align="left" valign="top" style="padding-top:3px;padding-bottom:30px">
+    <a href="http://twitter.com/{{ twitter_user.screen_name }}" style="text-decoration:none" target="_blank">
+      <span style="font-size:13px;line-height:15px;color:#333">
+        <b>{{ twitter_user.name }}</b>
+      </span>
+      <span style="font-size:12px;line-height:14px;color:#999">@{{ twitter_user.screen_name }}</span>
+    </a>
+    <br/>
+    <span style="font-size:12px;line-height:14px;color:#999">
+      <b>Followers:</b> {{ twitter_user.followers_count }}
+      <b>Friends:</b> {{ twitter_user.friends_count }}
+    </span>
+    <br/>
+    <br/>
+    <span style="padding-top:2px;padding-bottom:2px;color:#777777;word-wrap:break-word;font-size:12px;line-height:16px;font-style:italic;font-family:'Georgia','Times New Roman',serif">
+      {{ twitter_user.description }}
+    </span>
+    <br/>
+    <br/>
+    {% if twitter_user.status %}
+    <span style="padding-top:2px;padding-bottom:2px;color:#777777;word-wrap:break-word;font-size:12px;line-height:16px;;font-family:'Georgia','Times New Roman',serif">
+      {{ twitter_user.status.text }}
+    </span>
+    {% endif %}
+  </td>
+  <td width="30"></td>
+</tr>
