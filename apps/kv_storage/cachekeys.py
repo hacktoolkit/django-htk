@@ -5,5 +5,5 @@ class KVStorageCache(CustomCacheScheme):
     """Cache management object for key-value storage
     """
     def get_cache_duration(self):
-        duration = TIMEOUT_15_MINUTES
+        duration = TIMEOUT_30_MINUTES
         return duration
