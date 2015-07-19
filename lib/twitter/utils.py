@@ -1,6 +1,8 @@
 import time
 import tweepy
 
+from htk.utils import chunks
+
 def _get_auth_keys():
     from django.conf import settings
     consumer_key=settings.SOCIAL_AUTH_TWITTER_KEY
@@ -39,13 +41,6 @@ def get_user(screen_name):
     api = get_tweepy_api()
     twitter_user = api.get_user(screen_name=screen_name)
     return twitter_user
-
-def chunks(l, n):
-    """Yield successive n-sized chunks from l.
-    From: http://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks-in-python
-    """
-    for i in xrange(0, len(l), n):
-        yield l[i:i+n]
 
 def lookup_users_by_id(user_ids):
     """
