@@ -1,3 +1,4 @@
+from htk.apps.kv_storage.cachekeys import KVStorageCache
 from htk.utils import htk_setting
 
 def get_kv_storage_model():
@@ -46,20 +47,38 @@ def kv_put(key, value, overwrite=False):
                 key=key,
                 value=value
             )
+
+        if kv_obj:
+            # update the cache if value was successfully written
+            c = KVStorageCache(prekey=key)
+            c.cache_store(value)
     return kv_obj
 
 def kv_get(key):
     """GETs the value of `key` from key-value storage
     """
-    kv_obj = _get_kv_obj(key)
-    value = None
-    if kv_obj:
-        value = kv_obj.value
+    c = KVStorageCache(prekey=key)
+    value = c.get()
+    if value is None:
+        kv_obj = _get_kv_obj(key)
+        if kv_obj:
+            value = kv_obj.value
+            c.cache_store(value)
+    return value
+
+def kv_get_cached(key):
+    """GETs the cached value of `key`
+    Returns None if not cached
+    """
+    c = KVStorageCache(prekey=key)
+    value = c.get()
     return value
 
 def kv_delete(key):
     """DELETEs `key` from key-value storage
     """
+    c = KVStorageCache(prekey=key)
+    c.invalidate_cache()
     kv_obj = _get_kv_obj(key)
     if kv_obj:
         kv_obj.delete()
