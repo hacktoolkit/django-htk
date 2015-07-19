@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+class BaseKVStorageAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'key',
+        'value',
+    )

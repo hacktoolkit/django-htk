@@ -21,7 +21,7 @@ def _get_kv_obj(key):
             kv_obj = KV.objects.get(key=key)
         except KV.DoesNotExist:
             pass
-    return None
+    return kv_obj
 
 def kv_put(key, value, overwrite=False):
     """PUTs a key-value pair for `key` and `value`
