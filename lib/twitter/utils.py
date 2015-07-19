@@ -35,6 +35,11 @@ def get_tweepy_api(consumer_key=None, consumer_secret=None, access_token_key=Non
     api = tweepy.API(auth)
     return api
 
+def get_user(screen_name):
+    api = get_tweepy_api()
+    twitter_user = api.get_user(screen_name=screen_name)
+    return twitter_user
+
 def get_lists(screen_name):
     api = get_tweepy_api()
     lists = api.lists_all(screen_name)
