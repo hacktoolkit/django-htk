@@ -8,7 +8,16 @@ from django.contrib.auth import get_user_model
 from htk.utils import utcnow
 from htk.utils.datetime_utils import get_timezones_within_current_local_time_bounds
 
+def get_all_users():
+    """Returns all users
+    """
+    UserModel = get_user_model()
+    users = UserModel.objects.all()
+    return users
+
 def get_inactive_users():
+    """Returns all inactive users
+    """
     UserModel = get_user_model()
     inactive_users = UserModel.objects.filter(is_active=False)
     return inactive_users
