@@ -1,7 +1,9 @@
-# config.py
+# script_config.py
 # shared settings for standalone scripts hooking into Django
 
 import datetime
+import inspect
+import logging
 import os
 import re
 import sys
@@ -29,5 +31,22 @@ def job_runner(f):
     except:
         rollbar.report_exc_info()
 
-def slog(m):
-    print '%s:%s\t%s' % (__file__, datetime.datetime.now().isoformat(), m,)
+def slog(m, level='info'):
+    logger = logging.getLogger(__name__)
+    logger_fns = {
+        'debug' : logger.debug,
+        'info' : logger.info,
+        'warning' : logger.warn,
+        'error' : logger.error,
+        'critical' : logger.critical,
+    }
+    logger_fn = logger_fns.get(level, logger.info)
+
+    previous_call = inspect.stack()[1]
+    previous_fn = previous_call[0].f_code.co_name
+    previous_file = previous_call[1]
+    extra = {
+        'file' : previous_file,
+        'func' : previous_fn,
+    }
+    logger_fn(m, extra=extra)
