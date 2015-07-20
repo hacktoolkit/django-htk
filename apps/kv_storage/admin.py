@@ -8,3 +8,6 @@ class BaseKVStorageAdmin(admin.ModelAdmin):
         'created_on',
         'timestamp',
     )
+    search_fields = (
+        'key',
+    )
