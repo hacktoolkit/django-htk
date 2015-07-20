@@ -45,12 +45,14 @@ def get_user(screen_name):
 def lookup_users_by_id(user_ids):
     """
     https://dev.twitter.com/rest/reference/get/users/lookup
+
+    Requests / 15-min window (app auth): 60
     """
     api = get_tweepy_api()
     users = []
     for chunk in chunks(user_ids, 100):
         users.extend(api.lookup_users(user_ids=chunk))
-        time.sleep(60)
+        time.sleep(15)
     return users
 
 def get_lists(screen_name):
@@ -88,12 +90,17 @@ def get_following(screen_name):
     return friends
 
 def get_friends(screen_name):
+    """
+    https://dev.twitter.com/rest/reference/get/friends/list
+
+    Requests / 15-min window (app auth): 30
+    """
     api = get_tweepy_api()
     friends = []
     is_first = True
     for page in tweepy.Cursor(api.friends, screen_name=screen_name, count=200).pages():
         if not is_first:
-            time.sleep(60)
+            time.sleep(30)
         else:
             is_first = False
         friends.extend(page)
@@ -115,11 +122,21 @@ def get_friends_ids(screen_name):
     return ids
 
 def get_followers(screen_name):
+    """
+    https://dev.twitter.com/rest/reference/get/followers/list
+
+    Requests / 15-min window (app auth): 30
+    """
     api = get_twitter_api()
     followers = api.GetFollowers(screen_name=screen_name)
     return followers
 
 def get_followers_ids(screen_name):
+    """
+    https://dev.twitter.com/rest/reference/get/followers/ids
+
+    Requests / 15-min window (app auth): 15
+    """
     api = get_tweepy_api()
     ids = []
     is_first = True
