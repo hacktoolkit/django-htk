@@ -10,4 +10,5 @@ class BaseKVStorageAdmin(admin.ModelAdmin):
     )
     search_fields = (
         'key',
+        'value',
     )
