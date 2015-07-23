@@ -35,7 +35,7 @@ def is_business_hours_for_timezone(timezone_name='America/Los_Angeles'):
 def is_morning_hours_for_timezone(timezone_name='America/Los_Angeles'):
     """Determine if the local time for given `timezone_name` is currently during morning hours
 
-    Morning hours defined as MORNING_HOURS_START to MORNING_HOURS_END (approx: 6:00am to 8:59pm)
+    Morning hours defined as MORNING_HOURS_START to MORNING_HOURS_END (approx: 6:00am to 9:59am)
     """
     is_morning_hours = is_within_hour_bounds(MORNING_HOURS_START, MORNING_HOURS_END, timezone_name=timezone_name)
     return is_morning_hours
