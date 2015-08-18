@@ -21,12 +21,15 @@ import django_settings_module
 # import rollbar so we can report stuff!
 import rollbar
 
+from htk.utils.db import ensure_mysql_connection_usable
+
 def job_runner(f):
     """Accepts any callable function and runs it
 
     Catches any exceptions and logs to Rollbar
     """
     try:
+        ensure_mysql_connection_usable()
         f()
     except:
         rollbar.report_exc_info()
