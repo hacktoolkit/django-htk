@@ -119,7 +119,8 @@ def wrap_data(request, data=None):
             'inverted' : [],
             'join_value' : ',',
             'static_values' : {},
-         },
+        },
+        'site_verifications' : {},
     }
 
     ##

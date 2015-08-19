@@ -4,3 +4,8 @@
 {% if meta.keywords.content %}
 <meta name="keywords" content="{{ meta.keywords.content }}">
 {% endif %}
+
+{# site verifications #}
+{% if meta.site_verifications.alexa %}
+<meta name="alexaVerifyID" content="{{ meta.site_verifications.alexa }}"/>
+{% endif %}
