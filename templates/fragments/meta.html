@@ -4,8 +4,16 @@
 {% if meta.keywords.content %}
 <meta name="keywords" content="{{ meta.keywords.content }}">
 {% endif %}
-
-{# site verifications #}
+{# ----- Site Verifications ----- #}
 {% if meta.site_verifications.alexa %}
 <meta name="alexaVerifyID" content="{{ meta.site_verifications.alexa }}"/>
+{% endif %}
+{% if meta.site_verifications.bing %}
+<meta name="msvalidate.01" content="{{ meta.site_verifications.bing }}" />
+{% endif %}
+{% if meta.site_verifications.google %}
+<meta name="google-site-verification" content="{{ meta.site_verifications.google }}" />
+{% endif %}
+{% if meta.site_verifications.yandex %}
+<meta name='yandex-verification' content="{{ meta.site_verifications.yandex }}" />
 {% endif %}
