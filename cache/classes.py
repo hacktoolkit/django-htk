@@ -131,13 +131,23 @@ class LockableObject(object):
         locked = lock_presence == 1
         return locked
 
+    def acquire(self):
+        """Alias for lock()
+        """
+        self.lock()
+
+    def release(self):
+        """Alias for unlock()
+        """
+        self.unlock()
+
     def lock(self):
         """Lock an object, blocking concurrent access
         """
         lock_key = self.get_lock_key()
         lock_duration = self.get_lock_duration()
-        # use lock.add() instead of lock.set() by default,
-        # lock.add() fails if there's already something store for the key
+        # use cache.add() instead of cache.set() by default,
+        # cache.add() fails if there's already something stored for the key
         was_locked = cache.add(lock_key, 1, lock_duration)
         return was_locked
 
