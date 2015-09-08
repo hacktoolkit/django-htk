@@ -205,7 +205,7 @@ class UsernameEmailAuthenticationForm(forms.Form):
         Parameterize username_email and password to allow invoking from subclass
         """
         if not username_email:
-            username_email = self.cleaned_data.get('username_email').strip()
+            username_email = self.cleaned_data.get('username_email', '').strip()
         if not password:
             password = self.cleaned_data.get('password')
 
