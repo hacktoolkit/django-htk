@@ -10,6 +10,15 @@ from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.validators import is_valid_email
 from htk.utils import htk_setting
+from htk.utils.general import resolve_model_dynamically
+
+##
+# model resolvers
+
+def get_user_profile_model():
+    user_profile_model_name = htk_setting('HTK_USER_PROFILE_MODEL')
+    UserProfileModel = resolve_model_dynamically(user_profile_model_name)
+    return UserProfileModel
 
 ##
 # login and registration
