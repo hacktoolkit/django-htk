@@ -21,12 +21,32 @@ from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.utils import encrypt_uid
 from htk.lib.geoip.utils import get_geoip_city
 from htk.lib.geoip.utils import get_geoip_country
+from htk.models import AbstractAttribute
+from htk.models import AbstractAttributeHolderClassFactory
 from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.utils.request import get_current_request
 
-class BaseAbstractUserProfile(models.Model):
+class UserAttribute(AbstractAttribute):
+    holder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='attributes')
+
+    class Meta:
+        verbose_name = 'User Attribute'
+        unique_together = (
+            ('holder', 'key',),
+        )
+
+    def __unicode__(self):
+        value = '%s (%s)' % (self.key, self.holder)
+        return value
+
+UserAttributeHolder = AbstractAttributeHolderClassFactory(
+    UserAttribute,
+    holder_resolver=lambda self: self.user
+).get_class()
+
+class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
     """
     django.contrib.auth.models.User does not have a unique email
     """
