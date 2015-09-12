@@ -49,3 +49,16 @@ def json_response_okay():
 
 def json_response_error():
     return json_response(json_error())
+
+def extract_post_params(post_data, expected_params, strict=True):
+    """Extract `expected_params` from `post_data`
+
+    Raise Exception if `strict` and any `expected_params` are missing
+    """
+    data = {}
+    for param in expected_params:
+        if strict and param not in post_data:
+            raise Exception('Missing param: %s' % param)
+        value = post_data.get(param)
+        data[param] = value
+    return data
