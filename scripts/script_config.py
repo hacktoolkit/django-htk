@@ -1,9 +1,6 @@
 # script_config.py
 # shared settings for standalone scripts hooking into Django
 
-import datetime
-import inspect
-import logging
 import os
 import re
 import sys
