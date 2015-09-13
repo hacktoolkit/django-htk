@@ -3,9 +3,10 @@ import inspect
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
+from htk.tasks import BaseTask
 from htk.mailers import send_email
 
-class BaseBatchRelationshipEmails(object):
+class BaseBatchRelationshipEmails(BaseTask):
     """
     Relationship emails are related to transactional emails, but usually happen asynchronously or offline, apart from direct web requests
 
@@ -37,34 +38,12 @@ class BaseBatchRelationshipEmails(object):
         else:
             raise TemplateDoesNotExist('Unspecified template')
 
-    def has_cooldown(self, user):
-        """Checks whether cooldown timer is still going for `user`
-        """
-        prekey = user.id
-        c = self.cooldown_class(prekey)
-        _has_cooldown = bool(c.get())
-        return _has_cooldown
-
-    def reset_cooldown(self, user):
-        """Resets cooldown timer for this `user`
-
-        Returns whether cooldown was reset, False if timer was still running
-        """
-        prekey = user.id
-        c = self.cooldown_class(prekey)
-        if c.get():
-            was_reset = False
-        else:
-            c.cache_store()
-            was_reset = True
-        return was_reset
-
     def get_recipients(self):
         """Returns a list or QuerySet of User objects
 
         Should be overridden
         """
-        users = []
+        users = self.get_users()
         return users
 
     def get_subject(self, recipient):
@@ -100,7 +79,7 @@ class BaseBatchRelationshipEmails(object):
         return email_params
 
     def send_email(self, recipient):
-        """Workhorse function called by `self.send_emails for`
+        """Workhorse function called by `self.send_emails` for
         sending to one `recipient`
 
         Can be overridden
@@ -124,6 +103,6 @@ class BaseBatchRelationshipEmails(object):
                 pass
             else:
                 self.send_email(recipient)
-                # cache right after we send, since we want to guarantee
-                # each send operation costs a non-zero overhead,
+                # cache right after we send, not before
+                # since each send operation costs a non-zero overhead
                 self.reset_cooldown(recipient)

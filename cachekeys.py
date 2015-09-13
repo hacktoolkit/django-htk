@@ -11,7 +11,16 @@ class StaticAssetVersionCache(CustomCacheScheme):
         duration = TIMEOUT_30_DAYS
         return duration
 
-class BatchRelationshipEmailCooldown(CustomCacheScheme):
+class TaskCooldown(CustomCacheScheme):
+    """Cache management object for not performing background tasks too frequently
+
+    Default cooldown: no more than once per day
+    """
+    def get_cache_duration(self):
+        duration = TIMEOUT_24_HOURS
+        return duration
+
+class BatchRelationshipEmailCooldown(TaskCooldown):
     """Cache management object for not sending out BatchRelationshipEmails too frequently
 
     Default cooldown: no more than once per day

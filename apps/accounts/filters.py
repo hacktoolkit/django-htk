@@ -2,6 +2,41 @@ import datetime
 
 from htk.utils import utcnow
 
+def active_users(users, active=True):
+    filtered = users.filter(is_active=active)
+    return filtered
+
+def inactive_users(users):
+    filtered = users.filter(is_active=False)
+    return filtered
+
+def users_with_attribute_value(users, key, value):
+    filtered = users.filter(
+        attributes__key=key,
+        attributes__value=value
+    )
+    return filtered
+
+def users_currently_at_local_time(users, start_hour, end_hour, isoweekday=None):
+    """Filters a QuerySet of `users` whose current local time is within a time range
+
+    Strategy 1 (inefficient):
+    enumerate through every User, and keep the ones whose current local time is within the range
+
+    Strategy 2:
+    - find all the timezones that are in the local time
+    - query users in that timezone
+
+    `start_hour` and `end_hour` are naive datetimes
+    If `isoweekday` is specified, also checks that it falls on that weekday (Monday = 1, Sunday = 7)
+    """
+    from htk.utils.datetime_utils import get_timezones_within_current_local_time_bounds    
+    timezones = get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweekday=isoweekday)
+    filtered = users.filter(
+        profile__timezone__in=timezones
+    )
+    return filtered
+
 def users_logged_in_within_period(users, window=1):
     """Filter the queryset of users who logged in within the last `window` number of hours.
     """
