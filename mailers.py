@@ -6,6 +6,7 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
 from htk.constants.defaults import *
+from htk.middleware import GlobalRequestMiddleware
 from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
 from htk.utils.text.converters import html2markdown
@@ -30,7 +31,24 @@ def email_context_generator():
     """Dummy email context generator
     Returns a dictionary
     """
+    request = GlobalRequestMiddleware.get_current_request()
+    protocol = 'http'
+    if request:
+        if request.is_secure():
+            protocol = 'https'
+        else:
+            pass
+        domain = request.get_host() or htk_setting('HTK_DEFAULT_DOMAIN')
+    else:
+        domain = htk_setting('HTK_DEFAULT_DOMAIN')
+
+    base_url = '%(protocol)s://%(domain)s' % {
+        'protocol' : protocol,
+        'domain' : domain,
+    }
+
     context = {
+        'base_url': base_url,
         'site_name': htk_setting('HTK_SITE_NAME'),
     }
     return context
