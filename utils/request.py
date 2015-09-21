@@ -1,4 +1,7 @@
+import re
+
 from htk.utils import htk_setting
+from htk.utils.constants import *
 
 def get_current_request():
     from htk.middleware.classes import GlobalRequestMiddleware
@@ -17,6 +20,13 @@ def extract_request_ip(request):
     if real_ip:
         return real_ip
     return request.environ['REMOTE_ADDR']
+
+def get_custom_http_headers(request):
+    custom_http_headers = []
+    for header_name in request.META.keys():
+        if re.match(r'^HTTP', header_name) and header_name not in REQUEST_HTTP_HEADERS_STANDARD:
+            custom_http_headers.append(header_name)
+    return custom_http_headers
 
 def build_dict_from_request(request):
     """Build a dictionary from `request` that can be serialized to JSON

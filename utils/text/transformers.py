@@ -1,6 +1,6 @@
 import re
 
-from htk.utils.constants import *
+from htk.utils.text.constants import *
 from htk.utils.text.unicode import unicode_to_ascii
 
 def get_sentences(paragraph):

@@ -8,6 +8,13 @@ register = Library()
 ##################################################
 # Filters
 
+# Dictionary Utilities
+
+@register.filter()
+def get_item(dictionary, key):
+    value = dictionary.get(key)
+    return value
+
 # String Utilities
 
 @register.filter(is_safe=True)
@@ -73,6 +80,20 @@ def obfuscate_mailto(value, text=False):
 def jsbool(value):
     js_value = 'true' if bool(value) else 'false'
     return js_value
+
+# Requests
+
+@register.filter()
+def http_header(value):
+    """Converts Django HTTP headers to standard format
+    e.g.
+      HTTP_ACCEPT -> Accept
+      HTTP_CACHE_CONTROL -> Cache-Control
+    """
+    parts = value.split('_')
+    header_parts = [part.title() for part in parts[1:]]
+    formatted = '-'.join(header_parts)
+    return formatted
 
 ##################################################
 # Tags
