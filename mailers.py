@@ -134,3 +134,33 @@ def send_email(
         pass
 
     msg.send()
+
+def send_markdown_email(
+    subject='',
+    sender=None,
+    to=None,
+    cc=None,
+    bcc=None,
+    markdown_content=''
+):
+    """Sends an email  w/ text and HTML produced from Markdown
+    """
+    sender = sender or htk_setting('HTK_DEFAULT_EMAIL_SENDER', HTK_DEFAULT_EMAIL_SENDER)
+    to = to or htk_setting('HTK_DEFAULT_EMAIL_RECIPIENTS', HTK_DEFAULT_EMAIL_RECIPIENTS)
+    bcc = bcc or []
+    cc = cc or []
+
+    if settings.ENV_DEV:
+        subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
+
+    msg = EmailMultiAlternatives(subject=subject,
+                                 body=markdown_content,
+                                 from_email=sender,
+                                 to=to,
+                                 bcc=bcc,
+                                 cc=cc)
+
+    import markdown
+    html_content = markdown.markdown(markdown_content)
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
