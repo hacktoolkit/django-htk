@@ -56,7 +56,7 @@ def email_context_generator():
 def get_email_context():
     """Get the email context dictionary for templated emails
     """
-    email_context_generator = htk_setting('HTK_EMAIL_CONTEXT_GENERATOR', None)
+    email_context_generator = htk_setting('HTK_EMAIL_CONTEXT_GENERATOR')
     context = {}
     if email_context_generator:
         method = resolve_method_dynamically(email_context_generator)
