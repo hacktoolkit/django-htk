@@ -1,0 +1,2 @@
+HTK_MAINTENANCE_MODE = False
+HTK_MAINTENANCE_MODE_URL_NAME = 'maintenance_mode'

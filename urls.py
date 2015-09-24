@@ -15,6 +15,12 @@ urlpatterns = patterns(
     url(r'^redir$', views.redir, name='redir'),
 )
 
+if 'htk.apps.maintenance_mode' in settings.INSTALLED_APPS:
+    urlpatterns += patterns(
+        '',
+        url(r'', include('htk.apps.maintenance_mode.urls')),
+    )
+
 if settings.TEST or settings.ENV_DEV:
     urlpatterns += patterns(
         '',
