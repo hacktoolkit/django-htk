@@ -5,9 +5,8 @@ from importlib import import_module
 from django.conf import settings
 from django.db.models.loading import get_model
 
-import htk.constants
-
 def htk_setting(key, default=None):
+    import htk.constants.defaults
     if hasattr(settings, key):
         value = getattr(settings, key)
     elif default is not None:
