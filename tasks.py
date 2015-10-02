@@ -17,10 +17,14 @@ class BaseTask(object):
         else:
             self.cooldown_class = TaskCooldown
 
+    def get_cooldown_class_prekey(self, user):
+        prekey = user.id
+        return prekey
+
     def has_cooldown(self, user):
         """Checks whether cooldown timer is still going for `user`
         """
-        prekey = user.id
+        prekey = self.get_cooldown_class_prekey(user)
         c = self.cooldown_class(prekey)
         _has_cooldown = bool(c.get())
         return _has_cooldown
@@ -30,7 +34,7 @@ class BaseTask(object):
 
         Returns whether cooldown was reset, False if timer was still running
         """
-        prekey = user.id
+        prekey = self.get_cooldown_class_prekey(user)
         c = self.cooldown_class(prekey)
         if c.get():
             was_reset = False
