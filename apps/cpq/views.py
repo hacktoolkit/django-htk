@@ -14,13 +14,13 @@ def invoice(
         request,
         invoice_code,
         data=None,
-        template_name='htk/fragments/invoices/invoice.html',
+        template_name='htk/fragments/cpq/invoice.html',
         renderer=_r
     ):
     if data is None:
         data = wrap_data(request)
 
-    from htk.apps.invoices.utils import resolve_invoice_code
+    from htk.apps.cpq.utils import resolve_invoice_code
     invoice = resolve_invoice_code(invoice_code)
     if invoice is None:
         raise Http404
