@@ -3,31 +3,36 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 from htk.apps.cpq.constants import *
-from htk.apps.cpq.utils import compute_invoice_code
+from htk.apps.cpq.utils import compute_cpq_code
 from htk.fields import CurrencyField
 from htk.utils.enums import enum_to_str
 
-class BaseInvoice(models.Model):
-    customer = models.ForeignKey(settings.HTK_INVOICE_CUSTOMER_MODEL, related_name='invoices')
+class BaseCPQQuote(models.Model):
+    # related_name = customer.quotes, customer.invoices
+    customer = models.ForeignKey(settings.HTK_CPQ_CUSTOMER_MODEL, related_name='%(class)ss')
     date = models.DateField()
-    notes = models.TextField(max_length=256, blank=True)
-    invoice_type = models.PositiveIntegerField(default=HTK_INVOICE_DEFAULT_TYPE.value)
-    paid = models.BooleanField(default=False)
-    payment_terms = models.PositiveIntegerField(default=HTK_INVOICE_DEFAULT_PAYMENT_TERM.value)
+    notes = models.TextField(max_length=1024, blank=True)
 
     class Meta:
         abstract = True
 
     def __unicode__(self):
-        value = 'Invoice #%s' % self.id
+        value = 'CPQ #%s' % self.id
         return value
 
     def get_encoded_id(self):
-        invoice_code = compute_invoice_code(self)
+        invoice_code = compute_cpq_code(self)
         return invoice_code
 
+    def get_url_name(self):
+        """Gets the url_name for this object
+        Abstract method must be overrided
+        """
+        raise Exception('get_url_name abstract method not implemented')
+
     def get_url(self):
-        url = reverse('invoices_invoice', args=(self.get_encoded_id(),))
+        url_name = self.get_url_name()
+        url = reverse(url_name, args=(self.get_encoded_id(),))
         return url
 
     def get_total(self):
@@ -36,6 +41,22 @@ class BaseInvoice(models.Model):
         for line_item in line_items:
             subtotal += line_item.get_amount()
         return subtotal
+
+class BaseCPQInvoice(BaseCPQQuote):
+    invoice_type = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_TYPE.value)
+    paid = models.BooleanField(default=False)
+    payment_terms = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_PAYMENT_TERM.value)
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        value = 'Invoice #%s' % self.id
+        return value
+
+    def get_url_name(self):
+        url_name = 'invoices_invoice'
+        return url_name
 
     def get_invoice_type(self):
         from htk.apps.cpq.enums import InvoiceType
@@ -49,8 +70,7 @@ class BaseInvoice(models.Model):
         str_value = enum_to_str(invoice_payment_term)
         return str_value
 
-class BaseInvoiceLineItem(models.Model):
-    invoice = models.ForeignKey(settings.HTK_INVOICE_MODEL, related_name='line_items')
+class BaseCPQLineItem(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField(max_length=256)
     unit_cost = CurrencyField(default=0)
@@ -59,10 +79,26 @@ class BaseInvoiceLineItem(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
-        value = 'Line Item for Invoice #%s' % self.invoice.id
-        return value
-
     def get_amount(self):
         amount = self.unit_cost * self.quantity
         return amount
+
+class BaseCPQQuoteLineItem(BaseCPQLineItem):
+    quote = models.ForeignKey(settings.HTK_CPQ_QUOTE_MODEL, related_name = 'line_items')
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        value = 'Line Item for %s #%s' % (self.__class__.__name__, self.quote.id,)
+        return value
+
+class BaseCPQInvoiceLineItem(BaseCPQLineItem):
+    invoice = models.ForeignKey(settings.HTK_CPQ_INVOICE_MODEL, related_name='line_items')
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        value = 'Line Item for %s #%s' % (self.__class__.__name__, self.invoice.id,)
+        return value

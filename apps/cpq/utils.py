@@ -4,53 +4,59 @@ from django.conf import settings
 from django.utils.http import base36_to_int
 from django.utils.http import int_to_base36
 
+from htk.apps.cpq.enums import CPQType
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
 from htk.utils.luhn import calculate_luhn
 from htk.utils.luhn import is_luhn_valid
 
-INVOICE_XOR_KEY = htk_setting('HTK_INVOICE_XOR_KEY')
-INVOICE_CHECK_HASH_LENGTH = htk_setting('HTK_INVOICE_CHECK_HASH_LENGTH')
+CPQ_XOR_KEY = htk_setting('HTK_CPQ_XOR_KEY')
+CPQ_CHECK_HASH_LENGTH = htk_setting('HTK_CPQ_CHECK_HASH_LENGTH')
 
-def compute_invoice_code(invoice):
-    """Computes the encoded id for an Invoice
+def compute_cpq_code(cpq):
+    """Computes the encoded id for a CPQ object (Quote or Invoice)
     """
-    xored = invoice.id ^ INVOICE_XOR_KEY
+    xored = cpq.id ^ CPQ_XOR_KEY
     check_digit = calculate_luhn(xored)
     padded = int(str(xored) + str(check_digit))
-    invoice_code = int_to_base36(padded)
-    check_hash = compute_invoice_code_check_hash(invoice_code)
-    invoice_code = check_hash + invoice_code
-    return invoice_code
+    cpq_code = int_to_base36(padded)
+    check_hash = compute_cpq_code_check_hash(cpq_code)
+    cpq_code = check_hash + cpq_code
+    return cpq_code
 
-def compute_invoice_code_check_hash(invoice_code):
-    check_hash = hashlib.md5(invoice_code).hexdigest()[:INVOICE_CHECK_HASH_LENGTH]
+def compute_cpq_code_check_hash(cpq_code):
+    check_hash = hashlib.md5(cpq_code).hexdigest()[:CPQ_CHECK_HASH_LENGTH]
     return check_hash
 
-def is_valid_invoice_code_check_hash(invoice_code, check_hash):
-    verify_hash = compute_invoice_code_check_hash(invoice_code)
+def is_valid_cpq_code_check_hash(cpq_code, check_hash):
+    verify_hash = compute_cpq_code_check_hash(cpq_code)
     is_valid = verify_hash == check_hash
     return is_valid
 
-def resolve_invoice_code(invoice_code):
-    """Returns the Invoice for this `invoice_code`
+def resolve_cpq_code(cpq_code, cpq_type=CPQType.INVOICE):
+    """Returns the CPQ object (Quote or Invoice) for this `cpq_code`
     """
-    check_hash = invoice_code[:INVOICE_CHECK_HASH_LENGTH]
-    invoice_code = invoice_code[INVOICE_CHECK_HASH_LENGTH:]
-    if is_valid_invoice_code_check_hash(invoice_code, check_hash):
-        InvoiceModel = resolve_model_dynamically(settings.HTK_INVOICE_MODEL)
+    check_hash = cpq_code[:CPQ_CHECK_HASH_LENGTH]
+    cpq_code = cpq_code[CPQ_CHECK_HASH_LENGTH:]
+    if is_valid_cpq_code_check_hash(cpq_code, check_hash):
+        if cpq_type == CPQType.INVOICE:
+            CPQModel = resolve_model_dynamically(settings.HTK_CPQ_INVOICE_MODEL)
+        elif cpq_type == CPQType.QUOTE:
+            CPQModel = resolve_model_dynamically(settings.HTK_CPQ_QUOTE_MODEL)
+        else:
+            raise Exception('Bad value for cpq_type')
         try:
-            padded = base36_to_int(invoice_code)
+            padded = base36_to_int(cpq_code)
             if is_luhn_valid(padded):
                 xored = padded / 10
-                invoice_id = xored ^ INVOICE_XOR_KEY
-                invoice = InvoiceModel.objects.get(id=invoice_id)
+                cpq_id = xored ^ CPQ_XOR_KEY
+                cpq = CPQModel.objects.get(id=cpq_id)
             else:
-                invoice = None
+                cpq = None
         except ValueError:
-            invoice = None
-        except InvoiceModel.DoesNotExist:
-            invoice = None
+            cpq = None
+        except CPQModel.DoesNotExist:
+            cpq = None
     else:
-        invoice = None
-    return invoice
+        cpq = None
+    return cpq

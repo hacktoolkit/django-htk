@@ -1,8 +1,11 @@
 from enum import Enum
 
-class InvoiceType(Enum):
+class CPQType(Enum):
     INVOICE = 1
     QUOTE = 2
+
+class InvoiceType(Enum):
+    INVOICE = 1
     REIMBURSEMENT = 10
 
 class InvoicePaymentTerm(Enum):
