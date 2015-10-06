@@ -26,8 +26,8 @@ class AccountActivationReminderEmails(BaseBatchRelationshipEmails):
         account_creation_threshold_upper = utcnow() - datetime.timedelta(days=1)
         account_creation_threshold_lower = account_creation_threshold_upper - datetime.timedelta(days=21)
         users = inactive_users.filter(
-            date_joined__lte=account_creation_threshold_upper,
-            date_joined__gte=account_creation_threshold_lower
+            date_joined__gte=account_creation_threshold_lower,
+            date_joined__lte=account_creation_threshold_upper
         )
         return users
 
