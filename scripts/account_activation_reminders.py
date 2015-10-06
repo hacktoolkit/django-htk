@@ -30,4 +30,5 @@ def main():
         slog('Done sending reminder emails, sleeping...')
         time.sleep(TIMEOUT_1_HOUR)
 
-job_runner(main)
+if __name__ == '__main__':
+    job_runner(main)

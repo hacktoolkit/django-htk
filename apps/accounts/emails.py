@@ -22,9 +22,12 @@ class AccountActivationReminderEmails(BaseBatchRelationshipEmails):
     def get_recipients(self):
         from htk.apps.accounts.utils.lookup import get_inactive_users
         inactive_users = get_inactive_users()
-        account_creation_threshold = utcnow() - datetime.timedelta(days=1)
+        # send reminders after 1 day and up to 3 weeks
+        account_creation_threshold_upper = utcnow() - datetime.timedelta(days=1)
+        account_creation_threshold_lower = account_creation_threshold_upper - datetime.timedelta(days=21)
         users = inactive_users.filter(
-            date_joined__lte=account_creation_threshold
+            date_joined__gte=account_creation_threshold_lower,
+            date_joined__lte=account_creation_threshold_upper
         )
         return users
 
