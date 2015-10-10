@@ -64,7 +64,7 @@
       </table>
       <br/>
 
-      <h3 class="cpq-heading">{% if quote.get_quote_type == 'Quote' %}Bill To{% else %}Pay To{% endif %}:</h3>
+      <h3 class="cpq-heading">Quoted For:</h3>
       {% with customer=quote.customer %}
       {{ customer.name }}<br/>
       {% if customer.attention %}
