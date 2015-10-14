@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema attributeFormDefault="unqualified"
+            elementFormDefault="unqualified"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:ZillowTypes="http://www.zillow.com/static/xsd/ZillowTypes.xsd"
+            xmlns="http://www.zillow.com/static/xsd/Zestimate.xsd" 
+            targetNamespace="http://www.zillow.com/static/xsd/Zestimate.xsd">
+
+    <xsd:import namespace="http://www.zillow.com/static/xsd/ZillowTypes.xsd"
+    schemaLocation="ZillowTypes.xsd"/>
+
+    <xsd:element name="zestimate" type="zestimateResultType" />
+	
+	<xsd:complexType name="zestimateResultType">
+            <xsd:sequence>
+                <xsd:element name="request">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="zpid" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+               
+                <xsd:element name="message" type="ZillowTypes:Message"/>
+
+                <xsd:element minOccurs="0" name="response" type="ZillowTypes:DetailedProperty"/>
+
+            </xsd:sequence>
+	</xsd:complexType>
+	
+</xsd:schema>
