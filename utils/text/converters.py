@@ -17,7 +17,7 @@ def markdown2slack(markdown_text):
         # MD headings to Slack bold
         line = re.sub(r'^#+(.*)$', r'*\1*', line)
         # MD bold to Slack bold
-        line = re.sub(r'\*\*(.*)\*\*', r'*\1*', line)
+        line = re.sub(r'\*\*(.*?)\*\*', r'*\1*', line)
         slack_lines.append(line)
     slack_text = '\n'.join(slack_lines)
     return slack_text
