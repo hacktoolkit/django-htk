@@ -2,5 +2,6 @@ HTK_SLACK_EVENT_TYPE_RESOLVER = 'htk.lib.slack.event_resolvers.default_event_typ
 
 HTK_SLACK_EVENT_HANDLERS = {
     'default' : 'htk.lib.slack.event_handlers.default',
+    'bible' : 'htk.lib.slack.event_handlers.bible',
     'weather' : 'htk.lib.slack.event_handlers.weather',
 }
