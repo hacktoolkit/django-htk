@@ -1,6 +1,7 @@
 import json
 import requests
 
+from htk.apps.kv_storage import *
 from htk.utils import htk_setting
 
 def webhook_call(
@@ -32,6 +33,13 @@ def webhook_call(
 def is_valid_webhook_token(token):
     expected_token = htk_setting('HTK_SLACK_WEBHOOK_TOKEN')
     is_valid = token == expected_token
+    if not is_valid:
+        # try against KV storages
+        key = 'slack_webhook_%s' % token
+        is_valid = kv_get(key) is not None
+    else:
+        # it's really invalid
+        pass
     return is_valid
 
 def get_event_type(event):
