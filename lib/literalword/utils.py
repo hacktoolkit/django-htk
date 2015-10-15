@@ -15,7 +15,7 @@ def get_bible_passage(query):
         soup = BeautifulSoup(response.content, 'html.parser')
         text_container = soup.select('.bMeatWrapper')
         if len(text_container):
-            container = text_container
+            container = text_container[0]
             # remove <p> tags
             for p in container.find_all('p'):
                 p.decompose()
