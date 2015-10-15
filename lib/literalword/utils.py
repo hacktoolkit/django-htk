@@ -11,7 +11,6 @@ def get_bible_passage(query):
         'q' : query,
     }
     response = requests.get(url, params)
-    default_text = 'Could not find passage in Bible. Please review your query or try again later.'
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
         text_container = soup.select('.bMeatWrapper')
@@ -23,9 +22,10 @@ def get_bible_passage(query):
             html = u'%s' % container
             text = html2markdown(html)
         else:
-            text = default_text
+            meta_description_tag = soup.meta.find(attrs={'name' : 'description',})
+            text = meta_description_tag['content']
     else:
-        text = default_text
+        text = 'Could not find passage in Bible. Please review your query or try again later.'
 
     passage = {
         'url' : response.url,
