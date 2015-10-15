@@ -7,7 +7,7 @@ def html2markdown(html):
     markdown_text = pypandoc.convert(html, 'markdown_strict', format='html')
     return markdown_text
 
-def markdown_to_slack(markdown_text):
+def markdown2slack(markdown_text):
     """Converts Markdown-formatted text to Slack-formatted text
     """
     markdown_lines = markdown_text.split('\n')

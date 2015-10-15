@@ -29,7 +29,7 @@ def bible(event):
         if args:
             location = args
             from htk.lib.literalword.utils import get_bible_passage
-            #from htk.utils.text.converters import markdown_to_slack
+            #from htk.utils.text.converters import markdown2slack
             passage = get_bible_passage(args)
             passage['query'] = args
             slack_text = """Bible passage: *%(query)s*
@@ -59,13 +59,13 @@ def weather(event):
         if args:
             location = args
             from htk.lib.forecastio.utils import format_weather
-            from htk.utils.text.converters import markdown_to_slack
+            from htk.utils.text.converters import markdown2slack
             from htk.utils.weather import get_weather
             weather = get_weather(location)
             formatted_weather = format_weather(weather)
             slack_text = '*Weather for %s*:\n%s' % (
                 location,
-                markdown_to_slack(formatted_weather),
+                markdown2slack(formatted_weather),
             )
         else:
             slack_text = 'Please specify a location to retrieve weather for.'
