@@ -11,6 +11,12 @@ def webhook_call(
     text='',
     icon_emoji=None
 ):
+    """Performs a webhook call to Slack
+
+    https://api.slack.com/incoming-webhooks
+
+    `channel` override must be a public channel
+    """
     if webhook_url is None:
         webhook_url = htk_setting('HTK_SLACK_WEBHOOK_URL')
 
