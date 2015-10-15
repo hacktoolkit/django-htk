@@ -34,35 +34,6 @@ def is_valid_webhook_token(token):
     is_valid = token == expected_token
     return is_valid
 
-def default_event_type_resolver(event):
-    """The Hacktoolkit-flavored default event type resolver for Slack webhook events
-    """
-    trigger_word = event['trigger_word']
-    text = event['text'][len(trigger_word):].strip()
-    event_type = 'default'
-    return event_type
-
-def default_event_handler(event):
-    """A Hacktoolkit-flavored default event handler for Slack webhook events
-
-    Returns a payload if applicable, or None
-    """
-    trigger_word = event['trigger_word']
-    text = event['text'][len(trigger_word):].strip()
-
-    # for example, we could...
-    # make another webhook call in response
-    channel = event['channel_id']
-    echo_text = 'You said: [%s]. Roger that.' % text
-    username = 'Hacktoolkit Bot'
-    #webhook_call(text=echo_text, channel=channel, username=username)
-
-    payload = {
-        'text' : echo_text,
-        'username' : username,
-    }
-    return payload
-
 def get_event_type(event):
     event_type_resolver_module_str = htk_setting('HTK_SLACK_EVENT_TYPE_RESOLVER')
     from htk.utils.general import resolve_method_dynamically
@@ -97,3 +68,17 @@ def handle_event(event):
     else:
         payload = None
     return payload
+
+def parse_event_text(event):
+    """Helper function to parse Slack webhook `event` text
+
+    Returns tuple of (text, command, args,)
+    """
+    trigger_word = event['trigger_word']
+    text = event['text'][len(trigger_word):].strip()
+
+    parts = text.split(' ')
+    command = parts[0].lower()
+    args = ' '.join(parts[1:]) if len(parts) > 1 else ''
+    parsed = (text, command, args,)
+    return parsed
