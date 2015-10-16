@@ -8,3 +8,5 @@ PLIVO_MESSAGE_WEBHOOK_PARAMS = (
     'Type', # sms
     'MessageUUID',
 )
+
+PLIVO_SLACK_DEFAULT_MESSAGE_FORMAT = u'Plivo Message from *%(From)s* (%(Type)s; %(MessageUUID)s)\n>>> %(Text)s'
