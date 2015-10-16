@@ -59,16 +59,20 @@ def stock(event):
     if command == 'stock':
         if args:
             STOCK_TICKER_MAX_LENGTH = 5
-            symbols = map(lambda x: x.upper(), filter(lambda x: 0 < len(x) <= STOCK_TICKER_MAX_LENGTH, re.split(r'[, ]', args)))
+            symbols = map(lambda x: x.upper(), filter(lambda x: 0 < len(x) <= STOCK_TICKER_MAX_LENGTH, re.split(r'[;, ]', args)))
+            # remove duplicates
             symbols = list(set(symbols))
+            # cap number of symbols per request
+            MAX_SYMBOLS = 20
+            symbols = symbols[:MAX_SYMBOLS]
             from htk.lib.yahoo.finance.utils import get_stock_price
             prices = {}
             for symbol in symbols:
                 prices[symbol] = get_stock_price(symbol)
-            prices_strings = ['*%s* - $%s' % (symbol, prices[symbol],) for symbol in prices.keys()]
+            prices_strings = ['*%s* - $%s' % (symbol, prices[symbol],) for symbol in sorted(prices.keys())]
             slack_text = '\n'.join(prices_strings)
         else:
-            slack_text = 'Please enter a list of stock symbols to look up'
+            slack_text = 'Please enter a list of stock symbols to look up.'
     else:
         slack_text = 'Illegal command.'
 
