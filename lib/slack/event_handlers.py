@@ -1,6 +1,26 @@
 import re
 
+from htk.lib.slack.constants.defaults import HTK_SLACK_EVENT_HANDLERS
 from htk.lib.slack.utils import parse_event_text
+
+def help(event):
+    (text, command, args,) = parse_event_text(event)
+
+    if command == 'help':
+        commands = ['`%s`' % command for command in sorted(HTK_SLACK_EVENT_HANDLERS.keys())]
+        slack_text = """Usage: `htk: command args`
+Available commands are: %s
+""" % ', '.join(commands)
+    else:
+        slack_text = 'Illegal command.'
+
+    username = 'Hacktoolkit Bot'
+    payload = {
+        'text' : slack_text,
+        'username' : username,
+    }
+    return payload
+
 
 def default(event):
     """A Hacktoolkit-flavored default event handler for Slack webhook events
