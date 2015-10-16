@@ -59,7 +59,7 @@ Read on LiteralWord: %(url)s
 >>> %(text)s
 """ % passage
         else:
-            slack_text = 'Please specify a location to retrieve weather for.'
+            slack_text = 'Please specify a Bible passage to look up. e.g. `htk: bible Lamentations 3:22-23` or `htk: bible Psalm 119:11`'
     else:
         slack_text = 'Illegal command.'
 
