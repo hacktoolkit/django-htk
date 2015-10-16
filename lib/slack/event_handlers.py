@@ -1,3 +1,5 @@
+import re
+
 from htk.lib.slack.utils import parse_event_text
 
 def default(event):
@@ -41,9 +43,36 @@ Read on LiteralWord: %(url)s
     else:
         slack_text = 'Illegal command.'
 
-    channel = event['channel_id']
     username = 'Hacktoolkit Bot'
 
+    payload = {
+        'text' : slack_text,
+        'username' : username,
+    }
+    return payload
+
+def stock(event):
+    """Stock event handler for Slack webhook events
+    """
+    (text, command, args,) = parse_event_text(event)
+
+    if command == 'stock':
+        if args:
+            STOCK_TICKER_MAX_LENGTH = 5
+            symbols = map(lambda x: x.upper(), filter(lambda x: 0 < len(x) <= STOCK_TICKER_MAX_LENGTH, re.split(r'[, ]', args)))
+            symbols = list(set(symbols))
+            from htk.lib.yahoo.finance.utils import get_stock_price
+            prices = {}
+            for symbol in symbols:
+                prices[symbol] = get_stock_price(symbol)
+            prices_strings = ['*%s* - $%s' % (symbol, prices[symbol],) for symbol in prices.keys()]
+            slack_text = '\n'.join(prices_strings)
+        else:
+            slack_text = 'Please enter a list of stock symbols to look up'
+    else:
+        slack_text = 'Illegal command.'
+
+    username = 'Hacktoolkit Bot'
     payload = {
         'text' : slack_text,
         'username' : username,

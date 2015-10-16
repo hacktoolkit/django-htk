@@ -16,3 +16,10 @@ def get_stock_info_and_historical_data(symbol):
         'historical' : historical,
     }
     return data
+
+def get_stock_price(symbol):
+    """Retrieve the latest price for `symbol` representing stock
+    """
+    share = yahoo_finance.Share(symbol)
+    price = share.get_price()
+    return price
