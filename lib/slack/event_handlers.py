@@ -55,7 +55,7 @@ def bible(event):
             passage = get_bible_passage(args)
             passage['query'] = args
             slack_text = """Bible passage: *%(query)s*
-Read on LiteralWord: %(url)s
+Read on Literal Word: %(url)s
 >>> %(text)s
 """ % passage
         else:
