@@ -32,19 +32,19 @@ def get_users_with_attribute_value(key, value, active=True):
         users = _filters.active_users(users, active=active)
     return users
 
-def get_users_currently_at_local_time(start_hour, end_hour, isoweekday=None, active=True):
+def get_users_currently_at_local_time(start_hour, end_hour, isoweekdays=None, active=True):
     """Returns a Queryset of Users whose current local time is within a time range
 
     `start_hour` and `end_hour` are naive datetimes
-    If `isoweekday` is specified, also checks that it falls on that weekday (Monday = 1, Sunday = 7)
+    If `isoweekdays` is specified, also checks that it falls on one of the days of the week (Monday = 1, Sunday = 7)
     """
-    timezones = get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweekday=isoweekday)
+    timezones = get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweekdays=isoweekdays)
     UserModel = get_user_model()
     users = _filters.users_currently_at_local_time(
         UserModel.objects,
         start_hour,
         end_hour,
-        isoweekday=isoweekday
+        isoweekdays=isoweekdays
     )
 
     if active is not None:

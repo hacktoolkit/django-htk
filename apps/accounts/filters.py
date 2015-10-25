@@ -17,7 +17,7 @@ def users_with_attribute_value(users, key, value):
     )
     return filtered
 
-def users_currently_at_local_time(users, start_hour, end_hour, isoweekday=None):
+def users_currently_at_local_time(users, start_hour, end_hour, isoweekdays=None):
     """Filters a QuerySet of `users` whose current local time is within a time range
 
     Strategy 1 (inefficient):
@@ -28,10 +28,10 @@ def users_currently_at_local_time(users, start_hour, end_hour, isoweekday=None):
     - query users in that timezone
 
     `start_hour` and `end_hour` are naive datetimes
-    If `isoweekday` is specified, also checks that it falls on that weekday (Monday = 1, Sunday = 7)
+    If `isoweekdays` is specified, also checks that it falls on one of the days of the week (Monday = 1, Sunday = 7)
     """
     from htk.utils.datetime_utils import get_timezones_within_current_local_time_bounds    
-    timezones = get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweekday=isoweekday)
+    timezones = get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweekdays=isoweekdays)
     filtered = users.filter(
         profile__timezone__in=timezones
     )
