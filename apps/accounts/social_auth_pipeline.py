@@ -38,17 +38,17 @@ def python_social_auth_shim(pipeline_func):
         return pipeline_func(*args, **kwargs)
     return wrapped
 
-def reset_session_keys(request, *args, **kwargs):
+def reset_session_keys(strategy, *args, **kwargs):
     """Reset a bunch of keys used as part of the social auth flow
     This is to prevent partially-completed values from a previous flow from affecting a new social auth flow
     """
     for key in SOCIAL_AUTH_FLOW_KEYS:
-        if request.session.get(key):
+        if strategy.request.session.get(key):
             del request.session[key]
     return None
 
 @partial
-def check_email(request, details, user=None, *args, **kwargs):
+def check_email(strategy, details, user=None, *args, **kwargs):
     """Ask the user to enter the email if we don't have one yet
 
     The pipeline process was cut prior to this custom pipeline function, and will resume to this same function after completing
@@ -56,14 +56,14 @@ def check_email(request, details, user=None, *args, **kwargs):
     response = None
     if user is None:
         social_email = details.get('email')
-        collected_email = request.session.get(SOCIAL_REGISTRATION_SETTING_EMAIL)
+        collected_email = strategy.request.session.get(SOCIAL_REGISTRATION_SETTING_EMAIL)
         if social_email:
             # email available from social auth
             user = get_user_by_email(social_email)
             if user and user.is_active:
                 # a user is already associated with this email
                 # TODO: there is an error with linking accounts...
-                request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = social_email
+                strategy.request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = social_email
                 if user.has_usable_password():
                     # user should log into the existing account with a password
                     url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME')
@@ -77,23 +77,23 @@ def check_email(request, details, user=None, *args, **kwargs):
             response = { 'details' : details }
         else:
             # no email provided from social auth
-            request.session[SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL] = True
+            strategy.request.session[SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL] = True
             url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_URL_NAME')
             response = redirect(url_name)
 
     return response
 
 @partial
-def check_terms_agreement(request, details, user=None, *args, **kwargs):
+def check_terms_agreement(strategy, details, user=None, *args, **kwargs):
     """
     Ask the user to agree to Privacy Policy and Terms of Service
     """
     response = None
     if user is None:
-        agreed_to_terms = request.session.get(SOCIAL_REGISTRATION_SETTING_AGREED_TO_TERMS, False)
+        agreed_to_terms = strategy.request.session.get(SOCIAL_REGISTRATION_SETTING_AGREED_TO_TERMS, False)
         if not agreed_to_terms:
             email = details.get('email')
-            request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = email
+            strategy.request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = email
             url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_AND_TERMS_URL_NAME')
             response = redirect(url_name)
         else:
@@ -102,7 +102,7 @@ def check_terms_agreement(request, details, user=None, *args, **kwargs):
         pass
     return response
 
-def check_incomplete_signup(request, details, user=None, *args, **kwargs):
+def check_incomplete_signup(strategy, details, user=None, *args, **kwargs):
     """Checks for an incomplete signup, and sets that User instead
     """
     response = None
@@ -115,7 +115,7 @@ def check_incomplete_signup(request, details, user=None, *args, **kwargs):
         }
     return response
 
-def set_username(request, details, user, social, *args, **kwargs):
+def set_username(strategy, details, user, social, *args, **kwargs):
     """This pipeline function can be used to set UserProfile.has_username_set = True
 
     Normally not used if the auto-generated username is ugly
@@ -131,7 +131,7 @@ def set_username(request, details, user, social, *args, **kwargs):
             user_profile.save()
     return response
 
-def associate_email(request, details, user, social, *args, **kwargs):
+def associate_email(strategy, details, user, social, *args, **kwargs):
     """Associate email with the user
     """
     if not user or not social:
@@ -140,10 +140,10 @@ def associate_email(request, details, user, social, *args, **kwargs):
     response = None
 
     email = details.get('email')
-    domain = request.get_host()
+    domain = strategy.request.get_host()
     # Should confirm if the email was provided by the social auth provider, not the user
     # i.e. SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL was False
-    confirmed = not(request.session.get(SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL, False))
+    confirmed = not(strategy.request.session.get(SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL, False))
     user_email = associate_user_email(user, email, domain, confirmed=confirmed)
 
     if user_email:
@@ -153,7 +153,7 @@ def associate_email(request, details, user, social, *args, **kwargs):
         }
     return response
 
-def handle_new_user(request, user, is_new, *args, **kwargs):
+def handle_new_user(user, is_new, *args, **kwargs):
     """Do stuff if the account was newly created
     """
     if not user:
@@ -163,6 +163,6 @@ def handle_new_user(request, user, is_new, *args, **kwargs):
         # send a welcome email to the user, regardless of email confirmation status
         welcome_email(user)
 
-def post_connect(request, user, social, *args, **kwargs):
+def post_connect(user, social, *args, **kwargs):
     response = None
     return response

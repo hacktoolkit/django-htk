@@ -11,8 +11,6 @@ from htk.session_keys import *
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
 
-UserProfile = resolve_model_dynamically(settings.AUTH_PROFILE_MODULE)
-
 class AddEmailForm(forms.Form):
     email = forms.EmailField(label='Email')
 
