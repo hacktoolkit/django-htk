@@ -63,7 +63,7 @@ def gravatar_img_for_user(user, size=80):
     url = gravatar_for_user(user, size=size)
     img = '<img src="%s" alt="Gravatar for %s" height="%s" width="%s" />' % (
         escape(url),
-        user.username,
+        user.profile.get_display_name(),
         size,
         size,
     )
