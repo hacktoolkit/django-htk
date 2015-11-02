@@ -16,7 +16,3 @@ import django_settings_module
 
 import django
 django.setup()
-
-from django.db.models.loading import cache as model_cache
-if not model_cache.loaded:
-    model_cache.get_models()
