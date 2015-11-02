@@ -2,7 +2,6 @@
 # shared settings for standalone scripts hooking into Django
 
 import os
-import re
 import sys
 
 sys.stdout = sys.stderr
@@ -14,3 +13,6 @@ sys.path.append(os.path.realpath(os.path.join(SCRIPTS_DIR, '..', '..', '..').rep
 import django_settings_module
 # Requires a django_settings_module.py at the project's top-level directory
 #os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'YOURAPP.settings')
+
+import django
+django.setup()

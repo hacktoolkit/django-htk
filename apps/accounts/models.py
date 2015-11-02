@@ -32,6 +32,7 @@ class UserAttribute(AbstractAttribute):
     holder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='attributes')
 
     class Meta:
+        app_label = 'accounts'
         verbose_name = 'User Attribute'
         unique_together = (
             ('holder', 'key',),
@@ -465,6 +466,7 @@ class UserEmail(models.Model):
     is_confirmed = models.BooleanField(default=False)
 
     class Meta:
+        app_label = 'accounts'
         verbose_name = 'User Email'
         unique_together = (
             ('user', 'email',),
