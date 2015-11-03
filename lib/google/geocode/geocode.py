@@ -83,12 +83,18 @@ def get_latlng(address):
     }
     url = GOOGLE_GEOCODING_API_GEOCODE_URL % values
     response = requests.get(url)
+    # TODO: check response.status_code
     data = json.loads(response.text)
     try:
         location = data['results'][0]['geometry']['location']
         latitude = location['lat']
         longitude = location['lng']
     except KeyError, k:
+        latitude = None
+        longitude = None
+    except IndexError:
+        # address could not be geocoded
+        # most likely did not have data['results'][0]
         latitude = None
         longitude = None
     return (latitude, longitude,)
