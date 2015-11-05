@@ -32,9 +32,15 @@ class AbstractGeolocation(models.Model):
         address = self.get_address_string()
         latitude, longitude = get_latlng(address)
         if latitude and longitude:
-            self.latitude = latitude
-            self.longitude = longitude
-            self.save(update_fields=('latitude', 'longitude',))
+            update_fields = []
+            if self.latitude != latitude:
+                self.latitude = latitude
+                update_fields.append('latitude')
+            if self.longitude != longitude:
+                self.longitude = longitude
+                update_fields.append('longitude')
+            if update_fields:
+                self.save(update_fields=update_fields)
         else:
             pass
         return (latitude, longitude,)
