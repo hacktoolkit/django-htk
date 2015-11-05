@@ -88,11 +88,17 @@ def parse_event_text(event):
 
     Returns tuple of (text, command, args,)
     """
-    trigger_word = event['trigger_word']
+    trigger_word = event['trigger_word'].lower()
     text = event['text'][len(trigger_word):].strip()
+    if trigger_word[-1] == ':':
+        trigger_word = trigger_word[:-1]
 
-    parts = text.split(' ')
-    command = parts[0].lower()
-    args = ' '.join(parts[1:]) if len(parts) > 1 else ''
+    if trigger_word in htk_setting('HTK_SLACK_TRIGGER_COMMAND_WORDS'):
+        command = trigger_word.lower()
+        args = text
+    else:
+        parts = text.split(' ')
+        command = parts[0].lower()
+        args = ' '.join(parts[1:]) if len(parts) > 1 else ''
     parsed = (text, command, args,)
     return parsed
