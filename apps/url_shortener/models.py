@@ -26,7 +26,7 @@ class HTKShortUrl(models.Model):
     """
     url = models.CharField(max_length=256)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='short_urls', blank=True, null=True, default=None, on_delete=models.SET_DEFAULT)
-    created_on = models.DateTimeField(auto_now_add=True, default=utcnow)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'htk'
