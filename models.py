@@ -25,8 +25,8 @@ class AbstractAttribute(models.Model):
     value = models.TextField(max_length=2048, blank=True)
 
     # meta
-    created_on = models.DateTimeField(auto_now_add=True, default=utcnow)
-    updated_on = models.DateTimeField(auto_now=True, default=utcnow)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
