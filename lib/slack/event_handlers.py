@@ -1,13 +1,14 @@
 import re
 
-from htk.lib.slack.constants.defaults import HTK_SLACK_EVENT_HANDLERS
 from htk.lib.slack.utils import parse_event_text
+from htk.utils import htk_setting
 
 def help(event):
     (text, command, args,) = parse_event_text(event)
+    event_handlers = htk_setting('HTK_SLACK_EVENT_HANDLERS')
 
     if command == 'help':
-        commands = ['`%s`' % command for command in sorted(HTK_SLACK_EVENT_HANDLERS.keys())]
+        commands = ['`%s`' % command for command in sorted(event_handlers.keys())]
         slack_text = """Usage: `htk: command args`
 Available commands are: %s
 """ % ', '.join(commands)
