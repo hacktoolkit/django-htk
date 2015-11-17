@@ -81,7 +81,7 @@ def get_latlng(address):
         'sensor' : 'false',
         'address' : address,
     }
-    key = htk_setting('HTK_GOOGLE_GEOCODING_API_KEY', None)
+    key = htk_setting('HTK_GOOGLE_SERVER_API_KEY', None)
     if key:
         params['key'] = key
 
