@@ -21,9 +21,12 @@ import requests
 import sys
 import urllib
 
-GOOGLE_GEOCODING_API_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/%(format)s?sensor=%(sensor)s&'
-GOOGLE_GEOCODING_API_GEOCODE_URL = GOOGLE_GEOCODING_API_BASE_URL + 'address=%(address)s'
-GOOGLE_GEOCODING_API_REVERSE_URL = GOOGLE_GEOCODING_API_BASE_URL + 'latlng=%(latlng)s'
+from htk.utils import htk_setting
+
+GOOGLE_GEOCODING_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+#GOOGLE_GEOCODING_API_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/%(format)s?sensor=%(sensor)s&'
+#GOOGLE_GEOCODING_API_GEOCODE_URL = GOOGLE_GEOCODING_API_BASE_URL + 'address=%(address)s'
+#GOOGLE_GEOCODING_API_REVERSE_URL = GOOGLE_GEOCODING_API_BASE_URL + 'latlng=%(latlng)s'
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -74,15 +77,15 @@ def main(argv = None):
         return 3.14159
 
 def get_latlng(address):
-    address_query = urllib.quote(address, '')
-    
-    values = {
-        'format' : 'json',
+    params = {
         'sensor' : 'false',
-        'address' : address_query,
+        'address' : address,
     }
-    url = GOOGLE_GEOCODING_API_GEOCODE_URL % values
-    response = requests.get(url)
+    key = htk_setting('HTK_GOOGLE_GEOCODING_API_KEY', None)
+    if key:
+        params['key'] = key
+
+    response = requests.get(GOOGLE_GEOCODING_API_URL, params=params)
     # TODO: check response.status_code
     data = json.loads(response.text)
     try:
@@ -100,13 +103,14 @@ def get_latlng(address):
     return (latitude, longitude,)
 
 def reverse_geocode(latitude, longitude):
-    values = {
-        'format' : 'json',
+    params = {
         'sensor' : 'false',
         'latlng' : '%s,%s' % (latitude, longitude,)
     }
-    url = GOOGLE_GEOCODING_API_REVERSE_URL % values
-    response = requests.get(url)
+    key = htk_setting('HTK_GOOGLE_GEOCODING_API_KEY', None)
+    if key:
+        params['key'] = key
+    response = requests.get(GOOGLE_GEOCODING_API_URL, params=params)
     data = json.loads(response.text)
     try:
         location = data['results'][0]
