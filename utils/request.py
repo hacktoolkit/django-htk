@@ -58,11 +58,10 @@ def is_domain_meta_view(request):
         pass
     return False
 
-def is_allowed_host(request):
-    """Determines whether this `request` host is explicitly allowed
+def is_allowed_host(host):
+    """Determines whether this `host` is explicitly allowed
     """
     from django.conf import settings
-    host = request.get_host()
     allowed = False
     if settings.TEST:
         allowed = True
