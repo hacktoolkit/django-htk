@@ -6,13 +6,15 @@ from htk.apps.geolocations.enums import DistanceUnit
 from htk.lib.google.geocode.geocode import get_latlng as get_latlng_google
 from htk.utils.maths.trigonometry import deg2rad
 from htk.utils.maths.trigonometry import rad2deg
+from htk.utils.text.transformers import seo_tokenize
 
 def get_latlng(location_name):
     """Geocodes a `location_name` and caches the result
 
     For now, uses Google maps geocode API
     """
-    c = GeocodeCache(prekey=location_name)
+    prekey = seo_tokenize(location_name)
+    c = GeocodeCache(prekey=prekey)
     latlng = c.get()
     if latlng is None:
         latlng = get_latlng_google(location_name)
