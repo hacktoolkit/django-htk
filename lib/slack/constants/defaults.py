@@ -8,6 +8,14 @@ HTK_SLACK_EVENT_HANDLERS = {
     'weather' : 'htk.lib.slack.event_handlers.weather',
 }
 
+HTK_SLACK_EVENT_HANDLER_USAGES = {
+    'help' : 'htk.lib.slack.event_handler_usages.help',
+    'default' : 'htk.lib.slack.event_handler_usages.default',
+    'bible' : 'htk.lib.slack.event_handler_usages.bible',
+    'stock' : 'htk.lib.slack.event_handler_usages.stock',
+    'weather' : 'htk.lib.slack.event_handler_usages.weather',
+}
+
 # trigger words that are also commands
 HTK_SLACK_TRIGGER_COMMAND_WORDS = (
     'bible',
