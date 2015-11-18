@@ -53,7 +53,9 @@ def bible(event):
             location = args
             from htk.lib.literalword.utils import get_bible_passage
             #from htk.utils.text.converters import markdown2slack
-            passage = get_bible_passage(args)
+            webhook_settings = event.get('webhook_settings', {})
+            bible_version = webhook_settings.get('bible_version', None)
+            passage = get_bible_passage(args, version=bible_version)
             passage['query'] = args
             slack_text = """Bible passage: *%(query)s*
 Read on Literal Word: %(url)s

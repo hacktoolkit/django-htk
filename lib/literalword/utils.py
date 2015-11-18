@@ -2,11 +2,12 @@ from bs4 import BeautifulSoup
 import re
 import requests
 
+from htk.lib.literalword.constants import *
 from htk.utils.text.converters import html2markdown
 
-def get_bible_passage(query):
-    BASE_URL = 'http://nasb.literalword.com/'
-    url = BASE_URL
+def get_bible_passage(query, version=None):
+    version = version or DEFAULT_BIBLE_VERSION
+    url = LITERAL_WORD_URLS.get(version, DEFAULT_BIBLE_VERSION)
     params = {
         'q' : query,
     }

@@ -36,17 +36,29 @@ def webhook_call(
     response = requests.post(webhook_url, json=payload)
     return response
 
-def is_valid_webhook_token(token):
+def is_valid_webhook_event(event):
+    """Determines whether the Slack webhook event has a valid token
+
+    Mutates `event` by adding `webhook_settings` if available
+    """
+    token = event['token']
     expected_token = htk_setting('HTK_SLACK_WEBHOOK_TOKEN')
     is_valid = token == expected_token
+    webhook_settings = get_webhook_settings(token)
+    event['webhook_settings'] = webhook_settings
     if not is_valid:
-        # try against KV storages
-        key = 'slack_webhook_%s' % token
-        is_valid = kv_get(key) is not None
+        is_valid = webhook_settings is not None
     else:
         # it's really invalid
         pass
     return is_valid
+
+def get_webhook_settings(token):
+    """Retrieves the webhook settings from KV storage
+    """
+    key = 'slack_webhook_%s' % token
+    webhook_settings = kv_get(key)
+    return webhook_settings
 
 def get_event_type(event):
     event_type_resolver_module_str = htk_setting('HTK_SLACK_EVENT_TYPE_RESOLVER')
