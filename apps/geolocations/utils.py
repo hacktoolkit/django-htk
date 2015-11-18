@@ -18,7 +18,11 @@ def get_latlng(location_name):
     latlng = c.get()
     if latlng is None:
         latlng = get_latlng_google(location_name)
-        c.cache_store(latlng)
+        if latlng is None:
+            # an exception occurred; possibly hit Google API limit
+            pass
+        else:
+            c.cache_store(latlng)
     return latlng
 
 def WGS84EarthRadius(lat):
