@@ -21,7 +21,7 @@ import requests
 import sys
 import urllib
 
-from htk.utils import htk_setting
+from htk.lib.google.utils import get_server_api_key
 
 GOOGLE_GEOCODING_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
 #GOOGLE_GEOCODING_API_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/%(format)s?sensor=%(sensor)s&'
@@ -81,7 +81,7 @@ def get_latlng(address):
         'sensor' : 'false',
         'address' : address,
     }
-    key = htk_setting('HTK_GOOGLE_SERVER_API_KEY', None)
+    key = get_server_api_key()
     if key:
         params['key'] = key
 
@@ -110,7 +110,7 @@ def reverse_geocode(latitude, longitude):
         'sensor' : 'false',
         'latlng' : '%s,%s' % (latitude, longitude,)
     }
-    key = htk_setting('HTK_GOOGLE_GEOCODING_API_KEY', None)
+    key = get_server_api_key()
     if key:
         params['key'] = key
     response = requests.get(GOOGLE_GEOCODING_API_URL, params=params)
