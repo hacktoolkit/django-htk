@@ -67,18 +67,23 @@ def get_event_type(event):
     event_type = event_type_resolver(event)
     return event_type
 
-def get_event_handler(event):
-    """Gets the event handler for a Slack webhook event, if available
+def get_event_handler_for_type(event_type):
+    """Gets the event handler for `event_type`
     """
     event_handlers = htk_setting('HTK_SLACK_EVENT_HANDLERS')
-    event_type = get_event_type(event)
     event_handler_module_str = event_handlers.get(event_type)
-
     if event_handler_module_str:
         from htk.utils.general import resolve_method_dynamically
         event_handler = resolve_method_dynamically(event_handler_module_str)
     else:
         event_handler = None
+    return event_handler
+
+def get_event_handler(event):
+    """Gets the event handler for a Slack webhook event, if available
+    """
+    event_type = get_event_type(event)
+    event_handler = get_event_handler_for_type(event_type)
     return event_handler
 
 def handle_event(event):

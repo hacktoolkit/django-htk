@@ -1,5 +1,6 @@
 import re
 
+from htk.lib.slack.utils import get_event_handler_for_type
 from htk.lib.slack.utils import parse_event_text
 from htk.utils import htk_setting
 
@@ -37,11 +38,22 @@ def get_usage(command):
     usage_fn = resolve_method_dynamically(usage_fn_module_str)
     if type(usage_fn) == type(lambda x: True):
         # <type 'function'>
-        usage = usage_fn()
+        usage_dict = usage_fn()
     else:
-        usage = """Usage: `htk: %s`
-Not specified.
-""" % command
+        usage_dict = {
+            'description' : 'Not specified',
+            'basic' : 'htk: %s' % command,
+            'examples' : [],
+        }
+    if usage_dict['examples']:
+        formatted_examples = '```%s```' % '\n'.join('    %s' % example for example in usage_dict['examples'])
+    else:
+        formatted_examples = 'N/A'
+    usage_dict['formatted_examples'] = formatted_examples
+    usage = """*Usage*: %(description)s
+`    %(basic)s`
+*Examples*:
+%(formatted_examples)s""" % usage_dict
     return usage
 
 @preprocess_event
@@ -51,6 +63,13 @@ def help(event, **kwargs):
     args = kwargs.get('args')
 
     if command == 'help':
+        if args:
+            arg_parts = args.split()
+            arg1 = arg_parts[0].lower()
+            event_handler = get_event_handler_for_type(arg1)
+            if event_handler:
+                # override the command to get help for
+                command = arg1
         slack_text = get_usage(command)
     else:
         slack_text = 'Illegal command.'
