@@ -5,8 +5,18 @@ import requests
 from htk.lib.literalword.constants import *
 from htk.utils.text.converters import html2markdown
 
-def get_bible_passage(query, version=None):
+def is_bible_version(version):
+    _is_bible_version = version in LITERAL_WORD_URLS
+    return _is_bible_version
+
+def get_bible_version(version):
     version = version or DEFAULT_BIBLE_VERSION
+    if not is_bible_version(version):
+        version = DEFAULT_BIBLE_VERSION
+    return version
+
+def get_bible_passage(query, version=None):
+    version = get_bible_version(version)
     url = LITERAL_WORD_URLS.get(version, DEFAULT_BIBLE_VERSION)
     params = {
         'q' : query,

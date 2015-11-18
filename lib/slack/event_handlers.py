@@ -50,11 +50,17 @@ def bible(event):
 
     if command == 'bible':
         if args:
-            location = args
             from htk.lib.literalword.utils import get_bible_passage
+            from htk.lib.literalword.utils import is_bible_version
             #from htk.utils.text.converters import markdown2slack
-            webhook_settings = event.get('webhook_settings', {})
-            bible_version = webhook_settings.get('bible_version', None)
+            arg_parts = args.split()
+            arg1 = len(arg_parts) and arg_parts[0].lower()
+            if arg1 and is_bible_version(arg1):
+                bible_version = arg1
+                args = ' '.join(arg_parts[1:])
+            else:
+                webhook_settings = event.get('webhook_settings', {})
+                bible_version = webhook_settings.get('bible_version', None)
             passage = get_bible_passage(args, version=bible_version)
             passage['query'] = args
             slack_text = """Bible passage: *%(query)s*
