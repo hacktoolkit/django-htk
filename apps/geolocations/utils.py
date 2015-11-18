@@ -20,7 +20,7 @@ def get_latlng(location_name):
         latlng = get_latlng_google(location_name)
         if latlng is None:
             # an exception occurred; possibly hit Google API limit
-            latlng = (None, None)
+            latlng = (None, None,)
         else:
             c.cache_store(latlng)
     return latlng
