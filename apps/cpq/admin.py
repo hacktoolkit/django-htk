@@ -28,6 +28,12 @@ class InvoiceAdmin(admin.ModelAdmin):
         'view_invoice_link',
     )
 
+    list_filter = (
+        'paid',
+        'invoice_type',
+        'payment_terms',
+    )
+
     inlines = (
         InvoiceLineItemInline,
     )

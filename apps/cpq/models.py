@@ -8,6 +8,10 @@ from htk.fields import CurrencyField
 from htk.utils.enums import enum_to_str
 
 class BaseCPQQuote(models.Model):
+    """Base class for a Quote
+    Quote has not been executed yet (signed or paid)
+    Once executed, an invoice is generated
+    """
     # related_name = customer.quotes, customer.invoices
     customer = models.ForeignKey(settings.HTK_CPQ_CUSTOMER_MODEL, related_name='%(class)ss')
     date = models.DateField()
@@ -43,6 +47,8 @@ class BaseCPQQuote(models.Model):
         return subtotal
 
 class BaseCPQInvoice(BaseCPQQuote):
+    """Base class for an Invoice
+    """
     invoice_type = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_TYPE.value)
     paid = models.BooleanField(default=False)
     payment_terms = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_PAYMENT_TERM.value)
