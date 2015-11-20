@@ -1,6 +1,9 @@
 from django.db import models
 
-class BasePostalAddress(models.Model):
+from htk.apps.addresses.enums import AddressUnitType
+from htk.apps.geolocations.models import AbstractGeolocation
+
+class BasePostalAddress(AbstractGeolocation):
     """Class for storing Postal Address
 
     This object is always referenced by a foreign key from another object
@@ -15,14 +18,16 @@ class BasePostalAddress(models.Model):
     Right now, go with the "good enough" approach
     """
     name = models.CharField(max_length=64, blank=True)
-    street_number = models.CharField(max_length=16, blank=True)
     street = models.CharField(max_length=128, blank=True)
-    #unit_type = models.PositiveIntegerField(blank=True, null=True)
-    unit = models.CharField(max_length=10, blank=True)
     city = models.CharField(max_length=64, blank=True)
     state = models.CharField(max_length=2, blank=True)
     zipcode = models.CharField(max_length=5, blank=True)
     country = models.CharField(max_length=64, blank=True)
+    # parts
+    street_number = models.CharField(max_length=16, blank=True)
+    street_name = models.CharField(max_length=64, blank=True)
+    unit_type = models.PositiveIntegerField(default=AddressUnitType.NONE.value)
+    unit = models.CharField(max_length=10, blank=True)
 
     class Meta:
         abstract = True
@@ -30,28 +35,65 @@ class BasePostalAddress(models.Model):
         verbose_name_plural = 'Postal Addresses'
 
     def __unicode__(self):
-        street_component = ' '.join(filter(lambda x: x.strip() != '', [self.street_number, self.street, self.unit,]))
-        municipal_component = '%s, %s %s' % (self.city, self.state, self.zipcode,)
-        value = '%s, %s' % (street_component, municipal_component,)
+        value = self.get_address_string()
         return value
 
     def clone(self):
         address_clone = PostalAddress.objects.create(
-            street_number=self.street_number,
             street=self.street,
-            unit=self.unit,
             city=self.city,
             state=self.state,
             zipcode=self.zipcode,
-            country=self.country
+            country=self.country,
+            street_number=self.street_number,
+            street_name=self.street_name,
+            unit_type=self.unit_type,
+            unit=self.unit,
+            latitude=self.latitude,
+            longitude=self.longitude
         )
         return address_clone
 
-    def get_formatted_address(self):
-        street_component = ' '.join(filter(lambda x: x.strip() != '', [self.street_number, self.street, self.unit,]))
+    ##
+    # address formats
+
+    def get_address_street_component(self):
+        if self.street_number and self.street_name:
+            from htk.utils.enums import enum_to_str
+            unit_type = enum_to_str(AddressUnitType(self.unit_type)) if self.unit_type > 0 else ''
+            street_component = ' '.join(
+                filter(
+                    lambda x: x.strip() != '',
+                    [
+                        self.street_number,
+                        self.street_name,
+                        unit_type,
+                        self.unit,
+                    ]
+                )
+            )
+        else:
+            street_component = self.street
+        return street_component
+
+    def get_address_municipal_component(self):
         municipal_component = '%s, %s %s' % (self.city, self.state, self.zipcode,)
-        value = '%s\n%s' % (street_component, municipal_component,)        
-        return value
+        return municipal_component
+
+    def get_address_string(self):
+        street_component = self.get_address_street_component()
+        municipal_component = self.get_address_municipal_component()
+        address_string = '%s, %s' % (street_component, municipal_component,)
+        return address_string
+
+    def get_formatted_address(self):
+        street_component = self.get_address_street_component()
+        municipal_component = self.get_address_municipal_component()
+        formatted = '%s\n%s' % (street_component, municipal_component,)        
+        return formatted
+
+    ##
+    # utils
 
     def get_static_google_map_image_url(self):
         """

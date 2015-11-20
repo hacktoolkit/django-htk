@@ -4,12 +4,16 @@ class BasePostalAddressAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
-        'street_number',
         'street',
-        'unit',
-        #'unit_type',
         'city',
         'state',
         'zipcode',
         'country',
+        # computed parts
+        'street_number',
+        'street_name',
+        'unit_type',
+        'unit',
+        'latitude',
+        'longitude',
     )
