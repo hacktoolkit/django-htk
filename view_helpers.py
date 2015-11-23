@@ -190,6 +190,7 @@ def _build_meta_content(data=None):
             try:
                 inverted_content = config.get('inverted', [])
                 config['content'] = config.get('join_value', '').join(inverted_content[::-1])
+                config['value'] = inverted_content[-1]
             except:
                 request = data.get('request', {}).get('request')
                 rollbar.report_exc_info(request=request)
