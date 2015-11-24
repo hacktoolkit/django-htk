@@ -27,3 +27,13 @@ class UserSocialAuthInline(admin.TabularInline):
     model = UserSocialAuth
     extra = 0
     can_delete = True
+
+class UserEmailAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'email',
+        'activation_key',
+        'key_expires',
+        'is_confirmed',
+    )
