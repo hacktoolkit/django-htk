@@ -39,7 +39,8 @@ class UserRegistrationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
         self.cascaded_errors = []
-        del self.fields['username']
+        if 'username' in self.fields:
+            del self.fields['username']
         self.fields['password2'].label = 'Confirm Password'
         self.label_suffix = ''
         set_input_attrs(self)
