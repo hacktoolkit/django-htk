@@ -207,7 +207,7 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
         try:
             welcome_email(self.user)
         except:
-            htk.middleware.classes import GlobalRequestMiddleware
+            from htk.middleware.classes import GlobalRequestMiddleware
             request = GlobalRequestMiddleware.get_current_request()
             rollbar.report_exc_info(request=request)
 
