@@ -6,9 +6,9 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
 from htk.constants.defaults import *
-from htk.middleware import GlobalRequestMiddleware
 from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
+from htk.utils.request import get_current_request
 from htk.utils.text.converters import html2markdown
 
 def simple_email(
@@ -31,7 +31,7 @@ def email_context_generator():
     """Dummy email context generator
     Returns a dictionary
     """
-    request = GlobalRequestMiddleware.get_current_request()
+    request = get_current_request()
     protocol = 'http'
     if request:
         if request.is_secure():
