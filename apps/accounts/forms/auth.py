@@ -10,6 +10,7 @@ from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
 from htk.apps.accounts.utils import authenticate_user_by_username_email
 from htk.apps.accounts.utils import email_to_username_hash
+from htk.apps.accounts.utils import email_to_username_pretty_unique
 from htk.apps.accounts.utils import get_user_by_email
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
@@ -98,13 +99,51 @@ class UserRegistrationForm(UserCreationForm):
         user.username = email_to_username_hash(email)
         # we'll store the primary email in the User object
         user.email = email
-        user.primary_email = email
         # require user to confirm email account before activating it
         user.is_active = False
         if commit:
             user.save()
             from htk.apps.accounts.utils import associate_user_email
             user_email = associate_user_email(user, email, domain)
+        return user
+
+class NameEmailUserRegistrationForm(forms.ModelForm):
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+    class Meta:
+        model = UserModel
+        fields = (
+            'first_name',
+            'last_name',
+            'email',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(NameEmailUserRegistrationForm, self).__init__(*args, **kwargs)
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
+
+    def save(self, domain=None, commit=True):
+        domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
+        user = super(NameEmailUserRegistrationForm, self).save(commit=False)
+        email = self.cleaned_data.get('email')
+        password1 = self.cleaned_data.get('password1')
+        user.username = email_to_username_pretty_unique(email)
+        user.set_password(password1)
+        if commit:
+            user.save()
+            # associate user and email
+            from htk.apps.accounts.utils import associate_user_email
+            user_email = associate_user_email(user, email, domain)
+            # mark has_username_set
+            user_profile = user.profile
+            user_profile.has_username_set = True
+            user_profile.save()
+
+            # send welcome email
+            was_activated = user.is_active
+            if was_activated:
+                user_profile.send_welcome_email()
         return user
 
 class ResendConfirmationForm(forms.Form):
