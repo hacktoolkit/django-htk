@@ -195,9 +195,21 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
             gravatar_hash = ''
         return gravatar_hash
 
+    # send emails
+
     def send_activation_reminder_email(self):
         user_email = get_user_email(self.user, self.user.email)
         user_email.send_activation_reminder_email()
+
+    def send_welcome_email(self):
+        """Sends a welcome email to the user
+        """
+        try:
+            welcome_email(self.user)
+        except:
+            htk.middleware.classes import GlobalRequestMiddleware
+            request = GlobalRequestMiddleware.get_current_request()
+            rollbar.report_exc_info(request=request)
 
     ##
     # social auth stuff
@@ -300,7 +312,7 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
             user.save()
             was_activated = user.is_active
         if was_activated:
-            welcome_email(user)
+            self.send_welcome_email()
         return was_activated
 
     def get_timezone(self):
