@@ -62,7 +62,7 @@ def subscribe_email(list_id, email, subscribed=False):
     }
     response = api_call('PUT', resource, payload)
     if response.status_code == 200:
-        pass
+        subscribed = True
     else:
-        pass
-    return response
+        subscribed = False
+    return subscribed
