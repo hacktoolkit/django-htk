@@ -2,8 +2,14 @@
 https://rollbar.com/docs/notifier/rollbar.js/
 {% endcomment %}
 
-{% if rollbar_js_version and rollbar_js_version != '1' %}
+{% if rollbar_js_version %}
+{% if rollbar_js_version == '1' %}
+{% include 'fragments/js/rollbar_v1.html' %}
+{% elif rollbar_js_version == '1.7' %}
+{% include 'fragments/js/rollbar_v1.7.html' %}
+{% else %}
 {% include 'fragments/js/rollbar_v1.x.html' %}
+{% endif %}
 {% else %}
 {% include 'fragments/js/rollbar_v1.html' %}
 {% endif %}
