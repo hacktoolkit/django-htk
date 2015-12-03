@@ -3,8 +3,8 @@ import rollbar
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 
-from htk.middleware import GlobalRequestMiddleware
 from htk.decorators.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
+from htk.utils.request import get_current_request
 
 def deprecated(func):
     """Decorator for reporting deprecated function calls
@@ -13,7 +13,7 @@ def deprecated(func):
     """
     def wrapped(*args, **kwargs):
         # try to get a request, may not always succeed
-        request = GlobalRequestMiddleware.get_current_request()
+        request = get_current_request()
         # notify a maximum of once per function per request/session
         if request:
             if DEPRECATED_ROLLBAR_NOTIFIED not in request.session:
