@@ -8,6 +8,11 @@ register = Library()
 ##################################################
 # Filters
 
+@register.filter()
+def clsname(field):
+    clsname = field.field.widget.__class__.__name__
+    return clsname
+
 # Dictionary Utilities
 
 @register.filter()
