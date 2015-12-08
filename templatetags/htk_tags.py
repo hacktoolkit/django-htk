@@ -13,6 +13,12 @@ def clsname(field):
     clsname = field.field.widget.__class__.__name__
     return clsname
 
+# Form Utilities
+@register.filter(is_safe=True)
+def label_with_classes(value, arg):
+    html = value.label_tag(attrs={'class': arg})
+    return html
+
 # Dictionary Utilities
 
 @register.filter()
