@@ -28,9 +28,11 @@ def clean_model_instance_field(form_obj, field_name, cls):
 def set_input_attrs(form, attrs=None):
     """Set various attributes on form input fields
     """
+    if attrs is None:
+        attrs = {}
     for name, field in form.fields.items():
         if field.widget.__class__ in TEXT_STYLE_INPUTS:
-            field.widget.attrs['class'] = getattr(attrs, 'class', htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS'))
+            field.widget.attrs['class'] = attrs.get('class', htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS'))
         if field.required:
             field.widget.attrs['required'] = 'required'
 
