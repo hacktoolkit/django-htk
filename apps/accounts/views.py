@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
@@ -190,6 +189,7 @@ def register(
     reg_form_kwargs=None,
     auth_form_model=UsernameEmailAuthenticationForm,
     success_url_name='account_register_done',
+    login_if_success=False,
     template='account/register.html',
     renderer=_r
 ):
@@ -205,11 +205,13 @@ def register(
         if reg_form.is_valid():
             domain = request.get_host()
             new_user = reg_form.save(domain)
-            # if we did want to log the user in right away, this is what we'd do... but we don't want to do it
-            #username = user.username
-            #password = reg_form.cleaned_data.get('password1') # user.password is a hashed value
-            #auth_user = authenticate(username=username, password=password)
-            #login(request, auth_user)
+            if login_if_success:
+                username = new_user.username
+                password = reg_form.cleaned_data.get('password1') # new_user.password is a hashed value
+                auth_user = authenticate(username=username, password=password)
+                login(request, auth_user)
+            else:
+                pass
             success = True
         else:
             for error in reg_form.non_field_errors():
