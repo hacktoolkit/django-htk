@@ -107,7 +107,9 @@ class UserRegistrationForm(UserCreationForm):
             user_email = associate_user_email(user, email, domain)
         return user
 
-class NameEmailUserRegistrationForm(forms.ModelForm):
+class NameEmailUserRegistrationForm(UserRegistrationForm):
+    first_name = forms.CharField(label='First Name', required=True)
+    last_name = forms.CharField(label='Last Name', required=True)
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
 
     class Meta:
@@ -120,6 +122,7 @@ class NameEmailUserRegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(NameEmailUserRegistrationForm, self).__init__(*args, **kwargs)
+        del self.fields['password2']
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
