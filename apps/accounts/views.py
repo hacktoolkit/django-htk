@@ -22,6 +22,7 @@ from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
 from htk.apps.accounts.utils import get_user_by_email
 from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
+from htk.forms.utils import set_input_attrs
 from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.view_helpers import render_to_response_custom as _r
@@ -276,8 +277,11 @@ def resend_confirmation(
                 data['errors'].append(error)
     else:
         resend_confirmation_form = ResendConfirmationForm()
+    if 'input_attrs' in data:
+        set_input_attrs(resend_confirmation_form, attrs=data['input_attrs'])
     data['resend_confirmation_form'] = resend_confirmation_form
-    return renderer(template, data)
+    response = renderer(template, data)
+    return response
 
 @require_GET
 def confirm_email(
@@ -405,6 +409,8 @@ def reset_password(
         else:
             validlink = False
             form = None
+        if 'input_attrs' in data:
+            set_input_attrs(form, attrs=data['input_attrs'])
         data['form'] = form
         data['validlink'] = validlink
     else:

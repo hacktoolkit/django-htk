@@ -29,6 +29,7 @@ class UpdatePasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super(UpdatePasswordForm, self).__init__(*args, **kwargs)
         set_input_placeholder_labels(self)
+        set_input_attrs(self)
 
     def save(self, commit=True):
         user = super(UpdatePasswordForm, self).save(commit=commit)
