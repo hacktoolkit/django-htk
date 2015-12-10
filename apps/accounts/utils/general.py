@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import rollbar
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -11,6 +12,7 @@ from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.validators import is_valid_email
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
+from htk.utils.request import get_current_request
 
 ##
 # model resolvers
@@ -84,10 +86,18 @@ def get_user_by_email(email):
             # if there are more, we have a data error!
             raise NonUniqueEmail(email)
         else:
-            # num_results == 0
-            # also check newly registered accounts
-            # if not user.is_active, handling will get passed downstream
-            user = get_incomplete_signup_user_by_email(email)
+            # num_results == 0, so check UserModel for active users with email
+            UserModel = get_user_model()
+            try:
+                user = UserModel.objects.get(email__iexact=email, is_active=True)
+            except UserModel.MultipleObjectsReturned:
+                user = None
+                request = get_current_request()
+                rollbar.report_exc_info()
+            except UserModel.DoesNotExist:
+                # also check newly registered accounts
+                # if not user.is_active, handling will get passed downstream
+                user = get_incomplete_signup_user_by_email(email)
     else:
         user = None
     return user
