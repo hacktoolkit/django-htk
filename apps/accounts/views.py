@@ -33,6 +33,7 @@ from htk.view_helpers import wrap_data
 def login_view(
     request,
     data=None,
+    auth_form_model=UsernameEmailAuthenticationForm,
     default_next_url_name='account_login_redirect',
     template='account/login.html',
     renderer=_r
@@ -42,7 +43,7 @@ def login_view(
     data.update(csrf(request))
     success = False
     if request.method == 'POST':
-        auth_form = UsernameEmailAuthenticationForm(None, request.POST)
+        auth_form = auth_form_model(None, request.POST)
         if auth_form.is_valid():
             user = auth_form.get_user()
             login(request, user)
@@ -61,7 +62,7 @@ def login_view(
             else:
                 pass
     else:
-        auth_form = UsernameEmailAuthenticationForm(None)
+        auth_form = auth_form_model(None)
 
     if success:
         response = redirect(next_uri)
