@@ -16,3 +16,12 @@ HTK_USER_PROFILE_MODEL = None
 HTK_VALID_USERNAME_REGEX = r'^[A-Za-z0-9_-]{1,30}$'
 
 HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE = 'accounts/activation_reminder'
+
+HTK_ACCOUNT_ACTIVATE_UPON_REGISTRATION = False
+
+##
+# Account Email Subjects
+HTK_ACCOUNT_EMAIL_SUBJECT_ACTIVATION = 'Confirm your email address, %(email)s'
+HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_CHANGED = 'Password changed on %(site_name)s'
+HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_RESET = 'Password reset on %(site_name)s'
+HTK_ACCOUNT_EMAIL_SUBJECT_WELCOME = 'Welcome to %(site_name)s, %(email)s'

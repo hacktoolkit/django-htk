@@ -1,9 +1,13 @@
+import os
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 from django.template import Context
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
+
+from email.MIMEImage import MIMEImage
 
 from htk.constants.defaults import *
 from htk.utils import htk_setting
@@ -28,8 +32,8 @@ def simple_email(
     send_mail(subject, message, sender, to, fail_silently=fail_silently)
 
 def email_context_generator():
-    """Dummy email context generator
-    Returns a dictionary
+    """Default HTK email context generator
+    Returns a dictionary with values for inflating templated emails
     """
     request = get_current_request()
     protocol = 'http'
@@ -50,6 +54,7 @@ def email_context_generator():
     context = {
         'base_url': base_url,
         'site_name': htk_setting('HTK_SITE_NAME'),
+        'support_email': htk_setting('HTK_SUPPORT_EMAIL'),
     }
     return context
 
@@ -67,6 +72,15 @@ def get_email_context():
     else:
         pass
     return context
+
+def attach_images_to_message(message, images):
+    for image in images:
+      fp = open(image, 'rb')
+      filename = os.path.basename(image)
+      msg_image = MIMEImage(fp.read())
+      fp.close()
+      msg_image.add_header('Content-ID', '<%s>' % filename)
+      message.attach(msg_image)
 
 def send_email(
     template=None,
@@ -133,6 +147,12 @@ def send_email(
     else:
         pass
 
+    email_attachments = htk_setting('HTK_EMAIL_ATTACHMENTS')
+    if email_attachments:
+        attach_images_to_message(msg, email_attachments)
+        #for attachment in email_attachments:
+        #    msg.attach_file(attachment)
+
     msg.send()
 
 def send_markdown_email(
@@ -163,4 +183,11 @@ def send_markdown_email(
     import markdown
     html_content = markdown.markdown(markdown_content)
     msg.attach_alternative(html_content, 'text/html')
+
+    email_attachments = htk_setting('HTK_EMAIL_ATTACHMENTS')
+    if email_attachments:
+        attach_images_to_message(msg, email_attachments)
+        #for attachment in email_attachments:
+        #    msg.attach_file(attachment)
+
     msg.send()

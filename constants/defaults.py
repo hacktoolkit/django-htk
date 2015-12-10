@@ -26,6 +26,7 @@ HTK_DEFAULT_EMAIL_SENDING_DOMAIN = 'hacktoolkit.com'
 HTK_DEFAULT_EMAIL_SENDER = 'Hacktoolkit <no-reply@hacktoolkit.com>'
 HTK_DEFAULT_EMAIL_RECIPIENTS = ['info@hacktoolkit.com',]
 HTK_EMAIL_CONTEXT_GENERATOR = 'htk.mailers.email_context_generator'
+HTK_EMAIL_ATTACHMENTS = ()
 
 ##
 # Locale
