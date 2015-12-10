@@ -45,6 +45,8 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
 
     context = {
         'user': user,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
         'email': email,
         'protocol': use_https and 'https' or 'http', 
         'domain': domain,
@@ -59,7 +61,7 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
         template='accounts/activation'
 
     if subject is None:
-        subject = 'Confirm your email address, %s' % email
+        subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_ACTIVATION') % context
 
     activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % context
     context['activation_uri'] = activation_uri
@@ -75,12 +77,16 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
 def welcome_email(user):
     context = {
         'user': user,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
         'site_name': htk_setting('HTK_SITE_NAME'),
     }
     bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
+    subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_WELCOME') % context
     send_email(
         template='accounts/welcome',
-        subject='Welcome to %s, %s' % (htk_setting('HTK_SITE_NAME'), user.email,),
+        subject=subject,
         to=[user.email],
         context=context,
         bcc=bcc
@@ -101,9 +107,10 @@ def password_reset_email(user, token_generator, use_https=False, domain=None):
 
     reset_uri = '%(protocol)s://%(domain)s%(reset_path)s?u=%(uid)s&t=%(token)s' % context
     context['reset_uri'] = reset_uri
+    subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_RESET') % context
     send_email(
         template='accounts/reset_password',
-        subject='Password reset on %s' % context['site_name'],
+        subject=subject,
         to=[context['email']],
         context=context
     )
@@ -115,9 +122,10 @@ def password_changed_email(user):
         'domain': htk_setting('HTK_DEFAULT_DOMAIN'),
         'site_name': htk_setting('HTK_SITE_NAME'),
     }
+    subject = 'Password changed on %(site_name)s' % context
     send_email(
         template='accounts/password_changed',
-        subject='Password changed on %s' % context['site_name'],
+        subject=subject,
         to=[user.email],
         context=context
     )

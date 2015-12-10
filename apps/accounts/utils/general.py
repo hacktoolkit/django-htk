@@ -94,6 +94,7 @@ def get_user_by_email(email):
                 user = None
                 request = get_current_request()
                 rollbar.report_exc_info()
+                raise NonUniqueEmail(email)
             except UserModel.DoesNotExist:
                 # also check newly registered accounts
                 # if not user.is_active, handling will get passed downstream
@@ -189,8 +190,25 @@ def associate_user_email(user, email, domain=None, confirmed=False):
     user_email = None
     if user and email:
         existing_user = get_user_by_email(email)
-        if existing_user is None or (user == existing_user and not(user.is_active)):
-            # email address must not be associated to another account, or must be a new registration
+        should_associate = False
+        if existing_user is None:
+            # email address must not be associated to another account
+            should_associate = True
+        elif user == existing_user:
+            if user.is_active:
+                # an existing active account
+                should_associate = True
+            else:
+                # a new registration
+                should_associate = True
+        else:
+            # skip association
+            # This email address is either:
+            # a) already confirmed on another account
+            # b) not already confirmed, and not a new registration
+            should_associate = False
+
+        if should_associate:
             user_email = get_user_email(user, email)
             if user_email is None:
                 user_email = UserEmail.objects.create(user=user, email=email, is_confirmed=confirmed)
@@ -200,14 +218,14 @@ def associate_user_email(user, email, domain=None, confirmed=False):
                 user_email.confirm_and_activate_account()
             elif not user_email.is_confirmed:
                 domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
-                user_email.send_activation_email(domain)
+                try:
+                    user_email.send_activation_email(domain)
+                except:
+                    request = get_current_request()
+                    rollbar.report_exc_info()
             else:
                 pass
         else:
-            # skip association
-            # This email address is either:
-            # a) already confirmed on another account
-            # b) not already confirmed, and not a new registration
             pass
     else:
         # invalid user or email

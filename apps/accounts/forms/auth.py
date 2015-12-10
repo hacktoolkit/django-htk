@@ -99,8 +99,9 @@ class UserRegistrationForm(UserCreationForm):
         user.username = email_to_username_hash(email)
         # we'll store the primary email in the User object
         user.email = email
-        # require user to confirm email account before activating it
-        user.is_active = False
+        if not htk_setting('HTK_ACCOUNT_ACTIVATE_UPON_REGISTRATION', False):
+            # require user to confirm email account before activating it
+            user.is_active = False
         if commit:
             user.save()
             from htk.apps.accounts.utils import associate_user_email
@@ -129,10 +130,10 @@ class NameEmailUserRegistrationForm(UserRegistrationForm):
     def save(self, domain=None, commit=True):
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         user = super(NameEmailUserRegistrationForm, self).save(commit=False)
-        email = self.cleaned_data.get('email')
-        password1 = self.cleaned_data.get('password1')
+        email = self.email
         user.username = email_to_username_pretty_unique(email)
-        user.set_password(password1)
+        #password1 = self.cleaned_data.get('password1')
+        #user.set_password(password1)
         if commit:
             user.save()
             # associate user and email
