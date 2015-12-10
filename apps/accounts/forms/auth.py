@@ -1,8 +1,11 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import default_token_generator
+import rollbar
+
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.tokens import default_token_generator
 from django.utils.translation import ugettext_lazy as _
 
 from htk.apps.accounts.emails import password_reset_email
@@ -15,8 +18,27 @@ from htk.apps.accounts.utils import get_user_by_email
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
 from htk.utils import htk_setting
+from htk.utils.request import get_current_request
 
 UserModel = get_user_model()
+
+class UpdatePasswordForm(SetPasswordForm):
+    """A subclass of Django's SetPasswordForm
+    Sends out a password_changed_email
+    """
+    def __init__(self, *args, **kwargs):
+        super(UpdatePasswordForm, self).__init__(*args, **kwargs)
+        set_input_placeholder_labels(self)
+
+    def save(self, commit=True):
+        user = super(UpdatePasswordForm, self).save(commit=commit)
+        from htk.apps.accounts.emails import password_changed_email
+        try:
+            password_changed_email(user)
+        except:
+            request = get_current_request()
+            rollbar.report_exc_info(request=request)
+        return user
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(label=_('Email'))

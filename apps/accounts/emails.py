@@ -122,7 +122,7 @@ def password_changed_email(user):
         'domain': htk_setting('HTK_DEFAULT_DOMAIN'),
         'site_name': htk_setting('HTK_SITE_NAME'),
     }
-    subject = 'Password changed on %(site_name)s' % context
+    subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_CHANGED') % context
     send_email(
         template='accounts/password_changed',
         subject=subject,

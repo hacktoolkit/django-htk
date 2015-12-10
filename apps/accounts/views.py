@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from django.contrib.auth import logout
-from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import password_reset
 from django.core.context_processors import csrf
@@ -16,6 +15,7 @@ from django.views.decorators.http import require_GET
 from htk.apps.accounts.decorators import logout_required
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.apps.accounts.forms.auth import ResendConfirmationForm
+from htk.apps.accounts.forms.auth import UpdatePasswordForm
 from htk.apps.accounts.forms.auth import UserRegistrationForm
 from htk.apps.accounts.forms.auth import UsernameEmailAuthenticationForm
 from htk.apps.accounts.models import UserEmail
@@ -396,12 +396,12 @@ def reset_password(
         if user is not None and token_generator.check_token(user, token):
             validlink = True
             if request.method == 'POST':
-                form = SetPasswordForm(user, request.POST)
+                form = UpdatePasswordForm(user, request.POST)
                 if form.is_valid():
                     form.save()
                     success = True
             else:
-                form = SetPasswordForm(None)
+                form = UpdatePasswordForm(None)
         else:
             validlink = False
             form = None
