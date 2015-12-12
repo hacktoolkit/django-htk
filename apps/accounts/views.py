@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import password_reset
@@ -21,6 +20,7 @@ from htk.apps.accounts.forms.auth import UsernameEmailAuthenticationForm
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
 from htk.apps.accounts.utils import get_user_by_email
+from htk.apps.accounts.utils.auth import login_authenticated_user
 from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
 from htk.forms.utils import set_input_attrs
 from htk.utils import htk_setting
@@ -47,9 +47,8 @@ def login_view(
         auth_form = auth_form_model(None, request.POST)
         if auth_form.is_valid():
             user = auth_form.get_user()
-            login(request, user)
+            login_authenticated_user(request, user)
             success = True
-            user.profile.update_locale_info_by_ip_from_request(request)
             default_next_uri = reverse(default_next_url_name)
             next_uri = request.GET.get('next', default_next_uri)
         else:
@@ -150,7 +149,7 @@ def register_social_login(
         auth_form = SocialRegistrationAuthenticationForm(email, request.POST)
         if auth_form.is_valid():
             user = auth_form.get_user()
-            login(request, user)
+            login_authenticated_user(request, user)
             success = True
         else:
             for error in auth_form.non_field_errors():
@@ -211,7 +210,7 @@ def register(
                 username = new_user.username
                 password = reg_form.cleaned_data.get('password1') # new_user.password is a hashed value
                 auth_user = authenticate(username=username, password=password)
-                login(request, auth_user)
+                login_authenticated_user(request, auth_user)
             else:
                 pass
             success = True
