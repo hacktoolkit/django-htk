@@ -1,0 +1,10 @@
+{% comment %}
+A nifty way to disable auto-complete
+
+How it works: "Chrome notices the hidden password field and halts auto-complete. Reportedly this is to prevent the site stealing password info without the user noticing."
+Source: http://stackoverflow.com/questions/2530/how-do-you-disable-browser-autocomplete-on-web-form-field-input-tag#comment42954572_23234498
+
+How to use: Include this fragment before any other forms on a page for which you would like to disable auto-complete.
+{% endcomment %}
+<input type="text" style="display:none;">
+<input type="password" style="display:none;">
