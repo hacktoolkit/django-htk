@@ -33,10 +33,11 @@ def set_input_attrs(form, attrs=None):
             attrs = form.attrs
         else:
             attrs = {}
+    use_react = hasattr(form, 'use_react') and form.use_react
     for name, field in form.fields.items():
         if field.widget.__class__ in TEXT_STYLE_INPUTS:
             classes = attrs.get('class', htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS'))
-            if hasattr(form, 'use_react') and form.use_react:
+            if use_react:
                 # React forms
                 field.widget.attrs['className'] = classes
             else:
@@ -45,7 +46,9 @@ def set_input_attrs(form, attrs=None):
         if field.required:
             field.widget.attrs['required'] = 'required'
         for key, value in attrs.iteritems():
-            if key != 'class':
+            if use_react and key == 'class':
+                field.widget.attrs['className'] = value
+            else:
                 field.widget.attrs[key] = value
 
 def set_input_placeholder_labels(form):
