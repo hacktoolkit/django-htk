@@ -1,22 +1,34 @@
 import datetime
+import re
 
 from django.template.base import Library
 from django.template.defaultfilters import stringfilter
+from django.utils.safestring import mark_safe
 
 register = Library()
 
 ##################################################
 # Filters
 
+# Form Utilities
 @register.filter()
-def clsname(field):
+def field_clsname(field):
     clsname = field.field.widget.__class__.__name__
     return clsname
 
-# Form Utilities
 @register.filter(is_safe=True)
 def label_with_classes(value, arg):
-    html = value.label_tag(attrs={'class': arg})
+    attrs = {
+        'class': arg,
+        'className': arg,
+    }
+    html = value.label_tag(attrs=attrs)
+    return html
+
+@register.filter(is_safe=True)
+def react_field(field):
+    html = field.__str__()
+    html = mark_safe(re.sub(r' value="(.*?)"', r' defaultValue="\g<1>"', html))
     return html
 
 # Dictionary Utilities
