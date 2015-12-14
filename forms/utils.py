@@ -34,20 +34,26 @@ def set_input_attrs(form, attrs=None):
         else:
             attrs = {}
     use_react = hasattr(form, 'use_react') and form.use_react
+    default_input_class = htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS')
+    if 'class' not in attrs:
+        attrs['class'] = attrs.get('class', default_input_class)
     for name, field in form.fields.items():
         if field.widget.__class__ in TEXT_STYLE_INPUTS:
-            classes = attrs.get('class', htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS'))
+            input_classes = attrs.get('class', '')
             if use_react:
                 # React forms
-                field.widget.attrs['className'] = classes
+                field.widget.attrs['className'] = input_classes
             else:
                 # regular HTML forms
-                field.widget.attrs['class'] = classes
+                field.widget.attrs['class'] = input_classes
         if field.required:
             field.widget.attrs['required'] = 'required'
         for key, value in attrs.iteritems():
-            if use_react and key == 'class':
-                field.widget.attrs['className'] = value
+            if key == 'class':
+                if 'class' not in field.widget.attrs:
+                    # only override if widget does not have class explicitly set
+                    key = 'className' if use_react else 'class'
+                    field.widget.attrs[key] = value
             else:
                 field.widget.attrs[key] = value
 

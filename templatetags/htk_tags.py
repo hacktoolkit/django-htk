@@ -28,7 +28,9 @@ def label_with_classes(value, arg):
 @register.filter(is_safe=True)
 def react_field(field):
     html = field.__str__()
-    html = mark_safe(re.sub(r' value="(.*?)"', r' defaultValue="\g<1>"', html))
+    html = re.sub(r' value="(.*?)"', r' defaultValue="\g<1>"', html)
+    html = re.sub(r' class="(.*?)"', r' className="\g<1>"', html)
+    html = mark_safe(html)
     return html
 
 # Dictionary Utilities
