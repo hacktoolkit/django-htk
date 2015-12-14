@@ -29,7 +29,10 @@ def set_input_attrs(form, attrs=None):
     """Set various attributes on form input fields
     """
     if attrs is None:
-        attrs = {}
+        if hasattr(form, 'attrs'):
+            attrs = form.attrs
+        else:
+            attrs = {}
     for name, field in form.fields.items():
         if field.widget.__class__ in TEXT_STYLE_INPUTS:
             classes = attrs.get('class', htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS'))
@@ -41,6 +44,9 @@ def set_input_attrs(form, attrs=None):
                 field.widget.attrs['class'] = classes
         if field.required:
             field.widget.attrs['required'] = 'required'
+        for key, value in attrs.iteritems():
+            if key != 'class':
+                field.widget.attrs[key] = value
 
 def set_input_placeholder_labels(form):
     """Set placeholder attribute to the field label on form input fields, if it doesn't have a placeholder set
