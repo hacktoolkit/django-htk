@@ -32,7 +32,13 @@ def set_input_attrs(form, attrs=None):
         attrs = {}
     for name, field in form.fields.items():
         if field.widget.__class__ in TEXT_STYLE_INPUTS:
-            field.widget.attrs['class'] = attrs.get('class', htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS'))
+            classes = attrs.get('class', htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS'))
+            if hasattr(form, 'use_react') and form.use_react:
+                # React forms
+                field.widget.attrs['className'] = classes
+            else:
+                # regular HTML forms
+                field.widget.attrs['class'] = classes
         if field.required:
             field.widget.attrs['required'] = 'required'
 

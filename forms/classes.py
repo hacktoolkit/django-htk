@@ -18,6 +18,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         """Overrides forms.ModelForm.__init__()
         Unlike forms.ModelForm, instance is required
         """
+        self.use_react = kwargs.pop('use_react', False)
         self.instance = instance
         super(AbstractModelInstanceUpdateForm, self).__init__(instance=instance, *args, **kwargs)
         self._set_save_fields(*args)
