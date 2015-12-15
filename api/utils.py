@@ -5,6 +5,7 @@ from time import mktime
 
 from django.core import serializers
 from django.http import HttpResponse
+from django.http import QueryDict
 
 from htk.api.constants import *
 
@@ -50,16 +51,24 @@ def json_response_okay():
 def json_response_error():
     return json_response(json_error())
 
-def extract_post_params(post_data, expected_params, strict=True):
+def extract_post_params(post_data, expected_params, list_params=None, strict=True):
     """Extract `expected_params` from `post_data`
 
     Raise Exception if `strict` and any `expected_params` are missing
     """
-    data = {}
+    data = QueryDict(mutable=True)
+    if list_params is None:
+        list_params = []
     for param in expected_params:
         if strict and param not in post_data:
             raise Exception('Missing param: %s' % param)
-        value = post_data.get(param)
-        if value is not None:
-            data[param] = value
+        if param in list_params:
+            value = post_data.getlist('%s[]' % param, False)
+            if value is not False:
+                value = json.dumps(value)
+                data[param] = value
+        else:
+            value = post_data.get(param)
+            if value is not None:
+                data[param] = value
     return data
