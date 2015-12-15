@@ -60,5 +60,6 @@ def extract_post_params(post_data, expected_params, strict=True):
         if strict and param not in post_data:
             raise Exception('Missing param: %s' % param)
         value = post_data.get(param)
-        data[param] = value
+        if value is not None:
+            data[param] = value
     return data
