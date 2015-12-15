@@ -23,11 +23,11 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         self.instance = instance
         super(AbstractModelInstanceUpdateForm, self).__init__(instance=instance, *args, **kwargs)
         self._set_save_fields(*args)
-        save_fields_dict = dict(zip(self.save_fields, [True] * len(self.save_fields)))
+
         if args or kwargs:
             # make all non-save fields optional
             for name, field in self.fields.items():
-                if name not in save_fields_dict:
+                if name not in self.save_fields_lookup:
                     field.required = False
                 else:
                     pass
@@ -42,7 +42,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
 
         Called by self.__init__()
         """
-        save_fields = []
+        save_fields_lookup = {}
         for arg in args:
             if hasattr(arg, '__iter__'):
                 # arg is an iterable
@@ -50,12 +50,13 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
                 for key, value in arg.items():
                     # only save this field if it is recognized in both this form and the model instance
                     if key in self.fields and hasattr(self.instance, key):
-                        save_fields.append(key)
+                        save_fields_lookup[key] = True
                     else:
                         pass
             else:
                 pass
-        self.save_fields = save_fields
+        self.save_fields_lookup = save_fields_lookup
+        self.save_fields = save_fields_lookup.keys()
 
     def save(self, commit=True):
         """Saves this form
