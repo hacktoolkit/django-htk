@@ -58,12 +58,14 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         self.save_fields_lookup = save_fields_lookup
         self.save_fields = save_fields_lookup.keys()
 
-    def save(self, commit=True):
+    def save(self, commit=True, should_refresh=False):
         """Saves this form
+
+        `should_refresh` whether the instance is a limited or full instance
 
         Returns an updated instance
 
-        Caveat emptor! instance returned will be a limited instance
+        Caveat emptor! If not refreshed, instance returned will be a limited instance
         Subsequently calling save() on the returned instance could clear out other fields if not called with update_fields
 
         It is recommended to refresh the instance to get the entire object, not one with limited fields in memory
@@ -76,4 +78,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
             value = self.cleaned_data[field]
             instance.__setattr__(field, value)
         instance.save(update_fields=self.save_fields)
+        if should_refresh:
+            from htk.utils.general import refresh
+            instance = refresh(instance)
         return instance
