@@ -65,7 +65,10 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
 
     activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % context
     context['activation_uri'] = activation_uri
-    bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
+    if htk_setting('HTK_ACCOUNT_EMAIL_BCC_ACTIVATION'):
+        bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
+    else:
+        bcc = None
     send_email(
         template=template,
         subject=subject,
@@ -82,7 +85,10 @@ def welcome_email(user):
         'last_name': user.last_name,
         'site_name': htk_setting('HTK_SITE_NAME'),
     }
-    bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
+    if htk_setting('HTK_ACCOUNT_EMAIL_BCC_WELCOME'):
+        bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
+    else:
+        bcc = None
     subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_WELCOME') % context
     send_email(
         template='accounts/welcome',

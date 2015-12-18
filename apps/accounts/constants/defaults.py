@@ -25,3 +25,8 @@ HTK_ACCOUNT_EMAIL_SUBJECT_ACTIVATION = 'Confirm your email address, %(email)s'
 HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_CHANGED = 'Password changed on %(site_name)s'
 HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_RESET = 'Password reset on %(site_name)s'
 HTK_ACCOUNT_EMAIL_SUBJECT_WELCOME = 'Welcome to %(site_name)s, %(email)s'
+
+##
+# Account Email BCC
+HTK_ACCOUNT_EMAIL_BCC_ACTIVATION = True
+HTK_ACCOUNT_EMAIL_BCC_WELCOME = True
