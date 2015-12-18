@@ -37,12 +37,12 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
-    def _set_save_fields(self, *args):
+    def _set_save_fields(self, *args, **kwargs):
         """Determine the subset of fields that we want to save
 
         Called by self.__init__()
         """
-        save_fields_lookup = {}
+        save_fields_lookup = kwargs.pop('save_fields_lookup', {})
         for arg in args:
             if hasattr(arg, '__iter__'):
                 # arg is an iterable
@@ -76,8 +76,9 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         """
         instance = self.instance
         for field in self.save_fields:
-            value = self.cleaned_data[field]
-            instance.__setattr__(field, value)
+            if field in self.cleaned_data:
+                value = self.cleaned_data[field]
+                instance.__setattr__(field, value)
         instance.save(update_fields=self.save_fields)
         if should_refresh:
             from htk.utils.general import refresh
