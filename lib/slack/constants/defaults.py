@@ -22,3 +22,6 @@ HTK_SLACK_TRIGGER_COMMAND_WORDS = (
     'stock',
     'weather',
 )
+
+HTK_SLACK_DEBUG_CHANNEL = '#test'
+
