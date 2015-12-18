@@ -58,10 +58,11 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         self.save_fields_lookup = save_fields_lookup
         self.save_fields = save_fields_lookup.keys()
 
-    def save(self, commit=True, should_refresh=False):
+    def save(self, commit=True, should_refresh=True):
         """Saves this form
 
-        `should_refresh` whether the instance is a limited or full instance
+        `should_refresh` whether the instance is a limited or full instance. Default True.
+        This is slightly less performant, but ensures less confusing behavior, and is less prone to human error.
 
         Returns an updated instance
 
