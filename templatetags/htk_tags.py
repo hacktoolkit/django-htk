@@ -30,6 +30,8 @@ def react_field(field):
     html = field.__str__()
     html = re.sub(r' value="(.*?)"', r' defaultValue="\g<1>"', html)
     html = re.sub(r' class="(.*?)"', r' className="\g<1>"', html)
+    if field.field.widget.__class__.__name__ == 'RadioSelect':
+        html = re.sub(r'checked="checked"', r'defaultChecked', html)
     html = mark_safe(html)
     return html
 
