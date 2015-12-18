@@ -41,7 +41,7 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
     def has_username_field(self):
         """Determines whether username is a field in this form instance
         """
-        result = 'username' in self.save_fields
+        result = 'username' in self._save_fields
         return result
 
     def clean_username(self):

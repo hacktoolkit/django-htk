@@ -27,7 +27,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         if args or kwargs:
             # make all non-save fields optional
             for name, field in self.fields.items():
-                if name not in self.save_fields_lookup:
+                if name not in self._save_fields_lookup:
                     field.required = False
                 else:
                     pass
@@ -55,8 +55,8 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
                         pass
             else:
                 pass
-        self.save_fields_lookup = save_fields_lookup
-        self.save_fields = save_fields_lookup.keys()
+        self._save_fields_lookup = save_fields_lookup
+        self._save_fields = save_fields_lookup.keys()
 
     def save(self, commit=True, should_refresh=True):
         """Saves this form
@@ -75,11 +75,11 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         instance = instance.__class__.objects.get(id=instance.id)
         """
         instance = self.instance
-        for field in self.save_fields:
+        for field in self._save_fields:
             if field in self.cleaned_data:
                 value = self.cleaned_data[field]
                 instance.__setattr__(field, value)
-        instance.save(update_fields=self.save_fields)
+        instance.save(update_fields=self._save_fields)
         if should_refresh:
             from htk.utils.general import refresh
             instance = refresh(instance)
