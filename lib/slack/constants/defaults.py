@@ -23,5 +23,9 @@ HTK_SLACK_TRIGGER_COMMAND_WORDS = (
     'weather',
 )
 
-HTK_SLACK_DEBUG_CHANNEL = '#test'
+# notifications
+HTK_SLACK_NOTIFICATIONS_ENABLED = False
 
+# channels
+HTK_SLACK_DEBUG_CHANNEL = '#test'
+HTK_SLACK_NOTIFICATIONS_CHANNEL = '#test'
