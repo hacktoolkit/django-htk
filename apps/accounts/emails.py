@@ -58,7 +58,7 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
     }
 
     if template is None:
-        template='accounts/activation'
+        template = 'accounts/activation'
 
     if subject is None:
         subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_ACTIVATION') % context
