@@ -127,10 +127,13 @@ def http_header(value):
 
 @register.simple_tag(takes_context=True)
 def get_django_setting(context, key):
+    """Retrieves a Django setting and sets it on the context dictionary
+    """
     from django.conf import settings
     if hasattr(settings, key):
         value = getattr(settings, key)
         context[key] = value
+    return ''
 
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base, media=None):
