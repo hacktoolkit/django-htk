@@ -126,6 +126,13 @@ def http_header(value):
 # Tags
 
 @register.simple_tag(takes_context=True)
+def get_django_setting(context, key):
+    from django.conf import settings
+    if hasattr(settings, key):
+        value = getattr(settings, key)
+        context[key] = value
+
+@register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base, media=None):
     media = 'media="%s" ' % media if media else ''
     values = {
