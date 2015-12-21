@@ -19,8 +19,6 @@ from htk.apps.accounts.emails import activation_email
 from htk.apps.accounts.emails import welcome_email
 from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.utils import encrypt_uid
-from htk.lib.geoip.utils import get_geoip_city
-from htk.lib.geoip.utils import get_geoip_country
 from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
 from htk.utils import extract_request_ip
@@ -353,10 +351,10 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
             ip = extract_request_ip(request)
             if ip and self.last_login_ip != ip:
                 self.last_login_ip = ip
-                gi_country = get_geoip_country()
-                gi_city = get_geoip_city()
-                self.detected_country = gi_country.country_code_by_addr(ip)
-                self.detected_timezone = gi_city.time_zone_by_addr(ip)
+                from htk.lib.geoip.utils import get_country_code_by_ip
+                from htk.lib.geoip.utils import get_timezone_by_ip
+                self.detected_country = get_country_code_by_ip(ip) or ''
+                self.detected_timezone = get_timezone_by_ip(ip) or ''
                 self.save()
         except:
             # couldn't find geoip records for ip, just be quiet for now
