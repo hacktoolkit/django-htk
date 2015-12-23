@@ -1,0 +1,45 @@
+<div class="cpq">
+<h3>Years</h3>
+<ul>
+  {% for invoice_year in invoice_years %}
+  <li>
+    <a href="{% url 'cpq_receivables_by_year' invoice_year %}">{{ invoice_year }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% if invoice_year %}
+<h3>Total Receivables in {{ invoice_year }}:</h3>
+{% load humanize %}
+<table class="pure-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Date</th>
+      <th>Customer Name</th>
+      <th>Status</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for invoice in receivables %}
+    <tr>
+      <td>{{ invoice.id }}</td>
+      <td>{{ invoice.date }}</td>
+      <td>{{ invoice.customer }}</td>
+      <td>{% if invoice.paid %}Paid{% else %}Not Paid{% endif %}</td>
+      <td class="align-right">${{ invoice.get_total|intcomma }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="3"></th>
+      <th>Total</th>
+      <th class="align-right">${{ total|intcomma }}</th>
+    </tr>
+  </tfoot>
+</table>
+{% endif %}
+
+</div>

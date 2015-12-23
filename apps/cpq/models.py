@@ -61,7 +61,7 @@ class BaseCPQInvoice(BaseCPQQuote):
         return value
 
     def get_url_name(self):
-        url_name = 'invoices_invoice'
+        url_name = 'cpq_invoices_invoice'
         return url_name
 
     def get_invoice_type(self):
