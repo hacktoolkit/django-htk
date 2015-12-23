@@ -24,7 +24,7 @@
   <tbody>
     {% for invoice in receivables %}
     <tr>
-      <td>{{ invoice.id }}</td>
+      <td><a href="{{ invoice.get_url }}">{{ invoice.id }}</a></td>
       <td>{{ invoice.date }}</td>
       <td>{{ invoice.customer }}</td>
       <td>{% if invoice.paid %}Paid{% else %}Not Paid{% endif %}</td>
