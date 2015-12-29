@@ -139,6 +139,8 @@ def get_django_setting(context, key):
 
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base, media=None):
+    """Determine whether to use LESS compilation on-the-fly or CSS files, and includes the appropriate one
+    """
     media = 'media="%s" ' % media if media else ''
     values = {
         'css_rel' : context.get('css_rel', 'stylesheet'),
@@ -151,6 +153,8 @@ def lesscss(context, css_file_path_base, media=None):
 
 @register.simple_tag(takes_context=True)
 def loadjs(context, js_file_path):
+    """Include a JS file and append a static asset version string
+    """
     asset_version = context.get('asset_version')
     if asset_version:
         asset_version_str = '?v=%s' % asset_version
@@ -165,6 +169,8 @@ def loadjs(context, js_file_path):
 
 @register.simple_tag()
 def qrcode_image_url(qr_data):
+    """Returns the URL to the QR Code image of `qr_data`
+    """
     if qr_data:
         from htk.lib.qrcode.utils import generate_qr_key
         from htk.utils import htk_setting
