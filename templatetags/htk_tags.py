@@ -1,6 +1,8 @@
 import datetime
 import re
+import urllib
 
+from django.core.urlresolvers import reverse
 from django.template.base import Library
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
@@ -160,3 +162,24 @@ def loadjs(context, js_file_path):
     }
     html = '<script type="text/javascript" src="%(js_file_path)s%(asset_version_str)s"></script>' % values
     return html
+
+@register.simple_tag()
+def qrcode_image_url(qr_data):
+    if qr_data:
+        from htk.lib.qrcode.utils import generate_qr_key
+        from htk.utils import htk_setting
+        url_name = htk_setting('HTK_QR_IMAGE_URL_NAME')
+        if url_name:
+            qr_params = urllib.urlencode(
+                {
+                    'key': generate_qr_key(qr_data),
+                    'data': qr_data,
+                }
+            )
+            image_url = '%s?%s' % (reverse(url_name), qr_params,)
+        else:
+            image_url = None
+    else:
+        image_url = None
+    return image_url
+
