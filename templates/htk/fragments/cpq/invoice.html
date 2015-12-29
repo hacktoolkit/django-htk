@@ -181,4 +181,6 @@
     <br/>
     Thank you!<br/>
   </div>
+  {% load htk_tags %}
+  <img src="{% qrcode_image_url invoice.get_full_url %}" />
 </div>

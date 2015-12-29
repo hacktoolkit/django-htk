@@ -6,6 +6,7 @@ from htk.apps.cpq.constants import *
 from htk.apps.cpq.utils import compute_cpq_code
 from htk.fields import CurrencyField
 from htk.utils.enums import enum_to_str
+from htk.utils import htk_setting
 
 class BaseCPQQuote(models.Model):
     """Base class for a Quote
@@ -38,6 +39,12 @@ class BaseCPQQuote(models.Model):
         url_name = self.get_url_name()
         url = reverse(url_name, args=(self.get_encoded_id(),))
         return url
+
+    def get_full_url(self):
+        site_base_url = htk_setting('HTK_DEFAULT_DOMAIN')
+        cpq_url = self.get_url()
+        full_url = 'http://%s%s' % (site_base_url, cpq_url,)
+        return full_url
 
     def get_total(self):
         line_items = self.line_items.all()
