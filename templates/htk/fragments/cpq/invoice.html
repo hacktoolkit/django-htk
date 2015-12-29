@@ -5,7 +5,7 @@
   </div>
   <div class="pure-g">
     <div class="pure-u-1-2">
-      <h1 class="cpq-heading">{{ invoice.get_invoice_type.name }}</h1>
+      <h1 class="cpq-heading">{{ invoice.get_invoice_type }}</h1>
     </div>
     <div class="pure-u-1-2 align-right">
       {% load gravatar %}
@@ -22,9 +22,10 @@
 
       <table class="cpq-contact">
         <tbody>
+          {% if constants.addresses.default %}
           <tr>
             <td>
-              <i class="fa fa-envelope-o"></i>
+              <i class="fa fa-building"></i>
             </td>
             <td>
               {{ constants.addresses.default.street }},
@@ -33,33 +34,42 @@
               {{ constants.addresses.default.zip }}
             </td>
           </tr>
-
+          {% endif %}
+          {% if constants.phones.default %}
           <tr>
             <td>
               <i class="fa fa-phone"></i>
             </td>
             <td>
+              {% if constants.phones.default_is_alpha %}
               {{ constants.phones.default }}
               [ {{ constants.phones.default|phonenumber }} ]
+              {% else %}
+              {{ constants.phones.default|phonenumber }}
+              {% endif %}
             </td>
           </tr>
-
+          {% endif %}
+          {% if constants.emails.sales %}
           <tr>
             <td>
-              <i class="fa fa-laptop"></i>
+              <i class="fa fa-envelope-o"></i>
             </td>
             <td>
               {{ constants.emails.sales|obfuscate_mailto|safe }}
             </td>
           </tr>
+          {% endif %}
+          {% if constants.legal.ein %}
           <tr>
             <td>
-              <i class="fa fa-bank"></i>
+              <i class="fa fa-balance-scale"></i>
             </td>
             <td>
               EIN #{{ constants.legal.ein }}
             </td>
           </tr>
+          {% endif %}
         </tbody>
       </table>
       <br/>
