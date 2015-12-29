@@ -4,6 +4,7 @@ import qrcode
 from PIL import Image
 
 from django.http import HttpResponse
+from django.http import HttpResponseForbidden
 
 from htk.utils import htk_setting
 
@@ -37,7 +38,7 @@ def restricted_qrcode_image_response(data='', key=None, require_key=True):
     if is_valid:
         response = qrcode_image_response(data)
     else:
-        response = None
+        response = HttpResponseForbidden()
 
     return response
 
