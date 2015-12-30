@@ -1,6 +1,22 @@
 <div class="cpq">
-<h1>Dashboard</h1>
+  <h1>Dashboard</h1>
 
-<a href="{% url 'cpq_receivables' %}">Receivables</a>
+<h3>Admin</h3>
+<ul>
+  {% for admin_url in admin_urls %}
+  <li>
+    <a href="{{ admin_url.url }}" target="_blank">{{ admin_url.name }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+<h3>Reporting</h3>
+<ul>
+  {% for reporting_url in reporting_urls %}
+  <li>
+    <a href="{{ reporting_url.url }}">{{ reporting_url.name }}</a>
+  </li>
+  {% endfor %}
+</ul>
 
 </div>

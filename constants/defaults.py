@@ -10,6 +10,7 @@ HTK_ALLOWED_HOST_REGEXPS = (
 ##
 # Miscellaneous settings
 HTK_DEFAULT_DOMAIN = 'hacktoolkit.com'
+HTK_DEFAULT_APP_LABEL = 'htk'
 HTK_SITE_NAME = 'Hacktoolkit'
 HTK_SYMBOLIC_SITE_NAME = 'hacktoolkit'
 
