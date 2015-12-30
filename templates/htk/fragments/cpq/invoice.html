@@ -1,13 +1,13 @@
 <div class="cpq">
-  <div class="controls align-right">
+  <div class="controls align-right no-print">
     <a href="javascript:void(0);" class="pure-button print-button">Print</a>
     {#<a href="javascript:void(0);" class="pure-button pdf-button">Save as PDF</a>#}
   </div>
   <div class="pure-g">
-    <div class="pure-u-1-2">
+    <div class="pure-u-2-3">
       <h1 class="cpq-heading">{{ invoice.get_invoice_type }}</h1>
     </div>
-    <div class="pure-u-1-2 align-right">
+    <div class="pure-u-1-3 align-right">
       {% load gravatar %}
       <img src="{% gravatar_for_email constants.emails.gravatar 100 %}" />
     </div>
@@ -133,15 +133,15 @@
     <thead>
       <tr>
         <th class="cpq-items-description">
-          Item
+          Item/Description
         </th>
         <th class="cpq-items-unit-cost">
-          Unit Cost
+          Cost/Unit
         </th>
         <th class="cpq-items-quantity">
           Qty.
         </th>
-        <th class="cpq-items-amount">
+        <th class="cpq-items-amount nowrap">
           Line Total
         </th>
       </tr>
@@ -181,6 +181,22 @@
     <br/>
     Thank you!<br/>
   </div>
-  {% load htk_tags %}
-  <img src="{% qrcode_image_url invoice.get_full_url %}" />
+  <table class="qrcode-container">
+    <tr class="valign-bottom">
+      <td>
+      View online at: <a href="{{ invoice_url }}">{{ invoice_url }}</a>
+      </td>
+      <td>
+      {% load htk_tags %}
+      <img src="{% qrcode_image_url invoice_url %}" class="qrcode" />
+      </td>
+</tr>
+</table>
+  <div class="pure-g qrcode-container page-break-before">
+    <div class="pure-u-2-3 align-left">
+    </div>
+    <div class="pure-u-1-3 align-right">
+    </div>
+  </div>
 </div>
+<div class="voffset-50 no-print"></div>

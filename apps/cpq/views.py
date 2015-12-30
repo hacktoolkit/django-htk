@@ -46,6 +46,7 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
         raise Http404
 
     data[data_key] = cpq_obj
+    data['%s_url' % data_key] = cpq_obj.get_full_url()
     if request.GET.get('pdf'):
         response = render_to_pdf_response(template_name, data)
     else:
