@@ -3,7 +3,6 @@ import sys
 from importlib import import_module
 
 from django.conf import settings
-from django.db.models.loading import get_model
 
 def htk_setting(key, default=None):
     import htk.constants.defaults
@@ -41,9 +40,18 @@ def resolve_method_dynamically(module_str):
         method = None
     return method
 
+def _get_model_fn():
+    try:
+        from django.apps import apps
+        get_model = apps.get_model
+    except:
+        from django.db.models.loading import get_model
+    return get_model
+
 def resolve_model_dynamically(module_str):
     (module_name, attr_name,) = get_module_name_parts(module_str)
     if module_name and attr_name:
+        get_model = _get_model_fn()
         model = get_model(module_name, attr_name)
     else:
         model = None
