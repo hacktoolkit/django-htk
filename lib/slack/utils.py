@@ -1,5 +1,6 @@
 import json
 import requests
+import rollbar
 
 from htk.apps.kv_storage import *
 from htk.utils import htk_setting
@@ -34,6 +35,8 @@ def webhook_call(
     data = { 'payload' : payload }
 
     response = requests.post(webhook_url, json=payload)
+    if response.status_code != 200:
+        rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,))
     return response
 
 def is_valid_webhook_event(event):
