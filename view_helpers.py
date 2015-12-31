@@ -88,13 +88,15 @@ def wrap_data(request, data=None):
     url_name = request.resolver_match.url_name
     host = request.get_host()
     is_secure = request.is_secure()
-    full_uri = '%s://%s%s' % ('http' + ('s' if is_secure else ''), host, path,)
+    base_uri = '%s://%s' % ('http' + ('s' if is_secure else ''), host,)
+    full_uri = '%s%s' % (base_uri, path,)
     data['request'] = {
         'request' : request,
         'is_secure' : is_secure,
         'host' : host,
         'path' : path,
         'url_name' : url_name,
+        'base_uri' : base_uri,
         'full_uri' : full_uri,
     }
     data['server'] = {
@@ -136,9 +138,10 @@ def wrap_data(request, data=None):
     ##
     # LESS http://lesscss.org/#usage
     asset_version = get_asset_version()
+    css_ext = '%s?v=%s' % (htk_setting('HTK_CSS_EXTENSION'), asset_version,)
     useless = settings.ENV_DEV and request.GET.get('useless', False)
     data['css_rel'] = 'stylesheet/less' if useless else 'stylesheet'
-    data['css_ext'] = 'less' if useless else 'css?v=%s' % asset_version
+    data['css_ext'] = 'less' if useless else css_ext
     data['asset_version'] = asset_version
 
     ##
