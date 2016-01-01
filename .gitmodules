@@ -1,3 +1,3 @@
 [submodule "static/htk/css"]
-	path = static/htk/css
+	path = static/htk/less
 	url = git@github.com:hacktoolkit/htk-css-hacktoolkit.git
