@@ -26,6 +26,8 @@ def generate_html_from_template(template_name, context_dict):
     return html
 
 def rewrite_relative_urls_as_absolute(html, base_url):
+    """Rewrite relative URLs in `html` as absolute urls with `base_url`
+    """
     html = re.sub(
         r'<(?P<tag>(?:a|link)[^>]*?(?:href|src))="(?P<path>/[^/][^>"]*?)"(?P<suffix>[^>]*?)>',
         #r'<(?P<tag>img[^>]*?src)="(?P<path>/[^/][^>"]*?)"(?P<suffix>[^>]*?)>',
