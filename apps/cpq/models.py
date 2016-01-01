@@ -40,10 +40,12 @@ class BaseCPQQuote(models.Model):
         url = reverse(url_name, args=(self.get_encoded_id(),))
         return url
 
-    def get_full_url(self):
-        site_base_url = htk_setting('HTK_DEFAULT_DOMAIN')
+    def get_full_url(self, base_uri=None):
+        if base_uri is None:
+            domain = htk_setting('HTK_DEFAULT_DOMAIN')
+            base_uri = 'http://%s' % domain
         cpq_url = self.get_url()
-        full_url = 'http://%s%s' % (site_base_url, cpq_url,)
+        full_url = '%s%s' % (base_uri, cpq_url,)
         return full_url
 
     def get_total(self):
