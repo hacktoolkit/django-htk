@@ -1,7 +1,7 @@
 <div class="cpq">
-  <div class="controls align-right no-print">
-    <a href="javascript:void(0);" class="pure-button print-button">Print</a>
-    {#<a href="javascript:void(0);" class="pure-button pdf-button">Save as PDF</a>#}
+  <div class="controls align-right-sm no-print">
+    <a href="javascript:void(0);" class="pure-button print-button bg-flatui-peter-river">Print</a>
+    <a href="javascript:void(0);" class="pure-button pdf-button bg-flatui-peter-river">Save as PDF</a>
   </div>
   <div class="pure-g">
     <div class="pure-u-2-3">
@@ -14,165 +14,19 @@
   </div>
   <br/>
 
-  {% load htk_tags %}
   <div class="pure-g">
-    <div class="pure-u-1-2">
-      <span class="cpq-company">{{ constants.legal.owner }}</span>
+    <div class="pure-u-1 pure-u-sm-1-2">
+      {% include 'htk/fragments/cpq/company_contact.html' %}
       <br/>
-
-      <table class="cpq-contact">
-        <tbody>
-          {% if constants.addresses.default %}
-          <tr>
-            <td>
-              <i class="fa fa-building"></i>
-            </td>
-            <td>
-              {{ constants.addresses.default.street }},
-              {{ constants.addresses.default.city }},
-              {{ constants.addresses.default.state }}
-              {{ constants.addresses.default.zip }}
-            </td>
-          </tr>
-          {% endif %}
-          {% if constants.phones.default %}
-          <tr>
-            <td>
-              <i class="fa fa-phone"></i>
-            </td>
-            <td>
-              {% if constants.phones.default_is_alpha %}
-              {{ constants.phones.default }}
-              [ {{ constants.phones.default|phonenumber }} ]
-              {% else %}
-              {{ constants.phones.default|phonenumber }}
-              {% endif %}
-            </td>
-          </tr>
-          {% endif %}
-          {% if constants.emails.sales %}
-          <tr>
-            <td>
-              <i class="fa fa-envelope-o"></i>
-            </td>
-            <td>
-              {{ constants.emails.sales|obfuscate_mailto|safe }}
-            </td>
-          </tr>
-          {% endif %}
-          {% if constants.legal.ein %}
-          <tr>
-            <td>
-              <i class="fa fa-balance-scale"></i>
-            </td>
-            <td>
-              EIN #{{ constants.legal.ein }}
-            </td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
-      <br/>
-
-      <h3 class="cpq-heading">{% if invoice.get_invoice_type == 'Invoice' %}Bill To{% else %}Pay To{% endif %}:</h3>
-      {% with customer=invoice.customer %}
-      {{ customer.name }}<br/>
-      {% if customer.attention %}
-      Attn: {{ customer.attention }}
-      {% if customer.email %}
-      ({{ customer.email }})
-      {% endif %}
-      <br/>
-      {% endif %}
-      {{ customer.address }}<br/>
-      {% endwith %}
+      {% include 'htk/fragments/cpq/recipient_info.html' %}
     </div>
-    <div class="pure-u-1-2 align-right">
-      <table class="pure-table cpq-summary">
-        <tbody>
-          <tr>
-            <td>
-              Invoice #
-            </td>
-            <td>
-              {{ invoice.id }}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Invoice Date:
-            </td>
-            <td>
-              {{ invoice.date }}
-            </td>
-          </tr>
-          <tr>
-            <td class="bold">
-              Amount Due:
-            </td>
-            <td class="bold">
-              {% load humanize %}
-              ${{ invoice.get_total|intcomma }}
-            </td>
-          </tr>
-          <tr>
-            <td>
-              Status:
-            </td>
-            <td>
-              {% if invoice.paid %}Paid{% else %}Not Paid{% endif %}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="pure-u-1 pure-u-sm-1-2">
+      {% include 'htk/fragments/cpq/summary_table.html' %}
     </div>
   </div>
   <br/>
 
-  <table class="pure-table cpq-items">
-    <thead>
-      <tr>
-        <th class="cpq-items-description">
-          Item/Description
-        </th>
-        <th class="cpq-items-unit-cost">
-          Cost/Unit
-        </th>
-        <th class="cpq-items-quantity">
-          Qty.
-        </th>
-        <th class="cpq-items-amount nowrap">
-          Line Total
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for line_item in invoice.line_items.all %}
-      <tr>
-        <td>
-          <span class="bold">{{ line_item.name }}</span><br/>
-          {{ line_item.description|linebreaksbr }}
-        </td>
-        <td class="cpq-item-unit-cost">
-          ${{ line_item.unit_cost|intcomma }}
-        </td>
-        <td class="cpq-item-quantity">
-          {{ line_item.quantity|intcomma }}
-        </td>
-        <td class="cpq-item-amount">
-          ${{ line_item.get_amount|intcomma }}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="2"></td>
-        <th>Amount Due</th>
-        <th class="cpq-total">${{ invoice.get_total|intcomma }}</th>
-      </tr>
-    </tfoot>
-  </table>
+  {% include 'htk/fragments/cpq/items_table.html' %}
 
   <div>
     <h3 class="cpq-heading">Notes</h3>
@@ -181,22 +35,6 @@
     <br/>
     Thank you!<br/>
   </div>
-  <table class="qrcode-container">
-    <tr class="valign-bottom">
-      <td>
-      View online at: <a href="{{ invoice_url }}">{{ invoice_url }}</a>
-      </td>
-      <td>
-      {% load htk_tags %}
-      <img src="{% qrcode_image_url invoice_url %}" class="qrcode" />
-      </td>
-</tr>
-</table>
-  <div class="pure-g qrcode-container page-break-before">
-    <div class="pure-u-2-3 align-left">
-    </div>
-    <div class="pure-u-1-3 align-right">
-    </div>
-  </div>
+  {% include 'htk/fragments/cpq/qrcode_container.html' %}
+  <div class="voffset-50 no-print"></div>
 </div>
-<div class="voffset-50 no-print"></div>

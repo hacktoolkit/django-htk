@@ -1,0 +1,37 @@
+{% load humanize %}
+<table class="pure-table cpq-summary right align-right-sm align-right-print">
+  <tbody>
+    <tr>
+      <td>
+        Invoice #
+      </td>
+      <td>
+        {{ invoice.id }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Invoice Date:
+      </td>
+      <td>
+        {{ invoice.date }}
+      </td>
+    </tr>
+    <tr>
+      <td class="bold">
+        Amount Due:
+      </td>
+      <td class="bold">
+        ${{ invoice.get_total|intcomma }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Status:
+      </td>
+      <td>
+        {% if invoice.paid %}Paid{% else %}Not Paid{% endif %}
+      </td>
+    </tr>
+  </tbody>
+</table>

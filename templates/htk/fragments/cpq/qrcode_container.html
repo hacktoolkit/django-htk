@@ -1,0 +1,11 @@
+<table class="qrcode-container">
+  <tr class="valign-bottom">
+    <td>
+      View online at: <a href="{{ invoice_url }}">{{ invoice_url }}</a>
+    </td>
+    <td>
+      {% load htk_tags %}
+      <img src="{% qrcode_image_url invoice_url %}" class="qrcode" />
+    </td>
+  </tr>
+</table>

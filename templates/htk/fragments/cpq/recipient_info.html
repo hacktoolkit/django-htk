@@ -1,0 +1,20 @@
+<div class="cpq-heading recipient">
+  {% if invoice.get_invoice_type == 'Invoice' %}
+  Bill To:
+  {% elif invoice.get_invoice_type == 'Quote' %}
+  Quoted For:
+  {% else %}
+  Pay To:
+  {% endif %}
+</div>
+{% with customer=invoice.customer %}
+{{ customer.name }}<br/>
+{% if customer.attention %}
+Attn: {{ customer.attention }}
+{% if customer.email %}
+({{ customer.email }})
+{% endif %}
+<br/>
+{% endif %}
+{{ customer.address }}<br/>
+{% endwith %}
