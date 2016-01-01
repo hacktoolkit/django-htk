@@ -4,7 +4,6 @@ from django.shortcuts import redirect
 from htk.apps.cpq.decorators import cpq_admin_required
 from htk.apps.cpq.enums import CPQType
 from htk.utils import htk_setting
-from htk.utils.pdf_utils import render_to_pdf_response
 from htk.utils.templates import get_renderer
 from htk.utils.templates import get_template_context_generator
 from htk.view_helpers import render_to_response_custom as _r
@@ -38,17 +37,19 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
     else:
         pass
 
-    if cpq_type == CPQType.INVOICE:
-        data_key = 'invoice'
-    elif cpq_type == CPQType.QUOTE:
-        data_key = 'quote'
+    if cpq_type in (CPQType.INVOICE, CPQType.QUOTE,):
+        cpq_obj_key = cpq_type.name.lower()
     else:
         raise Http404
 
-    data[data_key] = cpq_obj
-    data['%s_url' % data_key] = cpq_obj.get_full_url()
+    cpq_full_url = cpq_obj.get_full_url(base_uri=data['request']['base_uri'])
+    data['cpq_type'] = cpq_obj_key
+    data[cpq_obj_key] = cpq_obj
+    data['%s_url' % cpq_obj_key] = cpq_full_url
     if request.GET.get('pdf'):
-        response = render_to_pdf_response(template_name, data)
+        data['pdf_filename'] = '%s.pdf' % cpq_obj_key
+        from htk.utils.pdf_utils import render_to_pdf_response
+        response = render_to_pdf_response(template_name, data, show_content_in_browser=False)
     else:
         response = renderer(template_name, data)
     return response
