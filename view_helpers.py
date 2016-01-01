@@ -88,7 +88,8 @@ def wrap_data(request, data=None):
     url_name = request.resolver_match.url_name
     host = request.get_host()
     is_secure = request.is_secure()
-    base_uri = '%s://%s' % ('http' + ('s' if is_secure else ''), host,)
+    protocol = 'http' + ('s' if is_secure else '')
+    base_uri = '%s://%s' % (protocol, host,)
     full_uri = '%s%s' % (base_uri, path,)
     data['request'] = {
         'request' : request,
@@ -96,6 +97,7 @@ def wrap_data(request, data=None):
         'host' : host,
         'path' : path,
         'url_name' : url_name,
+        'protocol' : protocol,
         'base_uri' : base_uri,
         'full_uri' : full_uri,
     }
