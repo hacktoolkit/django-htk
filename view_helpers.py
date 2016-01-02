@@ -105,6 +105,8 @@ def wrap_data(request, data=None):
         'hostname' : gethostname(),
     }
 
+    data['site_name'] = htk_setting('HTK_SITE_NAME')
+
     data['meta'] = {
         'title' : {
             'content' : '',
