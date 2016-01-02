@@ -203,11 +203,12 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
         email = self.cleaned_data.get('email', None)
         if email:
             user = get_user_by_email(email)
-            if user.is_active:
-                pass
-            else:
-                self.inactive_user = True
-                raise forms.ValidationError("That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"javascript:void(0);\">Resend email confirmation &gt;</a>")
+            if user:
+                if user.is_active:
+                    pass
+                else:
+                    self.inactive_user = True
+                    raise forms.ValidationError("That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"javascript:void(0);\">Resend email confirmation &gt;</a>")
         else:
             user = None
 
