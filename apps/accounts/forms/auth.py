@@ -194,7 +194,9 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
     """
     def __init__(self, *args, **kwargs):
         super(PasswordResetFormHtmlEmail, self).__init__(*args, **kwargs)
-        self.fields['email'].widget.attrs['placeholder'] = 'Email'
+        self.label_suffix = ''
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
 
     def clean(self):
         cleaned_data = self.cleaned_data

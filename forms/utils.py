@@ -60,10 +60,16 @@ def set_input_attrs(form, attrs=None):
 def set_input_placeholder_labels(form):
     """Set placeholder attribute to the field label on form input fields, if it doesn't have a placeholder set
     """
+    if htk_setting('HTK_FORMS_USE_CUSTOM_PLACEHOLDER_VALUES'):
+        custom_labels = htk_setting('HTK_FORMS_CUSTOM_PLACEHOLDER_VALUES')
+    else:
+        custom_labels = {}
+
     for name, field in form.fields.items():
         if field.widget.__class__ in TEXT_STYLE_INPUTS:
             if not field.widget.attrs.get('placeholder'):
-                field.widget.attrs['placeholder'] = field.label
+                placeholder_value = custom_labels.get(name, field.label)
+                field.widget.attrs['placeholder'] = placeholder_value
 
 def get_form_errors(form):
     """Return a list of errors on the form
