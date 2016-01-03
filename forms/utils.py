@@ -4,6 +4,7 @@ from htk.utils import htk_setting
 
 TEXT_STYLE_INPUTS = (
     forms.TextInput,
+    forms.NumberInput,
     forms.EmailInput,
     forms.PasswordInput,
     forms.Textarea,
