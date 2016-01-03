@@ -1,7 +1,6 @@
 import json
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -16,6 +15,7 @@ from htk.apps.accounts.forms.settings import AddEmailForm
 from htk.apps.accounts.forms.update import ChangeUsernameForm
 from htk.apps.accounts.forms.update import ChangePasswordForm
 from htk.apps.accounts.models import UserEmail
+from htk.apps.accounts.utils.auth import login_authenticated_user
 from htk.apps.accounts.utils import resolve_encrypted_uid
 from htk.forms.utils import get_form_error
 from htk.forms.utils import get_form_errors
@@ -29,7 +29,7 @@ def login_view(request):
     auth_form = UsernameEmailAuthenticationForm(None, request.POST)
     if auth_form.is_valid():
         user = auth_form.get_user()
-        login(request, user)
+        login_authenticated_user(request, user)
         response = json_response_okay()
     else:
         response = json_response_error()
