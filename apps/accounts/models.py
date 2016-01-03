@@ -351,15 +351,21 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
             ip = extract_request_ip(request)
             if ip and self.last_login_ip != ip:
                 self.last_login_ip = ip
-                from htk.lib.geoip.utils import get_country_code_by_ip
-                from htk.lib.geoip.utils import get_timezone_by_ip
-                self.detected_country = get_country_code_by_ip(ip) or ''
-                self.detected_timezone = get_timezone_by_ip(ip) or ''
-                self.save()
+                try:
+                    from htk.lib.geoip.utils import get_country_code_by_ip
+                    from htk.lib.geoip.utils import get_timezone_by_ip
+                    detected_country = get_country_code_by_ip(ip) or ''
+                    detected_timezone = get_timezone_by_ip(ip) or ''
+                    self.detected_country = detected_country
+                    self.detected_timezone = detected_timezone
+                except:
+                    # couldn't find geoip records for ip, just be quiet for now
+                    pass
+                finally:
+                    self.save()
         except:
-            # couldn't find geoip records for ip, just be quiet for now
-            #rollbar.report_exc_info(request=request)
-            pass
+            # error extracting IP or saving
+            rollbar.report_exc_info(request=request)
 
 class AbstractUserProfile(BaseAbstractUserProfile):
     share_name = models.BooleanField(default=False)
