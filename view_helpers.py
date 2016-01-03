@@ -1,3 +1,4 @@
+import copy
 import re
 import rollbar
 from socket import gethostname
@@ -291,19 +292,16 @@ def generate_nav_links(request, nav_links_cfg):
     url_name = request.resolver_match.url_name
     nav_links = []
     for link_cfg in nav_links_cfg:
+        nav_link = copy.copy(link_cfg)
         text = link_cfg['text']
         submenu = link_cfg.get('submenu', None)
         cfg_url_name = link_cfg.get('url_name', None)
         if cfg_url_name:
-            uri = reverse(cfg_url_name)
+            nav_link['uri'] = reverse(cfg_url_name)
         else:
-            uri = link_cfg.get('uri')
+            pass
         selected = url_name == cfg_url_name
-        nav_link = {
-            'text' : text,
-            'uri' : uri,
-            'selected' : selected,
-        }
+        nav_link['selected'] = selected
         if submenu:
             nav_link['submenu'] = generate_nav_links(request, submenu)
         else:
