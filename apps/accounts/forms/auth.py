@@ -28,6 +28,7 @@ class UpdatePasswordForm(SetPasswordForm):
     """
     def __init__(self, *args, **kwargs):
         super(UpdatePasswordForm, self).__init__(*args, **kwargs)
+        self.label_suffix = ''
         set_input_placeholder_labels(self)
         set_input_attrs(self)
 
