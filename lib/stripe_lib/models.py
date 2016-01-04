@@ -1,12 +1,14 @@
 import rollbar
 import stripe
 
+from django.conf import settings
 from django.db import models
 
 from htk.lib.stripe_lib.enums import StripePlanInterval
 from htk.lib.stripe_lib.utils import _initialize_stripe
 from htk.lib.stripe_lib.utils import safe_stripe_call
 from htk.lib.stripe_lib.constants.general import *
+from htk.utils import htk_setting
 
 class BaseStripeCustomer(models.Model):
     stripe_id = models.CharField(max_length=255)
@@ -293,3 +295,45 @@ class BaseStripePlan(models.Model):
             }
         )
         return stripe_plan
+
+class AbstractStripeCustomerHolder(models.Model):
+    stripe_customer = models.OneToOneField(settings.HTK_STRIPE_CUSTOMER_MODEL, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT, related_name=settings.HTK_STRIPE_CUSTOMER_HOLDER_RELATED_NAME)
+
+    class Meta:
+        abstract = True
+
+    def get_stripe_customer_email(self):
+        raise Exception('Subclass must implement this abstract function')
+
+    def get_stripe_customer_description(self):
+        raise Exception('Subclass must implement this abstract function')
+
+    def create_stripe_customer(self, card=None):
+        """Creates a new StripeCustomer object for this User if one does not exist
+
+        If `card` is passed in, will also create the card for the customer
+        """
+        if self.stripe_customer:
+            pass
+        else:
+            from htk.lib.stripe_lib.utils import create_customer
+            email = self.get_stripe_customer_email()
+            description = self.get_stripe_customer_description()
+            customer, stripe_customer = create_customer(card=card, email=email, description=description)
+            self.stripe_customer = customer
+            self.save()
+        return self.stripe_customer
+
+    def add_or_replace_credit_card(self, card):
+        """Add or replace the credit card on file for this User
+
+        Creates a new StripeCustomer object if one does not exist yet
+        """
+        was_added_or_replaced = False
+        if self.stripe_customer:
+            was_replaced = self.stripe_customer.replace_card(card)
+            was_added_or_replaced = was_replaced
+        else:
+            customer = self.create_stripe_customer(card=card)
+            was_added_or_replaced = customer is not None
+        return was_added_or_replaced

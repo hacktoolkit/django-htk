@@ -189,3 +189,11 @@ def qrcode_image_url(qr_data):
         image_url = None
     return image_url
 
+@register.simple_tag()
+def credit_card_icon(credit_card_brand):
+    from htk.constants.icons import *
+    if credit_card_brand in CREDIT_CARD_ICONS:
+        credit_card_icon = CREDIT_CARD_ICONS[credit_card_brand]
+    else:
+        credit_card_icon = DEFAULT_CREDIT_CARD_ICON
+    return credit_card_icon
