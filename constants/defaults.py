@@ -61,6 +61,7 @@ HTK_FORMS_CUSTOM_LABELS = {}
 # Enums
 HTK_ENUM_SYMBOLIC_NAME_OVERRIDES = {}
 
+from htk.admintools.constants.defaults import *
 from htk.apps.accounts.constants.defaults import *
 from htk.apps.cpq.constants.defaults import *
 from htk.apps.file_storage.constants.defaults import *
