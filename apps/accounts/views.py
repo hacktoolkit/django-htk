@@ -405,11 +405,11 @@ def reset_password(
                     success = True
             else:
                 form = UpdatePasswordForm(None)
+            if 'input_attrs' in data:
+                set_input_attrs(form, attrs=data['input_attrs'])
         else:
             validlink = False
             form = None
-        if 'input_attrs' in data:
-            set_input_attrs(form, attrs=data['input_attrs'])
         data['form'] = form
         data['validlink'] = validlink
     else:
