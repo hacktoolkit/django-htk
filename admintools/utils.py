@@ -1,4 +1,4 @@
-from htk.admintools.cachekeys import HtkCompanyEmployersCache
+from htk.admintools.cachekeys import HtkCompanyEmployeesCache
 from htk.admintools.cachekeys import HtkCompanyOfficersCache
 from htk.utils import htk_setting
 
@@ -7,7 +7,7 @@ def get_company_officers_id_email_map():
 
     Returns a dictionary mapping User ids to emails
     """
-    c = CompanyOfficersCache()
+    c = HtkCompanyOfficersCache()
     officers_map = c.get()
     if officers_map is None:
         officers_map = {}
@@ -23,7 +23,7 @@ def get_company_employees_id_email_map():
 
     Returns a dictionary mapping User ids to emails
     """
-    c = CompanyEmployeesCache()
+    c = HtkCompanyEmployeesCache()
     employees_map = c.get()
     if employees_map is None:
         employees_map = {}
