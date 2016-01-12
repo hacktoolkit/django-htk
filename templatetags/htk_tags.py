@@ -103,6 +103,14 @@ def obfuscate_mailto(value, text=False):
     )
     return result
 
+# Oembed
+
+@register.filter(is_safe=True)
+def oembed(value):
+    from htk.lib.oembed.utils import get_oembed_html
+    html = get_oembed_html(value)
+    return html
+
 # Javascript-related
 
 @register.filter()
