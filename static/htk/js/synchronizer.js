@@ -18,6 +18,7 @@ const HtkSynchronizer = function(cfg) {
 
     this.state = {
         isSaving : false,
+        hasSaved : false,
         pendingSaveOperation : null,
         formData : {}
     };
@@ -65,6 +66,32 @@ const HtkSynchronizer = function(cfg) {
         });
     };
 
+    this.onSaveSuccess = function(data) {
+        this.clearUpdatedDataFromSave(data);
+        this.setState({
+            saveSuccess : true
+        })
+        if (this.saveSuccessCallback) {
+            this.saveSuccessCallback(data);
+        }
+    };
+
+    this.onSaveError = function() {
+        this.setState({
+            saveSuccess : false
+        });
+        if (this.saveErrorCallback) {
+            this.saveErrorCallback();
+        }
+    };
+
+    this.onSaveEnd = function(data) {
+        this.setState({
+            isSaving : false,
+            hasSaved : true
+        });
+    };
+
     this.clearUpdatedDataFromSave = function(data) {
         var formData = this.state.formData;
         _.forIn(data, function(value, key) {
@@ -87,6 +114,7 @@ const HtkSynchronizer = function(cfg) {
         this.setState({
             isSaving : true
         });
+        var _this = this;
 
         $.ajax(
             this.url,
@@ -95,13 +123,11 @@ const HtkSynchronizer = function(cfg) {
                 data: formData
             }
         ).done(function(data) {
-            if (this.saveSuccessCallback) {
-                this.saveSuccessCallback(data);
-            }
+            _this.onSaveSuccess(data);
         }).fail(function() {
-            if (this.saveErrorCallback) {
-                this.saveErrorCallback();
-            }
+            _this.onSaveError();
+        }).always(function(data) {
+            _this.onSaveEnd(data);
         });
     };
 };
