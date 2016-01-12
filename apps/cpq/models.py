@@ -15,6 +15,7 @@ class BaseCPQQuote(models.Model):
     """
     # related_name = customer.quotes, customer.invoices
     customer = models.ForeignKey(settings.HTK_CPQ_CUSTOMER_MODEL, related_name='%(class)ss')
+    organization = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), blank=True, null=True, default=None, on_delete=models.SET_DEFAULT, related_name='member_%(class)ss')
     date = models.DateField()
     notes = models.TextField(max_length=1024, blank=True)
 
