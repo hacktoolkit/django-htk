@@ -297,7 +297,14 @@ class BaseStripePlan(models.Model):
         return stripe_plan
 
 class AbstractStripeCustomerHolder(models.Model):
-    stripe_customer = models.OneToOneField(settings.HTK_STRIPE_CUSTOMER_MODEL, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT, related_name=settings.HTK_STRIPE_CUSTOMER_HOLDER_RELATED_NAME)
+    stripe_customer = models.OneToOneField(
+        settings.HTK_STRIPE_CUSTOMER_MODEL,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.SET_DEFAULT,
+        related_name=htk_setting('HTK_STRIPE_CUSTOMER_HOLDER_RELATED_NAME')
+    )
 
     class Meta:
         abstract = True
