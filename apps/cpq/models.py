@@ -49,8 +49,16 @@ class AbstractCPQQuote(models.Model):
         full_url = '%s%s' % (base_uri, cpq_url,)
         return full_url
 
-    def get_total(self):
+    def get_notes(self):
+        notes = self.notes
+        return notes
+
+    def get_line_items(self):
         line_items = self.line_items.all()
+        return line_items
+
+    def get_total(self):
+        line_items = self.get_line_items()
         subtotal = 0
         for line_item in line_items:
             subtotal += line_item.get_amount()
@@ -66,6 +74,24 @@ class BaseCPQQuote(AbstractCPQQuote):
 
     class Meta:
         abstract = True
+
+    def use_group_quote(self):
+        _use_group_quote = self.group_quote and not self.line_items.exists()
+        return _use_group_quote
+
+    def get_notes(self):
+        if self.use_group_quote():
+            notes = self.group_quote.get_notes()
+        else:
+            notes = self.notes
+        return notes
+
+    def get_line_items(self):
+        if self.use_group_quote():
+            line_items = self.group_quote.get_line_items()
+        else:
+            line_items = self.line_items.all()
+        return line_items
 
     def get_url_name(self):
         url_name = 'cpq_quotes_quote'

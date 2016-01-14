@@ -94,6 +94,7 @@ class QuoteAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'customer',
+        'group_quote',
         'notes',
         'total',
         'date',
