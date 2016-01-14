@@ -4,6 +4,7 @@ from django.db import models
 
 from htk.apps.cpq.constants import *
 from htk.apps.cpq.utils import compute_cpq_code
+from htk.apps.cpq.utils.general import get_invoice_payment_terms_choices
 from htk.fields import CurrencyField
 from htk.utils.enums import enum_to_str
 from htk.utils import htk_setting
@@ -95,7 +96,7 @@ class BaseCPQInvoice(AbstractCPQQuote):
     customer = models.ForeignKey(settings.HTK_CPQ_CUSTOMER_MODEL, related_name='%(class)ss')
     invoice_type = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_TYPE.value)
     paid = models.BooleanField(default=False)
-    payment_terms = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_PAYMENT_TERM.value)
+    payment_terms = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_PAYMENT_TERM.value, choices=get_invoice_payment_terms_choices())
     quote = models.ForeignKey(settings.HTK_CPQ_QUOTE_MODEL, null=True, blank=True, default=None, on_delete=models.SET_DEFAULT, related_name='%(class)ss')
 
     class Meta:

@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse
 
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
+from htk.utils.enums import get_enum_symbolic_name
 
 def get_admin_urls():
     from htk.apps.cpq.constants.general import CPQ_APP_MODEL_NAMES
@@ -38,3 +39,8 @@ def get_tools_urls():
         }
         tools_urls.append(tools_url)
     return tools_urls
+
+def get_invoice_payment_terms_choices():
+    from htk.apps.cpq.enums import InvoicePaymentTerm
+    choices = [(payment_term.value, get_enum_symbolic_name(payment_term),) for payment_term in InvoicePaymentTerm]
+    return choices
