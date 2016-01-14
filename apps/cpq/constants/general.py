@@ -2,6 +2,7 @@ CPQ_APP_MODEL_NAMES = [
     'invoice',
     'quote',
     'customer',
+    'organizationcustomer',
     'postaladdress',
 ]
 
