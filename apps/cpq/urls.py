@@ -10,6 +10,8 @@ urlpatterns = patterns(
     # public views
     url(r'^invoices/$', views.index, name='cpq_invoices_index'),
     url(r'^invoices/(?P<invoice_code>[a-z0-9]+)$', views.invoice, name='cpq_invoices_invoice'),
+    url(r'^groupquotes/$', views.index, name='cpq_groupquotes_index'),
+    url(r'^groupquotes/(?P<quote_code>[a-z0-9]+)$', views.groupquote, name='cpq_groupquotes_quote'),
     url(r'^quotes/$', views.index, name='cpq_quotes_index'),
     url(r'^quotes/(?P<quote_code>[a-z0-9]+)$', views.quote, name='cpq_quotes_quote'),
     # admin views

@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for line_item in invoice.line_items.all %}
+    {% for line_item in cpq_obj.line_items.all %}
     <tr>
       <td>
         <span class="bold">{{ line_item.name }}</span><br/>
@@ -39,7 +39,7 @@
     <tr>
       <td colspan="2"></td>
       <th>Amount Due</th>
-      <th class="cpq-total">${{ invoice.get_total|intcomma }}</th>
+      <th class="cpq-total">${{ cpq_obj.get_total|intcomma }}</th>
     </tr>
   </tfoot>
 </table>

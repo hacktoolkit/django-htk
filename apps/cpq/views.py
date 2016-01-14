@@ -22,8 +22,8 @@ def index(request):
 # public views
 
 def cpq_view(request, cpq_code, cpq_type, template_name):
-    """Renders an invoice or a quote
-    `cpq_type` CPQType.INVOICE or CPQType.QUOTE
+    """Renders an invoice, quote, or group quote
+    `cpq_type` CPQType.INVOICE or CPQType.QUOTE or CPQType.GROUP_QUOTE
     """
     renderer = get_renderer()
     wrap_data = get_template_context_generator()
@@ -37,7 +37,7 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
     else:
         pass
 
-    if cpq_type in (CPQType.INVOICE, CPQType.QUOTE,):
+    if cpq_type in (CPQType.INVOICE, CPQType.QUOTE, CPQType.GROUP_QUOTE):
         cpq_obj_key = cpq_type.name.lower()
     else:
         raise Http404
@@ -52,6 +52,11 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
         response = render_to_pdf_response(template_name, data, show_content_in_browser=False)
     else:
         response = renderer(template_name, data)
+    return response
+
+def groupquote(request, quote_code):
+    template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_GROUP_QUOTE')
+    response = cpq_view(request, quote_code, CPQType.GROUP_QUOTE, template_name)
     return response
 
 def invoice(request, invoice_code):

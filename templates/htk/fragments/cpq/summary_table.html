@@ -3,18 +3,18 @@
   <tbody>
     <tr>
       <td>
-        Invoice #
+        {{ cpq_obj.get_type }} #
       </td>
       <td>
-        {{ invoice.id }}
+        {{ cpq_obj.id }}
       </td>
     </tr>
     <tr>
       <td>
-        Invoice Date:
+        {{ cpq_obj.get_invoice_type }} Date:
       </td>
       <td>
-        {{ invoice.date }}
+        {{ cpq_obj.date }}
       </td>
     </tr>
     <tr>
@@ -22,7 +22,7 @@
         Amount Due:
       </td>
       <td class="bold">
-        ${{ invoice.get_total|intcomma }}
+        ${{ cpq_obj.get_total|intcomma }}
       </td>
     </tr>
     <tr>
@@ -30,7 +30,7 @@
         Status:
       </td>
       <td>
-        {% if invoice.paid %}Paid{% else %}Not Paid{% endif %}
+        {% if cpq_obj.paid %}Paid{% else %}Not Paid{% endif %}
       </td>
     </tr>
   </tbody>

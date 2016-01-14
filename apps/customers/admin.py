@@ -19,11 +19,15 @@ class BaseCustomerAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'user',
+        'organization',
         'name',
         'attention',
         'email',
         'address',
         'mailing_address',
+    )
+    list_filter = (
+        'organization',
     )
     inlines = (
         CustomerAttributeInline,

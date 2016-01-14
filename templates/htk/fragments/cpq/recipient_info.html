@@ -1,13 +1,15 @@
 <div class="cpq-heading recipient">
-  {% if invoice.get_invoice_type == 'Invoice' %}
-  Bill To:
-  {% elif invoice.get_invoice_type == 'Quote' %}
+  {% if cpq_obj.get_type == 'Quote' %}
   Quoted For:
+  {% elif cpq_obj.get_type == 'Invoice' %}
+  {% if cpq_obj.get_invoice_type == 'Invoice' %}
+  Bill To:
   {% else %}
   Pay To:
   {% endif %}
+  {% endif %}
 </div>
-{% with customer=invoice.customer %}
+{% with customer=cpq_obj.customer %}
 {{ customer.name }}<br/>
 {% if customer.attention %}
 Attn: {{ customer.attention }}

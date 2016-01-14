@@ -8,16 +8,12 @@ from htk.fields import CurrencyField
 from htk.utils.enums import enum_to_str
 from htk.utils import htk_setting
 
-class BaseCPQQuote(models.Model):
-    """Base class for a Quote
-    Quote has not been executed yet (signed or paid)
-    Once executed, an invoice is generated
+class AbstractCPQQuote(models.Model):
+    """Abstract base class for a Quote, Invoice, or GroupQuote
     """
-    # related_name = customer.quotes, customer.invoices
-    customer = models.ForeignKey(settings.HTK_CPQ_CUSTOMER_MODEL, related_name='%(class)ss')
-    organization = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), blank=True, null=True, default=None, on_delete=models.SET_DEFAULT, related_name='member_%(class)ss')
     date = models.DateField()
     notes = models.TextField(max_length=1024, blank=True)
+    timestamp = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
@@ -26,13 +22,16 @@ class BaseCPQQuote(models.Model):
         value = 'CPQ #%s' % self.id
         return value
 
+    def get_type(self):
+        return 'Quote'
+
     def get_encoded_id(self):
         invoice_code = compute_cpq_code(self)
         return invoice_code
 
     def get_url_name(self):
         """Gets the url_name for this object
-        Abstract method must be overrided
+        Abstract method must be overridden
         """
         raise Exception('get_url_name abstract method not implemented')
 
@@ -56,12 +55,48 @@ class BaseCPQQuote(models.Model):
             subtotal += line_item.get_amount()
         return subtotal
 
-class BaseCPQInvoice(BaseCPQQuote):
-    """Base class for an Invoice
+class BaseCPQQuote(AbstractCPQQuote):
+    """Base class for a Quote
+
+    Quote has not been executed yet (signed or paid)
     """
+    customer = models.ForeignKey(settings.HTK_CPQ_CUSTOMER_MODEL, related_name='%(class)ss')
+    group_quote = models.ForeignKey(settings.HTK_CPQ_GROUP_QUOTE_MODEL, null=True, blank=True, default=None, related_name='%(class)ss')
+
+    class Meta:
+        abstract = True
+
+    def get_url_name(self):
+        url_name = 'cpq_quotes_quote'
+        return url_name
+
+class BaseCPQGroupQuote(AbstractCPQQuote):
+    """Base class for a GroupQuote
+
+    A GroupQuote's details serves as the lookup for many individual Quotes in the group (OrganizationCustomer)
+    """
+    organization = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), related_name='member_%(class)ss')
+
+    class Meta:
+        abstract = True
+
+    def customer(self):
+        return self.organization
+
+    def get_url_name(self):
+        url_name = 'cpq_groupquotes_quote'
+        return url_name
+
+class BaseCPQInvoice(AbstractCPQQuote):
+    """Base class for an Invoice
+
+    An Invoice can be standalone, or get generated when its corresponding Quote is executed
+    """
+    customer = models.ForeignKey(settings.HTK_CPQ_CUSTOMER_MODEL, related_name='%(class)ss')
     invoice_type = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_TYPE.value)
     paid = models.BooleanField(default=False)
     payment_terms = models.PositiveIntegerField(default=HTK_CPQ_INVOICE_DEFAULT_PAYMENT_TERM.value)
+    quote = models.ForeignKey(settings.HTK_CPQ_QUOTE_MODEL, null=True, blank=True, default=None, on_delete=models.SET_DEFAULT, related_name='%(class)ss')
 
     class Meta:
         abstract = True
@@ -73,6 +108,9 @@ class BaseCPQInvoice(BaseCPQQuote):
     def get_url_name(self):
         url_name = 'cpq_invoices_invoice'
         return url_name
+
+    def get_type(self):
+        return self.get_invoice_type()
 
     def get_invoice_type(self):
         from htk.apps.cpq.enums import InvoiceType
@@ -99,8 +137,18 @@ class BaseCPQLineItem(models.Model):
         amount = self.unit_cost * self.quantity
         return amount
 
+class BaseCPQGroupQuoteLineItem(BaseCPQLineItem):
+    group_quote = models.ForeignKey(settings.HTK_CPQ_GROUP_QUOTE_MODEL, related_name='line_items')
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        value = 'Line Item for %s #%s' % (self.__class__.__name__, self.group_quote.id,)
+        return value
+
 class BaseCPQQuoteLineItem(BaseCPQLineItem):
-    quote = models.ForeignKey(settings.HTK_CPQ_QUOTE_MODEL, related_name = 'line_items')
+    quote = models.ForeignKey(settings.HTK_CPQ_QUOTE_MODEL, related_name='line_items')
 
     class Meta:
         abstract = True

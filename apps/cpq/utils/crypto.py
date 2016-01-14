@@ -43,6 +43,8 @@ def resolve_cpq_code(cpq_code, cpq_type=CPQType.INVOICE):
             CPQModel = resolve_model_dynamically(settings.HTK_CPQ_INVOICE_MODEL)
         elif cpq_type == CPQType.QUOTE:
             CPQModel = resolve_model_dynamically(settings.HTK_CPQ_QUOTE_MODEL)
+        elif cpq_type == CPQType.GROUP_QUOTE:
+            CPQModel = resolve_model_dynamically(settings.HTK_CPQ_GROUP_QUOTE_MODEL)
         else:
             raise Exception('Bad value for cpq_type')
         try:

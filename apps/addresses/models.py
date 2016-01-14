@@ -82,10 +82,9 @@ class BasePostalAddress(AbstractGeolocation):
         return municipal_component
 
     def get_address_string(self):
-        name_component = ('%s, ' % self.name) if self.name else ''
         street_component = self.get_address_street_component()
         municipal_component = self.get_address_municipal_component()
-        address_string = '%s%s, %s' % (name_component, street_component, municipal_component,)
+        address_string = '%s, %s' % (street_component, municipal_component,)
         return address_string
 
     def get_formatted_address(self):

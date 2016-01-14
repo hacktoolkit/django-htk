@@ -3,6 +3,7 @@ from enum import Enum
 class CPQType(Enum):
     INVOICE = 1
     QUOTE = 2
+    GROUP_QUOTE = 3
 
 class InvoiceType(Enum):
     INVOICE = 1
