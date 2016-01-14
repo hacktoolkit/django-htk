@@ -107,6 +107,10 @@ class BaseCPQGroupQuote(AbstractCPQQuote):
     class Meta:
         abstract = True
 
+    def __unicode__(self):
+        value = 'Group Quote #%s - %s' % (self.id, self.organization.name,)
+        return value
+
     def customer(self):
         return self.organization
 
