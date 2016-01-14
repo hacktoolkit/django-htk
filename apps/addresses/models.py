@@ -1,6 +1,7 @@
 from django.db import models
 
 from htk.apps.addresses.enums import AddressUnitType
+from htk.apps.addresses.utils import get_unit_type_choices
 from htk.apps.geolocations.models import AbstractGeolocation
 
 class BasePostalAddress(AbstractGeolocation):
@@ -26,7 +27,7 @@ class BasePostalAddress(AbstractGeolocation):
     # parts
     street_number = models.CharField(max_length=16, blank=True)
     street_name = models.CharField(max_length=64, blank=True)
-    unit_type = models.PositiveIntegerField(default=AddressUnitType.NONE.value)
+    unit_type = models.PositiveIntegerField(default=AddressUnitType.NONE.value, choices=get_unit_type_choices())
     unit = models.CharField(max_length=10, blank=True)
 
     class Meta:
@@ -81,9 +82,10 @@ class BasePostalAddress(AbstractGeolocation):
         return municipal_component
 
     def get_address_string(self):
+        name_component = ('%s, ' % self.name) if self.name else ''
         street_component = self.get_address_street_component()
         municipal_component = self.get_address_municipal_component()
-        address_string = '%s, %s' % (street_component, municipal_component,)
+        address_string = '%s%s, %s' % (name_component, street_component, municipal_component,)
         return address_string
 
     def get_formatted_address(self):

@@ -16,4 +16,49 @@ class BasePostalAddressAdmin(admin.ModelAdmin):
         'unit',
         'latitude',
         'longitude',
+        'view_on_map',
     )
+    readonly_fields = (
+        'latitude',
+        'longitude',
+        'view_on_map',
+    )
+    fieldsets = (
+        (None,
+         {
+             'fields' : (
+                 'name',
+                 'latitude',
+                 'longitude',
+                 'view_on_map',
+             ),
+         }
+        ),
+        ('Address',
+         {
+             'fields' : (
+                 'street',
+                 'city',
+                 'state',
+                 'zipcode',
+                 'country',
+             ),
+         }
+        ),
+        ('Address Parts',
+         {
+             'fields' : (
+                 'street_number',
+                 'street_name',
+                 'unit_type',
+                 'unit',
+             ),
+         }
+        )
+    )
+
+    def view_on_map(self, obj):
+        value = u'<a href="%s" target=_blank">View on Map</a>' % obj.map_url()
+        return value
+    view_on_map.allow_tags = True
+    view_on_map.short_description = 'View on Map'

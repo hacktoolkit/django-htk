@@ -17,4 +17,5 @@ urlpatterns = patterns(
     url(r'^cpq/dashboard$', views.dashboard, name='cpq_dashboard'),
     url(r'^cpq/receivables$', views.receivables, name='cpq_receivables'),
     url(r'^cpq/receivables/(?P<year>[0-9]{4})$', views.receivables, name='cpq_receivables_by_year'),
+    url(r'^cpq/customers/import_customers$', views.import_customers, name='cpq_import_customers'),
 )

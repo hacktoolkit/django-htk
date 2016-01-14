@@ -72,9 +72,11 @@ def dashboard(request):
     wrap_data = get_template_context_generator()
     from htk.apps.cpq.utils.general import get_admin_urls
     from htk.apps.cpq.utils.general import get_reporting_urls
+    from htk.apps.cpq.utils.general import get_tools_urls
     data = wrap_data(request)
     data['admin_urls'] = get_admin_urls()
     data['reporting_urls'] = get_reporting_urls()
+    data['tools_urls'] = get_tools_urls()
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_DASHBOARD')
     response = renderer(template_name, data)
     return response
@@ -94,5 +96,14 @@ def receivables(request, year=None):
             data['receivables'] = receivables
             data['total'] = sum([invoice.get_total() for invoice in receivables])
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_RECEIVABLES')
+    response = renderer(template_name, data)
+    return response
+
+@cpq_admin_required
+def import_customers(request):
+    renderer = get_renderer()
+    wrap_data = get_template_context_generator()
+    data = wrap_data(request)
+    template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_IMPORT_CUSTOMERS')
     response = renderer(template_name, data)
     return response

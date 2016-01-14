@@ -11,6 +11,7 @@ def get_admin_urls():
         app_model = resolve_model_dynamically('%s.%s' % (app_label, app_model_name,))
         admin_url = {
             'url' : reverse('admin:%s_%s_changelist' % (app_label, app_model_name,)),
+            'add_url' : reverse('admin:%s_%s_add' % (app_label, app_model_name,)),
             'name' : app_model._meta.verbose_name_plural.title(),
         }
         admin_urls.append(admin_url)
@@ -22,7 +23,18 @@ def get_reporting_urls():
     for reporting_url_name in CPQ_REPORTING_URL_NAMES:
         reporting_url = {
             'url' : reverse('cpq_%s' % reporting_url_name),
-            'name' : reporting_url_name.title(),
+            'name' : ' '.join(reporting_url_name.split('_')).title(),
         }
         reporting_urls.append(reporting_url)
     return reporting_urls
+
+def get_tools_urls():
+    from htk.apps.cpq.constants.general import CPQ_TOOLS_URL_NAMES
+    tools_urls = []
+    for tools_url_name in CPQ_TOOLS_URL_NAMES:
+        tools_url = {
+            'url' : reverse('cpq_%s' % tools_url_name),
+            'name' : ' '.join(tools_url_name.split('_')).title(),
+        }
+        tools_urls.append(tools_url)
+    return tools_urls

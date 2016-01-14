@@ -10,3 +10,7 @@ CPQ_APP_MODEL_NAMES = [
 CPQ_REPORTING_URL_NAMES = [
     'receivables',
 ]
+
+CPQ_TOOLS_URL_NAMES = [
+    'import_customers',
+]

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from htk.apps.customers.constants import *
+from htk.apps.customers.utils import get_organization_type_choices
 from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
 from htk.utils import htk_setting
@@ -49,7 +50,7 @@ class BaseCustomer(models.Model, CustomerAttributeHolder):
     name = models.CharField(max_length=64, default='Customer Name')
     attention = models.CharField(max_length=64, blank=True)
     email = models.EmailField(blank=True)
-    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='customers')
+    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='customers', editable=True)
     mailing_address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='mailing_address_customers', null=True, blank=True)
     organization = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), related_name='members', null=True, blank=True)
 
@@ -75,9 +76,9 @@ class BaseOrganizationCustomer(models.Model):
     name = models.CharField(max_length=64, default='Organization Customer Name')
     attention = models.CharField(max_length=64, blank=True)
     email = models.EmailField(blank=True)
-    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='organization_customers')
+    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='organization_customers', editable=True)
     mailing_address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='mailing_address_organization_customers', null=True, blank=True)
-    organization_type = models.PositiveIntegerField(default=DEFAULT_ORGANIZATION_TYPE.value)
+    organization_type = models.PositiveIntegerField(default=DEFAULT_ORGANIZATION_TYPE.value, choices=get_organization_type_choices())
 
     class Meta:
         abstract = True

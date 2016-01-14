@@ -17,5 +17,6 @@ class OrganizationType(Enum):
     SCHOOL_DISTRICT = 60
     SCHOOL = 61
     UNIVERSITY = 62
-    RELIGIOUS_INST = 70
+    RELIGIOUS_INSTITUTION = 70
+    CHURCH = 71
     OTHER = 90
