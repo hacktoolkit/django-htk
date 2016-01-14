@@ -104,6 +104,22 @@ def import_customers(request):
     renderer = get_renderer()
     wrap_data = get_template_context_generator()
     data = wrap_data(request)
+    from htk.apps.customers.forms import OrganizationCustomersImportForm
+    success = False
+    if request.method == 'POST':
+        data['was_submitted'] = True
+        import_customers_form = OrganizationCustomersImportForm(request.POST, request.FILES)
+        if import_customers_form.is_valid():
+            customers = import_customers_form.save()
+            data['customers'] = customers
+            success = True
+        else:
+            customers = None
+    else:
+        import_customers_form = OrganizationCustomersImportForm()
+
+    data['import_customers_form'] = import_customers_form
+    data['success'] = success
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_IMPORT_CUSTOMERS')
     response = renderer(template_name, data)
     return response

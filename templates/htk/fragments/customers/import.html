@@ -1,0 +1,14 @@
+{% if was_submitted %}
+<div class="alert alert-{% if success %}success{% else %}danger{% endif %}">
+  {% if success %}
+  Successfully imported {{ customers|length }} customers.<br/>
+  {% else %}
+  An error occurred trying to import customers.<br/>
+  {% endif %}
+</div>
+{% endif %}
+
+{% include 'htk/fragments/customers/import_form.html' %}
+
+<b>* Required CSV format</b>
+{% include 'htk/fragments/customers/import_csv_format.html' %}

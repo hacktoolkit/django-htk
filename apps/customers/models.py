@@ -50,7 +50,7 @@ class BaseCustomer(models.Model, CustomerAttributeHolder):
     name = models.CharField(max_length=64, default='Customer Name')
     attention = models.CharField(max_length=64, blank=True)
     email = models.EmailField(blank=True)
-    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='customers', editable=True)
+    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='customers')
     mailing_address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='mailing_address_customers', null=True, blank=True)
     organization = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), related_name='members', null=True, blank=True)
 

@@ -58,7 +58,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         self._save_fields_lookup = save_fields_lookup
         self._save_fields = save_fields_lookup.keys()
 
-    def save(self, commit=True, should_refresh=True):
+    def save(self, commit=True, should_refresh=True, *args, **kwargs):
         """Saves this form
 
         `should_refresh` whether the instance is a limited or full instance. Default True.
@@ -75,6 +75,10 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         instance = instance.__class__.objects.get(id=instance.id)
         """
         instance = self.instance
+        if instance is None or instance.id is None:
+            # in case there is not an instance, create a new one
+            instance = super(AbstractModelInstanceUpdateForm, self).save(commit=commit, *args, **kwargs)
+            return instance
         for field in self._save_fields:
             if field in self.cleaned_data:
                 value = self.cleaned_data[field]
