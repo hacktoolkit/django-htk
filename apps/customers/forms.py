@@ -8,7 +8,7 @@ from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
 
 class OrganizationCustomersImportForm(forms.Form):
-    organization_customer = forms.ChoiceField(choices=get_organization_customer_choices())
+    organization_customer = forms.ChoiceField(choices=get_organization_customer_choices)
     csv_file = forms.FileField(required=True, label='CSV file', help_text='<b>IMPORTANT:</b> The format of the CSV file* must be exact.')
 
     def __init__(self, *args, **kwargs):
