@@ -41,7 +41,17 @@ class BaseOrganizationCustomerAdmin(admin.ModelAdmin):
         'email',
         'address',
         'mailing_address',
+        'num_members',
     )
     inlines = (
         OrganizationCustomerAttributeInline,
     )
+
+    def num_members(self, obj):
+        value = '<a href="%s">%s Members</a>' % (
+            obj.members_changelist_url,
+            obj.members.count(),
+        )
+        return value
+    num_members.allow_tags = True
+    num_members.short_description = 'No. of Members'

@@ -116,6 +116,7 @@ def import_customers(request):
         import_customers_form = OrganizationCustomersImportForm(request.POST, request.FILES)
         if import_customers_form.is_valid():
             customers = import_customers_form.save()
+            data['organization_customer'] = import_customers_form.organization_customer
             data['customers'] = customers
             success = True
         else:

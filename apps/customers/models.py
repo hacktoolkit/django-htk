@@ -1,8 +1,10 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from htk.apps.customers.constants import *
 from htk.apps.customers.utils import get_organization_type_choices
+from htk.utils.cache_descriptors import CachedAttribute
 from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
 from htk.utils import htk_setting
@@ -87,3 +89,12 @@ class BaseOrganizationCustomer(models.Model):
     def __unicode__(self):
         value = 'Organization Customer %s: %s' % (self.id, self.name,)
         return value
+
+    @CachedAttribute
+    def members_changelist_url(self):
+        app_label = htk_setting('HTK_DEFAULT_APP_LABEL')
+        members_changelist_url = '%s?organization__id__exact=%s' % (
+            reverse('admin:%s_%s_changelist' % (app_label, 'customer',)),
+            self.id,
+        )
+        return members_changelist_url

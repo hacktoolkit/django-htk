@@ -1,7 +1,8 @@
 {% if was_submitted %}
 <div class="alert alert-{% if success %}success{% else %}danger{% endif %}">
   {% if success %}
-  Successfully imported {{ customers|length }} customers.<br/>
+  Successfully imported <a href="{{ organization_customer.members_changelist_url }}" target="_blank">{{ customers|length }} customer{{ customers|length|pluralize }}</a> into {{ organization_customer }}.
+  <br/>
   {% else %}
   An error occurred trying to import customers.<br/>
   {% endif %}
