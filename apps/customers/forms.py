@@ -29,6 +29,9 @@ class OrganizationCustomersImportForm(forms.Form):
 
         if organization_customer is None:
             raise forms.ValidationError('Could not find organization')
+        elif organization_customer.members.exists():
+            raise forms.ValidationError('Organization already has members. Importing is not allowed, as it would overwrite existing members. To re-import, delete existing members first.')
+
         self.organization_customer = organization_customer
         return organization_customer
 
