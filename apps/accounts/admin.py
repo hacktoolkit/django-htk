@@ -9,6 +9,7 @@ from htk.apps.accounts.utils.general import get_user_profile_model
 
 class UserProfileInline(admin.StackedInline):
     model = get_user_profile_model()
+    fk_name = 'user'
     can_delete = False
     filter_horizontal = (
     )
