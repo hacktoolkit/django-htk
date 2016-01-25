@@ -73,7 +73,10 @@ def phonenumber(value, country='US'):
     """Formats a phone number for a country
     """
     import phonenumbers
-    formatted = phonenumbers.format_number(phonenumbers.parse(value, country), phonenumbers.PhoneNumberFormat.NATIONAL)
+    try:
+        formatted = phonenumbers.format_number(phonenumbers.parse(value, country), phonenumbers.PhoneNumberFormat.NATIONAL)
+    except:
+        formatted = value
     return formatted
 
 @register.filter(is_safe=True)
