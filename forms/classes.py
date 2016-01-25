@@ -83,8 +83,9 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
             if field in self.cleaned_data:
                 value = self.cleaned_data[field]
                 instance.__setattr__(field, value)
-        instance.save(update_fields=self._save_fields)
-        if should_refresh:
-            from htk.utils.general import refresh
-            instance = refresh(instance)
+        if commit:
+            instance.save(update_fields=self._save_fields)
+            if should_refresh:
+                from htk.utils.general import refresh
+                instance = refresh(instance)
         return instance
