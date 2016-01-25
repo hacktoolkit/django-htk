@@ -33,4 +33,3 @@ class StarRatingRadioSelect(forms.RadioSelect):
         for rating in xrange(min_value, max_value + 1):
             choices.append((rating, rating,))
         return choices
-
