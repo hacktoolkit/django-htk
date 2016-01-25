@@ -329,12 +329,16 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
         tz = self.detected_timezone or htk_setting('HTK_DEFAULT_TIMEZONE')
         return tz
 
-    def get_local_time(self):
-        """Gets the current local time for user
+    def get_local_time(self, dt=None):
+        """Gets the current local time for User
+        If `dt` is specified, format `dt` into User's timezone
         """
         tz = self.get_django_timezone()
-        now = utcnow().astimezone(tz)
-        return now
+        if dt is None:
+            local_time = utcnow().astimezone(tz)
+        else:
+            local_time = dt.astimezone(tz)
+        return local_time
 
     def update_locale_info_by_ip_from_request(self, request):
         """Update user info by IP Address
