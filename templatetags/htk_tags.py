@@ -58,7 +58,31 @@ def zeropad(value, num_digits):
     padded = str(value).zfill(num_digits)
     return padded
 
+@register.filter(is_safe=True)
+def markdownify(value):
+    """Converts string to markdown
+    """
+    import markdown
+    html = markdown.markdown(value)
+    return html
+
+# Maths
+
+@register.filter()
+def int_divide(value, arg):
+    return int(value) / int(arg)
+
+@register.filter()
+def float_divide(value, arg):
+    return 1.0 * int(value) / int(arg)
+
 # Formatters
+
+@register.filter()
+def currency(value):
+    from decimal import Decimal
+    value = Decimal(value).quantize(Decimal('0.01'))
+    return value
 
 @register.filter()
 def timestamp(value):
