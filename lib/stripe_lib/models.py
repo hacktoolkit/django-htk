@@ -74,6 +74,17 @@ class BaseStripeCustomer(models.Model):
         )
         return ch
 
+    def get_charges(self):
+        _initialize_stripe(live_mode=self.live_mode)
+        charges = safe_stripe_call(
+            stripe.Charge.all,
+            **{
+                'customer' : self.stripe_id,
+            }
+        )
+        charges = charges.get('data')
+        return charges
+
     def create_invoice(self):
         """Create an Invoice for this Customer to pay any outstanding invoice items such as when upgrading plans
 
@@ -111,9 +122,9 @@ class BaseStripeCustomer(models.Model):
         stripe_customer = self.retrieve()
         if stripe_customer:
             stripe_card = safe_stripe_call(
-                stripe_customer.cards.create,
+                stripe_customer.sources.create,
                 **{
-                    'card' : card,
+                    'source' : card,
                 }
             )
         else:
@@ -130,7 +141,7 @@ class BaseStripeCustomer(models.Model):
         """
         stripe_customer = self.retrieve()
         if stripe_customer:
-            stripe_customer.card = card
+            stripe_customer.source = card
             cu = safe_stripe_call(
                 stripe_customer.save,
                 **{}
@@ -141,11 +152,15 @@ class BaseStripeCustomer(models.Model):
         return was_replaced
 
     def get_card(self):
+        """
+        https://stripe.com/docs/api/python#list_cards
+        """
         stripe_customer = self.retrieve()
         cards = safe_stripe_call(
-            stripe_customer.cards.all,
+            stripe_customer.sources.all,
             **{
                 'limit' : 1,
+                'object' : 'card',
             }
         )
         cards = cards.get('data')
@@ -155,14 +170,26 @@ class BaseStripeCustomer(models.Model):
             card = None
         return card
 
+    def get_cards(self):
+        stripe_customer = self.retrieve()
+        cards = safe_stripe_call(
+            stripe_customer.sources.all,
+            **{
+                'object' : 'card',
+            }
+        )
+        cards = cards.get('data')
+        return cards
+
     def has_card(self):
         """Determines whether this StripeCustomer has a card
         """
         stripe_customer = self.retrieve()
         cards = safe_stripe_call(
-            stripe_customer.cards.all,
+            stripe_customer.sources.all,
             **{
                 'limit' : 1,
+                'object' : 'card',
             }
         )
         value = len(cards) > 0
