@@ -1,3 +1,4 @@
+{% load htk_tags %}
 <div class="cpq">
   <div class="controls align-right-sm no-print">
     <a href="javascript:void(0);" class="pure-button print-button bg-flatui-peter-river">Print</a>
@@ -17,24 +18,35 @@
   <div class="pure-g">
     <div class="pure-u-1 pure-u-sm-1-2">
       {% include 'htk/fragments/cpq/company_contact.html' %}
-      <br/>
-      {% include 'htk/fragments/cpq/recipient_info.html' %}
     </div>
     <div class="pure-u-1 pure-u-sm-1-2">
       {% include 'htk/fragments/cpq/summary_table.html' %}
     </div>
   </div>
   <br/>
+  {% include 'htk/fragments/cpq/recipient_info.html' %}
+  <br/>
 
-  {% include 'htk/fragments/cpq/items_table.html' %}
+  <form class="cpq-form">
+    {% include 'htk/fragments/cpq/items_table.html' %}
+
+    {% if cpq_obj.get_type == 'Quote' %}
+    {% include 'htk/fragments/cpq/quote_acceptance.html' %}
+    {% endif %}
+  </form>
 
   <div>
-    <h3 class="cpq-heading">Notes</h3>
-    {{ cpq_obj.get_notes|linebreaksbr }}<br/>
+    <h4 class="cpq-heading">Notes</h4>
+    {{ cpq_obj.get_notes|markdownify|safe }}
+    {% if cpq_type.get_type == 'Invoice' %}
     <b>{{ cpq_obj.get_payment_terms }}</b><br/>
-    <br/>
+    {% endif %}
     Thank you!<br/>
   </div>
   {% include 'htk/fragments/cpq/qrcode_container.html' %}
+
+  {% if cpq_obj.get_type == 'Quote' %}
+  {% include 'htk/fragments/cpq/payments.html' %}
+  {% endif %}
   <div class="voffset-50 no-print"></div>
 </div>

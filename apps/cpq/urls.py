@@ -14,6 +14,7 @@ urlpatterns = patterns(
     url(r'^groupquotes/(?P<quote_code>[a-z0-9]+)$', views.groupquote, name='cpq_groupquotes_quote'),
     url(r'^quotes/$', views.index, name='cpq_quotes_index'),
     url(r'^quotes/(?P<quote_code>[a-z0-9]+)$', views.quote, name='cpq_quotes_quote'),
+    url(r'^quotes/(?P<quote_code>[a-z0-9]+)/pay$', views.quote_pay, name='cpq_quotes_quote_pay'),
     # admin views
     url(r'^cpq/$', views.index, name='cpq_index'),
     url(r'^cpq/dashboard$', views.dashboard, name='cpq_dashboard'),

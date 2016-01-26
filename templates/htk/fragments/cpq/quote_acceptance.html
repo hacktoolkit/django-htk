@@ -1,0 +1,12 @@
+<div>
+  <h4 class="cpq-heading">Acceptance</h4>
+  <label>
+    <input class="cpq-approval" type="checkbox">
+    I / We, {{ cpq_obj.customer.name }}, approve the foregoing items
+    as indicated by checking the box(es) above and consent to pay the
+    specified amount: <span class="cpq-approval-amount">$0.00</span>.
+  </label>
+  <div class="align-center no-print">
+    <a href="javascript:void(0);" class="pure-button stripe-pay-button bg-flatui-emerald pure-button-disabled" data:amount="0">Approve and Pay</a>
+  </div>
+</div>

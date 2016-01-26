@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -6,8 +8,10 @@ from htk.apps.cpq.constants import *
 from htk.apps.cpq.utils import compute_cpq_code
 from htk.apps.cpq.utils.general import get_invoice_payment_terms_choices
 from htk.fields import CurrencyField
-from htk.utils.enums import enum_to_str
 from htk.utils import htk_setting
+from htk.utils import resolve_model_dynamically
+from htk.utils.cache_descriptors import CachedAttribute
+from htk.utils.enums import enum_to_str
 
 class AbstractCPQQuote(models.Model):
     """Abstract base class for a Quote, Invoice, or GroupQuote
@@ -96,6 +100,56 @@ class BaseCPQQuote(AbstractCPQQuote):
     def get_url_name(self):
         url_name = 'cpq_quotes_quote'
         return url_name
+
+    def get_payment_uri(self):
+        uri = reverse('cpq_quotes_quote_pay', args=(self.get_encoded_id(),))
+        return uri
+
+    def get_payments(self):
+        key = 'quote_%s_payments' % self.id
+        payments = self.customer.get_attribute(key)
+        payments = json.loads(payments) if payments else []
+        return payments
+
+    def approve_and_pay(self, stripe_customer):
+        payments = self.get_payments()
+        payments.append(stripe_customer.id)
+        key = 'quote_%s_payments' % self.id
+        self.customer.set_attribute(key, json.dumps(payments))
+
+    def get_charges(self):
+        payments = self.get_payments()
+        StripeCustomerModel = resolve_model_dynamically(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'))
+        all_charges = []
+        for stripe_customer_id in payments:
+            stripe_customer = StripeCustomerModel.objects.get(id=stripe_customer_id)
+            charges = stripe_customer.get_charges()
+            for charge in charges:
+                all_charges.append(charge)
+        return all_charges
+
+    def get_amount_paid(self):
+        subtotal = 0
+        payments = self.get_payments()
+        StripeCustomerModel = resolve_model_dynamically(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'))
+        for stripe_customer_id in payments:
+            stripe_customer = StripeCustomerModel.objects.get(id=stripe_customer_id)
+            charges = stripe_customer.get_charges()
+            for charge in charges:
+                subtotal += charge.amount / 100 - charge.amount_refunded / 100
+        return subtotal
+
+    @CachedAttribute
+    def payment_status(self):
+        amount_paid = self.get_amount_paid()
+        total = self.get_total()
+        if amount_paid == 0:
+            status = 'Not Paid'
+        elif amount_paid < total:
+            status = 'Partially Paid'
+        else:
+            status = 'Paid in Full'
+        return status
 
 class BaseCPQGroupQuote(AbstractCPQQuote):
     """Base class for a GroupQuote

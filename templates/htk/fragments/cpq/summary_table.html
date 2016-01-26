@@ -19,7 +19,11 @@
     </tr>
     <tr>
       <td class="bold">
+        {% if cpq_obj.get_type == 'Quote' %}
+        Quote Amount:
+        {% else %}
         Amount Due:
+        {% endif %}
       </td>
       <td class="bold">
         ${{ cpq_obj.get_total|intcomma }}
@@ -30,7 +34,11 @@
         Status:
       </td>
       <td>
+        {% if cpq_obj.get_type == 'Quote' %}
+        {{ cpq_obj.payment_status }}
+        {% else %}
         {% if cpq_obj.paid %}Paid{% else %}Not Paid{% endif %}
+        {% endif %}
       </td>
     </tr>
   </tbody>

@@ -32,6 +32,9 @@ class BaseCustomerAdmin(admin.ModelAdmin):
     inlines = (
         CustomerAttributeInline,
     )
+    search_fields = (
+        'name',
+    )
 
 class BaseOrganizationCustomerAdmin(admin.ModelAdmin):
     list_display = (

@@ -1,8 +1,13 @@
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
+from django.views.decorators.http import require_POST
+
+from htk.api.utils import json_response_error
+from htk.api.utils import json_response_okay
 from htk.apps.cpq.decorators import cpq_admin_required
 from htk.apps.cpq.enums import CPQType
+from htk.lib.stripe_lib.utils import get_stripe_public_key
 from htk.utils import htk_setting
 from htk.utils.templates import get_renderer
 from htk.utils.templates import get_template_context_generator
@@ -29,7 +34,6 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
     wrap_data = get_template_context_generator()
     data = wrap_data(request)
 
-    from htk.apps.cpq.enums import CPQType
     from htk.apps.cpq.utils import resolve_cpq_code
     cpq_obj = resolve_cpq_code(cpq_code, cpq_type=cpq_type)
     if cpq_obj is None:
@@ -43,6 +47,10 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
         raise Http404
 
     cpq_full_url = cpq_obj.get_full_url(base_uri=data['request']['base_uri'])
+    if htk_setting('HTK_CPQ_PAY_ONLINE'):
+        live_mode = htk_setting('HTK_STRIPE_LIVE_MODE')
+        data['stripe_key'] = get_stripe_public_key(live_mode=live_mode)
+        data['cpq_payment_uri'] = cpq_obj.get_payment_uri()
     data['cpq_type'] = cpq_obj_key
     data[cpq_obj_key] = cpq_obj
     data['%s_url' % cpq_obj_key] = cpq_full_url
@@ -68,6 +76,41 @@ def quote(request, quote_code):
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_QUOTE')
     response = cpq_view(request, quote_code, CPQType.QUOTE, template_name)
     return response
+
+@require_POST
+def cpq_pay(request, cpq_code, cpq_type):
+    from htk.apps.cpq.utils import resolve_cpq_code
+    cpq_obj = resolve_cpq_code(cpq_code, cpq_type=cpq_type)
+    if cpq_obj is None:
+        raise Http404
+    if not htk_setting('HTK_CPQ_PAY_ONLINE'):
+        raise Http404
+
+    from htk.lib.stripe_lib.utils import create_customer
+    stripe_token = request.POST.get('stripeToken')
+    amount = request.POST.get('amount')
+    email = request.POST.get('email')
+    try:
+        amount = int(amount)
+        description = 'Rayco Energy %s: %s' % (cpq_obj.get_type(), cpq_obj.id,)
+        customer, stripe_customer = create_customer(
+            stripe_token,
+            email=email,
+            description=description
+        )
+        success = customer.charge(amount=amount)
+        if success:
+            cpq_obj.approve_and_pay(customer)
+            response = json_response_okay()
+        else:
+            response = json_response_error()
+    except ValueError:
+        response = json_response_error()
+    return response
+
+@require_POST
+def quote_pay(request, quote_code):
+    return cpq_pay(request, quote_code, CPQType.QUOTE)
 
 ##
 # admin views
