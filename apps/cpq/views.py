@@ -67,6 +67,11 @@ def groupquote(request, quote_code):
     response = cpq_view(request, quote_code, CPQType.GROUP_QUOTE, template_name)
     return response
 
+def groupquote_all(request, quote_code):
+    template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_GROUP_QUOTE_ALL')
+    response = cpq_view(request, quote_code, CPQType.GROUP_QUOTE, template_name)
+    return response
+
 def invoice(request, invoice_code):
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_INVOICE')
     response = cpq_view(request, invoice_code, CPQType.INVOICE, template_name)

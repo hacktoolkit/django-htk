@@ -1,0 +1,8 @@
+{% for quote in group_quote.quotes.all %}
+<p style="page-break-before: always !important; margin: 0px; height: 1px;">&nbsp;</p>
+<div class="page-break-before page-break-after">
+  {% include 'htk/fragments/cpq/quote.html' with quote_url=quote.get_full_url %}
+</div>
+<p style="page-break-after: always !important; margin: 0px; height: 1px;">&nbsp;</p>
+<hr class="no-print" />
+{% endfor %}

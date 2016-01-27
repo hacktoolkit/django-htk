@@ -53,6 +53,10 @@ class AbstractCPQQuote(models.Model):
         full_url = '%s%s' % (base_uri, cpq_url,)
         return full_url
 
+    def get_payment_uri(self):
+        uri = ''
+        return uri
+
     def get_notes(self):
         notes = self.notes
         return notes
@@ -171,6 +175,11 @@ class BaseCPQGroupQuote(AbstractCPQQuote):
     def get_url_name(self):
         url_name = 'cpq_groupquotes_quote'
         return url_name
+
+    def get_all_quotes_url(self):
+        url_name = 'cpq_groupquotes_quote_all'
+        url = reverse(url_name, args=(self.get_encoded_id(),))
+        return url
 
 class BaseCPQInvoice(AbstractCPQQuote):
     """Base class for an Invoice
