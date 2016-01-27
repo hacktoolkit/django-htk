@@ -29,7 +29,6 @@ class InvoiceAdmin(admin.ModelAdmin):
         'payment_terms',
         'view_invoice_link',
     )
-
     list_filter = (
         'paid',
         'invoice_type',
@@ -70,6 +69,9 @@ class GroupQuoteAdmin(admin.ModelAdmin):
         'date',
         'view_quote_link',
         'view_all_quotes',
+    )
+    list_filter = (
+        'organization',
     )
     search_fields = (
         'organization__name',
@@ -113,15 +115,11 @@ class QuoteAdmin(admin.ModelAdmin):
     )
     search_fields = (
         'customer__name',
+        'group_quote__organization__name',
     )
     list_filter = (
-        'id',
-        (
-            'Organization',
-            (
-                'group_quote__organization__name',
-            ),
-        ),
+        'group_quote',
+        'group_quote__organization',
     )
     inlines = (
         QuoteLineItemInline,
