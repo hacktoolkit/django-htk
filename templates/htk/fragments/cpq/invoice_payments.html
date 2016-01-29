@@ -1,7 +1,7 @@
 {% load htk_tags %}
 {% load humanize %}
-{% with all_charges=cpq_obj.get_charges %}
-{% if all_charges %}
+{% with charges=cpq_obj.get_charges %}
+{% if charges %}
 <div class="no-print">
   <h4 class="cpq-heading">Payments</h4>
   <table class="pure-table">
@@ -11,7 +11,7 @@
       <th>Card Ending In</th>
       <th>Amount</th>
     </tr>
-    {% for charge in all_charges %}
+    {% for charge in charges %}
     <tr>
       <td>{{ charge.created|timestamp }}</td>
       <td>{{ charge.source.name }}</td>

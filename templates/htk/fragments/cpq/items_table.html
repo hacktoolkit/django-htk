@@ -26,7 +26,7 @@
     <tr data:line_item_id="{{ line_item.id }}">
       {% if cpq_obj.get_type == 'Quote' %}
       <td>
-        <input class="approve" type="checkbox" value="{{ line_item.get_amount }}" />
+        <input class="approve" type="checkbox" value="{{ line_item.id }}" data:value="{{ line_item.get_amount }}" />
       </t>
       {% endif %}
       <td>

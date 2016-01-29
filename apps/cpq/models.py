@@ -10,6 +10,7 @@ from htk.apps.cpq.utils.general import get_invoice_payment_terms_choices
 from htk.fields import CurrencyField
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
+from htk.utils import utcnow
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.enums import enum_to_str
 
@@ -110,42 +111,72 @@ class BaseCPQQuote(AbstractCPQQuote):
         return uri
 
     def get_payments(self):
-        key = 'quote_%s_payments' % self.id
-        payments = self.customer.get_attribute(key)
-        payments = json.loads(payments) if payments else []
+        payments = filter(bool, [invoice.get_payment() for invoice in self.invoices.all()])
         return payments
 
-    def approve_and_pay(self, stripe_customer):
-        payments = self.get_payments()
-        payments.append(stripe_customer.id)
-        key = 'quote_%s_payments' % self.id
-        self.customer.set_attribute(key, json.dumps(payments))
+    def resolve_line_item_ids(self, line_item_ids, strict=True):
+        """Resolves `line_item_ids` into their respective GroupQuoteLineItems or QuoteLineItems
+        If `strict`, require all ids to be resolveable
+        """
+        if self.group_quote:
+            line_items = self.group_quote.line_items.filter(id__in=line_item_ids)
+        else:
+            line_items = self.line_items.filter(id__in=line_item_ids)
+        line_items = line_items.order_by('id')
+        if strict and line_items.count() != len(line_item_ids):
+            raise Exception('Could not resolve all line item ids')
+        return line_items
 
-    def get_charges(self):
-        payments = self.get_payments()
-        StripeCustomerModel = resolve_model_dynamically(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'))
-        all_charges = []
-        for stripe_customer_id in payments:
-            stripe_customer = StripeCustomerModel.objects.get(id=stripe_customer_id)
-            charges = stripe_customer.get_charges()
-            for charge in charges:
-                all_charges.append(charge)
-        return all_charges
+    def approve_and_pay(self, stripe_token, amount, email, line_item_ids):
+        """Approve `line_item_ids` and pay `amount` for them with a verified `stripe_token`
+        """
+        success = False
+        amount = int(amount)
+        description = '%s %s: %s' % (
+            htk_setting('HTK_SITE_NAME'),
+            self.get_type(),
+            self.id,
+        )
+        from htk.lib.stripe_lib.utils import create_customer
+        customer, stripe_customer = create_customer(
+            stripe_token,
+            email=email,
+            description=description
+        )
+        line_items = self.resolve_line_item_ids(line_item_ids)
+        metadata = {
+            'quote' : self.id,
+            'line_item_ids' : ','.join(line_item_ids),
+            'line_items' : ','.join(['[%s] %s' % (line_item.id, line_item.name,) for line_item in line_items]),
+        }
+        success = customer.charge(amount=amount, metadata=metadata)
+        if success:
+            self.create_invoice_for_payment(customer, line_items)
+        # TODO: send the customer an email receipt
+        return success
 
-    def get_amount_paid(self):
+    def create_invoice_for_payment(self, stripe_customer, line_items):
+        """Creates an invoice for this Quote with successful payment by `stripe_customer` for `line_items`
+        """
+        InvoiceModel = resolve_model_dynamically(htk_setting('HTK_CPQ_INVOICE_MODEL'))
+        invoice = InvoiceModel.objects.create(
+            date=utcnow(),
+            customer=self.customer,
+            paid=True,
+            quote=self
+        )
+        invoice.record_payment(stripe_customer, line_items)
+
+    @CachedAttribute
+    def amount_paid(self):
         subtotal = 0
-        payments = self.get_payments()
-        StripeCustomerModel = resolve_model_dynamically(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'))
-        for stripe_customer_id in payments:
-            stripe_customer = StripeCustomerModel.objects.get(id=stripe_customer_id)
-            charges = stripe_customer.get_charges()
-            for charge in charges:
-                subtotal += charge.amount / 100 - charge.amount_refunded / 100
+        for invoice in self.invoices.filter(paid=True):
+            subtotal += invoice.get_total()
         return subtotal
 
     @CachedAttribute
     def payment_status(self):
-        amount_paid = self.get_amount_paid()
+        amount_paid = self.amount_paid
         total = self.get_total()
         if amount_paid == 0:
             status = 'Not Paid'
@@ -217,6 +248,53 @@ class BaseCPQInvoice(AbstractCPQQuote):
         invoice_payment_term = InvoicePaymentTerm(self.payment_terms)
         str_value = enum_to_str(invoice_payment_term)
         return str_value
+
+    ##
+    # payment tracking
+
+    def get_payment_key(self):
+        key = 'invoice_%s_payment' % self.id
+        return key
+
+    def get_payment(self):
+        key = self.get_payment_key()
+        payment = self.customer.get_attribute(key)
+        payment = json.loads(payment) if payment else None
+        return payment
+
+    def record_payment(self, stripe_customer, line_items):
+        """Record an actual Stripe payment for `line_items`
+        Also creates InvoiceLineItems on this Invoice
+
+        `line_items` are either GroupQuoteLineItems or QuoteLineItems
+
+        Note: this function should only be called once for any Invoice
+        """
+        for line_item in line_items:
+            self.line_items.create(
+                name=line_item.name,
+                description=line_item.description,
+                unit_cost=line_item.unit_cost,
+                quantity=line_item.quantity
+            )
+        key = self.get_payment_key()
+        payment = {
+            'stripe_customer' : stripe_customer.id,
+            'invoice' : self.id,
+        }
+        if len(line_items) and hasattr(line_items[0], 'quote'):
+            payment['quote_line_item_ids'] = [line_item.id for line_item in line_items]
+        self.customer.set_attribute(key, json.dumps(payment))
+
+    def get_charges(self):
+        """Get charges made on this Invoice
+        """
+        payment = self.get_payment()
+        stripe_customer_id = payment['stripe_customer']
+        StripeCustomerModel = resolve_model_dynamically(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'))
+        stripe_customer = StripeCustomerModel.objects.get(id=stripe_customer_id)
+        charges = stripe_customer.get_charges()
+        return charges
 
 class BaseCPQLineItem(models.Model):
     name = models.CharField(max_length=64)

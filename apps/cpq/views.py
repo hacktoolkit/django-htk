@@ -51,9 +51,13 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
         live_mode = htk_setting('HTK_STRIPE_LIVE_MODE')
         data['stripe_key'] = get_stripe_public_key(live_mode=live_mode)
         data['cpq_payment_uri'] = cpq_obj.get_payment_uri()
+    data['cpq_obj'] = cpq_obj
+    data['cpq_url'] = cpq_full_url
+    # deprecated
     data['cpq_type'] = cpq_obj_key
     data[cpq_obj_key] = cpq_obj
     data['%s_url' % cpq_obj_key] = cpq_full_url
+
     if request.GET.get('pdf'):
         data['pdf_filename'] = '%s.pdf' % cpq_obj_key
         from htk.utils.pdf_utils import render_to_pdf_response
@@ -91,25 +95,20 @@ def cpq_pay(request, cpq_code, cpq_type):
     if not htk_setting('HTK_CPQ_PAY_ONLINE'):
         raise Http404
 
-    from htk.lib.stripe_lib.utils import create_customer
-    stripe_token = request.POST.get('stripeToken')
-    amount = request.POST.get('amount')
-    email = request.POST.get('email')
+    success = False
     try:
-        amount = int(amount)
-        description = 'Rayco Energy %s: %s' % (cpq_obj.get_type(), cpq_obj.id,)
-        customer, stripe_customer = create_customer(
-            stripe_token,
-            email=email,
-            description=description
-        )
-        success = customer.charge(amount=amount)
-        if success:
-            cpq_obj.approve_and_pay(customer)
-            response = json_response_okay()
-        else:
-            response = json_response_error()
+        stripe_token = request.POST.get('stripeToken')
+        amount = int(request.POST.get('amount'))
+        email = request.POST.get('email')
+        line_item_ids = request.POST.get('lineItemIds').split(',')
+        success = cpq_obj.approve_and_pay(stripe_token, amount, email, line_item_ids)
     except ValueError:
+        # most likely encountered exception parsing `amount` or `line_item_ids`
+        pass
+
+    if success:
+        response = json_response_okay()
+    else:
         response = json_response_error()
     return response
 

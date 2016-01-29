@@ -46,7 +46,9 @@
   {% include 'htk/fragments/cpq/qrcode_container.html' %}
 
   {% if cpq_obj.get_type == 'Quote' %}
-  {% include 'htk/fragments/cpq/payments.html' %}
+  {% include 'htk/fragments/cpq/quote_payments.html' %}
+  {% elif cpq_obj.get_type == 'Invoice' %}
+  {% include 'htk/fragments/cpq/invoice_payments.html' %}
   {% endif %}
   <div class="voffset-50 no-print"></div>
 </div>

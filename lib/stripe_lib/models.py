@@ -60,9 +60,11 @@ class BaseStripeCustomer(models.Model):
     ##
     # payments
 
-    def charge(self, amount=0, currency=DEFAULT_STRIPE_CURRENCY):
+    def charge(self, amount=0, currency=DEFAULT_STRIPE_CURRENCY, metadata=None):
         """Charges a Customer
         """
+        if metadata is None:
+            metadata = {}
         _initialize_stripe(live_mode=self.live_mode)
         ch = safe_stripe_call(
             stripe.Charge.create,
@@ -70,6 +72,7 @@ class BaseStripeCustomer(models.Model):
                 'amount' : amount,
                 'currency' : currency,
                 'customer' : self.stripe_id,
+                'metadata' : metadata
             }
         )
         return ch

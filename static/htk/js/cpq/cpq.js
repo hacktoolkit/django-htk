@@ -1,6 +1,21 @@
 $(function() {
     var CPQ_TOTAL = 0;
 
+    // String.prototype.format
+    // http://stackoverflow.com/a/4673436/865091
+    // First, checks if it isn't implemented yet.
+    if (!String.prototype.format) {
+        String.prototype.format = function() {
+            var args = arguments;
+            return this.replace(/{(\d+)}/g, function(match, number) { 
+                return typeof args[number] != 'undefined'
+                    ? args[number]
+                    : match
+                ;
+            });
+        };
+    }
+
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -33,13 +48,17 @@ $(function() {
 
     function handleCPQFormCheckboxChanged(e) {
         var subtotal = 0;
+        var lineItemIds = [];
         var approvedCheckboxes = $('.cpq-form input.approve:checkbox:checked');
         _.each(approvedCheckboxes, function(checkbox) {
-            var value = parseFloat($(checkbox).val());
+            var value = parseFloat($(checkbox).attr('data:value'));
             subtotal += value;
+            var lineItemId = $(checkbox).val();
+            lineItemIds.push(lineItemId)
         });
         CPQ_TOTAL = subtotal;
         $('.stripe-pay-button').attr('data:amount', parseInt(CPQ_TOTAL * 100));
+        $('.stripe-pay-button').attr('data:line_item_ids', lineItemIds.join(','));
         $('.cpq-approval-amount').html(formatCurrency(CPQ_TOTAL));
         updateApproveAndPayButtonState();
     }
@@ -56,14 +75,18 @@ $(function() {
         var target = e.target;
         e.preventDefault();
         var amount = $(target).attr('data:amount');
+        var formattedAmount = formatCurrency(parseInt(amount) / 100);
+        var lineItemIds = $(target).attr('data:line_item_ids');
+        var numItems = lineItemIds.split(',').length;
+        var description = '{0} item{1} ({2})'.format(numItems, (numItems > 1? 's' : ''), formattedAmount);
         var handler = StripeCheckout.configure({
             key: STRIPE_KEY,
             image: GRAVATAR_IMG,
-            token: createTransactionProcessorCallback(amount)
+            token: createTransactionProcessorCallback(amount, lineItemIds)
         });
         handler.open({
-            name: '',
-            description: 'Rayco Energy',
+            name: STRIPE_CHECKOUT_NAME,
+            description: description,
             amount: amount,
             panelLabel: 'Pay {{amount}}'
         });
@@ -75,14 +98,15 @@ $(function() {
      * Creates the callback function to create the charge on the server using `token`
      *
      */
-    function createTransactionProcessorCallback(amount) {
+    function createTransactionProcessorCallback(amount, lineItemIds) {
         var callback = function(token) {
             var uri = CPQ_PAYMENT_URI;
             var data = {
                 stripeToken : token.id,
                 email : token.email,
-                amount : amount
-            } ;
+                amount : amount,
+                lineItemIds : lineItemIds
+            };
             $.ajax(
                 uri,
                 {
