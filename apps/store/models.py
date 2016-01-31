@@ -1,6 +1,8 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from htk.utils import htk_setting
+from htk.utils.text.transformers import seo_tokenize
 
 class AbstractProduct(models.Model):
     name = models.CharField(max_length=128)
@@ -19,6 +21,16 @@ class AbstractProduct(models.Model):
         value = self.name
         return value
 
+    def get_seo_title(self):
+        title = '%s' % self.name
+        seo_title = seo_tokenize(title, lower=True)
+        return seo_title
+
+    def get_absolute_url(self):
+        seo_title = self.get_seo_title()
+        url = reverse('store_product', args=(self.id, seo_title,))
+        return url
+
     def get_amazon_tracking_id(self):
         # TODO: specify default
         amazon_tracking_id = htk_setting('HTK_AMAZON_TRACKING_ID')
@@ -36,4 +48,23 @@ class AbstractProduct(models.Model):
             'amazon_product_id' : self.amazon_product_id,
             'amazon_tracking_id' : self.get_amazon_tracking_id(),
         }
+        return url
+
+class AbstractProductCollection(models.Model):
+    name = models.CharField(max_length=128)
+    subtitle = models.CharField(max_length=256)
+    description = models.TextField(max_length=2000, blank=True)
+    products = models.ManyToManyField(htk_setting('HTK_STORE_PRODUCT_MODEL'), related_name='collections', blank=True)
+
+    class Meta:
+        abstract = True
+
+    def get_seo_title(self):
+        title = '%s' % self.name
+        seo_title = seo_tokenize(title, lower=True)
+        return seo_title
+
+    def get_absolute_url(self):
+        seo_title = self.get_seo_title()
+        url = reverse('store_collection', args=(self.id, seo_title,))
         return url

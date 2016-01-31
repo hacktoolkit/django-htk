@@ -1,11 +1,13 @@
-<li class="product-tile">
+<li class="product-tile" data:uri="{{ product.get_absolute_url }}">
   <div class="image-container">
     <div class="hover-container">
       <div class="image" style="background-image: url('{{ product.get_amazon_image_url }}');"></div>
       <div class="actions-container">
       </div>
-      <div class="details">
-        {{ product.name }}
+      <div class="details-container">
+        <div class="details">
+          {{ product.name }}
+        </div>
       </div>
     </div>
   </div>
