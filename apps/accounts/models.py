@@ -195,9 +195,9 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
 
     # send emails
 
-    def send_activation_reminder_email(self):
+    def send_activation_reminder_email(self, template=None, subject=None):
         user_email = get_user_email(self.user, self.user.email)
-        user_email.send_activation_reminder_email()
+        user_email.send_activation_reminder_email(template=template, subject=subject)
 
     def send_welcome_email(self):
         """Sends a welcome email to the user
@@ -562,13 +562,15 @@ class UserEmail(models.Model):
         self._reset_activation_key(resend=resend)
         activation_email(self, domain=domain, template=template, subject=subject)
 
-    def send_activation_reminder_email(self):
+    def send_activation_reminder_email(self, template=None, subject=None):
         """Sends an account activation reminder email
 
         Piggybacks off of `self.send_activation_email`
         """
-        template = htk_setting('HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE')
-        subject = 'Reminder to activate your account on %s' % htk_setting('HTK_SITE_NAME')
+        if template is None:
+            template = htk_setting('HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE')
+        if subject is None:
+            subject = 'Reminder to activate your account on %s' % htk_setting('HTK_SITE_NAME')
         self.send_activation_email(resend=True, template=template, subject=subject)
 
     def confirm_and_activate_account(self):
