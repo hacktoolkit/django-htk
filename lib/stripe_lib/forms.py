@@ -22,6 +22,7 @@ class CreditCardForm(forms.Form):
         """Get a dictionary representing this card compatible with Stripe's format
         """
         card_dict = {
+            'object' : 'card',
             'number' : self.cleaned_data['number'],
             'exp_month' : self.cleaned_data['exp_month'],
             'exp_year' : self.cleaned_data['exp_year'],
