@@ -51,7 +51,7 @@ const HtkSynchronizer = function(cfg) {
 
     this.queueSave = function(eventType) {
         var delayMap = {
-            'change' : 2500,
+            'change' : 2000,
             'blur' : 1000
         };
         var delay = delayMap[eventType] || 1000;
