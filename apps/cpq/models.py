@@ -290,10 +290,13 @@ class BaseCPQInvoice(AbstractCPQQuote):
         """Get charges made on this Invoice
         """
         payment = self.get_payment()
-        stripe_customer_id = payment['stripe_customer']
-        StripeCustomerModel = resolve_model_dynamically(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'))
-        stripe_customer = StripeCustomerModel.objects.get(id=stripe_customer_id)
-        charges = stripe_customer.get_charges()
+        if payment:
+            stripe_customer_id = payment['stripe_customer']
+            StripeCustomerModel = resolve_model_dynamically(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'))
+            stripe_customer = StripeCustomerModel.objects.get(id=stripe_customer_id)
+            charges = stripe_customer.get_charges()
+        else:
+            charges = None
         return charges
 
 class BaseCPQLineItem(models.Model):
