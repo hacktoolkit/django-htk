@@ -6,7 +6,7 @@ from htk.utils import utcnow
 class PrelaunchSignup(models.Model):
     site = models.ForeignKey(Site)
     email = models.EmailField(null=True, blank=True)
-    created_on = models.DateTimeField(auto_now_add=True, default=utcnow)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'htk'

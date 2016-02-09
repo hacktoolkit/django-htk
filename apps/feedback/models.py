@@ -15,7 +15,7 @@ class Feedback(models.Model):
     uri = models.CharField(max_length=200, null=True, blank=True)
     processed = models.BooleanField(default=False)
     needs_followup = models.BooleanField(default=True)
-    created_on = models.DateTimeField(auto_now_add=True, default=utcnow)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'htk'
