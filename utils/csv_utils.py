@@ -2,8 +2,6 @@ import cStringIO
 import codecs
 import csv
 
-from django.http import HttpResponse
-
 class UTF8Recoder(object):
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
@@ -64,6 +62,7 @@ class UnicodeWriter(object):
             self.writerow(row)
 
 def get_csv_response_from_collection(collection, row_generator, headings=None, filename='data.csv', utf8=True):
+    from django.http import HttpResponse
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
     # get csv writer
