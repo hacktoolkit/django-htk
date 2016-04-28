@@ -5,6 +5,8 @@ import csv
 class UTF8Recoder(object):
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
+
+    https://docs.python.org/2/library/csv.html
     """
     def __init__(self, f, encoding):
         self.reader = codecs.getreader(encoding)(f)
@@ -19,6 +21,8 @@ class UnicodeReader(object):
     """
     A CSV reader which will iterate over lines in the CSV file "f",
     which is encoded in the given encoding.
+
+    https://docs.python.org/2/library/csv.html
     """
 
     def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwds):
@@ -36,6 +40,8 @@ class UnicodeWriter(object):
     """
     A CSV writer which will write rows to CSV file "f",
     which is encoded in the given encoding.
+
+    https://docs.python.org/2/library/csv.html
     """
 
     def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwds):
