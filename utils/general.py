@@ -2,9 +2,8 @@ import sys
 
 from importlib import import_module
 
-from django.conf import settings
-
 def htk_setting(key, default=None):
+    from django.conf import settings
     import htk.constants.defaults
     if hasattr(settings, key):
         value = getattr(settings, key)

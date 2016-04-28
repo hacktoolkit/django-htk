@@ -2,7 +2,6 @@ import json
 import requests
 import rollbar
 
-from htk.apps.kv_storage import *
 from htk.utils import htk_setting
 
 def webhook_call(
@@ -59,6 +58,7 @@ def is_valid_webhook_event(event):
 def get_webhook_settings(token):
     """Retrieves the webhook settings from KV storage
     """
+    from htk.apps.kv_storage import kv_get
     key = 'slack_webhook_%s' % token
     webhook_settings = kv_get(key)
     return webhook_settings
