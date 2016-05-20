@@ -30,9 +30,6 @@ def webhook_call(
     if icon_emoji:
         payload['icon_emoji'] = icon_emoji
 
-    #data = 'payload=%s' % json.dumps(payload)
-    data = { 'payload' : payload }
-
     response = requests.post(webhook_url, json=payload)
     if response.status_code != 200:
         rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,))
