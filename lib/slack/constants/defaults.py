@@ -8,6 +8,8 @@ HTK_SLACK_EVENT_HANDLERS = {
     'weather' : 'htk.lib.slack.event_handlers.weather',
 }
 
+HTK_SLACK_EVENT_HANDLERS_EXTRAS = {}
+
 HTK_SLACK_EVENT_HANDLER_USAGES = {
     'help' : 'htk.lib.slack.event_handler_usages.help',
     'default' : 'htk.lib.slack.event_handler_usages.default',

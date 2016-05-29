@@ -1,3 +1,4 @@
+import copy
 import json
 import requests
 import rollbar
@@ -61,16 +62,50 @@ def get_webhook_settings(token):
     return webhook_settings
 
 def get_event_type(event):
+    """Get event type from Slack webhook `event`
+    """
     event_type_resolver_module_str = htk_setting('HTK_SLACK_EVENT_TYPE_RESOLVER')
     from htk.utils.general import resolve_method_dynamically
     event_type_resolver = resolve_method_dynamically(event_type_resolver_module_str)
     event_type = event_type_resolver(event)
     return event_type
 
-def get_event_handler_for_type(event_type):
-    """Gets the event handler for `event_type`
+def get_event_handlers(event):
+    """Gets all the event handlers available for `event`
+
+    Specifically, this is the set of event handlers in
+      {HTK_SLACK_EVENT_HANDLERS} + event['webhook_settings']
     """
-    event_handlers = htk_setting('HTK_SLACK_EVENT_HANDLERS')
+    event_handlers = copy.copy(htk_setting('HTK_SLACK_EVENT_HANDLERS'))
+    webhook_settings = event.get('webhook_settings', {})
+
+    # add in additional event group handlers
+    extra_event_handlers = htk_setting('HTK_SLACK_EVENT_HANDLERS_EXTRAS')
+    for event_group, handlers in extra_event_handlers.iteritems():
+        if webhook_settings.get(event_group, False) is True:
+            event_handlers.update(handlers)
+
+    # remove any disabled commands
+    disabled_commands = [k for k, v in webhook_settings.iteritems() if v is False and k in event_handlers]
+    for command in disabled_commands:
+        del event_handlers[command]
+    return event_handlers
+
+def is_available_command(event, command):
+    """Determines whether `command` is available for the `event`
+    """
+    event_handler = get_event_handler_for_type(event, event_type=command)
+    is_available = event_handler is not None
+    return is_available
+
+def get_event_handler_for_type(event, event_type=None):
+    """Gets the event handler for `event_type`
+
+    `event` is the original Slack webhook event
+    """
+    if event_type is None:
+        event_type = get_event_type(event)
+    event_handlers = get_event_handlers(event)
     event_handler_module_str = event_handlers.get(event_type)
     if event_handler_module_str:
         from htk.utils.general import resolve_method_dynamically
@@ -82,8 +117,7 @@ def get_event_handler_for_type(event_type):
 def get_event_handler(event):
     """Gets the event handler for a Slack webhook event, if available
     """
-    event_type = get_event_type(event)
-    event_handler = get_event_handler_for_type(event_type)
+    event_handler = get_event_handler_for_type(event)
     return event_handler
 
 def handle_event(event):

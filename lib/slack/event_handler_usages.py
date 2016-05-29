@@ -1,7 +1,8 @@
-from htk.utils import htk_setting
+from htk.lib.slack.utils import get_event_handlers
 
-def help():
-    event_handlers = htk_setting('HTK_SLACK_EVENT_HANDLERS')
+def help(**kwargs):
+    event = kwargs.get('event')
+    event_handlers = get_event_handlers(event)
     commands = ['`%s`' % command for command in sorted(event_handlers.keys())]
     usage_dict = {
         'description': 'Displays available commands. Available commands are: %s' % ', '.join(commands),
@@ -12,7 +13,7 @@ def help():
     }
     return usage_dict
 
-def default():
+def default(**kwargs):
     usage_dict = {
         'description' : 'This is not a very useful command; it simply parrots back what you said (to test whether the Slack bot is functioning)',
         'basic' : 'htk: default',
@@ -20,7 +21,7 @@ def default():
     }
     return usage_dict
 
-def bible():
+def bible(**kwargs):
     usage_dict = {
         'description' : 'Look up a Bible passage',
         'basic' : 'htk: bible [esv|nasb] passage',
@@ -33,7 +34,7 @@ def bible():
     }
     return usage_dict
 
-def stock():
+def stock(**kwargs):
     usage_dict = {
         'description' : 'Look up most recent stock quotes',
         'basic': 'htk: stock SYMBOL[( |;|,)SYMBOLS]',
@@ -43,7 +44,7 @@ def stock():
     }
     return usage_dict
 
-def weather():
+def weather(**kwargs):
     usage_dict = {
         'description' : 'Look up weather',
         'basic' : 'htk: weather LOCATION',

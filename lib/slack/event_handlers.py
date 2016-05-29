@@ -1,6 +1,6 @@
 import re
 
-from htk.lib.slack.utils import get_event_handler_for_type
+from htk.lib.slack.utils import is_available_command
 from htk.lib.slack.utils import parse_event_text
 from htk.utils import htk_setting
 
@@ -11,7 +11,7 @@ def preprocess_event(event_handler):
             arg_parts = args.split()
             arg1 = arg_parts[0].lower()
             if arg1 == 'help':
-                slack_text = get_usage(command)
+                slack_text = get_usage(event, command)
                 username = 'Hacktoolkit Bot'
                 payload = {
                     'text' : slack_text,
@@ -31,14 +31,17 @@ def preprocess_event(event_handler):
         return payload
     return wrapped_event_handler
 
-def get_usage(command):
+def get_usage(event, command):
     event_handler_usages = htk_setting('HTK_SLACK_EVENT_HANDLER_USAGES')
     from htk.utils.general import resolve_method_dynamically
     usage_fn_module_str = event_handler_usages.get(command)
     usage_fn = resolve_method_dynamically(usage_fn_module_str)
     if type(usage_fn) == type(lambda x: True):
         # <type 'function'>
-        usage_dict = usage_fn()
+        kwargs = {
+            'event' : event,
+        }
+        usage_dict = usage_fn(**kwargs)
     else:
         usage_dict = {
             'description' : 'Not specified',
@@ -66,11 +69,10 @@ def help(event, **kwargs):
         if args:
             arg_parts = args.split()
             arg1 = arg_parts[0].lower()
-            event_handler = get_event_handler_for_type(arg1)
-            if event_handler:
+            if is_available_command(event, arg1):
                 # override the command to get help for
                 command = arg1
-        slack_text = get_usage(command)
+        slack_text = get_usage(event, command)
     else:
         slack_text = 'Illegal command.'
 
@@ -132,7 +134,7 @@ Read on Literal Word: %(url)s
 >>> %(text)s
 """ % passage
         else:
-            slack_text = 'Please specify a Bible passage to look up.\n%s' % get_usage(command)
+            slack_text = 'Please specify a Bible passage to look up.\n%s' % get_usage(event, command)
     else:
         slack_text = 'Illegal command.'
 
