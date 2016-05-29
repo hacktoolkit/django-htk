@@ -54,12 +54,14 @@ def kv_put(key, value, overwrite=False):
             c.cache_store(value)
     return kv_obj
 
-def kv_get(key, cache_only=False):
+def kv_get(key, cache_only=False, force_refetch=False):
     """GETs the value of `key` from key-value storage
 
     `cache_only` == True : skips lookup in db, returns the cached value or None
     """
     c = KVStorageCache(prekey=key)
+    if force_refetch:
+        c.invalidate_cache()
     value = c.get()
     if value is None and not cache_only:
         kv_obj = _get_kv_obj(key)
