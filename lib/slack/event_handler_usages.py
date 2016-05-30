@@ -55,3 +55,13 @@ def weather(**kwargs):
         ],
     }
     return usage_dict
+
+def zesty(**kwargs):
+    usage_dict = {
+        'description' : 'Look up Zesty lunch menu',
+        'basic' : 'htk: zesty',
+        'examples' : [
+            'htk: zesty',
+        ],
+    }
+    return usage_dict

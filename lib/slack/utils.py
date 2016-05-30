@@ -91,6 +91,17 @@ def get_event_handlers(event):
         del event_handlers[command]
     return event_handlers
 
+def get_event_handler_usages(event):
+    event_handler_usages = copy.copy(htk_setting('HTK_SLACK_EVENT_HANDLER_USAGES'))
+    webhook_settings = event.get('webhook_settings', {})
+
+    # add in additional event group handler usages
+    extra_event_handler_usages = htk_setting('HTK_SLACK_EVENT_HANDLER_USAGES_EXTRA')
+    for event_group, usages in extra_event_handler_usages.iteritems():
+        if webhook_settings.get(event_group, False) is True:
+            event_handler_usages.update(usages)
+    return event_handler_usages
+
 def is_available_command(event, command):
     """Determines whether `command` is available for the `event`
     """
@@ -129,7 +140,16 @@ def handle_event(event):
     """
     event_handler = get_event_handler(event)
     if event_handler:
-        payload = event_handler(event)
+        try:
+            payload = event_handler(event)
+        except:
+            payload = {
+                'text' : """Oops, I couldn't process that.""",
+            }
+            rollbar.report_exc_info(extra_data={
+                'event' : event,
+                'event_handler' : event_handler.__name__,
+            })
     else:
         payload = None
     return payload

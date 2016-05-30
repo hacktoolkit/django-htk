@@ -1,8 +1,8 @@
 import re
 
+from htk.lib.slack.utils import get_event_handler_usages
 from htk.lib.slack.utils import is_available_command
 from htk.lib.slack.utils import parse_event_text
-from htk.utils import htk_setting
 
 def preprocess_event(event_handler):
     def wrapped_event_handler(event):
@@ -32,7 +32,7 @@ def preprocess_event(event_handler):
     return wrapped_event_handler
 
 def get_usage(event, command):
-    event_handler_usages = htk_setting('HTK_SLACK_EVENT_HANDLER_USAGES')
+    event_handler_usages = get_event_handler_usages(event)
     from htk.utils.general import resolve_method_dynamically
     usage_fn_module_str = event_handler_usages.get(command)
     usage_fn = resolve_method_dynamically(usage_fn_module_str)
@@ -203,6 +203,40 @@ def weather(event, **kwargs):
             )
         else:
             slack_text = 'Please specify a location to retrieve weather for.'
+    else:
+        slack_text = 'Illegal command.'
+
+    channel = event['channel_id']
+    username = 'Hacktoolkit Bot'
+
+    payload = {
+        'text' : slack_text,
+        'username' : username,
+    }
+    return payload
+
+@preprocess_event
+def zesty(event, **kwargs):
+    """Zesty event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'zesty':
+        webhook_settings = event['webhook_settings']
+        username = webhook_settings['user']
+        from htk.apps.accounts.utils import get_user_by_username
+        user = get_user_by_username(username)
+        zesty_id = user.profile.get_attribute('zesty_id')
+        if args:
+            slack_text = '`zesty` does not take any aruments'
+        elif zesty_id is None:
+            slack_text = 'Error: Your account does not have a Zesty account id configured. Please check with your Slack admin.'
+        else:
+            #from htk.lib.zesty.utils import get_zesty_lunch_menu
+            #slack_text = get_zesty_lunch_menu(zesty_id)
+            slack_text = '`get_zesty_lunch_menu(zesty_id)`'
     else:
         slack_text = 'Illegal command.'
 
