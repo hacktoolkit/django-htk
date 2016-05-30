@@ -223,6 +223,7 @@ def zesty(event, **kwargs):
     command = kwargs.get('command')
     args = kwargs.get('args')
 
+    zesty_slack_payload = {}
     if command == 'zesty':
         webhook_settings = event['webhook_settings']
         username = webhook_settings['user']
@@ -230,13 +231,14 @@ def zesty(event, **kwargs):
         user = get_user_by_username(username)
         zesty_id = user.profile.get_attribute('zesty_id')
         if args:
-            slack_text = '`zesty` does not take any aruments'
+            slack_text = '`zesty` does not take any arguments'
         elif zesty_id is None:
             slack_text = 'Error: Your account does not have a Zesty account id configured. Please check with your Slack admin.'
         else:
-            #from htk.lib.zesty.utils import get_zesty_lunch_menu
-            #slack_text = get_zesty_lunch_menu(zesty_id)
-            slack_text = '`get_zesty_lunch_menu(zesty_id)`'
+            from htk.lib.zesty.utils import get_zesty_lunch_menu
+            dt = user.profile.get_local_time()
+            slack_text = ''
+            zesty_slack_payload = get_zesty_lunch_menu(zesty_id, dt)
     else:
         slack_text = 'Illegal command.'
 
@@ -246,5 +248,8 @@ def zesty(event, **kwargs):
     payload = {
         'text' : slack_text,
         'username' : username,
+        'unfurl_links' : True,
+        'unfurl_media' : True,
     }
+    payload.update(zesty_slack_payload)
     return payload
