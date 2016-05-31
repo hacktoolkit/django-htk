@@ -133,7 +133,7 @@ class ZestyMeals(object):
         meal_dict.update({
             'day_of_week' : dt.strftime('%A'),
             'meal_type' : meal['meal_type'].capitalize(),
-            'time' : dt.strftime('%I:%M:%p'),
+            'time' : dt.strftime('%I:%M%p'),
             'date' : dt.strftime('%B %d, %Y'),
             'dishes' : dishes if slack_attachments else '\n\n'.join(dishes),
         })
