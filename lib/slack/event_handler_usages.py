@@ -34,6 +34,16 @@ def bible(**kwargs):
     }
     return usage_dict
 
+def findemail(**kwargs):
+    usage_dict = {
+        'description' : 'Find Company-Based Email Address automagically',
+        'basic' : 'htk: findemail domain|firstname|middlename|lastname',
+        'examples' : [
+            'htk: findemail facebook.com|mark||zuckerberg',
+        ],
+    }
+    return usage_dict
+
 def stock(**kwargs):
     usage_dict = {
         'description' : 'Look up most recent stock quotes',

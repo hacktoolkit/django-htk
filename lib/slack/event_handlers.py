@@ -147,6 +147,44 @@ Read on Literal Word: %(url)s
     return payload
 
 @preprocess_event
+def findemail(event, **kwargs):
+    """Find email event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'findemail':
+        if args:
+            parts = re.sub(r'\<.*\|(.*)\>', r'\g<1>', args).rsplit('|', 3)
+            domain, first_name, middle_name, last_name = parts
+
+            from htk.utils.emails import find_company_emails_for_name
+            emails = find_company_emails_for_name(
+                domain,
+                first_name=first_name,
+                middle_name=middle_name,
+                last_name=last_name
+            )
+            if emails:
+                slack_text = 'Found emails:\n%s' % ', '.join(emails)
+            else:
+                slack_text = 'No emails were found'
+        else:
+            slack_text = 'Missing arguments. See usage.'
+    else:
+        slack_text = 'Illegal command.'
+
+    channel = event['channel_id']
+    username = 'Hacktoolkit Bot'
+
+    payload = {
+        'text' : slack_text,
+        'username' : username,
+    }
+    return payload
+
+@preprocess_event
 def stock(event, **kwargs):
     """Stock event handler for Slack webhook events
     """

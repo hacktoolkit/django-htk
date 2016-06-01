@@ -3,6 +3,7 @@ HTK_SLACK_EVENT_TYPE_RESOLVER = 'htk.lib.slack.event_resolvers.default_event_typ
 HTK_SLACK_EVENT_HANDLERS = {
     'default' : 'htk.lib.slack.event_handlers.default',
     'bible' : 'htk.lib.slack.event_handlers.bible',
+    'findemail' : 'htk.lib.slack.event_handlers.findemail',
     'help' : 'htk.lib.slack.event_handlers.help',
     'stock' : 'htk.lib.slack.event_handlers.stock',
     'weather' : 'htk.lib.slack.event_handlers.weather',
@@ -15,6 +16,7 @@ HTK_SLACK_EVENT_HANDLER_USAGES = {
     'help' : 'htk.lib.slack.event_handler_usages.help',
     'default' : 'htk.lib.slack.event_handler_usages.default',
     'bible' : 'htk.lib.slack.event_handler_usages.bible',
+    'findemail' : 'htk.lib.slack.event_handler_usages.findemail',
     'stock' : 'htk.lib.slack.event_handler_usages.stock',
     'weather' : 'htk.lib.slack.event_handler_usages.weather',
     'zesty' : 'htk.lib.slack.event_handler_usages.zesty',
@@ -25,6 +27,7 @@ HTK_SLACK_EVENT_HANDLER_USAGES_EXTRA = {}
 # trigger words that are also commands
 HTK_SLACK_TRIGGER_COMMAND_WORDS = (
     'bible',
+    'findemail',
     'stock',
     'weather',
 )
