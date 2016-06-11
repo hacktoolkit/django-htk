@@ -55,7 +55,7 @@ class FullContactAPI(object):
         if response.status_code == 200:
             try:
                 data = response.json()
-                person = FullContactPerson(data)
+                person = FullContactPerson(email, data)
             except:
                 pass
         else:
@@ -80,7 +80,7 @@ class FullContactAPI(object):
                 if request_url in responses:
                     person_response = responses[request_url]
                     if person_response['status'] == 200:
-                        persons[email] = person_response
+                        persons[email] = FullContactPerson(email, person_response)
         else:
             pass
         return persons
@@ -89,5 +89,6 @@ class FullContactObject(object):
     pass
 
 class FullContactPerson(FullContactObject):
-    def __init__(self, person_data):
+    def __init__(self, email, person_data):
+        self.email = email
         self.data = person_data

@@ -34,6 +34,8 @@ HTK_DEFAULT_EMAIL_RECIPIENTS = ['info@hacktoolkit.com',]
 HTK_EMAIL_CONTEXT_GENERATOR = 'htk.mailers.email_context_generator'
 HTK_EMAIL_ATTACHMENTS = ()
 
+HTK_FIND_EMAILS_VALIDATOR = 'htk.lib.fullcontact.utils.find_valid_emails'
+
 ##
 # Locale
 HTK_DEFAULT_COUNTRY = 'US'
@@ -68,6 +70,7 @@ from htk.apps.file_storage.constants.defaults import *
 from htk.apps.maintenance_mode.constants.defaults import *
 from htk.cache.constants.defaults import *
 from htk.forms.constants.defaults import *
+from htk.lib.fullcontact.constants.defaults import *
 from htk.lib.qrcode.constants.defaults import *
 from htk.lib.slack.constants.defaults import *
 from htk.lib.stripe_lib.constants.defaults import *

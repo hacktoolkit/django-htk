@@ -41,6 +41,8 @@ def find_company_emails_for_name(domain, first_name='', middle_name='', last_nam
         middle_name=middle_name,
         last_name=last_name
     )
-    from htk.lib.fullcontact.utils import find_valid_emails
+    from htk.utils import htk_setting
+    from htk.utils import resolve_method_dynamically
+    find_valid_emails = resolve_method_dynamically(htk_setting('HTK_FIND_EMAILS_VALIDATOR'))
     emails = find_valid_emails(email_permutations)
     return emails
