@@ -12,7 +12,7 @@ class FullContactPerson(FullContactObject):
         """
         from collections import defaultdict
         demographics = self.data.get('demographics', {})
-        contact_info = self.data['contactInfo']
+        contact_info = self.data.get('contactInfo', {})
         values = defaultdict(lambda: 'N/A')
         values.update(contact_info)
         values.update(demographics)
