@@ -35,6 +35,7 @@ HTK_EMAIL_CONTEXT_GENERATOR = 'htk.mailers.email_context_generator'
 HTK_EMAIL_ATTACHMENTS = ()
 
 HTK_FIND_EMAILS_VALIDATOR = 'htk.lib.fullcontact.utils.find_valid_emails'
+HTK_EMAIL_PERSON_RESOLVER = 'htk.lib.fullcontact.utils.find_person_by_email'
 
 ##
 # Locale

@@ -1,7 +1,7 @@
 import random
 import time
 
-from htk.lib.fullcontact.classes import FullContactAPI
+from htk.lib.fullcontact.api import FullContactAPI
 from htk.utils import chunks
 from htk.utils import htk_setting
 

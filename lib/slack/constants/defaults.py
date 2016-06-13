@@ -3,6 +3,7 @@ HTK_SLACK_EVENT_TYPE_RESOLVER = 'htk.lib.slack.event_resolvers.default_event_typ
 HTK_SLACK_EVENT_HANDLERS = {
     'default' : 'htk.lib.slack.event_handlers.default',
     'bible' : 'htk.lib.slack.event_handlers.bible',
+    'emaildig' : 'htk.lib.slack.event_handlers.emaildig',
     'findemail' : 'htk.lib.slack.event_handlers.findemail',
     'help' : 'htk.lib.slack.event_handlers.help',
     'stock' : 'htk.lib.slack.event_handlers.stock',
@@ -16,6 +17,7 @@ HTK_SLACK_EVENT_HANDLER_USAGES = {
     'help' : 'htk.lib.slack.event_handler_usages.help',
     'default' : 'htk.lib.slack.event_handler_usages.default',
     'bible' : 'htk.lib.slack.event_handler_usages.bible',
+    'emaildig' : 'htk.lib.slack.event_handler_usages.emaildig',
     'findemail' : 'htk.lib.slack.event_handler_usages.findemail',
     'stock' : 'htk.lib.slack.event_handler_usages.stock',
     'weather' : 'htk.lib.slack.event_handler_usages.weather',

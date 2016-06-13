@@ -1,94 +1,57 @@
-import requests
-
-from htk.lib.fullcontact.constants import *
-
-class FullContactAPI(object):
-    """
-    https://www.fullcontact.com/developer/docs/
-    """
-    def __init__(self, api_key):
-        self.api_key = api_key
-
-    def get_resource_url(self, resource_type):
-        """Returns the resource URL for `resource_type`
-        """
-        url = '%s%s' % (
-            FULLCONTACT_API_BASE_URL,
-            FULLCONTACT_API_RESOURCES.get(resource_type),
-        )
-        return url
-
-    def get(self, resource_type, params):
-        """Performs a FullContact API GET request
-        """
-        url = self.get_resource_url(resource_type)
-        headers = {
-            'X-FullContact-APIKey' : self.api_key,
-        }
-        response = requests.get(url, headers=headers, params=params)
-        return response
-
-    def post(self, resource_type, json_payload):
-        """Performs a FullContact API POST request
-        """
-        url = self.get_resource_url(resource_type)
-        headers = {
-            'X-FullContact-APIKey' : self.api_key,
-            'Content-Type' : 'application/json',
-        }
-        response = requests.post(url, headers=headers, json=json_payload)
-        return response
-
-    def batch(self, json_payload):
-        response = self.post('batch', json_payload)
-        return response
-
-    def get_person(self, email):
-        """
-        https://www.fullcontact.com/developer/docs/person/
-        """
-        person = None
-        params = {
-            'email' : email,
-        }
-        response = self.get('person', params)
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                person = FullContactPerson(email, data)
-            except:
-                pass
-        else:
-            pass
-        return person
-
-    def get_persons(self, emails):
-        """Retrieves a batch of Person objects based on `emails`
-
-        Returns a dictionary mapping emails to Person objects
-        """
-        person_api_url = self.get_resource_url('person')
-        email_api_request_urls = { email : '%s?email=%s' % (person_api_url, email,) for email in emails }
-        json_payload = {
-            'requests' : email_api_request_urls.values(),
-        }
-        response = self.batch(json_payload)
-        persons = {}
-        if response.status_code == 200:
-            responses = response.json()['responses']
-            for email, request_url in email_api_request_urls.iteritems():
-                if request_url in responses:
-                    person_response = responses[request_url]
-                    if person_response['status'] == 200:
-                        persons[email] = FullContactPerson(email, person_response)
-        else:
-            pass
-        return persons
-
 class FullContactObject(object):
-    pass
+    def __init__(self, *args, **kwargs):
+        pass
 
 class FullContactPerson(FullContactObject):
-    def __init__(self, email, person_data):
+    def __init__(self, email, person_data, *args, **kwargs):
         self.email = email
         self.data = person_data
+
+    def as_slack(self):
+        """Formats this person's data as a Slack string
+        """
+        from collections import defaultdict
+        demographics = self.data.get('demographics', {})
+        contact_info = self.data['contactInfo']
+        values = defaultdict(lambda: 'N/A')
+        values.update(contact_info)
+        values.update(demographics)
+        values.update(demographics.get('locationDeduced', {}))
+        values['websites'] = '\n'.join([website['url'] for website in contact_info['websites']]) if 'websites' in contact_info else 'None'
+
+        basics_rendered = """%(fullName)s (%(familyName)s, %(givenName)s)
+Age: %(age)s (%(ageRange)s), Gender: %(gender)s
+General Location: %(locationGeneral)s / Deduced Location: %(normalizedLocation)s
+
+Websites:
+%(websites)s
+""" % values
+
+        photos_rendered = '\n'.join([photo['url'] for photo in self.data['photos']]) if 'photos' in self.data else 'None'
+        social_rendered = '\n'.join(['*%(typeName)s*: %(url)s' % social for social in self.data['socialProfiles']]) if 'socialProfiles' in self.data else 'None'
+
+        def format_org(org):
+            d_org = defaultdict(lambda: 'N/A')
+            d_org.update(org)
+            _s = '%(name)s - %(title)s (%(startDate)s - %(endDate)s)' % d_org
+            return _s
+        orgs_rendered = '\n'.join([format_org(org) for org in self.data['organizations']]) if 'organizations' in self.data else 'None'
+
+        s = """*Basic Information*:
+%(basics_rendered)s
+
+*Photos*:
+%(photos_rendered)s
+
+*Social Profiles*:
+%(social_rendered)s
+
+*Organizations*:
+%(orgs_rendered)s
+""" % {
+    'basics_rendered' : basics_rendered,
+    'photos_rendered' : photos_rendered,
+    'social_rendered' : social_rendered,
+    'orgs_rendered' : orgs_rendered,
+ }
+        return s

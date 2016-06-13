@@ -147,6 +147,43 @@ Read on Literal Word: %(url)s
     return payload
 
 @preprocess_event
+def emaildig(event, **kwargs):
+    """Email dig event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'emaildig':
+        if args:
+            parts = re.sub(r'\<.*\|(.*)\>', r'\g<1>', args).split(' ')
+            if len(parts) > 1:
+                slack_text= 'Too many arguments. See usage. `%s`' % args
+            else:
+                email = parts[0]
+                from htk.utils import htk_setting
+                from htk.utils import resolve_method_dynamically
+                find_person_by_email = resolve_method_dynamically(htk_setting('HTK_EMAIL_PERSON_RESOLVER'))
+                person = find_person_by_email(email)
+                if person:
+                    slack_text = 'The folowing information was retrieved for *%s*:\n%s' % (email, person.as_slack())
+                else:
+                    slack_text = 'No information was found for email: %s' % email
+        else:
+            slack_text = 'Missing arguments. See usage.'
+    else:
+        slack_text = 'Illegal command.'
+
+    channel = event['channel_id']
+    username = 'Hacktoolkit Bot'
+
+    payload = {
+        'text' : slack_text,
+        'username' : username,
+    }
+    return payload
+
+@preprocess_event
 def findemail(event, **kwargs):
     """Find email event handler for Slack webhook events
     """

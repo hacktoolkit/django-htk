@@ -34,6 +34,16 @@ def bible(**kwargs):
     }
     return usage_dict
 
+def emaildig(**kwargs):
+    usage_dict = {
+        'description' : 'Find information about a person by email address',
+        'basic' : 'htk: emaildig email',
+        'examples' : [
+            'htk: emaildig hello@hacktoolkit.com',
+        ],
+    }
+    return usage_dict
+
 def findemail(**kwargs):
     usage_dict = {
         'description' : 'Find Company-Based Email Address automagically',
