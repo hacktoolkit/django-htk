@@ -22,3 +22,10 @@ def get_devices_for_user(user, social_auth_user=None):
     api = get_fitbit_api_django(social_auth_user)
     devices = api.get_devices()
     return devices
+
+def get_activity_for_user(user, social_auth_user=None):
+    if social_auth_user is None:
+        social_auth_user = get_fitbit_social_auth_user(user)
+    api = get_fitbit_api_django(social_auth_user)
+    activity = api.get_activity_steps_past_month()
+    return activity

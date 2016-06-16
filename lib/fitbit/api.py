@@ -57,7 +57,7 @@ class FitbitAPI(object):
         headers = self.make_headers(auth_type, headers=headers)
         response = requests.get(url, headers=headers, params=params)
         if response.status_code == 401:
-            if False and refresh_token:
+            if refresh_token:
                 was_refreshed = self.refresh_oauth2_token()
                 if was_refreshed:
                     # if token was successfully refreshed, repeat request
@@ -132,6 +132,11 @@ class FitbitAPI(object):
     # Regular API calls
 
     def get_devices(self):
+        """Get a list of Devices
+
+        Requires the 'settings' permission
+        https://dev.fitbit.com/docs/devices/
+        """
         params = {}
         response = self.get('devices', params)
         if response.status_code == 200:
@@ -139,3 +144,18 @@ class FitbitAPI(object):
         else:
             devices = []
         return devices
+
+    def get_activity_steps_past_month(self):
+        """Get Steps for past month
+
+        Requires the 'activity' permission'
+        https://dev.fitbit.com/docs/activity/
+        """
+        params = {}
+        response = self.get('activity-steps-monthly', params)
+        if response.status_code == 200:
+            activity = response.json()['activities-steps']
+            activity = activity[::-1]
+        else:
+            activity = None
+        return activity
