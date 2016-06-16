@@ -55,7 +55,6 @@ class FullContactAPI(object):
             'email' : email,
         }
         response = self.get('person', params)
-        from htk.utils.debug import slack_debug
         if response.status_code == 200:
             try:
                 data = response.json()
