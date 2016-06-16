@@ -46,8 +46,6 @@ class FitbitAPI(object):
         if headers:
             _headers.update(headers)
         headers = _headers
-        from htk.utils.debug import slack_debug
-        slack_debug('headers: %s' % headers)
         return headers
 
     def get(self, resource_type, params, headers=None, auth_type='bearer', refresh_token=True):
