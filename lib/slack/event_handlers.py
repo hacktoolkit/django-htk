@@ -166,7 +166,7 @@ def emaildig(event, **kwargs):
                 find_person_by_email = resolve_method_dynamically(htk_setting('HTK_EMAIL_PERSON_RESOLVER'))
                 person = find_person_by_email(email)
                 if person:
-                    slack_text = 'The folowing information was retrieved for *%s*:\n%s' % (email, person.as_slack())
+                    slack_text = 'The following information was retrieved for *%s*:\n%s' % (email, person.as_slack())
                 else:
                     slack_text = 'No information was found for email: %s' % email
         else:
