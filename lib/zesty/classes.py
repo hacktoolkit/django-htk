@@ -116,7 +116,7 @@ class ZestyMeals(object):
         for meal_item in meal_items:
             dish_id = meal_item['dish_id']
             dish = self.api.get_dish(dish_id)
-            if dish:
+            if dish and dish.is_valid:
                 if slack_attachments:
                     pretty_dish = dish.get_slack_attachment()
                 else:
@@ -173,12 +173,16 @@ class ZestyDish(object):
         self.api = api
         # raw dish data as provided by Zesty API JSON response
         self.data = data
+        self.is_valid = 'dishes' in self.data
 
     def _get_dict(self):
-        dish = copy.copy(self.data['dish'])
-        dish.update({
-            'allergens' : ', '.join(dish['allergens']) or 'None',
-        })
+        dishes = self.data.get('dishes', [])
+        dish = {}
+        if dishes:
+            dish = copy.copy(dishes[0])
+            dish.update({
+                'allergens' : ', '.join(dish.get('allergens', [])) or 'None',
+            })
         return dish
 
     def get_pretty(self):
