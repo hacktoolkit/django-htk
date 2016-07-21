@@ -1,3 +1,5 @@
+import rollbar
+
 from django import forms
 
 from htk.apps.feedback.emails import feedback_email
@@ -28,5 +30,8 @@ class FeedbackForm(forms.ModelForm):
         feedback.uri = uri
         feedback.save()
 
-        feedback_email(feedback, domain=domain)
+        try:
+            feedback_email(feedback, domain=domain)
+        except:
+            rollbar.report_exc_info(request=request)
         return feedback
