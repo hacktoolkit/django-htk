@@ -1,13 +1,13 @@
 {% extends 'emails/base.html' %}
 {% block content %}
-Hello,<br/>
+New feedback was provided from the website at {{ domain}}.<br/>
 <br/>
 {% if feedback.user %}
-User: {{ feedback.user }}<br/>
+<b>User</b>: {{ feedback.user }}<br/>
 {% endif %}
-From: {{ feedback.name }}{% if feedback.email %} &lt;<a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a>&gt;{% endif %}<br/>
+<b>From</b>: {{ feedback.name }}{% if feedback.email %} &lt;<a href="mailto:{{ feedback.email }}">{{ feedback.email }}</a>&gt;{% endif %}<br/>
 <br/>
-Comment:<br/>
+<b>Comment</b>:<br/>
 {{ feedback.comment }}<br/>
 <br/>
 Go to <a href="http://{{ domain }}{{ feedback.get_admin_url }}">http://{{ domain }}{{ feedback.get_admin_url }}</a> to administer the message.

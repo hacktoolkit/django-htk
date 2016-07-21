@@ -1,5 +1,6 @@
 <h3>Feedback, suggestions...</h3>
 <form id="feedback_form" action="{% url 'htk_feedback_submit' %}" class="pure-form">
+  {% csrf_token %}
   {% for hidden in feedback_form.hidden_fields %}
   {{ hidden }}
   {% endfor %}
