@@ -11,4 +11,11 @@ def ensure_mysql_connection_usable():
         # destroy the default MySQL connection
         # after this line, when you use ORM methods
         # Django will reconnect to the default MySQL
-        del connections._connections.default
+        #
+        # Delete one database connection:
+        # del connections._connections.default
+        #
+        # Delete all database connections
+        databases = connections._connections.__dict__.keys()
+        for database in databases:
+            del connections._connections.__dict__[database]
