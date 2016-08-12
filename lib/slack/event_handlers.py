@@ -234,6 +234,7 @@ def geoip(event, **kwargs):
             ip = args
             from htk.lib.geoip.utils import get_record_by_ip
             from htk.lib.google.geocode.geocode import reverse_geocode
+            from htk.lib.google.maps.utils import get_map_url_for_geolocation
             geoip_record = get_record_by_ip(ip)
             lat = geoip_record.get('latitude')
             lng = geoip_record.get('longitude')
@@ -242,10 +243,11 @@ def geoip(event, **kwargs):
             else:
                 address = reverse_geocode(lat, lng)
                 geoip_record['address'] = address
+                geoip_record['map_url'] = get_map_url_for_geolocation(lat, lng)
                 msg = """*Latitude*: %(latitude)s, *Longitude*: %(longitude)s
 *Address*: %(address)s
 *Area code*: %(area_code)s
-*Map*: https://www.google.com/maps/@%(latitude)s,%(longitude)s,17z
+*Map*: %(map_url)s
 """ % geoip_record
             slack_text = '*GeoIP Location for %s*:\n%s' % (
                 ip,
