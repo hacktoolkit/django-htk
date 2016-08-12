@@ -39,3 +39,14 @@ def get_timezone_by_ip(ip):
     if gi_city:
         timezone = gi_city.time_zone_by_addr(ip)
     return timezone
+
+def get_record_by_ip(ip):
+    """Returns dictionary with city data containing country_code, country_name, region, city, postal_code, latitude, longitude, dma_code, metro_code, area_code, region_code and time_zone.
+
+    http://pygeoip.readthedocs.io/en/v0.3.2/api-reference.html#pygeoip.GeoIP.record_by_addr
+    """
+    gi_city = get_geoip_city()
+    record = {}
+    if gi_city:
+        record = gi_city.record_by_addr(ip)
+    return record

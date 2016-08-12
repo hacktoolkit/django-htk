@@ -54,6 +54,16 @@ def findemail(**kwargs):
     }
     return usage_dict
 
+def geoip(**kwargs):
+    usage_dict = {
+        'description' : 'Look up geo information for an IP address. Uses GeoIP database',
+        'basic' : 'htk: geoip ip',
+        'examples' : [
+            'htk: geoip 8.8.8.8',
+        ],
+    }
+    return usage_dict
+
 def stock(**kwargs):
     usage_dict = {
         'description' : 'Look up most recent stock quotes',

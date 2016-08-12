@@ -222,6 +222,52 @@ def findemail(event, **kwargs):
     return payload
 
 @preprocess_event
+def geoip(event, **kwargs):
+    """GeoIP event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'geoip':
+        if args:
+            ip = args
+            from htk.lib.geoip.utils import get_record_by_ip
+            from htk.lib.google.geocode.geocode import reverse_geocode
+            geoip_record = get_record_by_ip(ip)
+            lat = geoip_record.get('latitude')
+            lng = geoip_record.get('longitude')
+            if lat is None or lng is None:
+                msg = 'Could not resolve location from IP'
+            else:
+                address = reverse_geocode(lat, lng)
+                geoip_record['address'] = address
+                msg = """*Latitude*: %(latitude)s, *Longitude*: %(longitude)s
+*Address*: %(address)s
+*Area code*: %(area_code)s
+*Map*: https://www.google.com/maps/@%(latitude)s,%(longitude)s,17z
+""" % geoip_record
+            slack_text = '*GeoIP Location for %s*:\n%s' % (
+                ip,
+                msg,
+            )
+        else:
+            slack_text = 'Please specify an IP address.'
+    else:
+        slack_text = 'Illegal command.'
+
+    channel = event['channel_id']
+    username = 'Hacktoolkit Bot'
+
+    payload = {
+        'text' : slack_text,
+        'username' : username,
+        'unfurl_links' : True,
+        'unfurl_media' : True,
+    }
+    return payload
+
+@preprocess_event
 def stock(event, **kwargs):
     """Stock event handler for Slack webhook events
     """
