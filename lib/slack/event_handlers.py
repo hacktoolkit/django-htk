@@ -3,6 +3,7 @@ import re
 from htk.lib.slack.utils import get_event_handler_usages
 from htk.lib.slack.utils import is_available_command
 from htk.lib.slack.utils import parse_event_text
+from htk.lib.slack.utils import webhook_call
 
 def preprocess_event(event_handler):
     def wrapped_event_handler(event):
@@ -119,7 +120,15 @@ def beacon(event, **kwargs):
         from htk.lib.slack.beacon.utils import create_slack_beacon_url
         beacon_url = create_slack_beacon_url(event)
         if beacon_url:
-            slack_text = 'Open this URL to trigger the beacon: %s' % beacon_url
+            beacon_text = 'Open this URL to trigger the beacon: %s' % beacon_url
+            user_channel = '@%s' % event['user_name']
+            webhook_call(
+                text=beacon_text,
+                channel=user_channel,
+                unfurl_links=False,
+                unfurl_media=False,
+            )
+            slack_text = 'Homing beacon message deployed to <%s>.' % user_channel
         else:
             slack_text = 'Slack homing beacon not set up correctly.'
     else:
@@ -249,27 +258,8 @@ def geoip(event, **kwargs):
     if command == 'geoip':
         if args:
             ip = args
-            from htk.lib.geoip.utils import get_record_by_ip
-            from htk.lib.google.geocode.geocode import reverse_geocode
-            from htk.lib.google.maps.utils import get_map_url_for_geolocation
-            geoip_record = get_record_by_ip(ip)
-            lat = geoip_record.get('latitude')
-            lng = geoip_record.get('longitude')
-            if lat is None or lng is None:
-                msg = 'Could not resolve location from IP'
-            else:
-                address = reverse_geocode(lat, lng)
-                geoip_record['address'] = address
-                geoip_record['map_url'] = get_map_url_for_geolocation(lat, lng)
-                msg = """*Latitude*: %(latitude)s, *Longitude*: %(longitude)s
-*Address*: %(address)s
-*Area code*: %(area_code)s
-*Map*: %(map_url)s
-""" % geoip_record
-            slack_text = '*GeoIP Location for %s*:\n%s' % (
-                ip,
-                msg,
-            )
+            from htk.lib.slack.messages import slack_message_geoip
+            slack_text = slack_message_geoip(ip)
         else:
             slack_text = 'Please specify an IP address.'
     else:
