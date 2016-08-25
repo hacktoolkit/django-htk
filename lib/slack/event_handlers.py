@@ -99,10 +99,8 @@ def default(event, **kwargs):
     slack_text = 'You said:\n>%s\n Roger that.' % text
     #webhook_call(text=slack_text, channel=channel, username=username)
 
-    username = 'Hacktoolkit Bot'
     payload = {
         'text' : slack_text,
-        'username' : username,
     }
     return payload
 
@@ -138,11 +136,8 @@ Read on Literal Word: %(url)s
     else:
         slack_text = 'Illegal command.'
 
-    username = 'Hacktoolkit Bot'
-
     payload = {
         'text' : slack_text,
-        'username' : username,
     }
     return payload
 
@@ -175,11 +170,9 @@ def emaildig(event, **kwargs):
         slack_text = 'Illegal command.'
 
     channel = event['channel_id']
-    username = 'Hacktoolkit Bot'
 
     payload = {
         'text' : slack_text,
-        'username' : username,
     }
     return payload
 
@@ -213,11 +206,9 @@ def findemail(event, **kwargs):
         slack_text = 'Illegal command.'
 
     channel = event['channel_id']
-    username = 'Hacktoolkit Bot'
 
     payload = {
         'text' : slack_text,
-        'username' : username,
     }
     return payload
 
@@ -259,11 +250,9 @@ def geoip(event, **kwargs):
         slack_text = 'Illegal command.'
 
     channel = event['channel_id']
-    username = 'Hacktoolkit Bot'
 
     payload = {
         'text' : slack_text,
-        'username' : username,
         'unfurl_links' : True,
         'unfurl_media' : True,
     }
@@ -297,10 +286,8 @@ def stock(event, **kwargs):
     else:
         slack_text = 'Illegal command.'
 
-    username = 'Hacktoolkit Bot'
     payload = {
         'text' : slack_text,
-        'username' : username,
     }
     return payload
 
@@ -330,11 +317,9 @@ def weather(event, **kwargs):
         slack_text = 'Illegal command.'
 
     channel = event['channel_id']
-    username = 'Hacktoolkit Bot'
 
     payload = {
         'text' : slack_text,
-        'username' : username,
     }
     return payload
 
@@ -366,11 +351,9 @@ def zesty(event, **kwargs):
         slack_text = 'Illegal command.'
 
     channel = event['channel_id']
-    username = 'Hacktoolkit Bot'
 
     payload = {
         'text' : slack_text,
-        'username' : username,
         'unfurl_links' : True,
         'unfurl_media' : True,
     }
