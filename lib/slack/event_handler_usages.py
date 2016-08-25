@@ -21,6 +21,15 @@ def default(**kwargs):
     }
     return usage_dict
 
+def beacon(**kwargs):
+    usage_dict = {
+        'description' : 'Creates a homing beacon URL for the user good for 5 minutes. When the beacon URL is clicked, the IP address will be geo-located and shared to Slack.',
+        'basic' : 'htk: beacon',
+        'examples' : [
+        ],
+    }
+    return usage_dict
+
 def bible(**kwargs):
     usage_dict = {
         'description' : 'Look up a Bible passage',

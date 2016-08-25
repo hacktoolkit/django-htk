@@ -16,7 +16,7 @@ def slack_webhook_view(request):
     https://api.slack.com/outgoing-webhooks
     """
     event = extract_post_params(request.POST, SLACK_WEBHOOK_PARAMS)
-    if is_valid_webhook_event(event):
+    if is_valid_webhook_event(event, request):
         from htk.lib.slack.utils import handle_event
         payload = handle_event(event)
         if payload:

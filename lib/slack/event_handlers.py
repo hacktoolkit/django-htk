@@ -105,6 +105,32 @@ def default(event, **kwargs):
     return payload
 
 @preprocess_event
+def beacon(event, **kwargs):
+    """Beacon geo-ip location handler for Slack webhook events
+
+    Creates a homing beacon URL for the user good for 5 minutes
+    When the beacon URL is clicked, the IP address will be geo-located and shared to Slack
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'beacon':
+        from htk.lib.slack.beacon.utils import create_slack_beacon_url
+        beacon_url = create_slack_beacon_url(event)
+        if beacon_url:
+            slack_text = 'Open this URL to trigger the beacon: %s' % beacon_url
+        else:
+            slack_text = 'Slack homing beacon not set up correctly.'
+    else:
+        slack_text = 'Illegal command.'
+
+    payload = {
+        'text' : slack_text,
+    }
+    return payload
+
+@preprocess_event
 def bible(event, **kwargs):
     """Bible event handler for Slack webhook events
     """

@@ -10,7 +10,9 @@ def webhook_call(
     channel=None,
     username=None,
     text='',
-    icon_emoji=None
+    icon_emoji=None,
+    unfurl_links=True,
+    unfurl_media=True,
 ):
     """Performs a webhook call to Slack
 
@@ -23,6 +25,8 @@ def webhook_call(
 
     payload = {
         'text' : text,
+        'unfurl_links' : unfurl_links,
+        'unfurl_media' : unfurl_media,
     }
     if channel:
         payload['channel'] = channel
@@ -36,7 +40,7 @@ def webhook_call(
         rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,), extra_data={ 'payload' : payload, })
     return response
 
-def is_valid_webhook_event(event):
+def is_valid_webhook_event(event, request):
     """Determines whether the Slack webhook event has a valid token
 
     Mutates `event` by adding `webhook_settings` if available
@@ -46,6 +50,8 @@ def is_valid_webhook_event(event):
     is_valid = token == expected_token
     webhook_settings = get_webhook_settings(token)
     event['webhook_settings'] = webhook_settings
+    from htk.utils.request import get_request_metadata
+    event['webhook_request'] = get_request_metadata(request)
     if not is_valid:
         is_valid = webhook_settings is not None
     else:

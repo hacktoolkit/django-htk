@@ -21,6 +21,27 @@ def extract_request_ip(request):
         return real_ip
     return request.environ['REMOTE_ADDR']
 
+def get_request_metadata(request):
+    path = request.path
+    url_name = request.resolver_match.url_name
+    host = request.get_host()
+    is_secure = request.is_secure()
+    protocol = 'http' + ('s' if is_secure else '')
+    base_uri = '%s://%s' % (protocol, host,)
+    full_uri = '%s%s' % (base_uri, path,)
+
+    request_metadata = {
+        'request' : request,
+        'is_secure' : is_secure,
+        'host' : host,
+        'path' : path,
+        'url_name' : url_name,
+        'protocol' : protocol,
+        'base_uri' : base_uri,
+        'full_uri' : full_uri,
+    }
+    return request_metadata
+
 def get_custom_http_headers(request):
     custom_http_headers = []
     for header_name in request.META.keys():
