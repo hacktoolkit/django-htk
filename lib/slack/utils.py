@@ -43,20 +43,22 @@ def webhook_call(
 def is_valid_webhook_event(event, request):
     """Determines whether the Slack webhook event has a valid token
 
-    Mutates `event` by adding `webhook_settings` if available
+    Mutates `event` by adding `webhook_settings` if available, and `webhook_request` if valid
     """
     token = event['token']
     expected_token = htk_setting('HTK_SLACK_WEBHOOK_TOKEN')
     is_valid = token == expected_token
     webhook_settings = get_webhook_settings(token)
     event['webhook_settings'] = webhook_settings
-    from htk.utils.request import get_request_metadata
-    event['webhook_request'] = get_request_metadata(request)
     if not is_valid:
+        # can still be valid if it has webhook settings for this token
         is_valid = webhook_settings is not None
     else:
         # it's really invalid
         pass
+    if is_valid:
+        from htk.utils.request import get_request_metadata
+        event['webhook_request'] = get_request_metadata(request)
     return is_valid
 
 def get_webhook_settings(token):
