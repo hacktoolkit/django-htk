@@ -124,7 +124,7 @@ def beacon(event, **kwargs):
             user_channel = '@%s' % event['user_name']
             webhook_url = event['webhook_settings']['slack_webhook_url']
             webhook_call(
-                webhook_url=webhook_url
+                webhook_url=webhook_url,
                 text=beacon_text,
                 channel=user_channel,
                 unfurl_links=False,
