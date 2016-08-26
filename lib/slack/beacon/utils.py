@@ -23,7 +23,7 @@ def create_slack_beacon(event):
 def create_slack_beacon_url(event):
     """Creates an in-cache homing beacon URL for the user good for 5 minutes
     """
-    beacon_url = 'Unable to create beacon URL'
+    beacon_url = None
     beacon_url_name = htk_setting('HTK_SLACK_BEACON_URL_NAME')
     if beacon_url_name:
         beacon_key = create_slack_beacon(event)
