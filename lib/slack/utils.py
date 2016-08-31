@@ -37,7 +37,11 @@ def webhook_call(
 
     response = requests.post(webhook_url, json=payload)
     if response.status_code != 200:
-        rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,), extra_data={ 'payload' : payload, })
+        extra_data = {
+            'webhook_url' : webhook_url,
+            'payload' : payload,
+        }
+        rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,), extra_data=extra_data)
     return response
 
 def is_valid_webhook_event(event, request):
