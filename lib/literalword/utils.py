@@ -30,7 +30,8 @@ def get_bible_passage(query, version=None):
             # remove <p> tags
             for p in container.find_all('p'):
                 p.decompose()
-            html = u'%s' % container
+            # have to extract text using BeautifulSoup since Markdown syntax allows span tags, apparently
+            html = u'%s' % container.text
             text = html2markdown(html)
         else:
             meta_description_tag = soup.meta.find(attrs={'name' : 'description',})
