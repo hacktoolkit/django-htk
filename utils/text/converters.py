@@ -4,7 +4,7 @@ import re
 def html2markdown(html):
     """Converts `html` to Markdown-formatted text
     """
-    markdown_text = pypandoc.convert(html, 'markdown_strict', format='html')
+    markdown_text = pypandoc.convert_text(html, 'markdown_strict', format='html')
     return markdown_text
 
 def markdown2slack(markdown_text):
