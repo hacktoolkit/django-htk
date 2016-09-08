@@ -11,6 +11,15 @@ class BaseUSZipCodeAdmin(admin.ModelAdmin):
         'longitude',
         'view_on_map',
     )
+    list_filter = (
+        'state',
+        #'city', # too slow to get all cities
+    )
+    search_fields = (
+        'state',
+        'city',
+        'zip_code',
+    )
     readonly_fields = (
         'latitude',
         'longitude',
