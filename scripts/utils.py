@@ -10,11 +10,13 @@ def job_runner(f):
 
     Catches any exceptions and logs to Rollbar
     """
+    result = None
     try:
         ensure_mysql_connection_usable()
-        f()
+        result = f()
     except:
         rollbar.report_exc_info()
+    return result
 
 def slog(m, level='info'):
     logger = logging.getLogger(__name__)
