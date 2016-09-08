@@ -2,7 +2,9 @@ import datetime
 import inspect
 import logging
 import rollbar
+import time
 
+from htk.constants.time import *
 from htk.utils.db import ensure_mysql_connection_usable
 
 def job_runner(f):
@@ -17,6 +19,27 @@ def job_runner(f):
     except:
         rollbar.report_exc_info()
     return result
+
+def background_script_wrapper(
+        workhorse=lambda: None,
+        completion_message='Workhorse iteration completed.',
+        daemon_mode=True,
+        sleep_duration_seconds=TIMEOUT_1_HOUR
+    ):
+    from django.conf import settings
+    while True:
+        job_runner(workhorse)
+
+        if settings.TEST:
+            # just make sure that it runs
+            break
+
+        if not daemon_mode:
+            # just run once, don't keep looping
+            break
+
+        slog('DONE. %s Sleeping...' % completion_message)
+        time.sleep(sleep_duration_seconds)
 
 def slog(m, level='info'):
     logger = logging.getLogger(__name__)
