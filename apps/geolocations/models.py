@@ -139,3 +139,14 @@ class AbstractGeolocation(models.Model):
             limit=limit
         )
         return nearby_objects
+
+class BaseUSZipCode(AbstractGeolocation):
+    zip_code = models.CharField(max_length=10)
+    city = models.CharField(max_length=64, null=True, blank=True)
+    state = models.CharField(max_length=2, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def get_address_string(self):
+        return self.zip_code
