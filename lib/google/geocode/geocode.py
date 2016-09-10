@@ -81,7 +81,7 @@ def get_latlng(address):
         'sensor' : 'false',
         'address' : address,
     }
-    key = get_server_api_key()
+    key = get_server_api_key(use_pool=True)
     if key:
         params['key'] = key
 
@@ -110,7 +110,7 @@ def reverse_geocode(latitude, longitude):
         'sensor' : 'false',
         'latlng' : '%s,%s' % (latitude, longitude,)
     }
-    key = get_server_api_key()
+    key = get_server_api_key(use_pool=True)
     if key:
         params['key'] = key
     response = requests.get(GOOGLE_GEOCODING_API_URL, params=params)
