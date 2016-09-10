@@ -148,5 +148,15 @@ class BaseUSZipCode(AbstractGeolocation):
     class Meta:
         abstract = True
 
+    def json_encode(self):
+        value = {
+            'zip_code' : self.zip_code,
+            'state' : self.state,
+            'city' : self.city,
+            'latitude' : self.latitude,
+            'longitude' : self.longitude,
+        }
+        return value
+
     def get_address_string(self):
         return self.zip_code
