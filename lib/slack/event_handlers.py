@@ -352,9 +352,9 @@ def zesty(event, **kwargs):
     zesty_slack_payload = {}
     if command == 'zesty':
         webhook_settings = event['webhook_settings']
-        username = webhook_settings['user']
-        from htk.apps.accounts.utils import get_user_by_username
-        user = get_user_by_username(username)
+        user_id = webhook_settings['user']
+        from htk.apps.accounts.utils import get_user_by_id
+        user = get_user_by_id(user_id)
         zesty_id = user.profile.get_attribute('zesty_id')
         if args:
             slack_text = '`zesty` does not take any arguments'
