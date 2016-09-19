@@ -49,7 +49,7 @@ class AbstractAttributeHolderClassFactory(object):
         factory = self
         class AbstractAttributeHolderClass(object):
             def set_attribute(self, key, value):
-                attribute = self.get_attribute(key)
+                attribute = self._get_attribute_object(key)
                 if attribute is None:
                     holder = factory.holder_resolver(self)
                     attribute = factory.attribute_class.objects.create(
