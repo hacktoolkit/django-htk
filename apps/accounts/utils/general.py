@@ -174,7 +174,7 @@ def get_user_email(user, email):
         user_email = None
     return user_email
 
-def associate_user_email(user, email, domain=None, confirmed=False):
+def associate_user_email(user, email, domain=None, email_template=None, email_subject=None, email_sender=None, confirmed=False):
     """Associates `email` with `user`
 
     Resulting UserEmail.is_confirmed = `confirmed`, default False
@@ -219,7 +219,7 @@ def associate_user_email(user, email, domain=None, confirmed=False):
             elif not user_email.is_confirmed:
                 domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
                 try:
-                    user_email.send_activation_email(domain)
+                    user_email.send_activation_email(domain, template=email_template, subject=email_subject, sender=email_sender)
                 except:
                     request = get_current_request()
                     rollbar.report_exc_info()

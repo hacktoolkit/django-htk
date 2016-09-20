@@ -192,6 +192,9 @@ def register(
     success_url_name='account_register_done',
     login_if_success=False,
     template='account/register.html',
+    email_template=None,
+    email_subject=None,
+    email_sender=None,    
     renderer=_r
 ):
     if data is None:
@@ -205,7 +208,7 @@ def register(
         reg_form = reg_form_model(request.POST, **reg_form_kwargs)
         if reg_form.is_valid():
             domain = request.get_host()
-            new_user = reg_form.save(domain)
+            new_user = reg_form.save(domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
             if login_if_success:
                 username = new_user.username
                 password = reg_form.cleaned_data.get('password1') # new_user.password is a hashed value

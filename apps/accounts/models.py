@@ -195,9 +195,9 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
 
     # send emails
 
-    def send_activation_reminder_email(self, template=None, subject=None):
+    def send_activation_reminder_email(self, template=None, subject=None, sender=None):
         user_email = get_user_email(self.user, self.user.email)
-        user_email.send_activation_reminder_email(template=template, subject=subject)
+        user_email.send_activation_reminder_email(template=template, subject=subject, sender=sender)
 
     def send_welcome_email(self):
         """Sends a welcome email to the user
@@ -555,14 +555,14 @@ class UserEmail(models.Model):
             result = False
         return result
 
-    def send_activation_email(self, domain=None, resend=False, template=None, subject=None):
+    def send_activation_email(self, domain=None, resend=False, template=None, subject=None, sender=None):
         """Sends an activation email
         """
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         self._reset_activation_key(resend=resend)
-        activation_email(self, domain=domain, template=template, subject=subject)
+        activation_email(self, domain=domain, template=template, subject=subject, sender=sender)
 
-    def send_activation_reminder_email(self, template=None, subject=None):
+    def send_activation_reminder_email(self, template=None, subject=None, sender=None):
         """Sends an account activation reminder email
 
         Piggybacks off of `self.send_activation_email`
@@ -571,7 +571,7 @@ class UserEmail(models.Model):
             template = htk_setting('HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE')
         if subject is None:
             subject = 'Reminder to activate your account on %s' % htk_setting('HTK_SITE_NAME')
-        self.send_activation_email(resend=True, template=template, subject=subject)
+        self.send_activation_email(resend=True, template=template, subject=subject, sender=sender)
 
     def confirm_and_activate_account(self):
         """Confirms the email address, and activates the associated account if not already activated

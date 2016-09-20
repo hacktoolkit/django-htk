@@ -115,7 +115,7 @@ class UserRegistrationForm(UserCreationForm):
             raise forms.ValidationError(self.error_messages['empty_password'])
         return password1
 
-    def save(self, domain=None, commit=True):
+    def save(self, domain=None, email_template=None, email_subject=None, email_sender=None, commit=True):
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         user = super(UserRegistrationForm, self).save(commit=False)
         email = self.email
@@ -129,7 +129,7 @@ class UserRegistrationForm(UserCreationForm):
         if commit:
             user.save()
             from htk.apps.accounts.utils import associate_user_email
-            user_email = associate_user_email(user, email, domain)
+            user_email = associate_user_email(user, email, domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
         return user
 
 class NameEmailUserRegistrationForm(UserRegistrationForm):
@@ -151,7 +151,7 @@ class NameEmailUserRegistrationForm(UserRegistrationForm):
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
-    def save(self, domain=None, commit=True):
+    def save(self, domain=None, email_template=None, commit=True):
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         user = super(NameEmailUserRegistrationForm, self).save(commit=False)
         email = self.email
@@ -162,7 +162,7 @@ class NameEmailUserRegistrationForm(UserRegistrationForm):
             user.save()
             # associate user and email
             from htk.apps.accounts.utils import associate_user_email
-            user_email = associate_user_email(user, email, domain)
+            user_email = associate_user_email(user, email, domain=domain, email_template=email_template)
             # mark has_username_set
             user_profile = user.profile
             user_profile.has_username_set = True

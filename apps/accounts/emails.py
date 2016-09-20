@@ -36,7 +36,7 @@ class AccountActivationReminderEmails(BaseBatchRelationshipEmails):
         """
         recipient.profile.send_activation_reminder_email()
 
-def activation_email(user_email, use_https=False, domain=None, template=None, subject=None):
+def activation_email(user_email, use_https=False, domain=None, template=None, subject=None, sender=None):
     """Sends an activation/confirmation email for user to confirm email address
     """
     user = user_email.user
@@ -72,6 +72,7 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
     send_email(
         template=template,
         subject=subject,
+        sender=sender,
         to=[email,],
         context=context,
         bcc=bcc
