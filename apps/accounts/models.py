@@ -199,11 +199,11 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
         user_email = get_user_email(self.user, self.user.email)
         user_email.send_activation_reminder_email(template=template, subject=subject, sender=sender)
 
-    def send_welcome_email(self):
+    def send_welcome_email(self, template=None, subject=None, sender=None):
         """Sends a welcome email to the user
         """
         try:
-            welcome_email(self.user)
+            welcome_email(self.user, template=template, subject=subject, sender=sender)
         except:
             request = get_current_request()
             rollbar.report_exc_info(request=request)
@@ -299,7 +299,7 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
     ##
     # meta stuff
 
-    def activate(self):
+    def activate(self, email_template=None, email_subject=None, email_sender=None):
         """Activate the User if not already activated
         """
         was_activated = False
@@ -309,7 +309,7 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
             user.save()
             was_activated = user.is_active
         if was_activated:
-            self.send_welcome_email()
+            self.send_welcome_email(template=email_template, subject=email_subject, sender=email_sender)
         return was_activated
 
     def get_timezone(self):
@@ -573,7 +573,7 @@ class UserEmail(models.Model):
             subject = 'Reminder to activate your account on %s' % htk_setting('HTK_SITE_NAME')
         self.send_activation_email(resend=True, template=template, subject=subject, sender=sender)
 
-    def confirm_and_activate_account(self):
+    def confirm_and_activate_account(self, email_template=None, email_subject=None, email_sender=None):
         """Confirms the email address, and activates the associated account if not already activated
 
         Side effect: Once an email address is confirmed by an account, no other accounts can have that email address in a pending (unconfirmed state)
@@ -582,7 +582,7 @@ class UserEmail(models.Model):
         if not self.is_confirmed:
             self.is_confirmed = True
             self.save()
-        was_activated = self.user.profile.activate()
+        was_activated = self.user.profile.activate(email_template=email_template, email_subject=email_subject, email_sender=email_sender)
         # purge all other records with same email addresses that aren't confirmed
         # NOTE: Be careful to not delete the wrong ones!
         UserEmail.objects.filter(email=self.email, is_confirmed=False).delete()

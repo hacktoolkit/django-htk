@@ -78,7 +78,7 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
         bcc=bcc
     )
 
-def welcome_email(user):
+def welcome_email(user, template=None, subject=None, sender=None):
     context = {
         'user': user,
         'email': user.email,
@@ -90,10 +90,12 @@ def welcome_email(user):
         bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
     else:
         bcc = None
-    subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_WELCOME') % context
+    template = template or 'accounts/welcome'
+    subject = (subject or htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_WELCOME')) % context
     send_email(
-        template='accounts/welcome',
+        template=template,
         subject=subject,
+        sender=sender,
         to=[user.email],
         context=context,
         bcc=bcc

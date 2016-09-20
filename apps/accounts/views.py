@@ -253,6 +253,9 @@ def resend_confirmation(
     request,
     data=None,
     template='account/resend_confirmation.html',
+    email_template=None,
+    email_subject=None,
+    email_sender=None,    
     renderer=_r
 ):
     if data is None:
@@ -272,7 +275,7 @@ def resend_confirmation(
             else:
                 unconfirmed_user_emails = user_emails.filter(is_confirmed=False)
                 for unconfirmed in unconfirmed_user_emails:
-                    unconfirmed.send_activation_email(domain=request.get_host(), resend=True)
+                    unconfirmed.send_activation_email(domain=request.get_host(), template=email_template, subject=email_subject, sender=email_sender, resend=True)
                 data['success'] = True
         else:
             for error in resend_confirmation_form.non_field_errors():
@@ -292,6 +295,9 @@ def confirm_email(
     data=None,
     resend_confirmation_url_name='account_resend_confirmation',
     template='account/confirm_email.html',
+    email_template=None,
+    email_subject=None,
+    email_sender=None,
     renderer=_r
 ):
     if data is None:
@@ -311,7 +317,7 @@ def confirm_email(
         data['expired'] = True
         data['resend_confirmation_uri'] = reverse(resend_confirmation_url_name)
     else:
-        was_activated = user_email.confirm_and_activate_account()
+        was_activated = user_email.confirm_and_activate_account(email_template=email_template, email_subject=email_subject, email_sender=email_sender)
         data['was_activated'] = was_activated
         data['success'] = True
 
