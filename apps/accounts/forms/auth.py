@@ -222,6 +222,9 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
     def save(
         self,
         domain_override=None,
+        email_template=None,
+        email_subject=None,
+        email_sender=None,
         subject_template_name='', # not used
         email_template_name='', # not used
         use_https=False,
@@ -236,7 +239,10 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
             self.user_cache,
             token_generator,
             use_https=use_https,
-            domain=domain
+            domain=domain,
+            template=email_template,
+            subject=email_subject,
+            sender=email_sender
         )
 
 class UsernameEmailAuthenticationForm(forms.Form):

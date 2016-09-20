@@ -332,6 +332,9 @@ def forgot_password(
     data=None,
     redirect_url_name='account_password_reset_done',
     template='account/forgot_password.html',
+    email_template=None,
+    email_subject=None,
+    email_sender=None,
     renderer=_r
 ):
     """Modeled after django.contrib.auth.views.password_reset
@@ -348,7 +351,7 @@ def forgot_password(
             opts = {
                 'request': request,
             }
-            form.save(**opts)
+            form.save(email_template=email_template, email_subject=email_subject, email_sender=email_sender, **opts)
             response = redirect(redirect_url_name)
         else:
             for error in form.non_field_errors():

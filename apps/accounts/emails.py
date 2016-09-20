@@ -101,7 +101,7 @@ def welcome_email(user, template=None, subject=None, sender=None):
         bcc=bcc
     )
 
-def password_reset_email(user, token_generator, use_https=False, domain=None):
+def password_reset_email(user, token_generator, use_https=False, domain=None, template=None, subject=None, sender=None):
     domain = domain or htk_setting('HTK_DEFAULT_DOMAIN')
     context = {
         'user': user,
@@ -116,10 +116,12 @@ def password_reset_email(user, token_generator, use_https=False, domain=None):
 
     reset_uri = '%(protocol)s://%(domain)s%(reset_path)s?u=%(uid)s&t=%(token)s' % context
     context['reset_uri'] = reset_uri
-    subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_RESET') % context
+    template = template or 'accounts/reset_password'
+    subject = (subject or htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_RESET')) % context
     send_email(
-        template='accounts/reset_password',
+        template=template,
         subject=subject,
+        sender=sender,
         to=[context['email']],
         context=context
     )
