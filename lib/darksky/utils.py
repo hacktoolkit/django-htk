@@ -4,8 +4,9 @@ import requests
 from htk.utils import htk_setting
 
 def get_weather(lat, lng):
-    base_url = 'https://api.forecast.io/forecast/%(api_key)s/%(lat)s,%(lng)s'
-    api_key = htk_setting('HTK_FORECASTIO_API_KEY')
+    base_url = 'https://api.darksky.net/forecast/%(api_key)s/%(lat)s,%(lng)s'
+    #base_url = 'https://api.forecast.io/forecast/%(api_key)s/%(lat)s,%(lng)s'
+    api_key = htk_setting('HTK_DARKSKY_API_KEY') or htk_setting('HTK_FORECASTIO_API_KEY')
     url = base_url % {
         'api_key' : api_key,
         'lat' : lat,
@@ -19,7 +20,7 @@ def get_weather(lat, lng):
     return weather
 
 def format_weather(weather):
-    """Returns Forecast.io API `weather` formatted as Markdown
+    """Returns Dark Sky (formerly ForecastIO) API `weather` formatted as Markdown
 
     `weather` is the object returned by get_weather()
     """
