@@ -19,7 +19,11 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile = UserProfileModel.objects.create(user=user)
         profile.save()
         if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            slack_notify('A new user has registered on the site: *%s <%s>*' % (user.profile.get_display_name(), user.email,))
+            slack_notify('A new user has registered on the site %s: *%s <%s>*' % (
+                htk_setting('HTK_SITE_NAME'),
+                user.profile.get_display_name(),
+                user.email,
+            ))
 
 def process_user_email_association(sender, instance, created, **kwargs):
     """signal handler for UserEmail post-save
