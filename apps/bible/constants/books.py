@@ -1,6 +1,6 @@
 # https://en.wikipedia.org/wiki/Chapters_and_verses_of_the_Bible
 
-BIBLE_BOOKS = [
+BIBLE_BOOKS_DATA = [
     #Book / DivisionChapters
     #Pentateuch - 187
     {
