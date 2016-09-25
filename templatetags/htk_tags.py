@@ -76,6 +76,10 @@ def int_divide(value, arg):
 def float_divide(value, arg):
     return 1.0 * int(value) / int(arg)
 
+@register.filter()
+def make_range(value):
+    return xrange(value)
+
 # Formatters
 
 @register.filter()
