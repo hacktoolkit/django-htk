@@ -120,7 +120,10 @@ class UserRegistrationForm(UserCreationForm):
         user = super(UserRegistrationForm, self).save(commit=False)
         email = self.email
         # temporarily assign a unique username so that we can create the record and the user can log in
-        user.username = email_to_username_hash(email)
+        if htk_setting('HTK_ACCOUNTS_REGISTER_SET_PRETTY_USERNAME_FROM_EMAIL', False):
+            user.username = email_to_username_pretty_unique(email)
+        else:
+            user.username = email_to_username_hash(email)
         # we'll store the primary email in the User object
         user.email = email
         if not htk_setting('HTK_ACCOUNT_ACTIVATE_UPON_REGISTRATION', False):
@@ -155,7 +158,11 @@ class NameEmailUserRegistrationForm(UserRegistrationForm):
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         user = super(NameEmailUserRegistrationForm, self).save(commit=False)
         email = self.email
-        user.username = email_to_username_pretty_unique(email)
+        # temporarily assign a unique username so that we can create the record and the user can log in
+        if htk_setting('HTK_ACCOUNTS_REGISTER_SET_PRETTY_USERNAME_FROM_EMAIL', False):
+            user.username = email_to_username_pretty_unique(email)
+        else:
+            user.username = email_to_username_hash(email)
         #password1 = self.cleaned_data.get('password1')
         #user.set_password(password1)
         if commit:

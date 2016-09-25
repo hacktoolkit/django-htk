@@ -51,8 +51,8 @@ def email_to_username_pretty_unique(email):
         # need to do append some hashed chars to it
         hashed = email_to_username_hash(email)
         if len(username) < USERNAME_MAX_LENGTH:
-            pad_length = USERNAME_MAX_LENGTH - len(username)
-            username = username + hashed[:pad_length]
+            pad_length = USERNAME_MAX_LENGTH - (len(username) + 1)
+            username = username + '_' + hashed[:pad_length]
         else:
             username = hashed
     else:
