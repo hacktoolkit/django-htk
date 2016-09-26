@@ -162,10 +162,7 @@ BIBLE_BOOKS_DATA = [
         'name': 'Song of Solomon',
         'chapters': 8,
     },
-    {
-        'name': 'Major Prophets',
-        'chapters': 183,
-    },
+    # Major Prophets - 183
     {
         'name': 'Isaiah',
         'chapters': 66,
