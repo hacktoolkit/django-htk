@@ -13,3 +13,8 @@ class AbstractBibleVerse(models.Model):
         unique_together = (
             ('book', 'chapter', 'verse',),
         )
+
+    def __unicode__(self):
+        value = '%s %s:%s' % (self.book, self.chapter, self.verse,)
+        return value
+
