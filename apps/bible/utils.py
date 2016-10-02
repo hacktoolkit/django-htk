@@ -37,3 +37,12 @@ def get_bible_chapter_data(book, chapter):
         'num_verses' : BibleVerse.objects.filter(book=book, chapter=chapter).count(),
     }
     return data
+
+def get_all_chapters():
+    from htk.apps.bible.constants import BIBLE_BOOKS_DATA
+    chapters = []
+    for book_data in BIBLE_BOOKS_DATA:
+        for i in xrange(book_data['chapters']):
+            chapter = '%s %s' % (book_data['name'], i + 1,)
+            chapters.append(chapter)
+    return chapters
