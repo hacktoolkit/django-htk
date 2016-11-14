@@ -217,12 +217,19 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
         social_auths = UserSocialAuth.objects.filter(user__id=self.user.id)
         return social_auths
 
-    def get_social_user(self, provider):
+    def get_social_user(self, provider, provider_id=None):
         try:
-            social_user = UserSocialAuth.objects.get(
-                user__id=self.user.id,
-                provider=provider
-            )
+            if provider_id:
+                social_user = UserSocialAuth.objects.get(
+                    user__id=self.user.id,
+                    provider=provider,
+                    uid=provider_id
+                )
+            else:
+                social_user = UserSocialAuth.objects.get(
+                    user__id=self.user.id,
+                    provider=provider
+                )
         except UserSocialAuth.DoesNotExist:
             social_user = None
         return social_user
