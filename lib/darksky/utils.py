@@ -72,23 +72,29 @@ def _extract_period_weather(period_weather, prefix):
         data['rain_alert'] = '\n@here **ALERT!** Likelihood of rain!'
     return data
 
-def format_weather(weather):
-    """Returns Dark Sky (formerly ForecastIO) API `weather` formatted as Markdown
+def generate_weather_report(weather_data):
+    """Generates a weather report from Dark Sky (formerly ForecastIO) API `weather_data` formatted as Markdown
 
-    `weather` is the object returned by get_weather()
+    `weather_data` is the object returned by get_weather()
+
+    Returns formatted report summary along with icon emoji
     """
-    daily = weather['daily']['data']
+    daily = weather_data['daily']['data']
 
     data = {
         'rain_alert' : '',
     }
-    data.update(_extract_period_weather(weather['currently'], 'current'))
+    data.update(_extract_period_weather(weather_data['currently'], 'current'))
     data.update(_extract_period_weather(daily[0], 'today'))
     data.update(_extract_period_weather(daily[1], 'tomorrow'))
 
-    formatted = u"""**Currently**: %(current_temp)s\xB0F (Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s %(current_icon)s  
+    summary = u"""**Currently**: %(current_temp)s\xB0F (Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s %(current_icon)s  
 **Today**: %(today_temp_max)sF High, %(today_temp_min)s\xB0F Low (Precip Intensity: %(today_precip_intensity)s, Probability: %(today_precip_probability)s) - %(today_summary)s %(today_icon)s  
 **Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)sF Low (Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
 %(rain_alert)s
 """ % data
-    return formatted
+    result = {
+        'summary' : summary,
+        'icon_emoji' : data['current_icon'],
+    }
+    return result
