@@ -1,5 +1,6 @@
 import json
 import requests
+import rollbar
 
 from htk.utils import htk_setting
 
@@ -19,12 +20,40 @@ def get_weather(lat, lng):
         weather = None
     return weather
 
+def convert_weather_icon_to_emoji(weather_icon):
+    """
+    https://darksky.net/dev/docs/response
+    http://www.webpagefx.com/tools/emoji-cheat-sheet/
+    """
+    icons = {
+        'default' : ':sunny:',
+        'clear-day' : ':sun_small_cloud:',
+        'clear-night' : ':night_with_stars:',
+        'rain' : ':rain_cloud:',
+        'snow' : ':snow_cloud:',
+        'sleet' : ':snow_cloud:', # TODO better icon
+        'wind' : ':wind_chime:',
+        'fog' : ':fog:',
+        'cloudy' : ':cloud:',
+        'partly-cloudy-day' : ':partly_sunny:',
+        'partly-cloudy-night' : ':night_with_stars:', # TODO better icon
+        'hail' : ':snow_cloud:', # TODO better icon
+        'thunderstorm' : ':thunder_cloud_and_rain:',
+        'tornado' : ':tornado:',
+    }
+    if weather_icon not in icons:
+        weather_icon = 'default'
+        rollbar.report_message('Unmatched weather icon: %s' % weather_icon)
+    icon = icons.get(weather_icon)
+    return icon
+
 def _extract_period_weather(period_weather, prefix):
     """Returns a dictionary of relevant weather data from `period_weather`, with keys prefixed with `prefix`
     """
     precip_probability = period_weather['precipProbability']
     data = {
         prefix + '_summary' : period_weather['summary'],
+        prefix + '_icon' : convert_weather_icon_to_emoji(period_weather['icon']),
         prefix + '_precip_intensity' : period_weather['precipIntensity'],
         prefix + '_precip_probability' : '%s%%' % (precip_probability * 100,),
     }
@@ -57,9 +86,9 @@ def format_weather(weather):
     data.update(_extract_period_weather(daily[0], 'today'))
     data.update(_extract_period_weather(daily[1], 'tomorrow'))
 
-    formatted = u"""**Currently**: %(current_temp)s\xB0F (Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s  
-**Today**: %(today_temp_max)sF High, %(today_temp_min)s\xB0F Low (Precip Intensity: %(today_precip_intensity)s, Probability: %(today_precip_probability)s) - %(today_summary)s  
-**Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)sF Low (Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s  
+    formatted = u"""**Currently**: %(current_temp)s\xB0F (Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s %(current_icon)s  
+**Today**: %(today_temp_max)sF High, %(today_temp_min)s\xB0F Low (Precip Intensity: %(today_precip_intensity)s, Probability: %(today_precip_probability)s) - %(today_summary)s %(today_icon)s  
+**Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)sF Low (Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
 %(rain_alert)s
 """ % data
     return formatted
