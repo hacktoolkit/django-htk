@@ -141,7 +141,13 @@ class ZestyMeals(object):
                     target_dt.strftime(self.DATE_STRING_FMT)
                 )
                 menu_str += '\n\n'
-            meal_payload = meal.get_pretty_menu(slack_attachments=slack_attachments)
+                include_dishes = False
+            else:
+                include_dishes = True
+            meal_payload = meal.get_pretty_menu(
+                include_dishes=include_dishes,
+                slack_attachments=slack_attachments
+            )
             menu_str += meal_payload['text']
             attachments = meal_payload['attachments']
         payload = {
@@ -170,13 +176,16 @@ class ZestyMeal(object):
         # meal_items keyed by id
         self.meal_items = data.get('meal_items', [])
 
-    def _get_meal_dict(self, slack_attachments=False):
+    def _get_meal_dict(self, include_dishes=True, slack_attachments=False):
         """Get menu render data dict
         """
         meal = self.meal
         dt = datetime.datetime.strptime(meal['delivery_date'][:16], '%Y-%m-%dT%H:%M')
         meal_dict = copy.copy(meal)
-        dishes = self.get_pretty_dishes(slack_attachments=slack_attachments)
+        if include_dishes:
+            dishes = self.get_pretty_dishes(slack_attachments=slack_attachments)
+        else:
+            dishes = []
         meal_dict.update({
             'day_of_week' : dt.strftime('%A'),
             'meal_type' : meal['meal_type'].capitalize(),
@@ -186,8 +195,8 @@ class ZestyMeal(object):
         })
         return meal_dict
 
-    def get_pretty_menu(self, slack_attachments=False):
-        meal_dict = self._get_meal_dict(slack_attachments=slack_attachments)
+    def get_pretty_menu(self, include_dishes=True, slack_attachments=False):
+        meal_dict = self._get_meal_dict(include_dishes=include_dishes, slack_attachments=slack_attachments)
         menu_str = """*%(day_of_week)s %(meal_type)s, %(time)s - %(date)s* at %(delivery_location_address)s""" % meal_dict
         attachments = []
         if slack_attachments:
@@ -197,16 +206,17 @@ class ZestyMeal(object):
                 'image_url' : meal_dict['restaurant_full_image'],
             }
             attachments.append(restaurant_attachment)
-            attachments += meal_dict['dishes']
+            if include_dishes:
+                attachments += meal_dict['dishes']
         else:
             menu_str += """
 
 *%(restaurant_name)s* (%(restaurant_cuisine)s)
 %(restaurant_full_image)s
 _%(restaurant_description)s_
-
-%(dishes)s
 """ % meal_dict
+            if include_dishes:
+                menu_str += '\n%(dishes)s' % meal_dict
         meal_payload = {
             'text' : menu_str,
             'attachments' : attachments,
