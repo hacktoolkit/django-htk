@@ -316,19 +316,21 @@ def weather(event, **kwargs):
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
+    icon_emoji = None
 
     if command == 'weather':
         if args:
             location = args
-            from htk.lib.forecastio.utils import format_weather
+            from htk.lib.darksky.utils import generate_weather_report
             from htk.utils.text.converters import markdown2slack
             from htk.utils.weather import get_weather
             weather = get_weather(location)
-            formatted_weather = format_weather(weather)
+            formatted_weather = generate_weather_report(weather)
             slack_text = '*Weather for %s*:\n%s' % (
                 location,
-                markdown2slack(formatted_weather),
+                markdown2slack(formatted_weather['summary']),
             )
+            icon_emoji = formatted_weather.get('icon_emoji')
         else:
             slack_text = 'Please specify a location to retrieve weather for.'
     else:
@@ -338,6 +340,7 @@ def weather(event, **kwargs):
 
     payload = {
         'text' : slack_text,
+        'icon_emoji' : icon_emoji,
     }
     return payload
 
