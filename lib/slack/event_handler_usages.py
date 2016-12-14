@@ -83,6 +83,15 @@ def stock(**kwargs):
     }
     return usage_dict
 
+def utcnow_slack(**kwargs):
+    usage_dict = {
+        'description' : 'Get the current UTC time and some more.',
+        'basic': 'htk: utcnow',
+        'examples' : [
+        ],
+    }
+    return usage_dict
+
 def weather(**kwargs):
     usage_dict = {
         'description' : 'Look up weather',

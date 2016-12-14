@@ -9,6 +9,7 @@ HTK_SLACK_EVENT_HANDLERS = {
     'geoip' : 'htk.lib.slack.event_handlers.geoip',
     'help' : 'htk.lib.slack.event_handlers.help',
     'stock' : 'htk.lib.slack.event_handlers.stock',
+    'utcnow' : 'htk.lib.slack.event_handlers.utcnow_slack',
     'weather' : 'htk.lib.slack.event_handlers.weather',
     'zesty' : 'htk.lib.slack.event_handlers.zesty',
 }
@@ -24,6 +25,7 @@ HTK_SLACK_EVENT_HANDLER_USAGES = {
     'findemail' : 'htk.lib.slack.event_handler_usages.findemail',
     'geoip' : 'htk.lib.slack.event_handler_usages.geoip',
     'stock' : 'htk.lib.slack.event_handler_usages.stock',
+    'utcnow' : 'htk.lib.slack.event_handler_usages.utcnow_slack',
     'weather' : 'htk.lib.slack.event_handler_usages.weather',
     'zesty' : 'htk.lib.slack.event_handler_usages.zesty',
 }

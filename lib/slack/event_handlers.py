@@ -310,6 +310,36 @@ def stock(event, **kwargs):
     return payload
 
 @preprocess_event
+def utcnow_slack(event, **kwargs):
+    """utcnow event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'utcnow':
+        from htk.utils import utcnow
+        now = utcnow()
+        webhook_settings = event['webhook_settings']
+        user_id = webhook_settings['user']
+        from htk.apps.accounts.utils import get_user_by_id
+        user = get_user_by_id(user_id)
+        slack_text = """*The time is now*:\n
+*UTC*: %s
+*%s*: %s""" % (
+    now,
+    user.profile.get_timezone(),
+    user.profile.get_local_time(dt=now),
+)
+    else:
+        slack_text = 'Illegal command.'
+
+    payload = {
+        'text' : slack_text,
+    }
+    return payload
+
+@preprocess_event
 def weather(event, **kwargs):
     """Weather event handler for Slack webhook events
     """
