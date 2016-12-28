@@ -19,3 +19,11 @@ def ensure_mysql_connection_usable():
         databases = connections._connections.__dict__.keys()
         for database in databases:
             del connections._connections.__dict__[database]
+
+def attempt_mysql_reconnect():
+    """Attempt to reconnect to MySQL
+    http://stackoverflow.com/a/29331237/865091
+    """
+    import MySQLdb
+    conn = MySQLdb.Connect()
+    conn.ping(True)

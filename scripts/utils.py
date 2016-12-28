@@ -1,3 +1,4 @@
+import MySQLdb
 import datetime
 import inspect
 import logging
@@ -5,6 +6,7 @@ import rollbar
 import time
 
 from htk.constants.time import *
+from htk.utils.db import attempt_mysql_reconnect
 from htk.utils.db import ensure_mysql_connection_usable
 
 def job_runner(f):
@@ -16,6 +18,9 @@ def job_runner(f):
     try:
         ensure_mysql_connection_usable()
         result = f()
+    except MySQLdb.OperationalError, e:
+        rollbar.report_exc_info()
+        attempt_mysql_reconnect()
     except:
         rollbar.report_exc_info()
     return result
