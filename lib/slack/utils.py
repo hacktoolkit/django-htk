@@ -13,6 +13,7 @@ def webhook_call(
     icon_emoji=None,
     unfurl_links=True,
     unfurl_media=True,
+    error_response_handlers=None
 ):
     """Performs a webhook call to Slack
 
@@ -36,13 +37,45 @@ def webhook_call(
         payload['icon_emoji'] = icon_emoji
 
     response = requests.post(webhook_url, json=payload)
-    if response.status_code != 200:
-        extra_data = {
-            'webhook_url' : webhook_url,
-            'payload' : payload,
-        }
-        rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,), extra_data=extra_data)
+    if response.status_code == 200:
+        # success case, do nothing
+        pass
+    elif response.status_code <= 399:
+        # 200-300, do nothing
+        pass
+    else:
+        if handle_webhook_error_response(response, error_response_handlers):
+            # successfully handled the webhook error
+            pass
+        else:
+            extra_data = {
+                'webhook_url' : webhook_url,
+                'payload' : payload,
+            }
+            rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,), extra_data=extra_data)
     return response
+
+def handle_webhook_error_response(response, error_response_handlers=None):
+    """Handles a Slack webhook call error response
+
+    `error_response_handlers` is formatted as:
+    {
+        404: {
+            'No active hooks': <function>,
+        },
+        500: {
+            'channel_not_found': <function>,
+        },
+    }
+    """
+    if error_response_handlers is None:
+        error_response_handlers = {}
+
+    if response.status_code in error_response_handlers:
+        error_message = response.content.strip()
+        if error_message in error_response_handlers[response.status_code]:
+            handler = error_response_handlers[response.status_code][error_message]
+            handler()
 
 def is_valid_webhook_event(event, request):
     """Determines whether the Slack webhook event has a valid token
