@@ -48,7 +48,9 @@ class AbstractAttributeHolderClassFactory(object):
     def get_class(self):
         factory = self
         class AbstractAttributeHolderClass(object):
-            def set_attribute(self, key, value):
+            def set_attribute(self, key, value, as_bool=False):
+                if as_bool:
+                    value = int(bool(value))
                 attribute = self._get_attribute_object(key)
                 if attribute is None:
                     holder = factory.holder_resolver(self)
@@ -72,9 +74,14 @@ class AbstractAttributeHolderClassFactory(object):
                     attribute = None
                 return attribute
 
-            def get_attribute(self, key):
+            def get_attribute(self, key, as_bool=False):
                 attribute = self._get_attribute_object(key)
                 value = attribute.value if attribute else None
+                if as_bool:
+                    try:
+                        value = bool(int(value))
+                    except TypeError, ValueError:
+                        value = False
                 return value
 
             def delete_attribute(self, key):
