@@ -35,4 +35,3 @@ def rewrite_relative_urls_as_absolute(html, base_url):
         html
     )
     return html
-
