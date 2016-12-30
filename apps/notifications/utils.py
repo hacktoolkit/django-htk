@@ -1,6 +1,8 @@
 from htk.utils import htk_setting
+from htk.utils.cache_descriptors import memoized
 from htk.utils.general import resolve_method_dynamically
 
+@memoized
 def get_alert_key(alert_name):
     alert_key = None
     alert_key_generators = htk_setting('HTK_NOTIFICATIONS_DISMISSIBLE_ALERT_KEY_GENERATORS')

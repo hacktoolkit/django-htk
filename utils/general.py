@@ -2,6 +2,8 @@ import sys
 
 from importlib import import_module
 
+from htk.utils.cache_descriptors import memoized
+
 def htk_setting(key, default=None):
     from django.conf import settings
     import htk.constants.defaults
@@ -28,6 +30,7 @@ def get_module_name_parts(module_str):
         values = (None, None,)
     return values
 
+@memoized
 def resolve_method_dynamically(module_str):
     """Returns the method for a module
     """
@@ -47,6 +50,7 @@ def _get_model_fn():
         from django.db.models.loading import get_model
     return get_model
 
+@memoized
 def resolve_model_dynamically(module_str):
     (module_name, attr_name,) = get_module_name_parts(module_str)
     if module_name and attr_name:
