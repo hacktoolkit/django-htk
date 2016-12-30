@@ -100,6 +100,9 @@ class UserRegistrationForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data['email']
+        from htk.utils.emails import normalize_email
+        email = normalize_email(email)
+        self.cleaned_data['email'] = email
 
         user = get_user_by_email(email)
         if user is not None:

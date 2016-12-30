@@ -44,7 +44,8 @@ def email_to_username_pretty_unique(email):
 
     To be efficient, only do one DB check for pre-existing username
     """
-    handle = email.split('@')[0]
+    from htk.utils.emails import extract_snowflake_handle_from_email
+    handle = extract_snowflake_handle_from_email(email)
     username = handle[:USERNAME_MAX_LENGTH]
     user = get_user_by_username(username)
     if user:

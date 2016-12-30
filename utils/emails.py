@@ -2,6 +2,10 @@ import copy
 import re
 import time
 
+def normalize_email(email):
+    normalized = email.strip().lower()
+    return normalized
+
 def email_permutator(domain, first_name='', middle_name='', last_name=''):
     """Generate common possible permutations of emails given company `domain` and `*_name`
     """
@@ -46,3 +50,17 @@ def find_company_emails_for_name(domain, first_name='', middle_name='', last_nam
     find_valid_emails = resolve_method_dynamically(htk_setting('HTK_FIND_EMAILS_VALIDATOR'))
     emails = find_valid_emails(email_permutations)
     return emails
+
+def extract_snowflake_handle_from_email(email):
+    """Extracts a handle from an email address that will likely be unique
+    """
+    from htk.constants.emails import COMMON_EMAIL_HANDLES
+    from htk.constants.dns import COMMON_TLDS
+    handle, domain = email.split('@')
+    if handle in COMMON_EMAIL_HANDLES:
+        domain_prefix, tld = domain.rsplit('.', 1)
+        if tld in COMMON_TLDS:
+            handle = domain_prefix
+        else:
+            handle = domain
+    return handle
