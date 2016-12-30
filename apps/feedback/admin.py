@@ -35,11 +35,41 @@ class FeedbackAdmin(admin.ModelAdmin):
         'uri',
     )
 
+    readonly_fields = (
+        'created_on',
+        'site',
+        'uri',
+        'name',
+        'email',
+        'comment',
+    )
+
     fieldsets = [
-        ('Date Information', {'fields': ['created_on']}),
-        ('Page Viewing', {'fields': ['uri']}),
-        ('Submitted Feedback', {'fields': ['name', 'email', 'comment']}),
-        ]
+        ('Date Information', {
+            'fields': [
+                'created_on',
+            ],
+        }),
+        ('Page Viewing', {
+            'fields': [
+                'site',
+                'uri',
+            ]
+        }),
+        ('Submitted Feedback', {
+            'fields': [
+                'name',
+                'email',
+                'comment',
+            ]
+        }),
+        ('Admin', {
+            'fields' : [
+                'processed',
+                'needs_followup',
+            ]
+        }),
+    ]
 
     date_hierarchy = 'created_on'
 

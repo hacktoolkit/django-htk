@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from htk.utils import utcnow
@@ -11,6 +13,17 @@ For example, the following module requires AWS Credentials.
 
 Others, like imaging libraries, require PIL, etc
 """
+
+class HtkBaseModel(models.Model):
+    """An abstract class extending Django models.Model for performing common operations
+    """
+    class Meta:
+        abstract = True
+
+    def get_admin_url(self):
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        url = reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
+        return url
 
 class AbstractAttribute(models.Model):
     """An abstract class for storing an arbitrary attribute on a Django model
