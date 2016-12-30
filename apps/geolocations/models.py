@@ -4,8 +4,9 @@ from htk.apps.geolocations.constants import *
 from htk.apps.geolocations.enums import DistanceUnit
 from htk.apps.geolocations.utils import get_bounding_box
 from htk.apps.geolocations.utils import get_latlng
+from htk.models.classes import HtkBaseModel
 
-class AbstractGeolocation(models.Model):
+class AbstractGeolocation(HtkBaseModel):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
 
