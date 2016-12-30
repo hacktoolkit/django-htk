@@ -1,6 +1,18 @@
 {% if should_display_dismissible_alert %}
-<div class="alert alert-{{ alert_level }} alert-dismissible" role="alert">
+<div id="alert_{{ alert_name }}" class="alert alert-{{ alert_level }} alert-dismissible" role="alert">
   <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
   {% include alert_template %}
 </div>
+<script>
+$('#alert_{{ alert_name }}').on('close.bs.alert', function() {
+  var url = '{% url 'api_dismiss_alert' %}';
+  var cfg = {
+    method: 'POST',
+    data: {
+      alert_name: '{{ alert_name }}'
+    }
+  };
+  $.ajax(url, cfg);
+});
+</script>
 {% endif %}
