@@ -13,7 +13,7 @@ def health_check(request):
     response = HttpResponse(status=200)
     return response
 
-def generic_template_view(request, template_name, context_dict=None, content_type='text/html'):
+def generic_template_view(request, template_name, context_dict=None, content_type='text/html', missing_template_exception=Http404):
     try:
         template = loader.get_template(template_name)
         context_dict = context_dict or {}
@@ -21,28 +21,37 @@ def generic_template_view(request, template_name, context_dict=None, content_typ
         response = HttpResponse(template.render(context), content_type=content_type)
     except TemplateDoesNotExist:
         response = None
-        raise Http404
+        raise missing_template_exception
     return response
 
 def google_site_verification(request, code):
+    from htk.exceptions import MissingGoogleSiteVerificationFile
     template_name = 'site_verification/google%s.html' % code
-    response = generic_template_view(request, template_name)
+    response = generic_template_view(
+        request,
+        template_name,
+        missing_template_exception=MissingGoogleSiteVerificationFile
+    )
     return response
 
 def html_site_verification(request, code):
+    from htk.exceptions import MissingHtmlSiteVerificationFile
     template_name = 'site_verification/%s--.html' % code
     response = generic_template_view(
         request,
-        template_name
+        template_name,
+        missing_template_exception=MissingHtmlSiteVerificationFile
     )
     return response
 
 def bing_site_auth(request):
+    from htk.exceptions import MissingBingSiteVerificationFile
     template_name = 'site_verification/BingSiteAuth.xml'
     response = generic_template_view(
         request,
         template_name,
-        content_type='text/xml'
+        content_type='text/xml',
+        missing_template_exception=MissingBingSiteVerificationFile
     )
     return response
 
