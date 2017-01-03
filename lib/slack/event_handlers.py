@@ -355,7 +355,7 @@ def weather(event, **kwargs):
             from htk.utils.text.converters import markdown2slack
             from htk.utils.weather import get_weather
             weather = get_weather(location)
-            formatted_weather = generate_weather_report(weather)
+            formatted_weather = generate_weather_report(weather, extended=True)
             slack_text = '*Weather for %s*:\n%s' % (
                 location,
                 markdown2slack(formatted_weather['summary']),

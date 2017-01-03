@@ -72,10 +72,13 @@ def _extract_period_weather(period_weather, prefix):
         data['rain_alert'] = '\n@here **ALERT!** Likelihood of rain!'
     return data
 
-def generate_weather_report(weather_data):
+def generate_weather_report(weather_data, extended=False):
     """Generates a weather report from Dark Sky (formerly ForecastIO) API `weather_data` formatted as Markdown
 
     `weather_data` is the object returned by get_weather()
+    `extended`
+      if True: return data for currently, today, and tomorrow
+      if False: return data for tomorrow only
 
     Returns formatted report summary along with icon emoji
     """
@@ -84,17 +87,24 @@ def generate_weather_report(weather_data):
     data = {
         'rain_alert' : '',
     }
-    data.update(_extract_period_weather(weather_data['currently'], 'current'))
-    data.update(_extract_period_weather(daily[0], 'today'))
+    if extended:
+        data.update(_extract_period_weather(weather_data['currently'], 'current'))
+        data.update(_extract_period_weather(daily[0], 'today'))
     data.update(_extract_period_weather(daily[1], 'tomorrow'))
 
-    summary = u"""**Currently**: %(current_temp)s\xB0F (Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s %(current_icon)s  
+    if extended:
+        summary = u"""**Currently**: %(current_temp)s\xB0F (Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s %(current_icon)s  
 **Today**: %(today_temp_max)sF High, %(today_temp_min)s\xB0F Low (Precip Intensity: %(today_precip_intensity)s, Probability: %(today_precip_probability)s) - %(today_summary)s %(today_icon)s  
 **Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)sF Low (Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
 %(rain_alert)s
 """ % data
+    else:
+        summary = u"""**Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)sF Low (Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
+%(rain_alert)s
+""" % data
+
     result = {
         'summary' : summary,
-        'icon_emoji' : data['current_icon'],
+        'icon_emoji' : data.get('current_icon', data.get('today_icon', data.get('tomorrow_icon'))),
     }
     return result
