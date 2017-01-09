@@ -67,9 +67,13 @@ def _extract_period_weather(period_weather, prefix):
         data[prefix + '_temp_min'] = period_weather['temperatureMin']
 
     # rain alert
-    RAIN_ALERT_THRESHOLD = 0.15
-    if precip_probability > RAIN_ALERT_THRESHOLD:
-        data['rain_alert'] = '\n@here **ALERT!** Likelihood of rain!'
+    RAIN_ALERT_THRESHOLD_HIGH = 0.65
+    RAIN_ALERT_THRESHOLD_LIKELY = 0.55
+
+    if precip_probability > RAIN_ALERT_THRESHOLD_HIGH:
+        data['rain_alert'] = '\n<!here> **ALERT!** Very high likelihood of rain!'
+    elif precip_probability > RAIN_ALERT_THRESHOLD_LIKELY:
+        data['rain_alert'] = '\n**ALERT!** Likelihood of rain!'
     return data
 
 def generate_weather_report(weather_data, extended=False):

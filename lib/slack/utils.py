@@ -18,6 +18,7 @@ def webhook_call(
     """Performs a webhook call to Slack
 
     https://api.slack.com/incoming-webhooks
+    https://api.slack.com/docs/message-formatting
 
     `channel` override must be a public channel
     """
