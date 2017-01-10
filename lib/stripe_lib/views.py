@@ -37,8 +37,11 @@ def stripe_webhook_view(request):
         handle_event(event, request=request)
     elif event_id and not live_mode:
         # handle the Stripe dashboard webhook test case
-        from htk.lib.stripe_lib.utils import rollbar_log_event
-        rollbar_log_event(event_json, request=request)
+        from htk.utils import htk_setting
+        should_log = htk_setting('HTK_STRIPE_LOG_TEST_MODE_EVENTS')
+        if should_log:
+            from htk.lib.stripe_lib.utils import rollbar_log_event
+            rollbar_log_event(event_json, request=request)
     else:
         pass
 
