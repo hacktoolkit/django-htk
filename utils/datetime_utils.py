@@ -16,11 +16,15 @@ def utcnow():
             now = fake_time
     return now
 
+def tznow(timezone_name='America/Los_Angeles'):
+    tz = pytz.timezone(timezone_name)
+    local_datetime = utcnow().astimezone(tz)
+    return local_datetime
+
 def is_within_hour_bounds_for_timezone(start_hour, end_hour, timezone_name='America/Los_Angeles'):
     """Determine if the local time for given `timezone_name` is currently within `start_hour` and `end_hour` bounds
     """
-    tz = pytz.timezone(timezone_name)
-    local_datetime = utcnow().astimezone(tz)
+    local_datetime = tznow(timezone_name)
     is_within_hour_bounds = start_hour <= local_datetime.hour < end_hour
     return is_within_hour_bounds
 
