@@ -47,6 +47,13 @@ def convert_weather_icon_to_emoji(weather_icon):
     icon = icons.get(weather_icon)
     return icon
 
+def _precipitation_intensity_to_str(intensity, src_unit='in', target_unit='mm'):
+    from htk.constants.units import LENGTH_CONVERSION_RATES
+    conversion = '%s_%s' % (src_unit, target_unit,)
+    conversion_rate = LENGTH_CONVERSION_RATES[conversion]
+    converted_intensity = '%0.2f %s/hr' % (intensity * conversion_rate, target_unit,)
+    return converted_intensity
+
 def _extract_period_weather(period_weather, prefix):
     """Returns a dictionary of relevant weather data from `period_weather`, with keys prefixed with `prefix`
     """
@@ -54,7 +61,7 @@ def _extract_period_weather(period_weather, prefix):
     data = {
         prefix + '_summary' : period_weather['summary'],
         prefix + '_icon' : convert_weather_icon_to_emoji(period_weather['icon']),
-        prefix + '_precip_intensity' : period_weather['precipIntensity'],
+        prefix + '_precip_intensity' : _precipitation_intensity_to_str(period_weather['precipIntensity']),
         prefix + '_precip_probability' : '%s%%' % (precip_probability * 100,),
     }
     # weather['currently'] only
@@ -97,13 +104,13 @@ def generate_weather_report(weather_data, extended=False):
     data.update(_extract_period_weather(daily[1], 'tomorrow'))
 
     if extended:
-        summary = u"""**Currently**: %(current_temp)s\xB0F (Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s %(current_icon)s  
-**Today**: %(today_temp_max)sF High, %(today_temp_min)s\xB0F Low (Precip Intensity: %(today_precip_intensity)s, Probability: %(today_precip_probability)s) - %(today_summary)s %(today_icon)s  
-**Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)sF Low (Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
+        summary = u"""**Currently**: %(current_temp)s\xB0F (Avg Precip Intensity: %(current_precip_intensity)s, Probability: %(current_precip_probability)s) - %(current_summary)s %(current_icon)s  
+**Today**: %(today_temp_max)s\xB0F High, %(today_temp_min)s\xB0F Low (Avg Precip Intensity: %(today_precip_intensity)s, Probability: %(today_precip_probability)s) - %(today_summary)s %(today_icon)s  
+**Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)s\xB0F Low (Avg Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
 %(rain_alert)s
 """ % data
     else:
-        summary = u"""**Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)sF Low (Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
+        summary = u"""**Tomorrow**: %(tomorrow_temp_max)s\xB0F High, %(tomorrow_temp_min)s\xB0F Low (Avg Precip Intensity: %(tomorrow_precip_intensity)s, Probability: %(tomorrow_precip_probability)s) - %(tomorrow_summary)s %(tomorrow_icon)s  
 %(rain_alert)s
 """ % data
 
