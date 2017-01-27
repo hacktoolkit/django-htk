@@ -161,9 +161,12 @@ def create_customer(card=None, email=None, description=''):
 # events and webhooks
 
 def retrieve_event(event_id, live_mode=False):
-    """Retrieve the Stripe event
+    """Retrieve the Stripe event by `event_id`
 
-    Only works when `live_mode=True`
+    Succeeds when `live_mode==True` and there a corresponding `event_id`
+    Fails when event was generated from the Stripe dashboard webhook test
+
+    https://stripe.com/docs/api#retrieve_event
     """
     _initialize_stripe(live_mode=live_mode)
     event = safe_stripe_call(
@@ -207,7 +210,14 @@ def handle_event(event, request=None):
     if event_handler:
         event_handler(event, request=request)
     elif htk_setting('HTK_STRIPE_LOG_UNHANDLED_EVENTS_ROLLBAR'):
-        rollbar_log_event(event, request=request)
+        # missing Stripe webhook event handler
+        live_mode = event.get('livemode', False)
+        should_log = live_mode or htk_setting('HTK_STRIPE_LOG_TEST_MODE_EVENTS')
+        if should_log:
+            rollbar_log_event(event, request=request)
+        else:
+            # do nothing
+            pass
     else:
         pass
 

@@ -42,6 +42,9 @@ def stripe_webhook_view(request):
         if should_log:
             from htk.lib.stripe_lib.utils import rollbar_log_event
             rollbar_log_event(event_json, request=request)
+        else:
+            # do nothing
+            pass
     else:
         pass
 
