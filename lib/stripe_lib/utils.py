@@ -209,23 +209,36 @@ def handle_event(event, request=None):
     event_handler = get_event_handler(event)
     if event_handler:
         event_handler(event, request=request)
-    elif htk_setting('HTK_STRIPE_LOG_UNHANDLED_EVENTS_ROLLBAR'):
+    elif htk_setting('HTK_STRIPE_LOG_UNHANDLED_EVENTS'):
         # missing Stripe webhook event handler
-        live_mode = event.get('livemode', False)
-        should_log = live_mode or htk_setting('HTK_STRIPE_LOG_TEST_MODE_EVENTS')
-        if should_log:
-            rollbar_log_event(event, request=request)
-        else:
-            # do nothing
-            pass
+        log_event(event, request=request)
     else:
         pass
 
-def rollbar_log_event(event, request=None, log_level='info', message=None):
+def log_event(event, request=None, log_level='info', message=None):
+    """Log the Stripe event `event`
+    """
+    live_mode = event.get('livemode', False)
+    should_log = live_mode or htk_setting('HTK_STRIPE_LOG_TEST_MODE_EVENTS')
+    if should_log:
+        logger_type = htk_setting('HTK_STRIPE_EVENT_LOGGER')
+        if logger_type == 'rollbar':
+            _log_event_rollbar(event, request=None, log_level='info', message=None)
+        else:
+            # unrecognized Stripe event logger
+            pass
+    else:
+        # do nothing
+        pass
+
+def _log_event_rollbar(event, request=None, log_level='info', message=None):
     """Log the Stripe event `event` to Rollbar
     """
     if message:
         message = '%s - Stripe Event: %s' % (message, get_event_type(event),)
     else:
         message = 'Stripe Event: %s' % get_event_type(event)
-    rollbar.report_message(message, log_level, request)
+    extra_data = {
+        'event' : event,
+    }
+    rollbar.report_message(message, log_level, request, extra_data=extra_data)
