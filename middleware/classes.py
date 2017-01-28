@@ -48,13 +48,15 @@ class AllowedHostsMiddleware(object):
     """
     def process_request(self, request):
         host = request.get_host()
-        path = request.path
+        request_path = request.path
         redirect_uri = None
         https_prefix = 's' if request.is_secure() else ''
-        if not(is_allowed_host(host)):
-            redirect_uri = 'http%s://%s%s' % (https_prefix, htk_setting('HTK_DEFAULT_DOMAIN'), path,)
+        if request_path == '/health_check':
+            return False
+        elif not(is_allowed_host(host)):
+            redirect_uri = 'http%s://%s%s' % (https_prefix, htk_setting('HTK_DEFAULT_DOMAIN'), request_path,)
         elif len(host) > 1 and host[-1] == '.':
-            redirect_uri = 'http%s://%s%s' % (https_prefix, host[:-1], path,)
+            redirect_uri = 'http%s://%s%s' % (https_prefix, host[:-1], request_path,)
 
         if redirect_uri:
             return redirect(redirect_uri)

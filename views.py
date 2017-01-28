@@ -10,7 +10,7 @@ from django.template import TemplateDoesNotExist
 from django.template import loader
 
 def health_check(request):
-    response = HttpResponse(status=200)
+    response = HttpResponse('200 OK', status=200)
     return response
 
 def generic_template_view(request, template_name, context_dict=None, content_type='text/html', missing_template_exception=Http404):
