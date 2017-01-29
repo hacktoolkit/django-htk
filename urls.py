@@ -27,4 +27,6 @@ if settings.TEST or settings.ENV_DEV:
         url(r'^403$', views.error_view, name='error_403'),
         url(r'^404$', views.error_view, name='error_404'),
         url(r'^500$', views.error_view, name='error_500'),
+        url(r'^browser_info$', views.browser_info, name='tools_browser_info'),
+        url(r'^debugger$', views.debugger, name='tools_debugger'),
     )
