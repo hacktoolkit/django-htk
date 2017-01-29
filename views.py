@@ -15,7 +15,8 @@ def health_check(request):
 
 def browser_info(request, data=None, template_name=None, renderer=None):
     if data is None:
-        data = {}
+        from htk.view_helpers import wrap_data
+        data = wrap_data(request)
     if template_name is None:
         template_name = 'htk/fragments/browser_info.html'
     if renderer is None:
