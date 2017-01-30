@@ -1,4 +1,8 @@
-<script src="http://yui.yahooapis.com/{{ yui_version|default:'3.18.0' }}/build/yui/yui-min.js"></script>
+{% if yui_local_path %}
+<script type="text/javascript" src="{{ yui_local_path }}/{{ yui_version|default:'3.18.1' }}/build/yui/yui-min.js"></script>
+{% else %}
+<script src="http://yui.yahooapis.com/{{ yui_version|default:'3.18.1' }}/build/yui/yui-min.js"></script>
+{% endif %}
 
 {% if not yui_no_reload %}
 {% comment %}
