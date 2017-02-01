@@ -74,7 +74,7 @@ class EgaugeAPI(object):
           </data>
         </group>
         """
-        print '\n'.join([response.url, str(response.status_code), response.content,])
+        #print '\n'.join([response.url, str(response.status_code), response.content,])
         soup = BeautifulSoup(response.content, 'xml')
         egauge_response = soup.response
         data = {
@@ -86,19 +86,29 @@ class EgaugeAPI(object):
         }
         return data
 
-    def get_stored_data(self):
-        url = self.get_url('stored') + '?d'
+    def get_stored_data(self, q_params=None):
+        if q_params is None:
+            q_params = [
+                'a',
+                'E',
+                'C',
+                'd',
+            ]
+        q_string = '' if not len(q_params) else '?%s' % '&'.join(q_params)
+        url = self.get_url('stored') + q_string
         params = {
             # TODO: specify param without value in dict
             # https://github.com/kennethreitz/requests/issues/2651
+            #'a' : '', # return virtual and remote headers
+            #'E' : '', # Requests that values are output relative to epoch
+            #'C' : '', # Specifies that the returned data be delta-compressed. That is, after the first row of data, each subsequent row's columns are expressed as a difference relative to the previous row's column-values.
             #'m' : '', # minutes
             #'h' : '', # hours
             #'d' : '', # days
             #'S' : None, # seconds
-            'n' : 2, # max number of rows to be returned
-            'a' : None, # return virtual and remote headers
+            'n' : 3, # max number of rows to be returned
             #'f' : time.mktime(tznow().timetuple()),
-            'w' : int(time.mktime((tznow() - datetime.timedelta(hours=24)).timetuple())),
+            #'w' : int(time.mktime((tznow() - datetime.timedelta(hours=24)).timetuple())),
         }
         response = requests.get(url, params=params)
         egauge_data = self._parse_stored_data_xml_response(response)
