@@ -25,6 +25,27 @@ def get_user_profile_model():
 ##
 # login and registration
 
+def create_user(first_name, last_name, email):
+    UserModel = get_user_model()
+    username = email_to_username_pretty_unique(email)
+    user = UserModel.objects.create(
+        username=username,
+        first_name=first_name,
+        last_name=last_name
+    )
+
+    user_email = associate_user_email(user, email, confirmed=True)
+    user_email.set_primary_email()
+
+    set_random_password(user)
+    return user
+
+def set_random_password(user):
+    from uuid import uuid4
+    password = uuid4().get_hex()[:16]
+    user.set_password(password)
+    user.save()
+
 def email_to_username_hash(email):
     """Convert emails to hashed versions where we store them in the username field
     We can't just store them directly, or we'd be limited to Django's username <= 30 chars limit,
