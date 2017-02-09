@@ -34,10 +34,14 @@ def _get_kv_obj(key, namespace=None):
             pass
     return kv_obj
 
-def kv_list_keys(namespace=None):
+def kv_list_keys(namespace=None, prefix=None):
     KV = get_kv_storage_model(namespace=namespace)
     if KV:
-        keys = KV.objects.values_list('key', flat=True)
+        if prefix:
+            keys_qs = KV.objects.filter(key__startswith=prefix)
+        else:
+            keys_qs = KV.objects
+        keys = keys_qs.values_list('key', flat=True)
     else:
         keys = []
     return keys
