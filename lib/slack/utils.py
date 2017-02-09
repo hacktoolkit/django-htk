@@ -104,7 +104,7 @@ def get_webhook_settings(token):
     """
     from htk.apps.kv_storage import kv_get
     key = 'slack_webhook_%s' % token
-    webhook_settings = kv_get(key)
+    webhook_settings = kv_get(key, namespace='slack')
     return webhook_settings
 
 def get_event_type(event):
