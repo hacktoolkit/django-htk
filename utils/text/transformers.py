@@ -115,7 +115,7 @@ def seo_tokenize(title, lower=True):
         cleaned_title = cleaned_title.lower()
     else:
         pass
-    # allow only spaces, alpha-numeric
-    cleaned_title = re.sub('[^ A-Za-z0-9]', '', cleaned_title)
+    # allow only spaces, hyphens, alpha-numeric
+    cleaned_title = re.sub('[^ \-A-Za-z0-9]', '', cleaned_title)
     tokenized_title = '-'.join(cleaned_title.split())
     return tokenized_title
