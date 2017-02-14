@@ -26,6 +26,7 @@ def render_to_response_custom(template_name, data=None, template_prefix=''):
     # pre-render
     data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
     _build_meta_content(data)
+    _build_breadcrumbs(data)
 
     # render
     response = render_to_response(template_name, data)
@@ -100,6 +101,9 @@ def wrap_data(request, data=None):
             'join_value' : ' | ',
             'static_values' : {},
         },
+        'breadcrumbs' : {
+            'url_names_to_breadcrumbs' : {},
+        },
         'description' : {
             'content' : '',
             'inverted' : [],
@@ -171,7 +175,7 @@ def _javascript_reloader(request, data):
         'yui' : request.session[YUI_RELOAD_ATTEMPTS],
     }
 
-def _build_meta_content(data=None):
+def _build_meta_content(data):
     """Build page title and META description and keywords before rendering
     """
     if data is None:
@@ -187,6 +191,23 @@ def _build_meta_content(data=None):
             except:
                 request = data.get('request', {}).get('request')
                 rollbar.report_exc_info(request=request)
+
+def _build_breadcrumbs(data):
+    if data.get('has_dynamic_breadcrumbs', False):
+        request = data.get('request', {}).get('request')
+        if request:
+            resolver_matches_chain = get_resolver_matches_chain(request)
+            url_names_to_breadcrumbs = data.get('meta', {}).get('breadcrumbs', {}).get('url_names_to_breadcrumbs', {})
+            inverted_breadcrumbs = []
+            for path, resolver_match in resolver_matches_chain:
+                title = url_names_to_breadcrumbs.get(resolver_match.url_name, None)
+                if title:
+                    inverted_breadcrumbs.append({
+                        'url' : path,
+                        'title' : title,
+                    })
+
+            data['breadcrumbs'] = inverted_breadcrumbs[::-1]
 
 def _update_meta_content(meta_type, value, update_type='set', data=None):
     if data is None:
@@ -238,10 +259,14 @@ def set_page_title(title, data=None):
     """
     _update_meta_content('title', title, update_type='set', data=data)
 
-def add_page_title(title, data=None):
+def add_page_title(title, data=None, url_name=None):
     """Adds an additional phrase to page title
+
+    If `url_name` is specified, also associates `title` with `url_name` for breadcrumbs lookup
     """
     _update_meta_content('title', title, update_type='add', data=data)
+    if url_name and data:
+        add_breadcrumb_mapping(url_name, title, data)
 
 def set_meta_description(description, data=None):
     """Sets the META description
@@ -268,6 +293,36 @@ def add_meta_keywords(keywords, data=None):
     `keywords` must be a list in order of least significant to most significant terms
     """
     _update_meta_content('keywords', keywords, update_type='add', data=data)
+
+def add_breadcrumb_mapping(url_name, title, data):
+    url_names_to_breadcrumbs = data.get('meta', {}).get('breadcrumbs', {}).get('url_names_to_breadcrumbs', {})
+    url_names_to_breadcrumbs[url_name] = title
+
+def get_resolver_matches_chain(request, data=None):
+    """Walk the current request URL path up to the top, attempting to resolve along the way
+    """
+    from django.core.urlresolvers import Resolver404
+    from django.core.urlresolvers import resolve
+    resolver_matches_chain = []
+    path = request.path
+    resolver_matches_chain.append((path, request.resolver_match,))
+    while path:
+        try:
+            path = path[:path.rindex('/')]
+            resolver_match = resolve(path)
+            resolver_matches_chain.append((path, resolver_match))
+        except Resolver404:
+            # could not resolve without '/'
+            path_with_slash = path + '/'
+            try:
+                resolver_match = resolve(path_with_slash)
+                resolver_matches_chain.append((path_with_slash, resolver_match))
+            except Resolver404:
+                pass
+        except ValueError:
+            # '/' substring not found
+            break
+    return resolver_matches_chain
 
 def generate_nav_links(request, nav_links_cfg):
     """Generate navigation menu links from a configuration dictionary
