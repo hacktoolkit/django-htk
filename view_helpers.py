@@ -333,7 +333,6 @@ def generate_nav_links(request, nav_links_cfg):
     nav_links = []
     for link_cfg in nav_links_cfg:
         nav_link = copy.copy(link_cfg)
-        text = link_cfg['text']
         submenu = link_cfg.get('submenu', None)
         cfg_url_name = link_cfg.get('url_name', None)
         if cfg_url_name:
