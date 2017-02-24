@@ -1,0 +1,2 @@
+class BartAPIException(Exception):
+    pass
