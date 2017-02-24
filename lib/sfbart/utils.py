@@ -7,12 +7,12 @@ def get_station_name(station_abbrev):
     return station_name
 
 def get_bart_stations():
-    sorted_station_abbrevs = sorted(BART_STATION_ABBREVIATIONS.iterkeys())
     stations = [
         { 'abbrev' : station_abbrev, 'name' : get_station_name(station_abbrev), }
-        for station_abbrev
-        in sorted_station_abbrevs
+        for station_abbrev, station_name
+        in BART_STATION_ABBREVIATIONS.iteritems()
     ]
+    stations = sorted(stations, key=lambda x: x['name'])
     return stations
 
 def get_bart_schedule_depart(orig_station, dest_station):
