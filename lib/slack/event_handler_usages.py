@@ -27,6 +27,7 @@ def bart(**kwargs):
         'basic' : 'htk: bart',
         'examples' : [
             'htk: bart stations',
+            'htk: bart <origin> <destination>',
         ],
     }
     return usage_dict
