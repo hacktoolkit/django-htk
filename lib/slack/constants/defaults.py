@@ -2,6 +2,7 @@ HTK_SLACK_EVENT_TYPE_RESOLVER = 'htk.lib.slack.event_resolvers.default_event_typ
 
 HTK_SLACK_EVENT_HANDLERS = {
     'default' : 'htk.lib.slack.event_handlers.default',
+    'bart' : 'htk.lib.slack.event_handlers.bart',
     'beacon' : 'htk.lib.slack.event_handlers.beacon',
     'bible' : 'htk.lib.slack.event_handlers.bible',
     'emaildig' : 'htk.lib.slack.event_handlers.emaildig',
@@ -19,6 +20,7 @@ HTK_SLACK_EVENT_HANDLERS_EXTRAS = {}
 HTK_SLACK_EVENT_HANDLER_USAGES = {
     'help' : 'htk.lib.slack.event_handler_usages.help',
     'default' : 'htk.lib.slack.event_handler_usages.default',
+    'bart' : 'htk.lib.slack.event_handler_usages.bart',
     'beacon' : 'htk.lib.slack.event_handler_usages.beacon',
     'bible' : 'htk.lib.slack.event_handler_usages.bible',
     'emaildig' : 'htk.lib.slack.event_handler_usages.emaildig',

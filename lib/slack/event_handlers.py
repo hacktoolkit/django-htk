@@ -106,6 +106,48 @@ def default(event, **kwargs):
     return payload
 
 @preprocess_event
+def bart(event, **kwargs):
+    """BART event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'bart':
+        if args:
+            arg_parts = args.split()
+            arg1 = arg_parts[0].lower()
+            if arg1 == 'stations':
+                from htk.lib.sfbart.utils import get_bart_stations
+                stations = get_bart_stations()
+                slack_text = 'BART stations:\n%s' % '\n'.join(['%s (%s)' % (station['name'], station['abbrev'],) for station in stations])
+            elif len(arg_parts) == 2:
+                # two stations, assume departure lookup
+                from htk.lib.sfbart.utils import get_bart_schedule_depart
+                orig_station = arg_parts[0].lower()
+                dest_station = arg_parts[1].lower()
+                data = get_bart_schedule_depart(orig_station, dest_station)
+                data['formatted_trips'] = '\n'.join([
+                    '%(origTimeMin)s - %(destTimeMin)s (%(tripTime)s mins)' % trip
+                    for trip
+                    in data['trips']
+                ])
+                slack_text = """*%(orig_station_name)s* (%(origin)s) to *%(dest_station_name)s* (%(destination)s)
+%(formatted_trips)s
+""" % data
+            else:
+                slack_text = 'No handler for specified arguments.\n%s' % get_usage(event, command)
+        else:
+            slack_text = 'Please specify a BART request.\n%s' % get_usage(event, command)
+    else:
+        slack_text = 'Illegal command.'
+
+    payload = {
+        'text' : slack_text,
+    }
+    return payload
+
+@preprocess_event
 def beacon(event, **kwargs):
     """Beacon geo-ip location handler for Slack webhook events
 

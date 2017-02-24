@@ -21,6 +21,16 @@ def default(**kwargs):
     }
     return usage_dict
 
+def bart(**kwargs):
+    usage_dict = {
+        'description' : 'Gets BART information',
+        'basic' : 'htk: bart',
+        'examples' : [
+            'htk: bart stations',
+        ],
+    }
+    return usage_dict
+
 def beacon(**kwargs):
     usage_dict = {
         'description' : 'Creates a homing beacon URL for the user good for 5 minutes. When the beacon URL is clicked, the IP address will be geo-located and shared to Slack.',

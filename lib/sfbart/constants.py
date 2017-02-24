@@ -11,7 +11,7 @@ BART_API_RESOURCES = {
 
 # station abbreviations
 # http://api.bart.gov/docs/overview/abbrev.aspx
-STATION_ABBREVIATIONS = {
+BART_STATION_ABBREVIATIONS = {
     '12th' : '12th St. Oakland City Center',
     '16th' : '16th St. Mission (SF)',
     '19th' : '19th St. Oakland',
