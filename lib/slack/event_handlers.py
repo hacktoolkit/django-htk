@@ -132,7 +132,7 @@ def bart(event, **kwargs):
                     for trip
                     in data['trips']
                 ])
-                slack_text = """*%(orig_station_name)s* (%(origin)s) to *%(dest_station_name)s* (%(destination)s)
+                slack_text = """*%(orig_station_name)s* (`%(origin)s`) to *%(dest_station_name)s* (`%(destination)s`)
 %(formatted_trips)s
 """ % data
             else:
