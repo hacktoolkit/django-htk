@@ -120,7 +120,7 @@ def bart(event, **kwargs):
             if arg1 == 'stations':
                 from htk.lib.sfbart.utils import get_bart_stations
                 stations = get_bart_stations()
-                slack_text = '*BART stations*:\n%s' % '\n'.join(['%s (`%s`)' % (station['name'], station['abbrev'],) for station in stations])
+                slack_text = '*BART stations*:\n%s' % '\n'.join(['%s (`%s`)' % (station['name'], station['abbrev'].upper(),) for station in stations])
             elif len(arg_parts) == 2:
                 # two stations, assume departure lookup
                 from htk.lib.sfbart.utils import get_bart_schedule_depart
