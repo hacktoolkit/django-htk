@@ -36,6 +36,7 @@ HTK_SLACK_EVENT_HANDLER_USAGES_EXTRA = {}
 
 # trigger words that are also commands
 HTK_SLACK_TRIGGER_COMMAND_WORDS = (
+    'bart',
     'bible',
     'findemail',
     'stock',
