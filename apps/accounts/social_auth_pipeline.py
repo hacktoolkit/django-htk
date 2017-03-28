@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 
-from social.pipeline.partial import partial
+from social_core.pipeline.partial import partial
 
 from htk.apps.accounts.emails import welcome_email
 from htk.apps.accounts.session_keys import *
@@ -55,6 +55,7 @@ def check_email(strategy, details, user=None, *args, **kwargs):
     """
     response = None
     if user is None:
+        strategy.request.session['backend'] = kwargs.get('current_partial').backend
         social_email = details.get('email')
         collected_email = strategy.request.session.get(SOCIAL_REGISTRATION_SETTING_EMAIL)
         if social_email:

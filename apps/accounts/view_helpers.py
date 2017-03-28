@@ -24,6 +24,7 @@ def get_social_auths_status(user):
 def redirect_to_social_auth_complete(request):
     """Return an HTTP Redirect response to social:complete to continue the pipeline
     """
-    backend = request.session[SOCIAL_AUTH_PARTIAL_PIPELINE_KEY]['backend']
+    backend = request.session['backend']
+    #backend = request.session[SOCIAL_AUTH_PARTIAL_PIPELINE_KEY]['backend']
     response = redirect('social:complete', backend=backend)
     return response
