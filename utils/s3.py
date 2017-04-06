@@ -9,7 +9,7 @@ def get_env_s3_key_prefix():
         env = 'dev'
     elif settings.ENV_ALPHA:
         env = 'alpha'
-    elif settings.ENV_PROD or settings.ENV_STAGE:
+    elif settings.ENV_PROD or settings.ENV_STAGE or settings.ENV_JOBS:
         env = 'prod'
     else:
         env = 'other'
