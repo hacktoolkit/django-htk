@@ -31,13 +31,13 @@
       </td>
     </tr>
     {% endif %}
-    {% if constants.emails.sales %}
+    {% if constants.emails.finance %}
     <tr>
       <td>
         <i class="fa fa-envelope-o"></i>
       </td>
       <td>
-        {{ constants.emails.sales|obfuscate_mailto|safe }}
+        {{ constants.emails.finance|obfuscate_mailto|safe }}
       </td>
     </tr>
     {% endif %}
