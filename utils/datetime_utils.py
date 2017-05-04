@@ -1,5 +1,6 @@
 import datetime
 import pytz
+import time
 
 from django.conf import settings
 from django.utils.timezone import utc
@@ -20,6 +21,16 @@ def tznow(timezone_name='America/Los_Angeles'):
     tz = pytz.timezone(timezone_name)
     local_datetime = utcnow().astimezone(tz)
     return local_datetime
+
+def datetime_to_unix_time(dt):
+    """http://stackoverflow.com/questions/2775864/python-create-unix-timestamp-five-minutes-in-the-future
+
+    Python 3.3 can simply do `dt.timestamp()`
+
+    For Python 2.7, some gymnastics required.
+    """
+    unix_time = time.mktime(dt.timetuple())
+    return unix_time
 
 def is_within_hour_bounds_for_timezone(start_hour, end_hour, timezone_name='America/Los_Angeles'):
     """Determine if the local time for given `timezone_name` is currently within `start_hour` and `end_hour` bounds
