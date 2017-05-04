@@ -1,3 +1,5 @@
+import rollbar
+
 from django.apps import AppConfig
 from django.contrib.auth import get_user_model
 from django.db.models import signals
@@ -19,11 +21,22 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile = UserProfileModel.objects.create(user=user)
         profile.save()
         if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            slack_notify('A new user has registered on the site %s: *%s <%s>*' % (
-                htk_setting('HTK_SITE_NAME'),
-                user.profile.get_display_name(),
-                user.email,
-            ))
+            try:
+                slack_notify('A new user has registered on the site %s: *%s <%s>*' % (
+                    htk_setting('HTK_SITE_NAME'),
+                    user.profile.get_display_name(),
+                    user.email,
+                ))
+            except:
+                rollbar.report_exc_info()
+
+        if htk_setting('HTK_ITERABLE_ENABLED'):
+            try:
+                from htk.lib.iterable.utils import get_iterable_api_client
+                itbl = get_iterable_api_client()
+                itbl.notify_sign_up(user)
+            except:
+                rollbar.report_exc_info()
 
 def process_user_email_association(sender, instance, created, **kwargs):
     """signal handler for UserEmail post-save
