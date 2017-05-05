@@ -40,7 +40,7 @@ class GitHubReminderBot(object):
     def pull_request_reminder(self):
         """Returns a Markdown-formatted message for this organization's pull requests
         """
-        greeting = random.choice(['Hola', 'Como estas', 'Greetings', '你好', 'Hello', 'Aloha', 'Ciao', 'Salut', '안녕하세요', 'こんにちは', 'שלום', 'chào bạn',])
+        greeting = random.choice([u'Hola', u'Como estas', u'Greetings', u'你好', u'Hello', u'Aloha', u'Ciao', u'Salut', u'안녕하세요', u'こんにちは', u'שלום', u'chào bạn',])
 
         def pluralize(s, num):
             plural_suffix = '' if num == 1 else 's'
