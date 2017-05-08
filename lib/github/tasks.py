@@ -7,7 +7,7 @@ class GitHubReminderTask(BaseTask):
         super(GitHubReminderTask, self).__init__(cooldown_class=GitHubReminderCooldown)
 
     def has_cooldown(self, user):
-        _has_cooldown = super(GitHubReminder, self).has_cooldown(user)
+        _has_cooldown = super(GitHubReminderTask, self).has_cooldown(user)
         #_has_cooldown = False
         return _has_cooldown
 
