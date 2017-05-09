@@ -88,7 +88,7 @@ class GitHubReminderBot(object):
             'greeting' : greeting,
             'pull_requests' : '\n'.join(pull_request_messages),
         }
-        markdown_content = u"""%(greeting)s Team!
+        markdown_content = u"""<!here> %(greeting)s Team!
 
 Here are the pull requests that need to be reviewed today:
 
