@@ -75,7 +75,8 @@ class GitHubReminderBot(object):
         num = 1
         pull_request_messages = []
         for repo in self.repos:
-            open_pull_requests = repo.get_pulls(state='open', sort='created')
+            # http://pygithub.readthedocs.io/en/latest/github_objects/Repository.html#github.Repository.Repository.get_pulls
+            open_pull_requests = repo.get_pulls(state='open', sort='created', direction='desc')
             for pull_request in open_pull_requests:
                 if should_exclude_pull_request(pull_request):
                     pass
