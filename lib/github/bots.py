@@ -114,7 +114,7 @@ class GitHubReminderSlackBot(GitHubReminderBot):
             channel=self.slack_channel,
             text=slack_text,
             username='GitHub Reminder Bot',
-            icon_emoji=':dark_sunglasses:',
+            icon_emoji=':octocat:',
             unfurl_links=False
         )
 
