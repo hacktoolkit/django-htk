@@ -7,6 +7,7 @@ import time
 
 from htk.constants.time import *
 from htk.utils.db import attempt_mysql_reconnect
+from htk.utils.db import close_connection
 from htk.utils.db import ensure_mysql_connection_usable
 
 def job_runner(f):
@@ -19,10 +20,16 @@ def job_runner(f):
         ensure_mysql_connection_usable()
         result = f()
     except MySQLdb.OperationalError, e:
-        rollbar.report_exc_info()
+        extra_data = {
+            'caught_exception' : True,
+            'attempt_reconnect' : True,
+        }
+        rollbar.report_exc_info(extra_data=extra_data)
         attempt_mysql_reconnect()
     except:
         rollbar.report_exc_info()
+    finally:
+        close_connection()
     return result
 
 def background_script_wrapper(
