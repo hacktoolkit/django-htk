@@ -15,7 +15,7 @@ class GitHubReminderTask(BaseTask):
         import htk.apps.accounts.filters as _filters
         from htk.apps.accounts.utils.lookup import get_users_with_attribute_value
         users = get_users_with_attribute_value('github_reminders', 1)
-        users = _filters.users_currently_at_local_time(users, MID_MORNING_HOURS_START, MID_MORNING_HOURS_END, isoweekdays=ISOWEEKDAY_WEEKDAYS)
+        users = _filters.users_currently_at_local_time(users, BUSINESS_HOURS_START, MORNING_HOURS_END, isoweekdays=ISOWEEKDAY_WEEKDAYS)
 
         return users
 
