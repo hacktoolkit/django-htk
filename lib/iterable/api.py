@@ -25,6 +25,9 @@ class IterableAPIClient(object):
         )
         return url
 
+    ##
+    # Various HTTP method wrappers
+
     def get(self, resource_type, params=None, headers=None):
         """Performs an Iterable API GET request
         """
@@ -111,6 +114,17 @@ class IterableAPIClient(object):
 
     ##
     # users
+
+    def update_user_email(self, current_email, new_email):
+        """Updates a user's email address
+        https://api.iterable.com/api/docs#!/users/updateEmail_post_1
+        """
+        payload = {
+            'currentEmail' : current_email,
+            'newEmail' : new_email,
+        }
+        response = self.post('update_email', payload=payload)
+        return response
 
     def delete_user(self, email):
         """Delete a user from Iterable

@@ -6,6 +6,7 @@ ITERABLE_API_RESOURCES = {
     'event_track' : '/events/track',
     ##
     # users
+    'update_email' : '/users/updateEmail',
     'user_delete' : '/users/%(email)s',
     ##
     # workflows
