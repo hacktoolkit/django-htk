@@ -6,6 +6,7 @@ from htk.utils.general import resolve_model_dynamically
 from htk.utils.cache_descriptors import CachedAttribute
 
 from htk.utils.iter_utils import chunks
+from htk.utils.iter_utils import lookahead
 
 from htk.utils.datetime_utils import utcnow
 from htk.utils.oauth import get_twitter_oauth

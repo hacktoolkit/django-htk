@@ -156,6 +156,16 @@ class ZestyMeals(object):
         }
         return payload
 
+    def get_menu_ssml(self, dt):
+        """Returns an SSML string representing menu for a meal on `dt`
+        """
+        meal = self.get_meal_for_date(dt)
+        if not meal:
+            ssml = """<speak>There is no Zesty meal scheduled for today.</speak>"""
+        else:
+            ssml = meal.get_menu_ssml()
+        return ssml
+
 class ZestyMeal(object):
     """Represents one Zesty meal for a specific day
     """
@@ -223,7 +233,7 @@ _%(restaurant_description)s_
         }
         return meal_payload
 
-    def get_pretty_dishes(self, slack_attachments=False):
+    def get_pretty_dishes(self, slack_attachments=False, ssml=False):
         """Makes API calls to fetch individual dish data
         """
         pretty_dishes = []
@@ -233,12 +243,27 @@ _%(restaurant_description)s_
             if dish and dish.is_valid:
                 if slack_attachments:
                     pretty_dish = dish.get_slack_attachment()
+                elif ssml:
+                    pretty_dish = dish.get_ssml_phrase()
                 else:
                     pretty_dish = dish.get_pretty()
             else:
                 pretty_dish = '*%s*' % meal_item['name']
             pretty_dishes.append(pretty_dish)
         return pretty_dishes
+
+    def get_menu_ssml(self, include_dishes=True):
+        """Get menu for this meal as SSML (speech synthesis markup language)
+
+        https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit/docs/speech-synthesis-markup-language-ssml-reference
+        """
+        from htk.utils import lookahead
+        meal_dict = copy.copy(self.meal)
+        dishes = self.get_pretty_dishes(ssml=True)
+        dishes = [('<p>%s%s</p>' % ('' if has_more else 'and ', dish,)) for dish, has_more in lookahead(dishes)]
+        meal_dict['dishes'] = ', '.join(dishes)
+        ssml = """<speak>%(restaurant_cuisine)s cuisine from <emphasis level="moderate">%(restaurant_name)s</emphasis>, with %(dishes)s</speak>""" % meal_dict
+        return ssml
 
 class ZestyDish(object):
     def __init__(self, api, data):
@@ -278,3 +303,8 @@ _%(description)s_
             'image_url' : dish['full_image_path'],
         }
         return attachment
+
+    def get_ssml_phrase(self):
+        dish = self._get_dict()
+        ssml_phrase = '<emphasis level="moderate">%(name)s</emphasis><break strength="medium" /> made from %(description)s' % dish
+        return ssml_phrase
