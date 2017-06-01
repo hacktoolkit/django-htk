@@ -25,8 +25,10 @@ def get_inactive_users():
     inactive_users = _filters.inactive_users(UserModel.objects)
     return inactive_users
 
-def get_users_with_attribute_value(key, value, active=True):
+def get_users_with_attribute_value(key, value, as_bool=False, active=True):
     UserModel = get_user_model()
+    if as_bool:
+        value = int(bool(value))
     users = _filters.users_with_attribute_value(UserModel.objects, key, value)
     if active is not None:
         users = _filters.active_users(users, active=active)
