@@ -4,6 +4,7 @@ import requests
 import rollbar
 
 from htk.lib.zesty.constants import *
+from htk.utils.text.ssml import ssml_sanitized
 
 class ZestyAPI(object):
     def __init__(self, zesty_id):
@@ -261,6 +262,8 @@ _%(restaurant_description)s_
         meal_dict = copy.copy(self.meal)
         dishes = self.get_pretty_dishes(ssml=True)
         dishes = [('<p>%s%s</p>' % ('' if has_more else 'and ', dish,)) for dish, has_more in lookahead(dishes)]
+        meal_dict['restaurant_cuisine'] = ssml_sanitized(meal_dict['restaurant_cuisine'])
+        meal_dict['restaurant_name'] = ssml_sanitized(meal_dict['restaurant_name'])
         meal_dict['dishes'] = ', '.join(dishes)
         ssml = """<speak>%(restaurant_cuisine)s cuisine from <emphasis level="moderate">%(restaurant_name)s</emphasis>, with %(dishes)s</speak>""" % meal_dict
         return ssml
@@ -306,5 +309,7 @@ _%(description)s_
 
     def get_ssml_phrase(self):
         dish = self._get_dict()
+        dish['name'] = ssml_sanitized(dish['name'])
+        dish['description'] = ssml_sanitized(dish['description'])
         ssml_phrase = '<emphasis level="moderate">%(name)s</emphasis><break strength="medium" /> made from %(description)s' % dish
         return ssml_phrase
