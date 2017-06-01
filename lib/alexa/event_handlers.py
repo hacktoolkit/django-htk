@@ -1,7 +1,7 @@
 def preprocess_event(event_handler):
     def wrapped_event_handler(event):
         kwargs = {
-            'intent' : event['request']['intent'],
+            'intent' : event['request'].get('intent', {}),
         }
         payload = event_handler(event, **kwargs)
         return payload
@@ -34,7 +34,7 @@ def zesty(event, **kwargs):
     """
     intent = kwargs.get('intent')
 
-    if intent['name'] == 'ZestyLunchIntent':
+    if intent.get('name') == 'ZestyLunchIntent':
         #webhook_settings = event['webhook_settings']
         #user_id = webhook_settings['user']
         #from htk.apps.accounts.utils import get_user_by_id
