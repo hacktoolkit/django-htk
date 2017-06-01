@@ -1,11 +1,34 @@
+import random
+
 def preprocess_event(event_handler):
     def wrapped_event_handler(event):
         kwargs = {
-            'intent' : event['request'].get('intent', {}),
+            'intent' : event['request'].get('intent', None),
         }
         payload = event_handler(event, **kwargs)
         return payload
     return wrapped_event_handler
+
+@preprocess_event
+def launch(event, **kwargs):
+    """Launch event handler for Alexa webhook events
+    """
+    intent = kwargs.get('intent')
+
+    from htk.lib.alexa.constants import PERSONAL_ASSISTANT_PHRASES
+    ready_phrase = random.choice(PERSONAL_ASSISTANT_PHRASES['ready'])
+    ssml = """<speak>%s</speak>""" % ready_phrase
+
+    payload = {
+        'version' : '1.0',
+        'response' : {
+            'outputSpeech' : {
+                'type' : 'SSML',
+                'ssml' : ssml,
+            }
+        },
+    }
+    return payload
 
 @preprocess_event
 def default(event, **kwargs):
@@ -14,13 +37,14 @@ def default(event, **kwargs):
     Returns a payload if applicable, or None
     """
     intent = kwargs.get('intent')
+    ssml = """<speak>Sorry, I'm not sure how to process that.</speak>""",
 
     payload = {
         'version' : '1.0',
         'response' : {
             'outputSpeech' : {
                 'type' : 'SSML',
-                'ssml' : """<speak>Sorry, I'm not sure how to process that.</speak>""",
+                'ssml' : ssml,
             }
         },
     }
