@@ -3,6 +3,7 @@
 
 from bs4 import BeautifulSoup
 import requests
+import rollbar
 
 from htk.utils import htk_setting
 
@@ -46,7 +47,15 @@ def get_zestimate(zpid, zwsid=None):
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
-        zestimate = parse_zestimate_response(response)
+        try:
+            zestimate = parse_zestimate_response(response)
+        except:
+            zestimate = None
+            extra_data = {
+                'url' : url,
+                'params' : params,
+            }
+            rollbar.report_exc_info(extra_data=extra_data)
     else:
         zestimate = None
     return zestimate
