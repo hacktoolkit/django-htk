@@ -208,6 +208,21 @@ def loadjs(context, js_file_path):
     html = mark_safe(html)
     return html
 
+##
+# ACL Tags
+
+@register.assignment_tag(takes_context=True)
+def is_editable_by_context_user(context, obj):
+    user = context.get('user', None)
+    if user:
+        is_editable = obj.is_editable_by(user)
+    else:
+        is_editable = False
+    return is_editable
+
+##
+# Util Tags
+
 @register.simple_tag()
 def qrcode_image_url(qr_data):
     """Returns the URL to the QR Code image of `qr_data`
