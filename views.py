@@ -41,7 +41,7 @@ def generic_template_view(request, template_name, context_dict=None, content_typ
     try:
         template = loader.get_template(template_name)
         context_dict = context_dict or {}
-        response = HttpResponse(context_dict, request, content_type=content_type)
+        response = HttpResponse(template.render(context_dict), content_type=content_type)
     except TemplateDoesNotExist:
         response = None
         raise missing_template_exception
