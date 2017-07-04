@@ -1,12 +1,10 @@
 from django.conf.urls import include
-from django.conf.urls import patterns
 from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 
 import htk.apps.forums.views as views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = (
     url(r'^$', views.index, name='forum_index'),
     url(r'^(?P<fid>\d+)$', views.forum, name='forum'),
     url(r'^(?P<fid>\d+)/create$', views.thread_create, name='forum_thread_create'),

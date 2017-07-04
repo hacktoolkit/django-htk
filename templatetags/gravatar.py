@@ -1,8 +1,8 @@
 import urllib
 
+from django import template
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.template.base import Library
 from django.utils.html import escape
 
 from htk.lib.gravatar.utils import get_gravatar_hash
@@ -11,7 +11,7 @@ from htk.lib.gravatar.utils import get_gravatar_hash
 GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com/')
 GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', 'mm')
 
-register = Library()
+register = template.Library()
 
 def get_user(user):
     UserModel = get_user_model()

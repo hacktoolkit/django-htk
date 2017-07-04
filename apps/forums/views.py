@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
-from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.template.context_processors import csrf
 
 from htk.apps.forums.forms import ThreadCreationForm
 from htk.apps.forums.forms import MessageCreationForm

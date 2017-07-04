@@ -4,8 +4,6 @@ from django.apps import AppConfig
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 
-from htk.apps.accounts.models import UserEmail
-from htk.apps.accounts.utils.general import get_user_profile_model
 from htk.utils import htk_setting
 from htk.utils.notifications import slack_notify
 
@@ -17,6 +15,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     """
     if created:
         user = instance
+        from htk.apps.accounts.utils.general import get_user_profile_model
         UserProfileModel = get_user_profile_model()
         profile = UserProfileModel.objects.create(user=user)
         profile.save()
@@ -55,6 +54,7 @@ class HtkAccountsAppConfig(AppConfig):
         ##
         # signals
         UserModel = get_user_model()
+        from htk.apps.accounts.models import UserEmail
 
         # Upon saving a User object, create a UserProfile object if it doesn't already exist
         signals.post_save.connect(create_user_profile, sender=UserModel)

@@ -5,7 +5,6 @@ from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
-from django.template import RequestContext
 from django.template import TemplateDoesNotExist
 from django.template import loader
 
@@ -42,8 +41,7 @@ def generic_template_view(request, template_name, context_dict=None, content_typ
     try:
         template = loader.get_template(template_name)
         context_dict = context_dict or {}
-        context = RequestContext(request, context_dict)
-        response = HttpResponse(template.render(context), content_type=content_type)
+        response = HttpResponse(context_dict, request, content_type=content_type)
     except TemplateDoesNotExist:
         response = None
         raise missing_template_exception

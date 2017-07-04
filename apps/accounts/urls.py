@@ -1,11 +1,9 @@
 from django.conf.urls import include
-from django.conf.urls import patterns
 from django.conf.urls import url
 
 import htk.apps.accounts.views as views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = (
     # account registration and activation
     # url(r'^register_social_email$', views.register_social_email, name='account_register_social_email'),
     # url(r'^register_social_login$', views.register_social_login, name='account_register_social_login'),

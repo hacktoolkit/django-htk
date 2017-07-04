@@ -3,7 +3,6 @@ import os
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
-from django.template import Context
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
@@ -114,8 +113,7 @@ def send_email(
     try:
         html_template = get_template('emails/%s.html' % template)
         context['base_template'] = htk_setting('HTK_EMAIL_BASE_TEMPLATE_HTML')
-        c = Context(context)
-        html_content = html_template.render(c)
+        html_content = html_template.render(context)
     except TemplateDoesNotExist:
         html_template = None
         html_content = ''
@@ -123,14 +121,13 @@ def send_email(
     # if native text template exists, use it
     try:
         context['base_template'] = htk_setting('HTK_EMAIL_BASE_TEMPLATE_TEXT')
-        c = Context(context)
         text_template = get_template('emails/%s.txt' % template)
-        text_content = text_template.render(c)
+        text_content = text_template.render(context)
     except TemplateDoesNotExist:
         text_template = None
         # convert HTML to text
         if html_template:
-            html_text_content = html_template.render(c)
+            html_text_content = html_template.render(context)
             text_content = html2markdown(html_text_content)
         else:
             text_content = ''

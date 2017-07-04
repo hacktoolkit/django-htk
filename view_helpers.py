@@ -4,11 +4,11 @@ import rollbar
 from socket import gethostname
 
 from django.conf import settings
-from django.core.context_processors import csrf
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import loader
 from django.template import TemplateDoesNotExist
+from django.template.context_processors import csrf
 
 from htk.cachekeys import StaticAssetVersionCache
 from htk.session_keys import *

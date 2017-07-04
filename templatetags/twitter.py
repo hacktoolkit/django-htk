@@ -1,8 +1,8 @@
 import requests
 
-from django.template.base import Library
+from django import template
 
-register = Library()
+register = template.Library()
 
 # https://dev.twitter.com/docs/api/1.1/get/users/show
 

@@ -1,12 +1,10 @@
 from django.conf import settings
 from django.conf.urls import include
-from django.conf.urls import patterns
 from django.conf.urls import url
 
 import htk.lib.yahoo.sports.fantasy.views as views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = (
     url(r'^$', views.index, name='index'),
     url(r'^get_user$', views.get_user, name='lib_yahoo_sports_fantasy_get_user'),
     url(r'^get_user_leagues$', views.get_user_leagues, name='lib_yahoo_sports_fantasy_get_user_leagues'),

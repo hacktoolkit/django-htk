@@ -1,9 +1,9 @@
+from django import template
 from django.core.urlresolvers import reverse
-from django.template.base import Library
 
 from htk.utils import htk_setting
 
-register = Library()
+register = template.Library()
 
 @register.simple_tag
 def redir(url, text=None, target='_blank'):

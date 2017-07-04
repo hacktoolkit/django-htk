@@ -2,12 +2,12 @@ import datetime
 import re
 import urllib
 
+from django import template
 from django.core.urlresolvers import reverse
-from django.template.base import Library
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
 
-register = Library()
+register = template.Library()
 
 ##################################################
 # Filters
@@ -188,6 +188,7 @@ def lesscss(context, css_file_path_base, media=None):
         'media' : media,
     }
     html = '<link type="text/css" rel="%(css_rel)s" href="%(css_file_path_base)s.%(css_ext)s" %(media)s/>' % values
+    html = mark_safe(html)
     return html
 
 @register.simple_tag(takes_context=True)
@@ -204,6 +205,7 @@ def loadjs(context, js_file_path):
         'asset_version_str' : asset_version_str,
     }
     html = '<script type="text/javascript" src="%(js_file_path)s%(asset_version_str)s"></script>' % values
+    html = mark_safe(html)
     return html
 
 @register.simple_tag()

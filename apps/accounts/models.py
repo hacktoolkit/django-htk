@@ -10,8 +10,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from social.apps.django_app.default.models import UserSocialAuth
-
 from htk.apps.accounts.cachekeys import UserFollowersCache
 from htk.apps.accounts.cachekeys import UserFollowingCache
 from htk.apps.accounts.constants import *
@@ -214,10 +212,12 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
     def get_social_auths(self):
         """Gets all associated UserSocialAuth objects
         """
+        from social_django.models import UserSocialAuth
         social_auths = UserSocialAuth.objects.filter(user__id=self.user.id)
         return social_auths
 
     def get_social_user(self, provider, provider_id=None):
+        from social_django.models import UserSocialAuth
         try:
             if provider_id:
                 social_user = UserSocialAuth.objects.get(
@@ -265,7 +265,7 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
         return twid
 
     def get_social_auth_linkedin(self):
-        from social.apps.django_app.default.models import UserSocialAuth
+        from social_django.models import UserSocialAuth
         social_auth = UserSocialAuth.objects.get(user__id=self.user.id, provider=SOCIAL_AUTH_PROVIDER_LINKEDIN)
         return social_auth
 

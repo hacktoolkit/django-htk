@@ -1,7 +1,7 @@
+from django import template
 from django.core.urlresolvers import reverse
-from django.template.base import Library
 
-register = Library()
+register = template.Library()
 
 @register.inclusion_tag('htk/fragments/notifications/dismissible_alert.html', takes_context=True)
 def show_dismissible_alert(context, alert_name, alert_level, alert_template, user, *args, **kwargs):

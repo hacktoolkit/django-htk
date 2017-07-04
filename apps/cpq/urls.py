@@ -1,12 +1,10 @@
 from django.conf.urls import include
-from django.conf.urls import patterns
 from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 
 import htk.apps.cpq.views as views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = (
     # public views
     url(r'^invoices/$', views.index, name='cpq_invoices_index'),
     url(r'^invoices/(?P<invoice_code>[a-z0-9]+)$', views.invoice, name='cpq_invoices_invoice'),

@@ -1,6 +1,6 @@
 from django.contrib.sites.models import get_current_site
-from django.core.context_processors import csrf
 from django.shortcuts import redirect
+from django.template.context_processors import csrf
 
 from htk.apps.prelaunch.constants import *
 from htk.apps.prelaunch.forms import PrelaunchSignupForm

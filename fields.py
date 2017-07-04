@@ -10,8 +10,6 @@ else:
     SOUTH = True
 
 class CurrencyField(models.DecimalField):
-    __metaclass__ = models.SubfieldBase
-
     def __init__(self, verbose_name=None, name=None, **kwargs):
         decimal_places = kwargs.pop('decimal_places', 2)
         max_digits = kwargs.pop('max_digits', 10)
