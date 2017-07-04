@@ -1,4 +1,4 @@
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect
 from django.template.context_processors import csrf
 
