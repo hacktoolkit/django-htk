@@ -34,15 +34,10 @@ def get_event_handlers(event):
     event_handlers = copy.copy(htk_setting('HTK_ALEXA_SKILL_EVENT_HANDLERS'))
 
     # add in additional event group handlers
-    #extra_event_handlers = htk_setting('HTK_ALEXA_SKILL_EVENT_HANDLERS_EXTRAS')
-    #for event_group, handlers in extra_event_handlers.iteritems():
-    #    if webhook_settings.get(event_group, False) is True:
-    #        event_handlers.update(handlers)
+    extra_event_handlers = htk_setting('HTK_ALEXA_SKILL_EVENT_HANDLERS_EXTRAS')
+    for event_group, handlers in extra_event_handlers.iteritems():
+        event_handlers.update(handlers)
 
-    # remove any disabled commands
-    #disabled_commands = [k for k, v in webhook_settings.iteritems() if v is False and k in event_handlers]
-    #for command in disabled_commands:
-    #    del event_handlers[command]
     return event_handlers
 
 def get_event_handler_for_type(event, event_type=None):
