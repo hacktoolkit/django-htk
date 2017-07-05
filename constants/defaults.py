@@ -14,6 +14,7 @@ HTK_DEFAULT_APP_LABEL = 'htk'
 HTK_SITE_NAME = 'Hacktoolkit'
 HTK_SYMBOLIC_SITE_NAME = 'hacktoolkit'
 
+HTK_URLS_NAMESPACE = None
 HTK_INDEX_URL_NAME = 'index'
 HTK_REDIRECT_URL_NAME = 'redir'
 

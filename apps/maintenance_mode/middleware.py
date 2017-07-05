@@ -10,7 +10,13 @@ class MaintenanceModeMiddleware(object):
     If so, redirects to the HTK_MAINTENANCE_MODE_URL_NAME page
     """
     def process_request(self, request):
-        maintenance_mode_page = reverse(htk_setting('HTK_MAINTENANCE_MODE_URL_NAME'))
+        namespace = htk_setting('HTK_URLS_NAMESPACE')
+        url_name_suffix = htk_setting('HTK_MAINTENANCE_MODE_URL_NAME')
+        if namespace:
+            url_name = '%s:%s' % (namespace, url_name_suffix,)
+        else:
+            url_name = url_name_suffix
+        maintenance_mode_page = reverse(url_name)
         response = None
         if request.path == maintenance_mode_page:
             if not is_maintenance_mode():

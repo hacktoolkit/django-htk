@@ -79,7 +79,12 @@ def bing_site_auth(request):
     return response
 
 def robots(request):
-    template_name = 'robots.txt'
+    url_namespace = request.resolver_match.namespace
+    if url_namespace:
+        template_prefix = '%s/' % url_namespace
+    else:
+        template_prefix = ''
+    template_name = '%srobots.txt' % template_prefix
     context_dict = {
         'request' : {
             'request' : request,
