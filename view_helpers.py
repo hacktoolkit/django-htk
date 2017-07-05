@@ -119,6 +119,9 @@ def wrap_data(request, data=None):
         'site_verifications' : {},
     }
 
+    data['privacy_url_name'] = 'privacy'
+    data['robots_url_name'] = 'robots'
+
     ##
     # Rollbar
     data['rollbar'] = {
@@ -160,6 +163,19 @@ def wrap_data(request, data=None):
     data['errors'] = []
 
     return data
+
+def update_top_level_constants(context):
+    """Updates top-level key-values in `context` from `context['constants']`
+    """
+    constants = context.get('constants', {})
+    if constants:
+        keys = [
+            'privacy_url_name',
+            'robots_url_name',
+        ]
+        for key in keys:
+            if key in constants:
+                context[key] = constants[key]
 
 def _javascript_reloader(request, data):
     """Since pages may depend on JavaScript to function properly,
