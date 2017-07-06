@@ -116,8 +116,14 @@ def redir(request):
 
 def error_view(request):
     path_no_slash = request.path[1:]
+    url_namespace = request.resolver_match.namespace
+    if url_namespace:
+        template_prefix = '%s/' % url_namespace
+    else:
+        template_prefix = ''
+    template_name = '%s%s.html' % (template_prefix, path_no_slash,)
     response = generic_template_view(
         request,
-        '%s.html' % path_no_slash
+        template_name
     )
     return response
