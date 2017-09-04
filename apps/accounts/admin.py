@@ -18,6 +18,9 @@ class UserAttributeInline(admin.TabularInline):
     model = UserAttribute
     extra = 0
     can_delete = True
+    ordering = (
+        'key',
+    )
 
 class UserEmailInline(admin.TabularInline):
     model = UserEmail
