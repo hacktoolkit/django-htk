@@ -26,7 +26,7 @@ class OrganizationAttribute(AbstractAttribute):
 
 OrganizationAttributeHolder = AbstractAttributeHolderClassFactory(
     OrganizationAttribute,
-    holder_resolver=lambda self: self.organization
+    holder_resolver=lambda self: self
 ).get_class()
 
 class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
