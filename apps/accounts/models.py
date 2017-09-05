@@ -101,9 +101,17 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
         return display_username
 
     def get_nav_display_name(self):
+        """Gets the name to be displayed to the user in app navigation context
+        """
         display_name = self.get_display_name()
         if display_name.strip() == '':
             display_name = self.user.username if self.has_username_set else self.user.email
+        return display_name
+
+    def get_org_display_name(self):
+        """Gets the name to be displayed to other users in Organization context
+        """
+        display_name = '%s (%s)' % (self.get_full_name(), self.user.username,)
         return display_name
 
     def has_completed_account_setup(self, require_name=False):
@@ -302,6 +310,14 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
             social_auths = self.get_social_auths()
             can_disconnect = social_auths.count() > 1
         return can_disconnect
+
+    ##
+    # Organizations
+    # These methods only work if using htk.apps.organizations
+
+    def get_organizations(self):
+        organizations = [org_member.organization for org_member in self.user.organizations.filter(active=True)]
+        return organizations
 
     ##
     # meta stuff

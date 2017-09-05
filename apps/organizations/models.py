@@ -40,6 +40,49 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
         value = '%s' % (self.name,)
         return value
 
+    ##
+    # URLs
+
+    def get_absolute_url(self):
+        raise Exception('Not implemented')
+
+    ##
+    # Accessors
+
+    def get_members(self):
+        sort_order = htk_setting('HTK_ORGANIZATION_MEMBERS_SORT_ORDER')
+        members = [organization_member.user for organization_member in self.members.filter(active=True).order_by(*sort_order)]
+        return members
+
+    ##
+    # ACLs
+
+    def _has_member_with_role(self, user, roles):
+        role_values = [role.value for role in roles]
+        has_member = self.members.filter(user=user, role__in=role_values)
+        return has_member
+
+    def has_owner(self, user):
+        roles = (
+            OrganizationMemberRoles.OWNER,
+        )
+        return self._has_member_with_role(user, roles=roles)
+
+    def has_admin(self, user):
+        roles = (
+            OrganizationMemberRoles.OWNER,
+            OrganizationMemberRoles.ADMIN,
+        )
+        return self._has_member_with_role(user, roles=roles)
+
+    def has_member(self, user):
+        roles = (
+            OrganizationMemberRoles.OWNER,
+            OrganizationMemberRoles.ADMIN,
+            OrganizationMemberRoles.MEMBER,
+        )
+        return self._has_member_with_role(user, roles=roles)
+
 class BaseAbstractOrganizationMember(HtkBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organizations')
     organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='members')
