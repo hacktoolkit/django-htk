@@ -221,6 +221,36 @@ def is_editable_by_context_user(context, obj):
     return is_editable
 
 ##
+# Organizations
+
+@register.simple_tag(takes_context=True)
+def is_user_organization_owner(context, organization):
+    user = context.get('user', None)
+    if user:
+        is_owner = organization.has_owner(user)
+    else:
+        is_owner = False
+    return is_owner
+
+@register.simple_tag(takes_context=True)
+def is_user_organization_admin(context, organization):
+    user = context.get('user', None)
+    if user:
+        is_admin = organization.has_admin(user)
+    else:
+        is_admin = False
+    return is_admin
+
+@register.simple_tag(takes_context=True)
+def is_user_organization_member(context, organization):
+    user = context.get('user', None)
+    if user:
+        is_member = organization.has_member(user)
+    else:
+        is_member = False
+    return is_member
+
+##
 # Util Tags
 
 @register.simple_tag()
