@@ -316,7 +316,9 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
     # These methods only work if using htk.apps.organizations
 
     def get_organizations(self):
-        organizations = [org_member.organization for org_member in self.user.organizations.filter(active=True)]
+        from htk.utils.general import resolve_model_dynamically
+        Organization = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MODEL'))
+        organizations = Organization.objects.filter(members__user=self.user, members__active=True)
         return organizations
 
     ##
