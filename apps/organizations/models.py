@@ -49,20 +49,7 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
             'handle' : self.handle,
         })
         return value
-
-    ##
-    # Attributes
-
-    def get_attribute_keys(self):
-        """Returns a list of attribute keys
-        """
-        return ()
-
-    def get_boolean_attributes_lookup(self):
-        """Returns a dictionary of attribute keys that are boolean values
-        """
-        return {}
-
+ 
     ##
     # Accessors
 

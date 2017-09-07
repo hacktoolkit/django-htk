@@ -116,4 +116,14 @@ class AbstractAttributeHolderClassFactory(object):
                 if attribute:
                     attribute.delete()
 
+            def get_attribute_keys(self):
+                """Returns a list of attribute keys
+                """
+                return ()
+
+            def get_boolean_attributes_lookup(self):
+                """Returns a dictionary of attribute keys that are boolean values
+                """
+                return {}
+
         return AbstractAttributeHolderClass
