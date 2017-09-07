@@ -40,11 +40,28 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
         value = '%s' % (self.name,)
         return value
 
-    ##
-    # URLs
+    def json_encode(self):
+        """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+        """
+        value = super(BaseAbstractOrganization, self).json_encode()
+        value.update({
+            'name' : self.name,
+            'handle' : self.handle,
+        })
+        return value
 
-    def get_absolute_url(self):
-        raise Exception('Not implemented')
+    ##
+    # Attributes
+
+    def get_attribute_keys(self):
+        """Returns a list of attribute keys
+        """
+        return ()
+
+    def get_boolean_attributes_lookup(self):
+        """Returns a dictionary of attribute keys that are boolean values
+        """
+        return {}
 
     ##
     # Accessors

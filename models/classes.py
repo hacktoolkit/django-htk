@@ -20,10 +20,24 @@ class HtkBaseModel(models.Model):
     class Meta:
         abstract = True
 
+    def json_encode(self):
+        """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+        """
+        value = {
+            'id' : self.id,
+        }
+        return value
+
+    ##
+    # URLs
+
     def get_admin_url(self):
         content_type = ContentType.objects.get_for_model(self.__class__)
         url = reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
         return url
+
+    def get_absolute_url(self):
+        raise Exception('Not implemented')
 
 class AbstractAttribute(models.Model):
     """An abstract class for storing an arbitrary attribute on a Django model
