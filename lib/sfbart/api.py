@@ -113,8 +113,8 @@ class BartAPI(object):
         dest_station,
         time='now',
         date='today',
-        trips_before=2,
-        trips_after=2,
+        trips_before=1,
+        trips_after=3,
         include_legend=False
     ):
         data = self._get_schedule_arrive_depart(
