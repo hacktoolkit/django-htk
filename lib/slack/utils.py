@@ -10,6 +10,7 @@ def webhook_call(
     channel=None,
     username=None,
     text='',
+    attachments=None,
     icon_emoji=None,
     unfurl_links=True,
     unfurl_media=True,
@@ -36,6 +37,8 @@ def webhook_call(
         payload['username'] = username
     if icon_emoji:
         payload['icon_emoji'] = icon_emoji
+    if attachments:
+        payload['attachments'] = attachments
 
     response = requests.post(webhook_url, json=payload)
     if response.status_code == 200:

@@ -53,12 +53,12 @@ class GitHubReminderBot(object):
             should_exclude = m is not None
             return should_exclude
 
-        def format_pull_request(num, repo, pull_request):
+        def add_pull_request(repo, pull_request, reviews, has_approval, has_change, pr_list):
             # http://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html#github.PullRequest.PullRequest
             # https://api.slack.com/docs/message-formatting
             num_comments = pull_request.comments
             context = {
-                'num' : num,
+                'num' : len(pr_list) + 1,
                 'repo_name' : repo.name,
                 'pr_author' : pull_request.user.login,
                 'pr_author_url' : pull_request.user.html_url,
@@ -67,13 +67,14 @@ class GitHubReminderBot(object):
                 'num_comments' : pluralize('comment', num_comments),
             }
 
-            msg = """%(num)s) **%(repo_name)s** | <%(pr_author_url)s|%(pr_author)s>
-<%(pr_url)s|%(pr_title)s> - %(num_comments)s""" % context
+            msg = """%(num)s) [%(repo_name)s] <%(pr_author_url)s|%(pr_author)s> | <%(pr_url)s|%(pr_title)s> (%(num_comments)s)""" % context
+            pr_list.append(msg)
 
-            return msg
+        pull_requests_review = []
+        pull_requests_change = []
+        pull_requests_approve = []
+        pull_requests_merge = []
 
-        num = 1
-        pull_request_messages = []
         for repo in self.repos:
             # http://pygithub.readthedocs.io/en/latest/github_objects/Repository.html#github.Repository.Repository.get_pulls
             open_pull_requests = repo.get_pulls(state='open', sort='created', direction='desc')
@@ -81,23 +82,57 @@ class GitHubReminderBot(object):
                 if should_exclude_pull_request(pull_request):
                     pass
                 else:
-                    message = format_pull_request(num,repo, pull_request)
-                    pull_request_messages.append(message)
-                    num += 1
+                    # https://developer.github.com/v3/pulls/reviews/
+                    reviews = pull_request.get_reviews()
+                    has_approval = False
+                    has_multiple_approvals = False
+                    has_change = False
+                    for review in reviews:
+                        if review.state == 'APPROVED':
+                            if has_approval:
+                                has_multiple_approvals = True
+                            else:
+                                has_approval = True
+                        elif review.state == 'CHANGES_REQUESTED':
+                            has_change = True
+                        elif review.state == 'COMMENTED':
+                            pass
+                        else:
+                            print review.state
+
+                    pr_list = pull_requests_change if has_change else pull_requests_merge if has_multiple_approvals else pull_requests_approve if has_approval else pull_requests_review
+                    add_pull_request(repo, pull_request, reviews, has_approval, has_change, pr_list)
 
         context = {
             'greeting' : greeting,
-            'pull_requests' : '\n'.join(pull_request_messages),
         }
         markdown_content = u"""<!here> %(greeting)s Team!
 
-Here are the pull requests that need to be reviewed today:
+Let's review some pull requests!""" % context
 
-%(pull_requests)s
-
-Happy reviewing!
-""" % context
-        return markdown_content
+        attachments = [
+            {
+                'title' : '%s Pull Requests need to be reviewed:' % len(pull_requests_review),
+                'text' : '\n'.join(pull_requests_review),
+                'color' : 'warning',
+            },
+            {
+                'title' : '%s Pull Requests require changes:' % len(pull_requests_change),
+                'text' : '\n'.join(pull_requests_change),
+                'color' : 'danger',
+            },
+            {
+                'title' : '%s Pull Requests need additional approvals:' % len(pull_requests_approve),
+                'text' : '\n'.join(pull_requests_approve),
+                'color' : '#439fe0',
+            },
+            {
+                'title' : '%s Pull Requests are ready to merge!' % len(pull_requests_merge),
+                'text' : '\n'.join(pull_requests_merge),
+                'color' : 'good',
+            },
+        ]
+        return (markdown_content, attachments,)
 
 class GitHubReminderSlackBot(GitHubReminderBot):
     def __init__(self, github_access_token, organization, slack_webhook_url, slack_channel):
@@ -106,7 +141,7 @@ class GitHubReminderSlackBot(GitHubReminderBot):
         self.slack_channel = slack_channel
 
     def remind_pull_requests(self):
-        markdown_content = self.pull_request_reminder()
+        markdown_content, attachments = self.pull_request_reminder()
         from htk.utils.text.converters import markdown2slack
         slack_text = markdown2slack(markdown_content)
         from htk.lib.slack.utils import webhook_call
@@ -114,6 +149,7 @@ class GitHubReminderSlackBot(GitHubReminderBot):
             webhook_url=self.slack_webhook_url,
             channel=self.slack_channel,
             text=slack_text,
+            attachments=attachments,
             username='GitHub Reminder Bot',
             icon_emoji=':octocat:',
             unfurl_links=False
