@@ -101,8 +101,8 @@ class BaseWebTestCase(BaseTestCase):
         response = client.post(path, data=params, follow=follow, **extra)
         return response
 
-    def _check_view_is_okay(self, view_name, client=None, params=None, follow=False):
-        response = self._get(view_name, client=client, params=params, follow=follow)
+    def _check_view_is_okay(self, view_name, client=None, params=None, follow=False, secure=False):
+        response = self._get(view_name, client=client, params=params, follow=follow, secure=secure)
         self.assertEqual(200,
                          response.status_code,
                          '[%s] got unexpected response code %d' %
@@ -128,19 +128,22 @@ class BaseWebTestCase(BaseTestCase):
                          len(redirect_chain),
                          'Unexpected redirect, should have stayed on [%s]. %s' % (view_name, extra_message,))
 
-    def _check_response_redirect_chain(self, view_name, another, response, extra_message=''):
+    def _check_response_redirect_chain(self, view_name, another, response, extra_message='', secure=False):
         """Check that response.redirect_chain is behaving correctly
         """
         redirect_chain = response.redirect_chain
         self.assertTrue(len(redirect_chain) > 0,
                         '[%s] did not redirect to [%s]. %s' % (view_name, another, extra_message,))
         self.assertEqual(302, redirect_chain[0][1])
-        if re.match(r'^http://', another):
+
+        protocol_pattern = r'^https://' if secure else r'^http://'
+        if re.match(protocol_pattern, another):
             # `another` is a full uri
             pattern = another
         else:
             # `another` is a view name
-            pattern = r'http://%s%s' % (TESTSERVER, reverse(another),)
+            protocol_pattern = protocol_pattern + '%s%s'
+            pattern = protocol_pattern % (TESTSERVER, reverse(another),)
         actual = redirect_chain[0][0]
         match = re.match(pattern, actual)
         self.assertIsNotNone(match,
@@ -149,19 +152,19 @@ class BaseWebTestCase(BaseTestCase):
                               actual,
                               another,))
 
-    def _check_view_redirects_to_another(self, view_name, another, client=None, params=None, view_args=None, view_kwargs=None, method='get'):
+    def _check_view_redirects_to_another(self, view_name, another, client=None, params=None, view_args=None, view_kwargs=None, method='get', secure=False):
         """Perform an HTTP request and check that the redirect_chain behaves correctly for a page that is expected to redirect
         """
         if method == 'get':
-            response = self._get(view_name, client=client, params=params, view_args=view_args, view_kwargs=view_kwargs, follow=True)
+            response = self._get(view_name, client=client, params=params, view_args=view_args, view_kwargs=view_kwargs, follow=True, secure=secure)
         elif method == 'post':
-            response = self._post(view_name, client=client, params=params, view_args=view_args, view_kwargs=view_kwargs, follow=True)
+            response = self._post(view_name, client=client, params=params, view_args=view_args, view_kwargs=view_kwargs, follow=True, secure=secure)
         else:
             raise Exception('Unknown HTTP method: %s' % method)
-        self._check_response_redirect_chain(view_name, another, response)
+        self._check_response_redirect_chain(view_name, another, response, secure=secure)
 
-    def _check_view_redirects_to_login(self, view_name, client=None, login_url_name='account_login'):
-        self._check_view_redirects_to_another(view_name, login_url_name, client=client)
+    def _check_view_redirects_to_login(self, view_name, client=None, login_url_name='account_login', secure=False):
+        self._check_view_redirects_to_another(view_name, login_url_name, client=client, secure=secure)
 
     def _check_prelaunch_mode(self, view_name):
         from htk.apps.prelaunch.utils import get_prelaunch_url_name
