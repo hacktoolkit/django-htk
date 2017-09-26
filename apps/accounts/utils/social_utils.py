@@ -1,4 +1,4 @@
-from social.apps.django_app.default.models import UserSocialAuth
+from social_django.models import UserSocialAuth
 
 def get_social_auth_for_user(user, provider):
     """Get UserSocialAuth for given `user` and `provider`
