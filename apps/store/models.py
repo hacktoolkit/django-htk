@@ -1,5 +1,5 @@
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 
 from htk.utils import htk_setting
 from htk.utils.text.transformers import seo_tokenize

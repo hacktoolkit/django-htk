@@ -1,6 +1,6 @@
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from htk.api.utils import json_response_error

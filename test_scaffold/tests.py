@@ -1,10 +1,10 @@
 import re
 
-from django.core.urlresolvers import NoReverseMatch
-from django.core.urlresolvers import reverse
 from django.test.client import Client
 # https://docs.djangoproject.com/en/1.5/topics/testing/overview/#provided-test-case-classes
 from django.test import TestCase
+from django.urls import NoReverseMatch
+from django.urls import reverse
 #from django.utils import unittest
 from django.utils.http import urlencode
 

@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from htk.apps.feedback.constants import *
 from htk.mailers import send_email

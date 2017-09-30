@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically

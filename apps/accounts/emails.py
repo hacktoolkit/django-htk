@@ -2,7 +2,7 @@ from hashlib import sha1
 import datetime
 import random
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.http import int_to_base36
 
 from htk.emails import BaseBatchRelationshipEmails

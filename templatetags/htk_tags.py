@@ -3,8 +3,8 @@ import re
 import urllib
 
 from django import template
-from django.core.urlresolvers import reverse
 from django.template.defaultfilters import stringfilter
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 register = template.Library()

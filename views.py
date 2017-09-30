@@ -1,12 +1,12 @@
 import re
 
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template import TemplateDoesNotExist
 from django.template import loader
+from django.urls import reverse
 
 def health_check(request):
     response = HttpResponse('200 OK', status=200)

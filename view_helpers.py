@@ -4,11 +4,11 @@ import rollbar
 from socket import gethostname
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import loader
 from django.template import TemplateDoesNotExist
 from django.template.context_processors import csrf
+from django.urls import reverse
 
 from htk.cachekeys import StaticAssetVersionCache
 from htk.session_keys import *
@@ -317,8 +317,8 @@ def add_breadcrumb_mapping(url_name, title, data):
 def get_resolver_matches_chain(request, data=None):
     """Walk the current request URL path up to the top, attempting to resolve along the way
     """
-    from django.core.urlresolvers import Resolver404
-    from django.core.urlresolvers import resolve
+    from django.urls import Resolver404
+    from django.urls import resolve
     resolver_matches_chain = []
     path = request.path
     resolver_matches_chain.append((path, request.resolver_match,))

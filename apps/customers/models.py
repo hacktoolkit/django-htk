@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 
 from htk.apps.customers.constants import *
 from htk.apps.customers.utils import get_organization_type_choices

@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from htk.apps.maintenance_mode.utils import is_maintenance_mode
 from htk.utils import htk_setting

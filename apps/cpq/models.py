@@ -1,8 +1,8 @@
 import json
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 
 from htk.apps.cpq.constants import *
 from htk.apps.cpq.utils import compute_cpq_code

@@ -1,6 +1,6 @@
 from django.contrib.auth import logout
-from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
+from django.urls import reverse
 
 from htk.utils import htk_setting
 

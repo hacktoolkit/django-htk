@@ -1,8 +1,8 @@
 import re
 
 from django.conf import settings
-from django.core.urlresolvers import NoReverseMatch
-from django.core.urlresolvers import reverse
+from django.urls import NoReverseMatch
+from django.urls import reverse
 
 from htk.apps.prelaunch.constants import *
 from htk.utils import htk_setting

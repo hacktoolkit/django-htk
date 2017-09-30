@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
 from django.template import Context
 from django.template import loader
+from django.urls import reverse
 
 from htk.api.utils import json_response
 from htk.lib.yahoo.sports.fantasy.constants import *
