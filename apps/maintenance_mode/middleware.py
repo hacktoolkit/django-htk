@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.urls import reverse_lazy
 
 from htk.apps.maintenance_mode.utils import is_maintenance_mode
 from htk.utils import htk_setting
@@ -16,7 +16,7 @@ class MaintenanceModeMiddleware(object):
             url_name = '%s:%s' % (namespace, url_name_suffix,)
         else:
             url_name = url_name_suffix
-        maintenance_mode_page = reverse(url_name)
+        maintenance_mode_page = reverse_lazy(url_name)
         response = None
         if request.path == maintenance_mode_page:
             if not is_maintenance_mode():
