@@ -1,4 +1,4 @@
-from social.apps.django_app.middleware import SocialAuthExceptionMiddleware
+from social_django.middleware import SocialAuthExceptionMiddleware
 
 from htk.utils import htk_setting
 
