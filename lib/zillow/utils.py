@@ -24,9 +24,9 @@ def parse_zestimate_response(response):
         'zestimate' : {
             'amount' : zresponse.zestimate.amount.string,
             'last_updated' : zresponse.zestimate.find('last-updated').string,
-            'value_change' : zresponse.zestimate.valueChange.string,
-            'low' : zresponse.zestimate.valuationRange.low.string,
-            'high' : zresponse.zestimate.valuationRange.high.string,
+            'value_change' : zresponse.zestimate.valueChange.string or 0,
+            'low' : zresponse.zestimate.valuationRange.low.string or 0,
+            'high' : zresponse.zestimate.valuationRange.high.string or 0,
         },
     }
     return zestimate
