@@ -134,7 +134,7 @@ class LockableObject(object):
     def acquire(self):
         """Alias for lock()
         """
-        self.lock()
+        return self.lock()
 
     def release(self):
         """Alias for unlock()
