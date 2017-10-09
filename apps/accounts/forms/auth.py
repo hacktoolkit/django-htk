@@ -15,6 +15,7 @@ from htk.apps.accounts.utils import authenticate_user_by_username_email
 from htk.apps.accounts.utils import email_to_username_hash
 from htk.apps.accounts.utils import email_to_username_pretty_unique
 from htk.apps.accounts.utils import get_user_by_email
+from htk.apps.accounts.utils import get_user_by_email_with_retries
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
 from htk.utils import htk_setting
@@ -119,23 +120,43 @@ class UserRegistrationForm(UserCreationForm):
         return password1
 
     def save(self, domain=None, email_template=None, email_subject=None, email_sender=None, commit=True):
-        domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
-        user = super(UserRegistrationForm, self).save(commit=False)
+        """Handles a possible race condition and performs save
+        """
+        def _process_registration(self, domain, email_template, email_subject, email_sender, commit):
+            domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
+            user = super(UserRegistrationForm, self).save(commit=False)
+            # temporarily assign a unique username so that we can create the record and the user can log in
+            if htk_setting('HTK_ACCOUNTS_REGISTER_SET_PRETTY_USERNAME_FROM_EMAIL', False):
+                user.username = email_to_username_pretty_unique(email)
+            else:
+                user.username = email_to_username_hash(email)
+            # we'll store the primary email in the User object
+            user.email = email
+            if not htk_setting('HTK_ACCOUNT_ACTIVATE_UPON_REGISTRATION', False):
+                # require user to confirm email account before activating it
+                user.is_active = False
+            if commit:
+                user.save()
+                from htk.apps.accounts.utils import associate_user_email
+                user_email = associate_user_email(user, email, domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
+            return user
+
+        from htk.apps.accounts.locks import UserEmailRegistrationLock
         email = self.email
-        # temporarily assign a unique username so that we can create the record and the user can log in
-        if htk_setting('HTK_ACCOUNTS_REGISTER_SET_PRETTY_USERNAME_FROM_EMAIL', False):
-            user.username = email_to_username_pretty_unique(email)
+        lock = UserEmailRegistrationLock(email)
+        if lock.is_locked():
+            # another user registration is in progress
+            user = get_user_by_email_with_retries(email)
         else:
-            user.username = email_to_username_hash(email)
-        # we'll store the primary email in the User object
-        user.email = email
-        if not htk_setting('HTK_ACCOUNT_ACTIVATE_UPON_REGISTRATION', False):
-            # require user to confirm email account before activating it
-            user.is_active = False
-        if commit:
-            user.save()
-            from htk.apps.accounts.utils import associate_user_email
-            user_email = associate_user_email(user, email, domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
+            try:
+                lock.acquire()
+                user = _process_registration(self, domain, email_template, email_subject, email_sender, commit)
+            except:
+                rollbar.report_exc_info()
+                # another user registration is in progress
+                user = get_user_by_email_with_retries(email)
+            finally:
+                lock.release()
         return user
 
 class NameEmailUserRegistrationForm(UserRegistrationForm):

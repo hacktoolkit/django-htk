@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import rollbar
+import time
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
@@ -123,6 +124,22 @@ def get_user_by_email(email):
                 user = get_incomplete_signup_user_by_email(email)
     else:
         user = None
+    return user
+
+def get_user_by_email_with_retries(email, max_attempts=4):
+    """Gets a User by `email`
+    Wrapper for `get_user_by_email()` that will retry up to `max_attempts`.
+    Used for mitigating possible race conditions during account creation.
+
+    Returns None if not found
+    """
+    user = None
+    attempt = 0
+    while user is None and attempt < max_attempts:
+        user = get_user_by_email(email)
+        if user is None:
+            time.sleep(2**attempt)
+        attempt += 1
     return user
 
 def get_incomplete_signup_user_by_email(email):
