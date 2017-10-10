@@ -6,11 +6,16 @@ def get_duplicate_emails():
     UserModel = get_user_model()
     users = UserModel.objects.all()
     emails_seen = {}
-    duplicate_emails = []
+    duplicate_emails = {}
     for user in users:
-        email = user.email.lower()
-        if email in emails_seen:
-            duplicate_emails.append(email)
-        else:
-            emails_seen[email] = True
-    return duplicate_emails
+        email = user.email.strip().lower()
+        if email:
+            if email not in emails_seen:
+                emails_seen[email] = True
+            else:
+                if email not in duplicate_emails:
+                    duplicate_emails[email] = 1
+                else:
+                    duplicate_emails[email] += 1
+
+    return sorted(duplicate_emails.keys())
