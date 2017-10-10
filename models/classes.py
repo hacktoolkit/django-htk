@@ -62,6 +62,13 @@ class AbstractAttribute(models.Model):
         self.value = value
         self.save()
 
+    def value_as_json(self):
+        try:
+            value = json.loads(self.value)
+        except ValueError:
+            value = None
+        return value
+
 class AbstractAttributeHolderClassFactory(object):
     """Creates an attribute holder class for multi-inheritance
     """
