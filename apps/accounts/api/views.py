@@ -19,6 +19,7 @@ from htk.apps.accounts.utils.auth import login_authenticated_user
 from htk.apps.accounts.utils import resolve_encrypted_uid
 from htk.forms.utils import get_form_error
 from htk.forms.utils import get_form_errors
+from htk.utils import htk_setting
 
 ##################################################
 # Authentication API views
@@ -120,7 +121,10 @@ def password(request):
     user = request.user
     password_form = ChangePasswordForm(user, request.POST)
     if password_form.is_valid():
-        password_form.save(user)
+        user = password_form.save(user)
+        if htk_setting('HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'):
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, user)
         response = json_response_okay()
     else:
         response = json_response_error()

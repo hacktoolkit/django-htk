@@ -413,7 +413,10 @@ def reset_password(
             if request.method == 'POST':
                 form = UpdatePasswordForm(user, request.POST)
                 if form.is_valid():
-                    form.save()
+                    user = form.save()
+                    if htk_setting('HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'):
+                        from django.contrib.auth import update_session_auth_hash
+                        update_session_auth_hash(request, user)
                     success = True
             else:
                 form = UpdatePasswordForm(None)

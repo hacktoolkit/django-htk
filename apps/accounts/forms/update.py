@@ -101,5 +101,6 @@ class ChangePasswordForm(SetPasswordForm):
         set_input_placeholder_labels(self)
 
     def save(self, user, *args, **kwargs):
-        super(ChangePasswordForm, self).save(*args, **kwargs)
+        user = super(ChangePasswordForm, self).save(*args, **kwargs)
         password_changed_email(user)
+        return user
