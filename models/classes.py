@@ -49,7 +49,7 @@ class AbstractAttribute(models.Model):
 
     """
     key = models.CharField(max_length=128, blank=True)
-    value = models.TextField(max_length=2048, blank=True)
+    value = models.TextField(max_length=4096, blank=True)
 
     # meta
     created_on = models.DateTimeField(auto_now_add=True)
