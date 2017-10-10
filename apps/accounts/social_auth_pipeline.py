@@ -44,7 +44,7 @@ def reset_session_keys(strategy, *args, **kwargs):
     """
     for key in SOCIAL_AUTH_FLOW_KEYS:
         if strategy.request.session.get(key):
-            del request.session[key]
+            del strategy.request.session[key]
     return None
 
 @partial
