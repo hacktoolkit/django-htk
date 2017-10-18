@@ -31,10 +31,11 @@ class AccountActivationReminderEmails(BaseBatchRelationshipEmails):
         )
         return users
 
-    def send_email(self, recipient):
-        """Sends an activation reminder email to `recipient`
+    def send_email(self, recipient, **kwargs):
+        """Sends an activation reminder email to `recipient`, a Django User
         """
-        recipient.profile.send_activation_reminder_email()
+        user = recipient
+        user.profile.send_activation_reminder_email()
 
 def activation_email(user_email, use_https=False, domain=None, template=None, subject=None, sender=None):
     """Sends an activation/confirmation email for user to confirm email address
