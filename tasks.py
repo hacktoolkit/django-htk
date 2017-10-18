@@ -51,7 +51,7 @@ class BaseTask(object):
         users = []
         return users
 
-    def execute(self, uesr):
+    def execute(self, user):
         """Workhorse function called by `self.execute_batch`
 
         Can be overriden
