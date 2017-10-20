@@ -38,7 +38,7 @@
   <div>
     <h4 class="cpq-heading">Notes</h4>
     {{ cpq_obj.get_notes|markdownify|safe }}
-    {% if cpq_type.get_type == 'Invoice' %}
+    {% if cpq_obj.get_type == 'Invoice' %}
     <b>{{ cpq_obj.get_payment_terms }}</b><br/>
     {% endif %}
     Thank you!<br/>

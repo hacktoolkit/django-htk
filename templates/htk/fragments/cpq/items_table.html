@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load htk_tags %}
 <table class="pure-table cpq-items">
   <thead>
     <tr>
@@ -34,13 +35,13 @@
         {{ line_item.description|linebreaksbr }}
       </td>
       <td class="cpq-item-unit-cost" data:line_item_unit_cost="{{ line_item.unit_cost }}">
-        ${{ line_item.unit_cost|intcomma }}
+        {{ line_item.unit_cost|intcomma|currency_symbol:'$' }}
       </td>
       <td class="cpq-item-quantity" data:line_item_quantity="{{ line_item.quantity }}">
         {{ line_item.quantity|intcomma }}
       </td>
       <td class="cpq-item-amount" data:line_item_amount="{{ line_item.get_amount }}">
-        ${{ line_item.get_amount|intcomma }}
+        {{ line_item.get_amount|intcomma|currency_symbol:'$' }}
       </td>
     </tr>
     {% endfor %}
@@ -55,7 +56,7 @@
         Amount Due
         {% endif %}
       </th>
-      <th class="cpq-total">${{ cpq_obj.get_total|intcomma }}</th>
+      <th class="cpq-total">{{ cpq_obj.get_total|intcomma|currency_symbol:'$' }}</th>
     </tr>
   </tfoot>
 </table>

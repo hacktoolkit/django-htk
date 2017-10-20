@@ -89,6 +89,17 @@ def currency(value):
     return value
 
 @register.filter()
+def currency_symbol(value, symbol):
+    if len(value) > 0 and value[0] == '-':
+        sign = '-'
+        abs_value = value[1:]
+    else:
+        sign = ''
+        abs_value = value
+    result = '%s%s%s' % (sign, symbol, abs_value,)
+    return result
+
+@register.filter()
 def timestamp(value):
     try:
         formatted = datetime.datetime.fromtimestamp(value)
