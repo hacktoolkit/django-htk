@@ -70,9 +70,11 @@ class BaseTask(object):
                     pass
                 else:
                     self.execute(user)
+                    # cache right after execution or exception, not before
+                    # since each execution costs a non-zero overhead
+                    self.reset_cooldown(user)
             except:
-                rollbar.report_exc_info()
-            finally:
-                # cache right after execution or exception, not before
-                # since each execution costs a non-zero overhead
-                self.reset_cooldown(user)
+                extra_data = {
+                    'user' : user,
+                }
+                rollbar.report_exc_info(extra_data=extra_data)

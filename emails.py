@@ -1,4 +1,5 @@
 import inspect
+import rollbar
 
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
@@ -38,9 +39,45 @@ class BaseBatchRelationshipEmails(BaseTask):
         else:
             raise TemplateDoesNotExist('Unspecified template')
 
+    def get_email_batch_cooldown_prekey(self, user, **kwargs):
+        prekey = ['email_batch', user.id,]
+        return prekey
+
+    def has_email_batch_cooldown(self, user, **kwargs):
+        """Checks whether cooldown timer is still going for the email batch for `user` and `kwargs`
+        """
+        prekey = self.get_email_batch_cooldown_prekey(user, **kwrags)
+        c = self.cooldown_class(prekey)
+        _has_cooldown = bool(c.get())
+        return _has_cooldown
+
+    def reset_email_batch_cooldown(self, user, **kwargs):
+        """Resets cooldown timer for email batch for `user` and `kwargs`
+
+        Returns whether cooldown was reset, False if timer was still running
+        """
+        prekey = self.get_email_batch_cooldown_prekey(user, **kwrags)
+        c = self.cooldown_class(prekey)
+        if c.get():
+            was_reset = False
+        else:
+            c.cache_store()
+            was_reset = True
+        return was_reset
+
     def get_users(self):
         users = self.get_recipients()
         return users
+
+    def get_recipient_email_batches_data(self, recipient):
+        """Gets data about each email for the `recipient`
+
+        Use cases. A recipient can receive multiple emails if:
+        - recipient has multiple "sub-accounts"
+
+        Returns a list of dictionaries
+        """
+        return [{}]
 
     def get_recipients(self):
         """Returns a list or QuerySet of User objects
@@ -58,17 +95,18 @@ class BaseBatchRelationshipEmails(BaseTask):
         recipient = user
         email_batches_data = self.get_recipient_email_batches_data(recipient)
         for email_batch_data in email_batches_data:
-            self.send_email(recipient, **email_batch_data)
-
-    def get_recipient_email_batches_data(self, recipient):
-        """Gets data about each email for the `recipient`
-
-        Use cases. A recipient can receive multiple emails if:
-        - recipient has multiple "sub-accounts"
-
-        Returns a list of dictionaries
-        """
-        return [{}]
+            try:
+                if has_email_batch_cooldown(recipient, **email_batch_data):
+                    pass
+                else:
+                    self.send_email(recipient, **email_batch_data)
+                    self.reset_email_batch_cooldown(recipient, **email_batch_data)
+            except:
+                extra_data = {
+                    'user' : user,
+                    'email_batch_data' : email_batch_data,
+                }
+                rollbar.report_exc_info(extra_data=extra_data)
 
     def send_email(self, recipient, **kwargs):
         """Workhorse function called by `self.send_emails` for
