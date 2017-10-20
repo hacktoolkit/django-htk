@@ -1,4 +1,5 @@
 import inspect
+import rollbar
 
 class BaseTask(object):
     """Base class for background tasks
@@ -63,11 +64,15 @@ class BaseTask(object):
         """
         users = self.get_users()
         for user in users:
-            if self.has_cooldown(user):
-                # cooldown has not elapsed yet, don't execute too frequently
-                pass
-            else:
-                self.execute(user)
-                # cache right after execution, not before
+            try:
+                if self.has_cooldown(user):
+                    # cooldown has not elapsed yet, don't execute too frequently
+                    pass
+                else:
+                    self.execute(user)
+            except:
+                rollbar.report_exc_info()
+            finally:
+                # cache right after execution or exception, not before
                 # since each execution costs a non-zero overhead
                 self.reset_cooldown(user)
