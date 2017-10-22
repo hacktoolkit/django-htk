@@ -96,7 +96,7 @@ class BaseBatchRelationshipEmails(BaseTask):
         email_batches_data = self.get_recipient_email_batches_data(recipient)
         for email_batch_data in email_batches_data:
             try:
-                if has_email_batch_cooldown(recipient, **email_batch_data):
+                if self.has_email_batch_cooldown(recipient, **email_batch_data):
                     pass
                 else:
                     self.send_email(recipient, **email_batch_data)
