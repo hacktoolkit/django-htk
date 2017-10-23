@@ -46,7 +46,7 @@ class BaseBatchRelationshipEmails(BaseTask):
     def has_email_batch_cooldown(self, user, **kwargs):
         """Checks whether cooldown timer is still going for the email batch for `user` and `kwargs`
         """
-        prekey = self.get_email_batch_cooldown_prekey(user, **kwrags)
+        prekey = self.get_email_batch_cooldown_prekey(user, **kwargs)
         c = self.cooldown_class(prekey)
         _has_cooldown = bool(c.get())
         return _has_cooldown
@@ -56,7 +56,7 @@ class BaseBatchRelationshipEmails(BaseTask):
 
         Returns whether cooldown was reset, False if timer was still running
         """
-        prekey = self.get_email_batch_cooldown_prekey(user, **kwrags)
+        prekey = self.get_email_batch_cooldown_prekey(user, **kwargs)
         c = self.cooldown_class(prekey)
         if c.get():
             was_reset = False
