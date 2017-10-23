@@ -47,8 +47,14 @@ HTK_SLACK_TRIGGER_COMMAND_WORDS = (
 HTK_SLACK_NOTIFICATIONS_ENABLED = False
 
 # channels
+HTK_SLACK_NOTIFICATION_CHANNELS = {
+    'critical' : '#alerts-p0-critical',
+    'severe'   : '#alerts-p1-severe',
+    'danger'   : '#alerts-p2-danger',
+    'warning'  : '#alerts-p3-warning',
+    'info'     : '#alerts-p4-info',
+}
 HTK_SLACK_DEBUG_CHANNEL = '#test'
-HTK_SLACK_NOTIFICATIONS_CHANNEL = '#test'
 
 # url names (routes)
 HTK_SLACK_BEACON_URL_NAME = None
