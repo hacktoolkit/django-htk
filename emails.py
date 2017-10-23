@@ -41,6 +41,8 @@ class BaseBatchRelationshipEmails(BaseTask):
 
     def get_email_batch_cooldown_prekey(self, user, **kwargs):
         prekey = ['email_batch', user.id,]
+        kw_values = [kwargs[key] for key in sorted(keys(kwargs))]
+        prekey += kw_values
         return prekey
 
     def has_email_batch_cooldown(self, user, **kwargs):
