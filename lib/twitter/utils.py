@@ -1,3 +1,4 @@
+import rollbar
 import time
 import tweepy
 
@@ -113,12 +114,18 @@ def get_friends_ids(screen_name):
     api = get_tweepy_api()
     ids = []
     is_first = True
-    for page in tweepy.Cursor(api.friends_ids, screen_name=screen_name, count=5000).pages():
-        if not is_first:
-            time.sleep(60)
-        else:
-            is_first = False
-        ids.extend(page)
+    try:
+        for page in tweepy.Cursor(api.friends_ids, screen_name=screen_name, count=5000).pages():
+            if not is_first:
+                time.sleep(60)
+            else:
+                is_first = False
+            ids.extend(page)
+    except tweepy.RateLimitError:
+        extra_data = {
+            'screen_name' : screen_name,
+        }
+        rollbar.report_exc_info(extra_data=extra_data)
     return ids
 
 def get_followers(screen_name):
@@ -140,12 +147,18 @@ def get_followers_ids(screen_name):
     api = get_tweepy_api()
     ids = []
     is_first = True
-    for page in tweepy.Cursor(api.followers_ids, screen_name=screen_name, count=5000).pages():
-        if not is_first:
-            time.sleep(60)
-        else:
-            is_first = False
-        ids.extend(page)
+    try:
+        for page in tweepy.Cursor(api.followers_ids, screen_name=screen_name, count=5000).pages():
+            if not is_first:
+                time.sleep(60)
+            else:
+                is_first = False
+            ids.extend(page)
+    except tweepy.RateLimitError:
+        extra_data = {
+            'screen_name' : screen_name,
+        }
+        rollbar.report_exc_info(extra_data=extra_data)
     return ids
 
 def search_tweets(keyword, limit=None, api=None):
