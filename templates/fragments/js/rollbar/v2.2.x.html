@@ -10,6 +10,12 @@ var _rollbarConfig = {
     // don't ignore anything (default)
     return false;
   },
+{% if rollbar.host_whitelist %}
+  hostWhitelist: {{ rollbar.host_whitelist|safe }},
+{% endif %}
+{% if rollbar.ignored_messages %}
+  ignoredMessages: {{ rollbar.ignored_messages|safe }},
+{% endif %}
   itemsPerMinute: 60,
   logLevel: 'error',
   payload: {
