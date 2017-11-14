@@ -13,14 +13,16 @@ var _rollbarConfig = {
   verbose: {% if rollbar.env == 'production' %}false{% else %}true{% endif %},
   captureUncaught: true,
   captureUnhandledRejections: true,
-  checkIgnore: function(msg, url, lineNo, colNo, error) {
+  checkIgnore: function(isUncaught, args, payload) {
     for (var i=0; i < _rollbarIgnoredMessagesRegexes.length; ++i) {
       var re = _rollbarIgnoredMessagesRegexes[i];
-      var matches = re.exec(msg)
+      var matches = re.exec(payload.body.trace.exception.description);
       if (matches) {
         return true;
       }
     }
+    // ignore all uncaught errors and all 'debug' items
+    //return isUncaught === true || payload.level === 'debug';
     // don't ignore anything (default)
     return false;
   },
