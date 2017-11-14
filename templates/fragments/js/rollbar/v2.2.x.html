@@ -1,5 +1,12 @@
 <script>
-// rollbar_js_version: 2.2.x (expected: {{ rollbar_js_version }})
+// rollbar_js_version: {{ rollbar_js_version }} (expected: 2.2.x)
+
+var _rollbarIgnoredMessagesRegexes = [
+{% for regex in rollbar.ignored_messages_regexes %}
+  new RegExp('{{ regex|safe }}'){% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+
 var _rollbarConfig = {
   accessToken: '{{ rollbar.tokens.post_client_item }}',
   // verbose: log to console.log, as well as Rollbar
@@ -7,6 +14,13 @@ var _rollbarConfig = {
   captureUncaught: true,
   captureUnhandledRejections: true,
   checkIgnore: function(msg, url, lineNo, colNo, error) {
+    for (var i=0; i < _rollbarIgnoredMessagesRegexes.length; ++i) {
+      var re = _rollbarIgnoredMessagesRegexes[i];
+      var matches = re.exec(msg)
+      if (matches) {
+        return true;
+      }
+    }
     // don't ignore anything (default)
     return false;
   },
