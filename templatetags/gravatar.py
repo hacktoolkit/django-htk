@@ -4,6 +4,7 @@ from django import template
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.html import escape
+from django.utils.safestring import mark_safe
 
 from htk.lib.gravatar.utils import get_gravatar_hash
 
@@ -67,6 +68,7 @@ def gravatar_img_for_user(user, size=80):
         size,
         size,
     )
+    img = mark_safe(img)
     return img
 
 @register.simple_tag
