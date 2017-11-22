@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 from htk.lib.gravatar.utils import get_gravatar_hash
 
 # http://en.gravatar.com/site/implement/images/
-GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com/')
+GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com')
 GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', 'mm')
 
 register = template.Library()
@@ -29,7 +29,7 @@ def gravatar_for_email(email, size=80):
     """
     https://en.gravatar.com/site/implement/images/
     """
-    url = '%savatar/%s?' % (
+    url = '%s/avatar/%s?' % (
         GRAVATAR_URL_PREFIX,
         get_gravatar_hash(email),
     )
