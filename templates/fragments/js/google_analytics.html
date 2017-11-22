@@ -23,6 +23,9 @@
 
   ga('create', '{{ google_analytics_id }}', '{{ google_analytics_domain }}');
   ga('require', 'linkid', 'linkid.js');
+{% if user %}
+  ga('set', 'userId', {{ user.id }});
+{% endif %}
 {% if display_features %}
   ga('require', 'displayfeatures');
 {% endif %}
