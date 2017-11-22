@@ -1,1 +1,2 @@
+from htk.forms.classes import AbstractModelInstanceAttributesForm
 from htk.forms.classes import AbstractModelInstanceUpdateForm

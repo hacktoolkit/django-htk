@@ -2,6 +2,7 @@ from django import forms
 
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
+from htk.utils.cache_descriptors import CachedAttribute
 
 class AbstractModelInstanceUpdateForm(forms.ModelForm):
     """An abstract class for manipulating Model instances
@@ -89,3 +90,58 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
                 from htk.utils.general import refresh
                 instance = refresh(instance)
         return instance
+
+class AbstractModelInstanceAttributesForm(forms.Form):
+    def __init__(self, instance, *args, **kwargs):
+        self.instance = instance
+        initial = self.get_initial_values_from_instance(instance)
+        self.initial = initial
+        kwargs['initial'] = initial
+        super(AbstractModelInstanceAttributesForm, self).__init__(*args, **kwargs)
+        self.label_suffix = ''
+        set_input_attrs(self)
+        set_input_placeholder_labels(self)
+        self.cascaded_errors = []
+
+    @CachedAttribute
+    def instance_attribute_fields(self):
+        raise AbstractMethodNotImplemented()
+        fields = []
+        return fields
+
+    @CachedAttribute
+    def boolean_attributes_lookup(self):
+        raise AbstractMethodNotImplemented()
+        boolean_attributes = ()
+        lookup = { k : True for k in boolean_attributes }
+        return lookup
+
+    def get_initial_values_from_instance(self, instance):
+        attributes = self.instance_attribute_fields
+        boolean_attributes = self.boolean_attributes_lookup
+        initial_values = {
+            k : instance.get_attribute(k, as_bool=k in boolean_attributes)
+            for k
+            in attributes
+        }
+        return initial_values
+
+    def save(self):
+        was_updated = self.save_instance_attributes()
+        return was_updated
+
+    def save_instance_attributes(self):
+        instance = self.instance
+        initial_values = self.initial
+        boolean_attributes = self.boolean_attributes_lookup
+        was_updated = False
+        for key, old_value in initial_values.iteritems():
+            new_value = self.cleaned_data.get(key, '')
+            if type(new_value) == str:
+                new_value = new_value.strip()
+            if new_value != old_value:
+                instance.set_attribute(key, new_value, as_bool=key in boolean_attributes)
+                was_updated = True
+            else:
+                pass
+        return was_updated
