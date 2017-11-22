@@ -1,5 +1,8 @@
 from django.http import Http404
 
+class AbstractMethodNotImplemented(Exception):
+    pass
+
 class MissingGoogleSiteVerificationFile(Http404):
     pass
 
