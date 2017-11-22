@@ -1,5 +1,6 @@
 from django import template
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from htk.utils import htk_setting
 
@@ -18,6 +19,7 @@ def redir(url, text=None, target='_blank'):
         'text' : text,
         'target' : target,
     }
+    html = mark_safe(html)
     return html
 
 @register.simple_tag
