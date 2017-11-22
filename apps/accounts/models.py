@@ -40,7 +40,8 @@ class UserAttribute(AbstractAttribute):
 
 UserAttributeHolder = AbstractAttributeHolderClassFactory(
     UserAttribute,
-    holder_resolver=lambda self: self.user
+    holder_resolver=lambda self: self.user,
+    defaults=htk_setting('HTK_USER_ATTRIBUTE_DEFAULTS')
 ).get_class()
 
 class BaseAbstractUserProfile(models.Model, UserAttributeHolder):

@@ -74,12 +74,13 @@ class AbstractAttribute(models.Model):
 class AbstractAttributeHolderClassFactory(object):
     """Creates an attribute holder class for multi-inheritance
     """
-    def __init__(self, attribute_class, holder_resolver=None):
+    def __init__(self, attribute_class, holder_resolver=None, defaults=None):
         self.attribute_class = attribute_class
         if holder_resolver is None:
             self.holder_resolver = lambda self: self
         else:
             self.holder_resolver = holder_resolver
+        self.defaults = defaults or {}
 
     def get_class(self):
         factory = self
@@ -112,7 +113,8 @@ class AbstractAttributeHolderClassFactory(object):
 
             def get_attribute(self, key, as_bool=False):
                 attribute = self._get_attribute_object(key)
-                value = attribute.value if attribute else None
+                value = attribute.value if attribute else factory.defaults.get(key, None)
+
                 if as_bool:
                     try:
                         value = bool(int(value))

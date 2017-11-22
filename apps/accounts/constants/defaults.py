@@ -34,3 +34,7 @@ HTK_ACCOUNT_EMAIL_SUBJECT_WELCOME = 'Welcome to %(site_name)s, %(email)s'
 # Account Email BCC
 HTK_ACCOUNT_EMAIL_BCC_ACTIVATION = True
 HTK_ACCOUNT_EMAIL_BCC_WELCOME = True
+
+##
+# User Attributes
+HTK_USER_ATTRIBUTE_DEFAULTS = {}
