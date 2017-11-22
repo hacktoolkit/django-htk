@@ -1,3 +1,5 @@
+import base64
+
 from django import template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -7,15 +9,21 @@ from htk.utils import htk_setting
 register = template.Library()
 
 @register.simple_tag
+def redir_url(url):
+    redir_view = htk_setting('HTK_REDIRECT_URL_NAME')
+    url = '%(path)s?url=%(url)s' % {
+        'path' : reverse(redir_view),
+        'url' : base64.urlsafe_b64encode(url),
+    }
+    return url
+
+@register.simple_tag
 def redir(url, text=None, target='_blank'):
     """Links to a redirect page
     """
-    redir_view = htk_setting('HTK_REDIRECT_URL_NAME')
-    path = reverse(redir_view)
     text = text or url
-    html = '<a href="%(path)s?url=%(url)s" target="%(target)s" title="%(url)s">%(text)s</a>' % {
-        'path' : path,
-        'url' : url,
+    html = '<a href="%(url)s" target="%(target)s">%(text)s</a>' % {
+        'url' : redir_url(url),
         'text' : text,
         'target' : target,
     }

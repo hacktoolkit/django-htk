@@ -1,3 +1,4 @@
+import base64
 import re
 
 from django.http import Http404
@@ -100,8 +101,9 @@ def robots(request):
     return response
 
 def redir(request):
-    url = request.GET.get('url', None)
-    if url:
+    encoded_url = request.GET.get('url', None)
+    if encoded_url:
+        url = base64.urlsafe_b64decode(str(encoded_url))
         if not re.match('^https?://', url):
             url = 'http://%s' % url
         else:
