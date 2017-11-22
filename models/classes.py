@@ -5,6 +5,7 @@ from django.db import models
 from django.urls import reverse
 
 from htk.utils import utcnow
+from htk.utils.cache_descriptors import CachedAttribute
 
 """
 While we *could* import models here for convenience,
@@ -127,12 +128,14 @@ class AbstractAttributeHolderClassFactory(object):
                 if attribute:
                     attribute.delete()
 
-            def get_attribute_keys(self):
+            @CachedAttribute
+            def attribute_fields(self):
                 """Returns a list of attribute keys
                 """
                 return ()
 
-            def get_boolean_attributes_lookup(self):
+            @CachedAttribute
+            def boolean_attributes_lookup(self):
                 """Returns a dictionary of attribute keys that are boolean values
                 """
                 return {}

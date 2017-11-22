@@ -91,17 +91,11 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
                 instance = refresh(instance)
         return instance
 
-class AbstractModelInstanceAttributesForm(forms.Form):
-    def __init__(self, instance, *args, **kwargs):
+class AbstractModelInstanceAttributesFormMixin(object):
+    def __init__(self, instance):
         self.instance = instance
         initial = self.get_initial_values_from_instance(instance)
         self.initial = initial
-        kwargs['initial'] = initial
-        super(AbstractModelInstanceAttributesForm, self).__init__(*args, **kwargs)
-        self.label_suffix = ''
-        set_input_attrs(self)
-        set_input_placeholder_labels(self)
-        self.cascaded_errors = []
 
     @CachedAttribute
     def instance_attribute_fields(self):
@@ -126,10 +120,6 @@ class AbstractModelInstanceAttributesForm(forms.Form):
         }
         return initial_values
 
-    def save(self):
-        was_updated = self.save_instance_attributes()
-        return was_updated
-
     def save_instance_attributes(self):
         instance = self.instance
         initial_values = self.initial
@@ -145,3 +135,28 @@ class AbstractModelInstanceAttributesForm(forms.Form):
             else:
                 pass
         return was_updated
+
+class AbstractModelInstanceAttributesForm(forms.Form, AbstractModelInstanceAttributesFormMixin):
+    def __init__(self, instance, *args, **kwargs):
+        AbstractModelInstanceAttributesFormMixin.__init__(self, instance)
+        kwargs['initial'] = self.initial
+        forms.Form.__init__(self, *args, **kwargs)
+
+    def save(self):
+        was_updated = self.save_instance_attributes()
+        return was_updated
+
+class AbstractModelInstanceUpdateFormWithAttributes(
+    AbstractModelInstanceUpdateForm,
+    AbstractModelInstanceAttributesFormMixin
+):
+    def __init__(self, instance, *args, **kwargs):
+        AbstractModelInstanceAttributesFormMixin.__init__(self, instance)
+        kwargs['initial'] = self.initial
+        AbstractModelInstanceUpdateForm.__init__(self, instance, *args, **kwargs)
+
+    def save(self):
+        #updated_instance = AbstractModelInstanceAttributesForm.save(self)
+        updated_instance = super(AbstractModelInstanceUpdateFormWithAttributes, self).save(self)
+        attributes_updated = self.save_instance_attributes()
+        return updated_instance
