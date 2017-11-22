@@ -333,11 +333,12 @@ def get_resolver_matches_chain(request, data=None):
         except Resolver404:
             # could not resolve without '/'
             path_with_slash = path + '/'
-            try:
-                resolver_match = resolve(path_with_slash)
-                resolver_matches_chain.append((path_with_slash, resolver_match))
-            except Resolver404:
-                pass
+            if request.path != path_with_slash:
+                try:
+                    resolver_match = resolve(path_with_slash)
+                    resolver_matches_chain.append((path_with_slash, resolver_match))
+                except Resolver404:
+                    pass
         except ValueError:
             # '/' substring not found
             break
