@@ -1,9 +1,13 @@
-SLIDESHARE_URL_REGEXP = r'https?://(?:www\.)?slideshare\.(?:com|net)/.*'
-VIMEO_URL_REGEXP = r'https?://(?:www\.)?vimeo\.com/.*'
-YOUTUBE_URL_REGEXP = r'https?://(?:(www\.)?youtube\.com|youtu\.be)/.*'
+OEMBED_URL_SCHEME_REGEXPS = {
+    'slideshare' : r'https?://(?:www\.)?slideshare\.(?:com|net)/.*',
+    'soundcloud' : r'https?://soundcloud.com/.*',
+    'vimeo' : r'https?://(?:www\.)?vimeo\.com/.*',
+    'youtube' : r'https?://(?:(www\.)?youtube\.com|youtu\.be)/.*',
+}
 
 OEMBED_BASE_URLS = {
-    'slideshare' : 'http://www.slideshare.net/api/oembed/2?url=%s',
-    'vimeo' : 'http://vimeo.com/api/oembed.json?url=%s&maxwidth=400&maxheight=350',
-    'youtube' : 'http://www.youtube.com/oembed?url=%s&format=json',
+    'slideshare' : 'https://www.slideshare.net/api/oembed/2?url=%(url)s',
+    'soundcloud' : 'https://soundcloud.com/oembed?url=%(url)s&format=json',
+    'vimeo' : 'https://vimeo.com/api/oembed.json?url=%(url)s&maxwidth=400&maxheight=350',
+    'youtube' : 'https://www.youtube.com/oembed?url=%(url)s&format=json',
 }

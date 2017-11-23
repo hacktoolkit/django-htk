@@ -29,7 +29,9 @@ def get_oembed_html_for_service(url, service):
         success = False
         try:
             oembed_base_url = OEMBED_BASE_URLS[service]
-            oembed_url = oembed_base_url % urllib.quote(url)
+            oembed_url = oembed_base_url % {
+                'url' : urllib.quote(url),
+            }
             response = requests.get(oembed_url)
             if response.status_code >= 400:
                 pass
@@ -40,17 +42,23 @@ def get_oembed_html_for_service(url, service):
                 success = True
         except:
             request = get_current_request()
-            rollbar.report_exc_info(request=request)
+            extra_data = {
+                'message' : 'Bad oembed URL',
+                'oembed_url' : oembed_url,
+                'url' : url,
+                'response' : {
+                    'status_code' : response.status_code,
+                    'content' : response.content,
+                }
+            }
+            rollbar.report_exc_info(level='warning', request=request, extra_data=extra_data)
 
         if success:
             pass
         else:
-            html = 'Failed to get oEmbed for URL: %s' % url
-            if request is None:
-                request = get_current_request()
-            else:
-                pass
-            rollbar.report_message('Bad oembed url <%s>' % (url), 'warning', request)
+            html = '<a href="%(url)s" target="_blank">%(url)s</a>' % {
+                'url' : url,
+            }
     else:
         pass
     return html
@@ -59,14 +67,10 @@ def get_oembed_type(url):
     """Determines the type of oEmbed this URL is, if it exists
     """
     oembed_type = None
-    if re.match(SLIDESHARE_URL_REGEXP, url, flags=re.I):
-        oembed_type = 'slideshare'
-    elif re.match(VIMEO_URL_REGEXP, url, flags=re.I):
-        oembed_type = 'vimeo'
-    elif re.match(YOUTUBE_URL_REGEXP, url, flags=re.I):
-        oembed_type = 'youtube'
-    else:
-        pass
+    for service, pattern in OEMBED_URL_SCHEME_REGEXPS.iteritems():
+        if re.match(pattern, url, flags=re.I):
+            oembed_type = service
+            break
     return oembed_type
 
 def youtube_oembed(url, autoplay=False):
