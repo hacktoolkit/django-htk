@@ -66,6 +66,24 @@ def markdownify(value):
     html = markdown.markdown(value)
     return html
 
+@register.filter()
+def atob(value):
+    """Base64 decode
+    ASCII to Binary
+    """
+    import base64
+    value = base64.b64decode(value)
+    return value
+
+@register.filter()
+def btoa(value):
+    """Base64 encode
+    Binary to ASCII
+    """
+    import base64
+    value = base64.b64encode(value)
+    return value
+
 # Maths
 
 @register.filter()
@@ -151,6 +169,7 @@ def obfuscate_mailto(value, text=False):
 def oembed(value):
     from htk.lib.oembed.utils import get_oembed_html
     html = get_oembed_html(value)
+    html = mark_safe(html)
     return html
 
 # Javascript-related
@@ -203,7 +222,7 @@ def lesscss(context, css_file_path_base, media=None):
     return html
 
 @register.simple_tag(takes_context=True)
-def loadjs(context, js_file_path):
+def loadjs(context, js_file_path, jsx=False):
     """Include a JS file and append a static asset version string
     """
     asset_version = context.get('asset_version')
@@ -212,11 +231,17 @@ def loadjs(context, js_file_path):
     else:
         asset_version_str = ''
     values = {
+        'script_type' : 'text/babel' if jsx else 'text/javascript',
         'js_file_path' : js_file_path,
         'asset_version_str' : asset_version_str,
     }
-    html = '<script type="text/javascript" src="%(js_file_path)s%(asset_version_str)s"></script>' % values
+    html = '<script type="%(script_type)s" src="%(js_file_path)s%(asset_version_str)s"></script>' % values
     html = mark_safe(html)
+    return html
+
+@register.simple_tag(takes_context=True)
+def loadjsx(context, js_file_path):
+    html = loadjs(context, js_file_path, jsx=True)
     return html
 
 ##
