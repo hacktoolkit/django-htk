@@ -22,6 +22,7 @@ from htk.models import AbstractAttributeHolderClassFactory
 from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
+from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.request import get_current_request
 
 class UserAttribute(AbstractAttribute):
@@ -316,7 +317,8 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
     # Organizations
     # These methods only work if using htk.apps.organizations
 
-    def get_organizations(self):
+    @CachedAttribute
+    def organizations(self):
         from htk.utils.general import resolve_model_dynamically
         Organization = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MODEL'))
         organizations = Organization.objects.filter(members__user=self.user, members__active=True)
