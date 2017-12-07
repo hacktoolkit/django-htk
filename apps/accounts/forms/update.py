@@ -1,4 +1,5 @@
 import re
+import rollbar
 
 from django import forms
 from django.conf import settings
@@ -102,5 +103,14 @@ class ChangePasswordForm(SetPasswordForm):
 
     def save(self, user, *args, **kwargs):
         user = super(ChangePasswordForm, self).save(*args, **kwargs)
-        password_changed_email(user)
+        try:
+            password_changed_email(user)
+        except:
+            from htk.utils.request import get_current_request
+            request = get_current_request()
+            extra_data = {
+                'user' : user,
+                'email' : user.email,
+            }
+            rollbar.report_exc_info(request=request, extra_data=extra_data)
         return user
