@@ -17,8 +17,8 @@ def default_event_type_resolver(event):
         else:
             intent_name = None
     except:
-        from htk.middleware.classes import GlobalRequestMiddleware
-        request = GlobalRequestMiddleware.get_current_request()
+        from htk.utils.request import get_current_request
+        request = get_current_request()
         extra_data = { 'event' : event, }
         rollbar.report_exc_info(request=request, extra_data=extra_data)
 
