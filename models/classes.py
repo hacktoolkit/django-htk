@@ -2,8 +2,12 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.http import Http404
 from django.urls import reverse
+from django.utils.http import base36_to_int
+from django.utils.http import int_to_base36
 
+from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.utils.cache_descriptors import CachedAttribute
 
@@ -30,6 +34,48 @@ class HtkBaseModel(models.Model):
             'id' : self.id,
         }
         return value
+
+    ##
+    # Crypto
+
+    @classmethod
+    def _luhn_xor_key(cls):
+        xor_key = htk_setting('HTK_LUHN_XOR_KEYS').get(cls.__name__, 0)
+        return xor_key
+
+    @CachedAttribute
+    def id_with_luhn_base36(self):
+        from htk.utils.luhn import calculate_luhn
+        xor_key = self.__class__._luhn_xor_key()
+        xored = self.id ^ xor_key
+        check_digit = calculate_luhn(xored)
+        id_with_luhn = xored * 10 + check_digit
+        encoded_id = int_to_base36(id_with_luhn)
+        return encoded_id
+
+    @classmethod
+    def from_encoded_id_luhn_base36(cls, encoded_id):
+        from htk.utils.luhn import is_luhn_valid
+        id_with_luhn = base36_to_int(encoded_id)
+        if is_luhn_valid(id_with_luhn):
+            xored = id_with_luhn / 10
+            xor_key = cls._luhn_xor_key()
+            obj_id =  xored ^ xor_key
+            obj = cls.objects.get(id=obj_id)
+        else:
+            obj = None
+        return obj
+
+    @classmethod
+    def from_encoded_id_luhn_base36_or_404(cls, encoded_id):
+        try:
+            obj = cls.from_encoded_id_luhn_base36(encoded_id)
+        except cls.DoesNotExist:
+            obj = None
+
+        if obj is None:
+            raise Http404('No %s matches the given query.' % cls.__name__)
+        return obj
 
     ##
     # URLs
