@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 
 from htk.utils import htk_setting
+from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.text.transformers import seo_tokenize
 
 class AbstractProduct(models.Model):
@@ -21,14 +22,14 @@ class AbstractProduct(models.Model):
         value = self.name
         return value
 
-    def get_seo_title(self):
+    @CachedAttribute
+    def seo_title(self):
         title = '%s' % self.name
         seo_title = seo_tokenize(title, lower=True)
         return seo_title
 
     def get_absolute_url(self):
-        seo_title = self.get_seo_title()
-        url = reverse('store_product', args=(self.id, seo_title,))
+        url = reverse('store_product', args=(self.id, self.seo_title,))
         return url
 
     def get_amazon_tracking_id(self):
@@ -59,12 +60,12 @@ class AbstractProductCollection(models.Model):
     class Meta:
         abstract = True
 
-    def get_seo_title(self):
+    @CachedAttribute
+    def seo_title(self):
         title = '%s' % self.name
         seo_title = seo_tokenize(title, lower=True)
         return seo_title
 
     def get_absolute_url(self):
-        seo_title = self.get_seo_title()
-        url = reverse('store_collection', args=(self.id, seo_title,))
+        url = reverse('store_collection', args=(self.id, self.seo_title,))
         return url

@@ -46,7 +46,7 @@ class restful_obj_seo_redirect(object):
             obj_id = kwargs.get(self.obj_id_key)
             obj = get_object_or_404(self.cls, id=obj_id)
             seo_title = kwargs.get('seo_title')
-            if obj.get_seo_title() != seo_title:
+            if obj.seo_title != seo_title:
                 # prevent tampering of URLs
                 # redirect to the canonical URL for this object
                 response = redirect(obj.get_absolute_url(), permanent=True)
