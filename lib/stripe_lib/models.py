@@ -159,43 +159,52 @@ class BaseStripeCustomer(models.Model):
         https://stripe.com/docs/api/python#list_cards
         """
         stripe_customer = self.retrieve()
-        cards = safe_stripe_call(
-            stripe_customer.sources.all,
-            **{
-                'limit' : 1,
-                'object' : 'card',
-            }
-        )
-        cards = cards.get('data')
-        if len(cards) > 0:
-            card = cards[0]
+        if stripe_customer:
+            cards = safe_stripe_call(
+                stripe_customer.sources.all,
+                **{
+                    'limit' : 1,
+                    'object' : 'card',
+                }
+            )
+            cards = cards.get('data')
+            if len(cards) > 0:
+                card = cards[0]
+            else:
+                card = None
         else:
             card = None
         return card
 
     def get_cards(self):
         stripe_customer = self.retrieve()
-        cards = safe_stripe_call(
-            stripe_customer.sources.all,
-            **{
-                'object' : 'card',
-            }
-        )
-        cards = cards.get('data')
+        if stripe_customer:
+            cards = safe_stripe_call(
+                stripe_customer.sources.all,
+                **{
+                    'object' : 'card',
+                }
+            )
+            cards = cards.get('data')
+        else:
+            cards = []
         return cards
 
     def has_card(self):
         """Determines whether this StripeCustomer has a card
         """
         stripe_customer = self.retrieve()
-        cards = safe_stripe_call(
-            stripe_customer.sources.all,
-            **{
-                'limit' : 1,
-                'object' : 'card',
-            }
-        )
-        value = len(cards) > 0
+        if stripe_customer:
+            cards = safe_stripe_call(
+                stripe_customer.sources.all,
+                **{
+                    'limit' : 1,
+                    'object' : 'card',
+                }
+            )
+            value = len(cards) > 0
+        else:
+            value = False
         return value
 
     ##
@@ -221,12 +230,15 @@ class BaseStripeCustomer(models.Model):
         https://stripe.com/docs/api#retrieve_subscription
         """
         stripe_customer = self.retrieve()
-        subscription = safe_stripe_call(
-            stripe_customer.subscriptions.retrieve,
-            **{
-                'id' : subscription_id,
-            }
-        )
+        if stripe_customer:
+            subscription = safe_stripe_call(
+                stripe_customer.subscriptions.retrieve,
+                **{
+                    'id' : subscription_id,
+                }
+            )
+        else:
+            subscription = None
         return subscription
 
     def change_subscription_plan(self, subscription_id, new_plan):
@@ -254,8 +266,11 @@ class BaseStripeCustomer(models.Model):
         https://stripe.com/docs/api#cancel_subscription
         """
         subscription = self.retrieve_subscription(subscription_id)
-        subscription.delete()
-        was_deleted = True
+        if subscription:
+            subscription.delete()
+            was_deleted = True
+        else:
+            was_deleted = False
         return was_deleted
 
     ##
@@ -267,11 +282,14 @@ class BaseStripeCustomer(models.Model):
         https://stripe.com/docs/api/python#delete_customer
         """
         stripe_customer = self.retrieve()
-        obj = safe_stripe_call(
-            stripe_customer.delete
-        )
-        if obj:
-            super(BaseStripeCustomer, self).delete()
+        if stripe_customer:
+            obj = safe_stripe_call(
+                stripe_customer.delete
+            )
+            if obj:
+                super(BaseStripeCustomer, self).delete()
+            else:
+                pass
         else:
             pass
 
