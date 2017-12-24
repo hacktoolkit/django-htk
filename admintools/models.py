@@ -1,8 +1,11 @@
 from htk.utils import htk_setting
+from htk.utils.cache_descriptors import CachedAttribute
 
 class HtkCompanyUserMixin(object):
     """Mixin for htk.apps.accounts.BaseAbstractUserProfile
     """
+
+    @CachedAttribute
     def is_company_officer(self):
         """Determines whether this User is a company officer
 
@@ -20,6 +23,7 @@ class HtkCompanyUserMixin(object):
                 is_officer = self.has_email(officer_email)
         return is_officer
 
+    @CachedAttribute
     def is_company_employee(self):
         """Determines whether this User is a company employee
 
@@ -37,6 +41,7 @@ class HtkCompanyUserMixin(object):
                 is_employee = self.has_email(employee_email)
         return is_employee
 
+    @CachedAttribute
     def has_company_email_domain(self):
         """Determines whether this User has email with company domain
         """
