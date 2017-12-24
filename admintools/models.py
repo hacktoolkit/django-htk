@@ -31,7 +31,7 @@ class HtkCompanyUserMixin(object):
         User.is_staff=True is also considered a company employee
         """
         is_employee = False
-        if self.user.is_staff or self.is_company_officer():
+        if self.user.is_staff or self.is_company_officer:
             is_employee = True
         else:
             from htk.admintools.utils import get_company_employees_id_email_map
