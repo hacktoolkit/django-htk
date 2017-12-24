@@ -2,7 +2,11 @@ from django import forms
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-class StarRatingRadioChoiceInput(forms.widgets.RadioChoiceInput):
+# Deprecated in Django 1.11
+# forms.widgets.RadioChoiceInput
+# https://docs.djangoproject.com/en/2.0/releases/1.11/#changes-due-to-the-introduction-of-template-based-widget-rendering
+#class StarRatingRadioChoiceInput(forms.widgets.RadioChoiceInput):
+class StarRatingRadioChoiceInput(object):
     def render(self, name=None, value=None, attrs=None, choices=()):
         if self.id_for_label:
             label_for = format_html(' for="{}"', self.id_for_label)
@@ -16,7 +20,9 @@ class StarRatingRadioChoiceInput(forms.widgets.RadioChoiceInput):
         result = mark_safe('<label%s></label>%s' % (label_for, self.tag(attrs),))
         return result
 
-class StarRatingRadioChoiceFieldRenderer(forms.widgets.RadioFieldRenderer):
+# Deprecated
+#class StarRatingRadioChoiceFieldRenderer(forms.widgets.RadioFieldRenderer):
+class StarRatingRadioChoiceFieldRenderer(object):
     choice_input_class = StarRatingRadioChoiceInput
     outer_html = '<span{id_attr} class="star-rating">{content}</span>'
     inner_html = '{choice_value}'
