@@ -1,5 +1,6 @@
 from htk.admintools.cachekeys import HtkCompanyEmployeesCache
 from htk.admintools.cachekeys import HtkCompanyOfficersCache
+from htk.apps.accounts.utils import get_user_by_email
 from htk.utils import htk_setting
 
 def get_company_officers_id_email_map():
