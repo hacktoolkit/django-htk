@@ -1,6 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 GitHub reminder bot
 
@@ -12,7 +9,6 @@ Examples:
 
 import getopt
 import json
-import random
 import re
 import requests
 import sys
@@ -40,7 +36,8 @@ class GitHubReminderBot(object):
     def pull_request_reminder(self):
         """Returns a Markdown-formatted message for this organization's pull requests
         """
-        greeting = random.choice([u'Hola', u'Como estas', u'Greetings', u'你好', u'Hello', u'Aloha', u'Ciao', u'Salut', u'안녕하세요', u'こんにちは', u'שלום', u'chào bạn',])
+        from htk.utils.i18n import get_random_greeting
+        greeting = get_random_greeting()
 
         def pluralize(s, num):
             plural_suffix = '' if num == 1 else 's'
