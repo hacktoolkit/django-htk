@@ -18,6 +18,15 @@ def _get_auth_keys():
     )
     return auth_keys
 
+def get_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
+    api = HtkTwitterAPI(
+        consumer_key=consumer_key,
+        consumer_secret=consumer_secret,
+        access_token_key=access_token_key,
+        access_token_secret=access_token_secret
+    )
+    return api
+
 def get_twitter_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
     import twitter
     if not(all((consumer_key, consumer_secret, access_token_key, access_token_secret,))):
