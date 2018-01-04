@@ -33,5 +33,5 @@ class HtkTwitterAPI(object):
 
     def unfollow(self, id=None, screen_name=None, user_id=None):
         # http://tweepy.readthedocs.io/en/v3.5.0/api.html#API.destroy_friendship
-        response = self.tweepy_api.destroy_friendship(id=id, screen_name=screen_name, user_id=user_id)
-        return response
+        user = self.tweepy_api.destroy_friendship(id=id, screen_name=screen_name, user_id=user_id)
+        return user
