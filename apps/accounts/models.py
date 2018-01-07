@@ -165,14 +165,20 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
         value = primary_email is not None
         return value
 
-    def get_primary_email(self):
+    def get_primary_email(self, verified_only=True):
         """Retrieve this `User`'s primary email
         """
         email = self.user.email
-        if email and self.has_email(email):
+        if email and (not verified_only or self.has_email(email)):
             primary_email = email
         else:
             primary_email = None
+        return primary_email
+
+    def get_primary_email_unverified(self):
+        """Retrieve this `User`'s primary email, even if it has not been verified
+        """
+        primary_email = self.get_primary_email(verified_only=False)
         return primary_email
 
     def get_nonprimary_emails(self):
