@@ -14,7 +14,7 @@ DAEMON_MODE = True
 
 def main():
     def workhorse():
-        AccountActivationReminderEmails().send_emails()
+        AccountActivationReminderEmails().execute_batch()
 
     while True:
         job_runner(workhorse)
