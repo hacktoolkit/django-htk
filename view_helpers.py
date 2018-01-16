@@ -133,6 +133,7 @@ def wrap_data(request, data=None):
         'host_whitelist' : settings.ROLLBAR.get('host_whitelist', None),
         'ignored_messages' : settings.ROLLBAR.get('ignored_messages', None),
         'ignored_messages_regexes' : settings.ROLLBAR.get('ignored_messages_regexes', None),
+        'ignored_uncaught_exception_classes' : settings.ROLLBAR.get('ignored_uncaught_exception_classes', None),
     }
 
     ##

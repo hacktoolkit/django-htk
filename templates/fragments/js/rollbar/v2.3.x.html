@@ -1,6 +1,8 @@
 <script>
 // rollbar_js_version: {{ rollbar_js_version }} (expected: 2.3.x)
 
+var _rollbarIgnoredUncaughtExceptionClasses = {% if rollbar.ignored_uncaught_exception_classes %}{{ rollbar.ignored_uncaught_exception_classes|safe }}{% else %}[]{% endif %};
+
 var _rollbarIgnoredMessagesRegexes = [
 {% for regex in rollbar.ignored_messages_regexes %}
   new RegExp('{{ regex|safe }}'){% if not forloop.last %},{% endif %}
@@ -10,10 +12,19 @@ var _rollbarIgnoredMessagesRegexes = [
 var _rollbarConfig = {
   accessToken: '{{ rollbar.tokens.post_client_item }}',
   // verbose: log to console.log, as well as Rollbar
-  verbose: {% if rollbar.env == 'production' %}false{% else %}true{% endif %},
+  verbose: {% if rollbar.environment == 'production' %}false{% else %}true{% endif %},
   captureUncaught: true,
   captureUnhandledRejections: true,
   checkIgnore: function(isUncaught, args, payload) {
+    if (isUncaught) {
+        for (var i=0; i < _rollbarIgnoredUncaughtExceptionClasses.length; ++i) {
+            var ignoredClass = _rollbarIgnoredUncaughtExceptionClasses[i];
+            if (payload.exception.class === ignoredClass) {
+                return true;
+            }
+        }
+    }
+
     for (var i=0; i < _rollbarIgnoredMessagesRegexes.length; ++i) {
       var re = _rollbarIgnoredMessagesRegexes[i];
       var matches = re.exec(payload.body.trace.exception.description);
