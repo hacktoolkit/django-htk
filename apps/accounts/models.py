@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from htk.admintools.models import HtkCompanyUserMixin
 from htk.apps.accounts.cachekeys import UserFollowersCache
 from htk.apps.accounts.cachekeys import UserFollowingCache
 from htk.apps.accounts.constants import *
@@ -45,7 +46,7 @@ UserAttributeHolder = AbstractAttributeHolderClassFactory(
     defaults=htk_setting('HTK_USER_ATTRIBUTE_DEFAULTS')
 ).get_class()
 
-class BaseAbstractUserProfile(models.Model, UserAttributeHolder):
+class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserMixin):
     """
     django.contrib.auth.models.User does not have a unique email
     """

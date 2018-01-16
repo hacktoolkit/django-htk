@@ -218,9 +218,22 @@ def email_set_primary(request):
 def email_delete(request):
     user = request.user
     email = request.POST.get('email')
-    user_email = get_object_or_404(UserEmail, user=user, email=email)
-    if user_email.delete():
-        response = json_response_okay()
+
+    if user.profile.is_company_employee:
+        # admin user, grab only by email
+        user_email = get_object_or_404(UserEmail, email=email)
     else:
-        response = json_response_error()
+        # regular user, retrieve by user and email
+        from htk.apps.accounts.utils import get_user_email
+        user_email = get_user_email(user, email)
+
+    if user_email:
+        if user_email.delete():
+            response = json_response_okay()
+        else:
+            response = json_response_error()
+    else:
+        # email does not exist or was already deleted
+        response = json_response_okay()
+
     return response
