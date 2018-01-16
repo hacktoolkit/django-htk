@@ -27,8 +27,7 @@ var _rollbarConfig = {
 
     for (var i=0; i < _rollbarIgnoredMessagesRegexes.length; ++i) {
       var re = _rollbarIgnoredMessagesRegexes[i];
-      var matches = re.exec(payload.body.trace.exception.description);
-      if (matches) {
+      if (re.test(payload.body.trace.exception.description)) {
         return true;
       }
     }
@@ -37,8 +36,11 @@ var _rollbarConfig = {
     // don't ignore anything (default)
     return false;
   },
+{% if rollbar.host_blacklist %}
+  hostBlackList: {{ rollbar.host_blacklist|safe }},
+{% endif %}
 {% if rollbar.host_whitelist %}
-  hostWhitelist: {{ rollbar.host_whitelist|safe }},
+  hostWhiteList: {{ rollbar.host_whitelist|safe }},
 {% endif %}
 {% if rollbar.ignored_messages %}
   ignoredMessages: {{ rollbar.ignored_messages|safe }},
