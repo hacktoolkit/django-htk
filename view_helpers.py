@@ -130,6 +130,7 @@ def wrap_data(request, data=None):
         'tokens' : {
             'post_client_item' : settings.ROLLBAR_TOKEN_POST_CLIENT_ITEM,
         },
+        'host_blacklist' : settings.ROLLBAR.get('host_blacklist', None),
         'host_whitelist' : settings.ROLLBAR.get('host_whitelist', None),
         'ignored_messages' : settings.ROLLBAR.get('ignored_messages', None),
         'ignored_messages_regexes' : settings.ROLLBAR.get('ignored_messages_regexes', None),
