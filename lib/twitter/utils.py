@@ -18,17 +18,18 @@ def _get_auth_keys():
     )
     return auth_keys
 
-def get_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
+def get_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None, wait_on_rate_limit=False):
     from htk.lib.twitter.api import HtkTwitterAPI
     api = HtkTwitterAPI(
         consumer_key=consumer_key,
         consumer_secret=consumer_secret,
         access_token_key=access_token_key,
-        access_token_secret=access_token_secret
+        access_token_secret=access_token_secret,
+        wait_on_rate_limit=wait_on_rate_limit
     )
     return api
 
-def get_twitter_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
+def get_twitter_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None, wait_on_rate_limit=False):
     import twitter
     if not(all((consumer_key, consumer_secret, access_token_key, access_token_secret,))):
         (consumer_key, consumer_secret, access_token_key, access_token_secret,) = _get_auth_keys()
@@ -40,7 +41,7 @@ def get_twitter_api(consumer_key=None, consumer_secret=None, access_token_key=No
     )
     return api
 
-def get_tweepy_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None, wait_on_rate_limit=True):
+def get_tweepy_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None, wait_on_rate_limit=False):
     if not(all((consumer_key, consumer_secret, access_token_key, access_token_secret,))):
         (consumer_key, consumer_secret, access_token_key, access_token_secret,) = _get_auth_keys()
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)

@@ -6,7 +6,8 @@ class HtkTwitterAPI(object):
         consumer_key=None,
         consumer_secret=None,
         access_token_key=None,
-        access_token_secret=None
+        access_token_secret=None,
+        wait_on_rate_limit=False
     ):
         if consumer_key is None:
             consumer_key = settings.SOCIAL_AUTH_TWITTER_KEY
@@ -19,13 +20,15 @@ class HtkTwitterAPI(object):
             consumer_key=consumer_key,
             consumer_secret=consumer_secret,
             access_token_key=access_token_key,
-            access_token_secret=access_token_secret
+            access_token_secret=access_token_secret,
+            wait_on_rate_limit=wait_on_rate_limit
         )
         self.tweepy_api = get_tweepy_api(
             consumer_key=consumer_key,
             consumer_secret=consumer_secret,
             access_token_key=access_token_key,
-            access_token_secret=access_token_secret
+            access_token_secret=access_token_secret,
+            wait_on_rate_limit=wait_on_rate_limit
         )
 
     ##
