@@ -40,12 +40,12 @@ def get_twitter_api(consumer_key=None, consumer_secret=None, access_token_key=No
     )
     return api
 
-def get_tweepy_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
+def get_tweepy_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None, wait_on_rate_limit=True):
     if not(all((consumer_key, consumer_secret, access_token_key, access_token_secret,))):
         (consumer_key, consumer_secret, access_token_key, access_token_secret,) = _get_auth_keys()
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token_key, access_token_secret)
-    api = tweepy.API(auth)
+    api = tweepy.API(auth, wait_on_rate_limit=wait_on_rate_limit)
     return api
 
 def get_user(screen_name):
