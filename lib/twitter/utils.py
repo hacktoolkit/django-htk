@@ -19,6 +19,7 @@ def _get_auth_keys():
     return auth_keys
 
 def get_api(consumer_key=None, consumer_secret=None, access_token_key=None, access_token_secret=None):
+    from htk.lib.twitter.api import HtkTwitterAPI
     api = HtkTwitterAPI(
         consumer_key=consumer_key,
         consumer_secret=consumer_secret,
