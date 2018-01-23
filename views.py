@@ -101,15 +101,22 @@ def robots(request):
     return response
 
 def redir(request):
+    response = None
+
     encoded_url = request.GET.get('url', None)
     if encoded_url:
-        url = base64.urlsafe_b64decode(str(encoded_url))
-        if not re.match('^https?://', url):
-            url = 'http://%s' % url
-        else:
+        try:
+            url = base64.urlsafe_b64decode(str(encoded_url))
+            if not re.match('^https?://', url):
+                url = 'http://%s' % url
+            else:
+                pass
+            response = redirect(url)
+        except:
+            # can encounter various illegal values from vulnerability scans and bots
             pass
-        response = redirect(url)
-    else:
+
+    if response is None:
         response = redirect('/')
     return response
 
