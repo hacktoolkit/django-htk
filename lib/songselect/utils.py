@@ -5,7 +5,13 @@ import re
 class SongSelectSong(object):
     def __init__(self, content):
         soup = BeautifulSoup(content, 'html.parser')
-        self.title = soup.select('.cproTitle')[0].string
+
+        title = soup.select('.cproTitle')
+        if title:
+            title = title[0].string
+            self.title = title
+        else:
+            self.title = ''
 
         key = soup.select('.cproSongKey')
         if key:
