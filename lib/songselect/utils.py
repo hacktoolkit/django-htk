@@ -62,8 +62,12 @@ class SongSelectSong(object):
                 self.copyright = None
 
         song_body = soup.select('.cproSongBody')[0]
+        song_sections = song_body.select('.cproSongSection')
+        if len(song_sections) == 0:
+            # treat entire body as one section, if there are no sections
+            song_sections = [song_body]
         self.song_sections = []
-        for song_section in song_body.select('.cproSongSection'):
+        for song_section in song_sections:
             self.song_sections.append(self.song_section_html2chopro(song_section))
 
         self.song_body = '\n\n'.join(self.song_sections)
