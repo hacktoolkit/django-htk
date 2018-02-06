@@ -9,20 +9,30 @@ class RedfinAPI(object):
 
     def _get_api_request(self, endpoint_name, params):
         url = '%s%s' % (REDFIN_API_BASE_URL, self._get_api_endpoint_url(endpoint_name),)
+
+        referrer_base_url = 'https://www.redfin.com/what-is-my-home-worth'
+        referrer_params = {
+            k : v
+            for k, v in params.iteritems()
+            if k in ['propertyId', 'listingId',]
+        }
+        referrer_url = requests.PreparedRequest().prepare_url(referrer_base_url, referrer_params)
+
         headers = {
-            #'Accept' : '*/*',
-            'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Encoding' : 'gzip, deflate, sdch, br',
-            'Accept-Language' : 'en-US,en;q=0.8',
+            'Accept' : '*/*',
+            #'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Encoding' : 'gzip, deflate, br',
+            'Accept-Language' : 'en-US,en;q=0.9',
             'Cache-Control' : 'no-cache',
             'Connection' : 'keep-alive',
             'Content-Type' : 'application/json',
             'Host' : 'www.redfin.com',
             'Pragma' : 'no-cache',
             'Upgrade-Insecure-Requests' : '1',
-            'Referer' : 'https://www.redfin.com/what-is-my-home-worth',
-            'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36',
+            'Referer' : referrer_url,
+            'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36',
         }
+
         cookies = {
             'RF_BROWSER_ID' : '',
             'RF_ACCESS_LEVEL' : '',
@@ -31,9 +41,9 @@ class RedfinAPI(object):
             'RF_SECURE_AUTH' : '',
             'RF_W_AUTH' : '',
         }
+
         response = requests.get(url, params=params, headers=headers, cookies=cookies, timeout=3)
-        print response.url
-        print response.text
+        #print response.text
         return response
 
     def _get_api_endpoint_url(self, endpoint_name):
