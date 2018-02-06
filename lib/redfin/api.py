@@ -10,13 +10,7 @@ class RedfinAPI(object):
     def _get_api_request(self, endpoint_name, params):
         url = '%s%s' % (REDFIN_API_BASE_URL, self._get_api_endpoint_url(endpoint_name),)
 
-        referrer_base_url = 'https://www.redfin.com/what-is-my-home-worth'
-        referrer_params = {
-            k : v
-            for k, v in params.iteritems()
-            if k in ['propertyId', 'listingId',]
-        }
-        referrer_url = requests.PreparedRequest().prepare_url(referrer_base_url, referrer_params)
+        referrer_url = self.get_home_worth_url(params.get('propertyId'), params.get('listingId'))
 
         headers = {
             'Accept' : '*/*',
@@ -50,10 +44,17 @@ class RedfinAPI(object):
         url = REDFIN_API_ENDPOINTS.get(endpoint_name)
         return url
 
-    def get_home_worth(self, property_id):
+    def get_home_worth_url(self, property_id, listing_id=None):
         """https://www.redfin.com/what-is-my-home-worth?propertyId={property_id}&listingId={listing_id}
         """
-        pass
+        base_url = 'https://www.redfin.com/what-is-my-home-worth'
+        params = {
+            'propertyId' : property_id,
+            'listingId' : listing_id,
+        }
+        r = requests.PreparedRequest()
+        r.prepare_url(base_url, params)
+        return r.url
 
     def get_property_listing_id(self, property_id):
         """Get property listing id
@@ -93,10 +94,20 @@ class RedfinAPI(object):
         response = self._get_api_request('get_avm', params)
         if response.status_code == 200:
             response_json = json.loads(response.text[4:])
-            data = response_json
+            avm_data = response_json.get('payload', None)
+            if avm_data is None:
+                extra_data = {
+                    'property_id' : property_id,
+                    'listing_id' : listing_id,
+                }
+                rollbar.report_message('Redfin API Missing AVM Payload', 'info', extra_data=extra_data)
+                avm_data = {}
         else:
-            data = {}
-        return data
+            avm_data = {}
+
+        home_worth_url = self.get_home_worth_url(property_id, listing_id=listing_id)
+        avm = RedfinAVM(property_id, home_worth_url, avm_data)
+        return avm
 
     def get_property_parcel_info(self, property_id, listing_id=None):
         """Get Property Parcel Info
@@ -120,3 +131,53 @@ class RedfinAPI(object):
         else:
             data = None
         return data
+
+class RedfinAVM(object):
+    def __init__(self, property_id, home_worth_url, raw_data):
+        self.property_id = property_id
+        self.home_worth_url = home_worth_url
+        self.raw_data = raw_data
+
+        self.property_value = raw_data.get('predictedValue', 0)
+        self.property_value_historical = raw_data.get('predictedValueHistorical', 0)
+        self.property_value_change = self.property_value - self.property_value_historical
+
+        lat_long = raw_data.get('latLong', {})
+        if lat_long:
+            self.latitude = lat_long.get('latitude')
+            self.longitude = lat_long.get('longitude')
+
+        # build the address
+        street_address = raw_data.get('streetAddress', {}).get('assembledAddress', None)
+
+        if street_address:
+            self.street_address = street_address
+            # full address is not directly returned
+            # assume the first comparable is in same city, state, zip
+            # alternatively, could reverse geocode the lat-lng
+            comparables = raw_data.get('comparables', [])
+            comparable = comparables[0] if len(comparables) > 0 else {}
+
+            self.city = comparable.get('city', 'Unknown City')
+            self.state = comparable.get('state', 'Unknown State')
+            self.zipcode = comparable.get('zip', '')
+
+            self.address = '%s, %s, %s %s' % (
+                street_address,
+                self.city,
+                self.state,
+                self.zipcode,
+            )
+
+    def to_json(self):
+        """Returns a JSON-encodable dictionary representation of the Redfin AVM `self.property_id`
+        """
+        data = {
+            'property_id' : self.property_id,
+            'property_value' : self.property_value,
+            'city' : self.city,
+            'state' : self.state,
+            'zipcode' : self.zipcode,
+            'address' : self.address,
+        }
+        return json
