@@ -21,6 +21,7 @@ from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
 from htk.apps.accounts.utils import get_user_by_email
 from htk.apps.accounts.utils.auth import login_authenticated_user
+from htk.apps.accounts.view_helpers import get_resend_confirmation_help_message
 from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
 from htk.forms.utils import set_input_attrs
 from htk.utils import htk_setting
@@ -34,6 +35,7 @@ from htk.view_helpers import wrap_data
 def login_view(
     request,
     data=None,
+    resend_confirmation_url_name='account_resend_confirmation',
     auth_form_model=UsernameEmailAuthenticationForm,
     default_next_url_name='account_login_redirect',
     template='account/login.html',
@@ -56,7 +58,8 @@ def login_view(
                 data['errors'].append(error)
             auth_user = auth_form.get_user()
             if auth_user and not auth_user.is_active:
-                data['errors'].append('Have you confirmed your email address yet? <a id="resend_confirmation" href="javascript:void(0);">Resend confirmation &gt;</a>')
+                msg = get_resend_confirmation_help_message(resend_confirmation_url_name, email=auth_user.email)
+                data['errors'].append(msg)
                 resend_confirmation_form = ResendConfirmationForm({'email': auth_user.email})
                 data['resend_confirmation_form'] = resend_confirmation_form
             else:
@@ -156,7 +159,8 @@ def register_social_login(
                 data['errors'].append(error)
             auth_user = auth_form.get_user()
             if auth_user and not auth_user.is_active:
-                data['errors'].append('Have you confirmed your email address yet? <a href="%s">Resend confirmation</a>.' % reverse(resend_confirmation_url_name))
+                msg = get_resend_confirmation_help_message(resend_confirmation_url_name, email=auth_user.email)
+                data['errors'].append(msg)
     else:
         auth_form = SocialRegistrationAuthenticationForm(email)
 
@@ -281,7 +285,11 @@ def resend_confirmation(
             for error in resend_confirmation_form.non_field_errors():
                 data['errors'].append(error)
     else:
-        resend_confirmation_form = ResendConfirmationForm()
+        email = request.GET.get('email')
+        initial_data = {
+            'email' : email,
+        }
+        resend_confirmation_form = ResendConfirmationForm(initial=initial_data)
     if 'input_attrs' in data:
         set_input_attrs(resend_confirmation_form, attrs=data['input_attrs'])
     data['resend_confirmation_form'] = resend_confirmation_form

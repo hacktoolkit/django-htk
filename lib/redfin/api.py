@@ -2,6 +2,7 @@ import json
 import requests
 
 from htk.lib.redfin.constants import *
+from htk.utils.urls import build_url_with_query_params
 
 class RedfinAPI(object):
     def __init__(self):
@@ -52,6 +53,7 @@ class RedfinAPI(object):
             'propertyId' : property_id,
             'listingId' : listing_id,
         }
+        url = build_url_with_query_params(base_url, params)
         r = requests.PreparedRequest()
         r.prepare_url(base_url, params)
         return r.url
