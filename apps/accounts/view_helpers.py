@@ -35,5 +35,5 @@ def get_resend_confirmation_help_message(resend_confirmation_url_name, email=Non
         'email' : email,
     }
     resend_confirmation_url = reverse_with_query_params(resend_confirmation_url_name, query_params)
-    msg = 'Have you confirmed your email address yet? <a id="resend_confirmation" href="%s">Request to resend confirmation email</a>.' % resend_confirmation_url
+    msg = 'Have you confirmed your email address yet? <a id="resend_confirmation" href="%s">Request another confirmation email</a>.' % resend_confirmation_url
     return msg
