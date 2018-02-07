@@ -2,7 +2,7 @@
 GitHub reminder bot
 
 Usage:
-    python bots.py [-t] TOKEN -o ORGANIZATION
+    python bots.py [-t TOKEN] [-o ORGANIZATION]
 Examples:
     $ python bots.py -t YOURTOKEN -o hacktoolkit
 """
