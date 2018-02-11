@@ -3,7 +3,6 @@ import rollbar
 
 from htk.lib.iterable.constants import *
 from htk.lib.iterable.exceptions import *
-from htk.lib.iterable.utils import get_workflow_id
 from htk.utils import htk_setting
 from htk.utils import utcnow
 
@@ -170,6 +169,8 @@ class HtkIterableAPIClient(IterableAPIClient):
 
         Based on HTK settings, either track an event, trigger a workflow, or both
         """
+        # avoid circular import
+        from htk.lib.iterable.utils import get_workflow_id
         sign_up_workflow_id = get_workflow_id('sign_up')
         if sign_up_workflow_id is not None:
             payload = {
@@ -183,6 +184,8 @@ class HtkIterableAPIClient(IterableAPIClient):
     def notify_account_activation(self, user):
         """Notify Iterable of a `user` activation event
         """
+        # avoid circular import
+        from htk.lib.iterable.utils import get_workflow_id
         account_activation_workflow_id = get_workflow_id('account_activation')
         if account_activation_workflow_id is not None:
             payload = {
@@ -196,6 +199,8 @@ class HtkIterableAPIClient(IterableAPIClient):
     def notify_login(self, user):
         """Notify Iterable of a `user` login event
         """
+        # avoid circular import
+        from htk.lib.iterable.utils import get_workflow_id
         login_workflow_id = get_workflow_id('login')
         if login_workflow_id is not None:
             payload = {
