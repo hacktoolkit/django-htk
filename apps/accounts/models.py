@@ -368,8 +368,8 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
                         user.email,
                         htk_setting('HTK_SITE_NAME'),
                     ))
-            except:
-                rollbar.report_exc_info()
+                except:
+                    rollbar.report_exc_info()
 
         return was_activated
 
