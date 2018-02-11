@@ -8,3 +8,7 @@ HTK_ITERABLE_WORKFLOW_IDS = {
     'account_activation' : None,
     'login' : None,
 }
+
+HTK_ITERABLE_OPTIONS = {
+    'override_welcome_email' : False,
+}

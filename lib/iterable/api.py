@@ -3,7 +3,9 @@ import rollbar
 
 from htk.lib.iterable.constants import *
 from htk.lib.iterable.exceptions import *
+from htk.lib.iterable.utils import get_workflow_id
 from htk.utils import htk_setting
+from htk.utils import utcnow
 
 class IterableAPIClient(object):
     """
@@ -168,7 +170,6 @@ class HtkIterableAPIClient(IterableAPIClient):
 
         Based on HTK settings, either track an event, trigger a workflow, or both
         """
-        from htk.lib.iterable.utils import get_workflow_id
         sign_up_workflow_id = get_workflow_id('sign_up')
         if sign_up_workflow_id is not None:
             payload = {
@@ -182,11 +183,25 @@ class HtkIterableAPIClient(IterableAPIClient):
     def notify_account_activation(self, user):
         """Notify Iterable of a `user` activation event
         """
-        from htk.lib.iterable.utils import get_workflow_id
         account_activation_workflow_id = get_workflow_id('account_activation')
-        pass
+        if account_activation_workflow_id is not None:
+            payload = {
+                'dataFields' : {
+                    'userId' : user.id,
+                    'date_activated' : utcnow().strftime(ITERABLE_DATE_FORMAT),
+                },
+            }
+            self.trigger_workflow(user.email, account_activation_workflow_id, payload=payload)
 
     def notify_login(self, user):
         """Notify Iterable of a `user` login event
         """
-        pass
+        login_workflow_id = get_workflow_id('login')
+        if login_workflow_id is not None:
+            payload = {
+                'dataFields' : {
+                    'userId' : user.id,
+                    'last_login' : user.last_login.strftime(ITERABLE_DATE_FORMAT),
+                },
+            }
+            self.trigger_workflow(user.email, login_workflow_id, payload=payload)

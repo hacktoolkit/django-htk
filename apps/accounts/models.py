@@ -343,8 +343,24 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
             user.is_active = True
             user.save()
             was_activated = user.is_active
+
         if was_activated:
-            self.send_welcome_email(template=email_template, subject=email_subject, sender=email_sender)
+            should_send_welcome_email = True
+
+            if htk_setting('HTK_ITERABLE_ENABLED'):
+                try:
+                    itbl_opts = htk_setting('HTK_ITERABLE_OPTIONS')
+                    should_send_welcome_email = not itbl_opts.get('override_welcome_email', False)
+
+                    from htk.lib.iterable.utils import get_iterable_api_client
+                    itbl = get_iterable_api_client()
+                    itbl.notify_account_activation(user)
+                except:
+                    rollbar.report_exc_info()
+
+            if should_send_welcome_email:
+                self.send_welcome_email(template=email_template, subject=email_subject, sender=email_sender)
+
         return was_activated
 
     def get_timezone(self):
