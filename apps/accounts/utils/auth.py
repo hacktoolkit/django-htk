@@ -15,6 +15,6 @@ def login_authenticated_user(request, authenticated_user):
         try:
             from htk.lib.iterable.utils import get_iterable_api_client
             itbl = get_iterable_api_client()
-            itbl.notify_login(user)
+            itbl.notify_login(authenticated_user)
         except:
             rollbar.report_exc_info()
