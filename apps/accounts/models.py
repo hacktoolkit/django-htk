@@ -345,6 +345,7 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
             was_activated = user.is_active
 
         if was_activated:
+            # trigger notifications for an activated account
             should_send_welcome_email = True
 
             if htk_setting('HTK_ITERABLE_ENABLED'):
@@ -360,6 +361,15 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
 
             if should_send_welcome_email:
                 self.send_welcome_email(template=email_template, subject=email_subject, sender=email_sender)
+
+            if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+                try:
+                    slack_notify('*%s* has activated their account on %s' % (
+                        user.email,
+                        htk_setting('HTK_SITE_NAME'),
+                    ))
+            except:
+                rollbar.report_exc_info()
 
         return was_activated
 
