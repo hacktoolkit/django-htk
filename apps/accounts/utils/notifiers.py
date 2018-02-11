@@ -7,6 +7,6 @@ def notify_user_email_update(user, old_email, new_email):
         try:
             from htk.lib.iterable.utils import get_iterable_api_client
             itbl = get_iterable_api_client()
-            itbl.update_user_email(old_email, email)
+            itbl.update_user_email(old_email, new_email)
         except:
             rollbar.report_exc_info()
