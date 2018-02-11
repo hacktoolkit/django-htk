@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from django.db.models import signals
 
 from htk.utils import htk_setting
-from htk.utils.notifications import slack_notify
 
 ################################################################################
 # signals and signal handlers
@@ -21,6 +20,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile.save()
         if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
             try:
+                from htk.utils.notifications import slack_notify
                 slack_notify('A new user has registered on the site %s: *%s <%s>*' % (
                     htk_setting('HTK_SITE_NAME'),
                     user.profile.get_display_name(),
