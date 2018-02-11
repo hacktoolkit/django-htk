@@ -213,7 +213,7 @@ def get_user_email(user, email):
         user_email = None
     return user_email
 
-def associate_user_email(user, email, domain=None, email_template=None, email_subject=None, email_sender=None, confirmed=False, replacing=None):
+def associate_user_email(user, email, replacing=None, domain=None, email_template=None, email_subject=None, email_sender=None, confirmed=False):
     """Associates `email` with `user`
 
     Resulting UserEmail.is_confirmed = `confirmed`, default False
