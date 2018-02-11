@@ -153,8 +153,11 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
         """
         user = self.user
         if self.has_email(email):
+            old_email = user.email
             user.email = email
             user.save()
+            from htk.apps.accounts.utils.notifiers import notify_user_email_update
+            notify_user_email_update(user, old_email, email)
         else:
             pass
         return user
@@ -545,6 +548,7 @@ class UserEmail(models.Model):
     activation_key = models.CharField(max_length=40, blank=True)
     key_expires = models.DateTimeField(null=True, blank=True)
     is_confirmed = models.BooleanField(default=False)
+    replacing = models.EmailField(null=True, blank=True)
 
     class Meta:
         app_label = 'accounts'
@@ -644,6 +648,10 @@ class UserEmail(models.Model):
         if not self.is_confirmed:
             self.is_confirmed = True
             self.save()
+            if self.replacing:
+                from htk.apps.accounts.utils.notifiers import notify_user_email_update
+                notify_user_email_update(self.user, self.replacing, self.email)
+
         was_activated = self.user.profile.activate(email_template=email_template, email_subject=email_subject, email_sender=email_sender)
         # purge all other records with same email addresses that aren't confirmed
         # NOTE: Be careful to not delete the wrong ones!

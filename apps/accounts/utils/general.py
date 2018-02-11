@@ -213,7 +213,7 @@ def get_user_email(user, email):
         user_email = None
     return user_email
 
-def associate_user_email(user, email, domain=None, email_template=None, email_subject=None, email_sender=None, confirmed=False):
+def associate_user_email(user, email, domain=None, email_template=None, email_subject=None, email_sender=None, confirmed=False, replacing=None):
     """Associates `email` with `user`
 
     Resulting UserEmail.is_confirmed = `confirmed`, default False
@@ -224,6 +224,8 @@ def associate_user_email(user, email, domain=None, email_template=None, email_su
     `user` and `email` to be valid
     `email` cannot be confirmed by any other user
     `email` cannot already be associated with THIS `user`
+
+    If `replacing` is specified, it denotes that it is being replaced by `email`
     """
     from htk.apps.accounts.models import UserEmail
     user_email = None
@@ -250,11 +252,16 @@ def associate_user_email(user, email, domain=None, email_template=None, email_su
         if should_associate:
             user_email = get_user_email(user, email)
             if user_email is None:
-                user_email = UserEmail.objects.create(user=user, email=email, is_confirmed=confirmed)
+                user_email = UserEmail.objects.create(user=user, email=email, is_confirmed=confirmed, replacing=replacing)
+
             if confirmed or user_email.is_confirmed:
                 # don't need to send activation email for a pre-confirmed address
                 # pre-confirmed email can come from a social auth provider
                 user_email.confirm_and_activate_account()
+                if replacing:
+                    from htk.apps.accounts.utils.notifiers import notify_user_email_update
+                    notify_user_email_update(user, replacing, email)
+
             elif not user_email.is_confirmed:
                 domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
                 try:
