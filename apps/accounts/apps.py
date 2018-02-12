@@ -26,6 +26,8 @@ def create_user_profile(sender, instance, created, **kwargs):
                     user.profile.get_display_name(),
                     user.email,
                 ))
+                if htk_setting('HTK_SLACK_BOT_ENABLED'):
+                    slack_notify('htk: emaildig %s' % user.email)
             except:
                 rollbar.report_exc_info()
 
