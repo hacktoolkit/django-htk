@@ -31,19 +31,22 @@ class AbstractGeolocation(HtkBaseModel):
         """Geocodes the address
         """
         address = self.get_address_string()
-        latitude, longitude = get_latlng(address)
-        if latitude and longitude:
-            update_fields = []
-            if self.latitude != latitude:
-                self.latitude = latitude
-                update_fields.append('latitude')
-            if self.longitude != longitude:
-                self.longitude = longitude
-                update_fields.append('longitude')
-            if update_fields:
-                self.save(update_fields=update_fields)
+        if not address:
+            latitude, longitude = (None, None,)
         else:
-            pass
+            latitude, longitude = get_latlng(address)
+            if latitude and longitude:
+                update_fields = []
+                if self.latitude != latitude:
+                    self.latitude = latitude
+                    update_fields.append('latitude')
+                if self.longitude != longitude:
+                    self.longitude = longitude
+                    update_fields.append('longitude')
+                if update_fields:
+                    self.save(update_fields=update_fields)
+            else:
+                pass
         return (latitude, longitude,)
 
     def get_latitude(self):
