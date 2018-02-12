@@ -30,3 +30,20 @@ def get_server_api_key(use_pool=False):
     else:
         key = None
     return key
+
+def get_browser_api_key(use_pool=False):
+    """Retrieves the Google Browser API key
+
+    If there are multiple keys configured and `use_pool` is enabled, selects one at random, otherwise the first
+    """
+    key = htk_setting('HTK_GOOGLE_BROWSER_API_KEY')
+    if type(key) == str:
+        key = key
+    elif hasattr(key, '__iter__'):
+        if use_pool:
+            key = random.choice(key)
+        else:
+            key = key[0]
+    else:
+        key = None
+    return key

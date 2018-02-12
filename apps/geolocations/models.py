@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.safestring import mark_safe
 
 from htk.apps.geolocations.constants import *
 from htk.apps.geolocations.enums import DistanceUnit
@@ -67,11 +68,42 @@ class AbstractGeolocation(HtkBaseModel):
             self.geocode()
         return self.longitude
 
+    ##
+    # Maps
+
     def map_url(self):
         """Get the Google Maps URL for this geolocation
         """
         url = LOCATION_MAP_URL_FORMAT % self.get_address_string()
         return url
+
+    def geocoordinates_map_url(self):
+        """Get the Google Maps URL for this geolocation, using coordinates
+        """
+        if self.has_latlng():
+            lat_lng_str = '%s,%s' % (self.latitude, self.longitude,)
+            url = LOCATION_MAP_URL_FORMAT % lat_lng_str
+        else:
+            url = None
+        return url
+
+    def embedded_map_html(self):
+        pass
+
+    def embedded_geocoordinates_map_html(self):
+        if self.has_latlng():
+            from htk.lib.google.utils import get_browser_api_key
+            html = """<iframe width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?key=%(api_key)s&q=%(q)s" allowfullscreen></iframe>""" % {
+                'api_key' : get_browser_api_key(),
+                'q' : '%s,%s' % (self.latitude, self.longitude,),
+            }
+            html = mark_safe(html)
+        else:
+            html = None
+        return html
+
+    ##
+    # Calculations
 
     @classmethod
     def find_near_latlng(cls, latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, offset=0, limit=0):
