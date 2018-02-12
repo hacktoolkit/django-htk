@@ -36,8 +36,9 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
             user.username = username_field_display_value
         else:
             pass
+        ProfileFormClass = kwargs.pop('profile_form_class', UserProfileUpdateForm)
         super(UserUpdateForm, self).__init__(user, *args, **kwargs)
-        self.profile_form = UserProfileUpdateForm(user_profile, *args, **kwargs)
+        self.profile_form = ProfileFormClass(user_profile, *args, **kwargs)
 
     def has_username_field(self):
         """Determines whether username is a field in this form instance
