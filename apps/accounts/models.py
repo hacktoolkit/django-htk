@@ -377,6 +377,9 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
 
         return was_activated
 
+    ##
+    # Time and Locale
+
     def get_timezone(self):
         tz = self.timezone if self.timezone else self.get_detected_timezone()
         return tz
@@ -404,6 +407,32 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
         else:
             local_time = dt.astimezone(tz)
         return local_time
+
+    @CachedAttribute
+    def local_time(self):
+        return self.get_local_time()
+
+    @CachedAttribute
+    def localized_date(self):
+        now = self.local_time
+        today = datetime.date(now.year, now.month, now.day)
+        return today
+
+    @CachedAttribute
+    def one_week_later_datetime(self):
+        return self.local_time + datetime.timedelta(weeks=1)
+
+    @CachedAttribute
+    def one_week_later_date(self):
+        return self.localized_date + datetime.timedelta(weeks=1)
+
+    @CachedAttribute
+    def next_iso_week_date(self):
+        """The first day of the next ISO week
+        """
+        from htk.utils.datetime_utils import iso_to_gregorian
+        year, week, day = self.one_week_later_date.isocalendar()
+        return iso_to_gregorian(year, week, 1)
 
     def update_locale_info_by_ip_from_request(self, request):
         """Update user info by IP Address

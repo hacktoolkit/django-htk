@@ -32,6 +32,22 @@ def datetime_to_unix_time(dt):
     unix_time = time.mktime(dt.timetuple())
     return unix_time
 
+def iso_to_gregorian(iso_year, iso_week, iso_day):
+    """
+    Gregorian calendar date for the given ISO year, week and day
+
+    From: https://stackoverflow.com/a/33101215/865091
+    """
+    # 4th of January always belongs to the same ISO year and Gregorian year
+    fourth_jan = datetime.date(iso_year, 1, 4)
+    _, fourth_jan_week, fourth_jan_day = fourth_jan.isocalendar()
+    delta = datetime.timedelta(
+        days=iso_day - fourth_jan_day,
+        weeks=iso_week - fourth_jan_week
+    )
+    gregorian = fourth_jan + delta
+    return gregorian
+
 def is_within_hour_bounds_for_timezone(start_hour, end_hour, timezone_name='America/Los_Angeles'):
     """Determine if the local time for given `timezone_name` is currently within `start_hour` and `end_hour` bounds
     """
