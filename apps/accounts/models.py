@@ -419,6 +419,12 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
         return today
 
     @CachedAttribute
+    def current_iso_week_date(self):
+        from htk.utils.datetime_utils import iso_to_gregorian
+        iso_year, iso_week, iso_day = self.localized_date.isocalendar()
+        return iso_to_gregorian(iso_year, iso_week, 1)
+
+    @CachedAttribute
     def one_week_later_datetime(self):
         return self.local_time + datetime.timedelta(weeks=1)
 
@@ -431,8 +437,8 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
         """The first day of the next ISO week
         """
         from htk.utils.datetime_utils import iso_to_gregorian
-        year, week, day = self.one_week_later_date.isocalendar()
-        return iso_to_gregorian(year, week, 1)
+        iso_year, iso_week, iso_day = self.one_week_later_date.isocalendar()
+        return iso_to_gregorian(iso_year, iso_week, 1)
 
     def update_locale_info_by_ip_from_request(self, request):
         """Update user info by IP Address
