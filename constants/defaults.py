@@ -81,6 +81,7 @@ from htk.forms.constants.defaults import *
 from htk.lib.alexa.constants.defaults import *
 from htk.lib.fullcontact.constants.defaults import *
 from htk.lib.iterable.constants.defaults import *
+from htk.lib.mongodb.constants.defaults import *
 from htk.lib.qrcode.constants.defaults import *
 from htk.lib.slack.constants.defaults import *
 from htk.lib.shopify_lib.constants.defaults import *

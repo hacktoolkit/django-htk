@@ -1,5 +1,4 @@
 import math
-import rollbar
 import shopify
 import time
 
