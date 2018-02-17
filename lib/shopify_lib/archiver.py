@@ -14,15 +14,15 @@ class HtkShopifyArchiver(object):
         self.archive_orders()
         self.archive_customers()
 
-    def archive_products():
+    def archive_products(self):
         for product in api.iter_products():
             self.archive_item('product', product)
 
-    def archive_orders():
+    def archive_orders(self):
         for order in api.iter_orders():
             self.archive_item('order', order)
 
-    def archive_customers():
+    def archive_customers(self):
         for customer in api.iter_customers():
             self.archive_item('customer', customer)
 
