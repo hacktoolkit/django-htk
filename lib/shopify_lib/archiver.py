@@ -57,8 +57,11 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
             collection = self.mongo_db[collection_name]
 
             item_json = json.loads(item.to_json())[item_type]
-            item_id = item_json['id']
             # set the primary key
+            get_item_pk = htk_setting('HTK_SHOPIFY_MONGODB_ITEM_PK')
+            item_id = get_item_pk(item_type, item_json)
             item_json['_id'] = item_id
-            del item_json['id']
+            if item_id == item_json['id']:
+                # remove the redundant id
+                del item_json['id']
             collection.insert(item_json)
