@@ -10,24 +10,34 @@ class HtkShopifyArchiver(object):
         self.api = api
 
     def archive_all(self):
+        self.items_seen = {
+            'product' : {},
+            'order' : {},
+            'customer' : {},
+        }
         self.archive_products()
         self.archive_orders()
         self.archive_customers()
 
+    def archive_item_type(self, item_type, iterator):
+        """Archives a collection of Shopify.Resource of `item_type` using `iterator`
+        """
+        print 'Archiving %ss' % item_type
+        for item, i, total, page in iterator():
+            print '%s of %s %ss'  % (i, total, item_type,)
+            self.archive_item(item_type, item)
+
     def archive_products(self):
-        for product in self.api.iter_products():
-            self.archive_item('product', product)
+        self.archive_item_type('product', self.api.iter_products)
 
     def archive_orders(self):
-        for order in self.api.iter_orders():
-            self.archive_item('order', order)
+        self.archive_item_type('order', self.api.iter_orders)
 
     def archive_customers(self):
-        for customer in self.api.iter_customers():
-            self.archive_item('customer', customer)
+        self.archive_item_type('customer', self.api.iter_customers)
 
     def archive_item(self, item_type, item):
-        """Archives a Shopify.Resource item into some database
+        """Archives a single Shopify.Resource item into some database
         """
         raise Exception('HtkShopifyArchiver::archive_item not implemented')
 
@@ -64,4 +74,9 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
             if item_id == item_json['id']:
                 # remove the redundant id
                 del item_json['id']
-            collection.insert(item_json)
+
+            if item_id in self.items_seen[item_type]:
+                print 'Skipping duplicate %s: %s' % (item_type, item_id,)
+            else:
+                self.items_seen[item_type][item_id] = True
+                collection.insert(item_json)

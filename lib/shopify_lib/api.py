@@ -29,9 +29,10 @@ class HtkShopifyAPIClient(object):
         page_size = 250
         num_pages = int(math.ceil(item_count / (page_size * 1.0)))
 
+        i = 0
         start_time = time.time()
-        for page in xrange(num_pages):
-            if page > 0:
+        for page in xrange(1, num_pages + 1):
+            if page > 1:
                 # implement leaky bucket to avoid 429 TOO MANY REQUESTS
                 stop_time = time.time()
                 processing_duration = stop_time - start_time
@@ -41,7 +42,8 @@ class HtkShopifyAPIClient(object):
 
             items = resource.find(limit=page_size, page=page)
             for item in items:
-                yield item
+                i += 1
+                yield item, i, item_count, page
 
     ##
     # Product
