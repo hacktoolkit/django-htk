@@ -1,6 +1,9 @@
+import math
 import rollbar
 import shopify
 import time
+
+SHOPIFY_API_RATE_LIMIT_CYCLE = 0.5 # can average 2 calls per second
 
 class HtkShopifyAPIClient(object):
     def __init__(self, shop_name=None, api_key=None, api_secret=None):
@@ -23,15 +26,23 @@ class HtkShopifyAPIClient(object):
     def resource_iterator(self, resource):
         """Returns an iterator/generator over the ActiveResource `resource`
         """
-        count = resource.count()
-        page_size = 50
-        has_remainder = count % page_size
-        num_pages = (count / page_size) + (1 if has_remainder else 0)
+        item_count = resource.count()
+        page_size = 250
+        num_pages = int(math.ceil(item_count / (page_size * 1.0)))
+
+        start_time = time.time()
         for page in xrange(num_pages):
-            items = resource.find(page=page)
+            if page > 0:
+                # implement leaky bucket to avoid 429 TOO MANY REQUESTS
+                stop_time = time.time()
+                processing_duration = stop_time - start_time
+                wait_time = int(math.ceil(SHOPIFY_API_RATE_LIMIT_CYCLE - processing_duration))
+                if wait_time > 0:
+                    time.sleep(wait_time)
+
+            items = resource.find(limit=page_size, page=page)
             for item in items:
                 yield item
-            time.sleep(1)
 
     ##
     # Product
