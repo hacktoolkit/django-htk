@@ -77,6 +77,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
             if item_id in self.items_seen[item_type]:
                 print 'Skipping duplicate %s: %s' % (item_type, item_id,)
+                print item_json
             else:
                 self.items_seen[item_type][item_id] = True
                 collection.insert(item_json)
