@@ -1,5 +1,6 @@
 import rollbar
 import shopify
+import time
 
 class HtkShopifyAPIClient(object):
     def __init__(self, shop_name=None, api_key=None, api_secret=None):
@@ -19,10 +20,42 @@ class HtkShopifyAPIClient(object):
             self.shop = None
             raise Exception('Missing Shopify store or API parameters')
 
+    def resource_iterator(self, resource):
+        """Returns an iterator/generator over the ActiveResource `resource`
+        """
+        count = resource.count()
+        page_size = 50
+        has_remainder = count % page_size
+        num_pages = (count / page_size) + (1 if has_remainder else 0)
+        for page in xrange(num_pages):
+            items = resource.find(page=page)
+            for item in items:
+                yield item
+            time.sleep(1)
+
     ##
     # Product
     # https://help.shopify.com/api/reference/product
 
-    def get_all_products(self):
-        products = shopify.Product.find()
-        return products
+    def iter_products(self):
+        """Returns an iterator/generator over all Products
+        """
+        return self.resource_iterator(shopify.Product)
+
+    ##
+    # Order
+    # https://help.shopify.com/api/reference/order
+
+    def iter_orders(self):
+        """Returns an iterator/generator over all Orders
+        """
+        return self.resource_iterator(shopify.Order)
+
+    ##
+    # Customer
+    # https://help.shopify.com/api/reference/customer
+
+    def iter_customers(self):
+        """Returns an iterator/generator over all Customers
+        """
+        return self.resource_iterator(shopify.Customer)
