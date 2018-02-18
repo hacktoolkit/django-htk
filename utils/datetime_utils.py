@@ -4,6 +4,7 @@ import time
 
 from django.conf import settings
 from django.utils.timezone import utc
+from django.utils.dateparse import parse_datetime as django_parse_datetime
 
 from htk.constants.time import *
 
@@ -22,6 +23,9 @@ def tznow(timezone_name='America/Los_Angeles'):
     local_datetime = utcnow().astimezone(tz)
     return local_datetime
 
+def parse_datetime(dt_str):
+    return django_parse_datetime(dt_str)
+
 def datetime_to_unix_time(dt):
     """http://stackoverflow.com/questions/2775864/python-create-unix-timestamp-five-minutes-in-the-future
 
@@ -30,6 +34,13 @@ def datetime_to_unix_time(dt):
     For Python 2.7, some gymnastics required.
     """
     unix_time = time.mktime(dt.timetuple())
+    return unix_time
+
+def iso_datetime_to_unix_time(iso):
+    """Converts an ISO datetime string to UNIX timestamp
+    """
+    dt = parse_datetime(iso)
+    unix_time = datetime_to_unix_time(dt)
     return unix_time
 
 def iso_to_gregorian(iso_year, iso_week, iso_day):
