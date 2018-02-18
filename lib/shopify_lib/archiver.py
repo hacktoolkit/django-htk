@@ -9,37 +9,80 @@ class HtkShopifyArchiver(object):
             api = get_shopify_api_cli()
         self.api = api
 
+    def _get_iterator_for_item_type(self, item_type):
+        iterators = {
+            'product' : self.api.iter_products,
+            'order' : self.api.iter_orders,
+            'customer' : self.api.iter_customers,
+        }
+        iterator = iterators.get(item_type)
+        return iterator
+
+    def _get_archiver_for_item_type(self, item_type):
+        archivers = {
+            'product' : self.archive_product,
+            'order' : self.archive_order,
+            'customer' : self.archive_customer,
+        }
+        archiver = archivers.get(item_type)
+        return archiver
+
+    def already_cached(self, item_type, item, key):
+        """Check whether an `item` of `item_type` was already cached
+        `key` is a function that applies to `item` to get the primary key
+        """
+        cache = self.items_seen[item_type]
+        pk = key(item)
+        if pk in cache:
+            was_cached = True
+        else:
+            cache[pk] = True
+            was_cached = False
+        return was_cached
+
     def archive_all(self):
         self.items_seen = {
             'product' : {},
             'order' : {},
             'customer' : {},
+            'product_image' : {},
         }
         self.archive_products()
         self.archive_orders()
         self.archive_customers()
 
-    def archive_item_type(self, item_type, iterator):
+    def archive_item_type(self, item_type):
         """Archives a collection of Shopify.Resource of `item_type` using `iterator`
         """
         print 'Archiving %ss' % item_type
+        iterator = self._get_iterator_for_item_type(item_type)
         for item, i, total, page in iterator():
             print '%s of %s %ss'  % (i, total, item_type,)
             self.archive_item(item_type, item)
 
     def archive_products(self):
-        self.archive_item_type('product', self.api.iter_products)
+        self.archive_item_type('product')
 
     def archive_orders(self):
-        self.archive_item_type('order', self.api.iter_orders)
+        self.archive_item_type('order')
 
     def archive_customers(self):
-        self.archive_item_type('customer', self.api.iter_customers)
+        self.archive_item_type('customer')
 
     def archive_item(self, item_type, item):
-        """Archives a single Shopify.Resource item into some database
+        """Archives a single Shopify.Resource `item` into some database using `archiver`
         """
-        raise Exception('HtkShopifyArchiver::archive_item not implemented')
+        archiver = self._get_archiver_for_item_type(item_type)
+        archiver(item_type, item)
+
+    def archive_product(self, item_type, product):
+        raise Exception('HtkShopifyArchiver::archive_product not implemented')
+
+    def archive_customer(self, item_type, customer):
+        raise Exception('HtkShopifyArchiver::archive_customer not implemented')
+
+    def archive_order(self, item_type, order):
+        raise Exception('HtkShopifyArchiver::archive_order not implemented')
 
 class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
     def __init__(self, mongodb_connection=None, mongodb_name=None, api=None):
@@ -56,28 +99,71 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
     def get_collection_name(self, item_type):
         collections = htk_setting('HTK_SHOPIFY_MONGODB_COLLECTIONS')
-        collection_name = collections.get(item_type)
+        collection_name = collections[item_type]
         return collection_name
 
-    def archive_item(self, item_type, item):
-        """Archive a Shopify.Resource item in MongoDB
-        """
+    def try_insert(self, item_type, document):
         collection_name = self.get_collection_name(item_type)
-        if collection_name:
-            collection = self.mongo_db[collection_name]
+        collection = self.mongo_db[collection_name]
 
-            item_json = json.loads(item.to_json())[item_type]
-            # set the primary key
-            get_item_pk = htk_setting('HTK_SHOPIFY_MONGODB_ITEM_PK')
-            item_id = get_item_pk(item_type, item_json)
-            item_json['_id'] = item_id
-            if item_id == item_json['id']:
-                # remove the redundant id
-                del item_json['id']
+        key = lambda document: document['_id']
+        pk = key(document)
+        if self.already_cached(item_type, document, key):
+            if item_type != 'product_image':
+                print 'Skipping duplicate %s: %s' % (item_type, pk,)
+                print document
+        else:
+            collection.insert(document)
 
-            if item_id in self.items_seen[item_type]:
-                print 'Skipping duplicate %s: %s' % (item_type, item_id,)
-                print item_json
-            else:
-                self.items_seen[item_type][item_id] = True
-                collection.insert(item_json)
+    def archive_product(self, item_type, product):
+        document = json.loads(product.to_json())[item_type]
+        pk = document['id']
+        document['_id'] = pk
+        del document['id']
+
+        # lift sku from first variant
+        sku = document.get('variants', [{}])[0].get('sku')
+        document['sku'] = sku
+
+        # rewrite tags as array
+        tags_str = document['tags']
+        tags = [tag.strip() for tag in tags_str.split(',')]
+        document['tags'] = tags
+
+        # rewrite images as foreign key
+        product_image = document['image']
+        image_id = self._archive_product_image('product_image', product_image)
+        document['image_id'] = image_id
+        del document['image']
+        image_ids =[self._archive_product_image('product_image', product_image) for product_image in document.get('images', [])]
+        document['image_ids'] = image_ids
+        del document['image_ids']
+
+        self.try_insert(item_type, document)
+        return pk
+
+    def _archive_product_image(self, item_type, document):
+        pk = document['id']
+        document['_id'] = pk
+        del document['id']
+
+        self.try_insert(item_type, document)
+        return pk
+
+    def archive_customer(self, item_type, customer):
+        document = json.loads(customer.to_json())[item_type]
+        pk = document['id']
+        document['_id'] = pk
+        del document['id']
+
+        self.try_insert(item_type, document)
+        return pk
+
+    def archive_order(self, item_type, order):
+        document = json.loads(order.to_json())[item_type]
+        pk = document['id']
+        document['_id'] = pk
+        del document['id']
+
+        self.try_insert(item_type, document)
+        return pk
