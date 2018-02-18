@@ -5,6 +5,7 @@ HTK_SHOPIFY_SHARED_SECRET = None
 
 HTK_SHOPIFY_MONGODB_COLLECTIONS = {
     'product' : 'product',
+    'product_tag' : 'product_tag',
     'product_image' : 'product_image',
     'product_variant' : 'product_variant',
     'order' : 'order',

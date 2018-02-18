@@ -45,6 +45,7 @@ class HtkShopifyArchiver(object):
         # reset the cache
         self.items_seen = {
             'product' : {},
+            'product_tag' : {},
             'product_image' : {},
             'product_variant' : {},
             'order' : {},
@@ -58,6 +59,7 @@ class HtkShopifyArchiver(object):
     @CachedAttribute
     def fk_item_types(self):
         item_types = (
+            'product_tag',
             'product_image',
             'product_variant',
             'customer_address',
@@ -141,6 +143,8 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         # rewrite tags as array
         tags_str = document['tags']
         tags = [tag.strip() for tag in tags_str.split(',')]
+        for tag in tags:
+            self._archive_product_tag('product_tag', tag)
         document['tags'] = tags
 
         # rewrite images as foreign key
@@ -162,6 +166,14 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
         self.upsert(item_type, document)
         return pk
+
+    def _archive_product_tag(self, item_type, tag):
+        document = {
+            '_id' : tag,
+        }
+
+        self.upsert(item_type, document)
+        return tag
 
     def _archive_product_image(self, item_type, document):
         pk = document['id']
