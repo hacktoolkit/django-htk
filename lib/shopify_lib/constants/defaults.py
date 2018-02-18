@@ -9,6 +9,7 @@ HTK_SHOPIFY_MONGODB_COLLECTIONS = {
     'product_variant' : 'product_variant',
     'order' : 'order',
     'customer' : 'customer',
+    'customer_address' : 'customer_address',
 }
 
 HTK_SHOPIFY_MONGODB_ITEM_PK = lambda item_type, item_json: item_json['id']

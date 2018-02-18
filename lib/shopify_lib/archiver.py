@@ -1,6 +1,7 @@
 import json
 
 from htk.utils import htk_setting
+from htk.utils.cache_descriptors import CachedAttribute
 
 class HtkShopifyArchiver(object):
     def __init__(self, api=None):
@@ -41,16 +42,27 @@ class HtkShopifyArchiver(object):
         return was_cached
 
     def archive_all(self):
+        # reset the cache
         self.items_seen = {
             'product' : {},
             'product_image' : {},
             'product_variant' : {},
             'order' : {},
             'customer' : {},
+            'customer_address' : {},
         }
         self.archive_products()
         self.archive_orders()
         self.archive_customers()
+
+    @CachedAttribute
+    def fk_item_types(self):
+        item_types = (
+            'product_image',
+            'product_variant',
+            'customer_address',
+        )
+        return item_types
 
     def archive_item_type(self, item_type):
         """Archives a collection of Shopify.Resource of `item_type` using `iterator`
@@ -110,7 +122,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         key = lambda document: document['_id']
         pk = key(document)
         if self.already_cached(item_type, document, key):
-            if item_type != 'product_image':
+            if item_type not in self.fk_item_types:
                 print 'Skipping duplicate processed in session %s: %s' % (item_type, pk,)
                 print document
         else:
@@ -169,6 +181,23 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
     def archive_customer(self, item_type, customer):
         document = json.loads(customer.to_json())[item_type]
+        pk = document['id']
+        document['_id'] = pk
+        del document['id']
+
+        # rewrite addresses as foreign key
+        default_address = document.pop('default_address', None)
+        default_address_id = self._archive_customer_address('customer_address', default_address) if default_address else None
+        document['default_address_id'] = default_address_id
+        # addresses -> address_ids (fk)
+        address_ids = [self._archive_customer_address('customer_address', customer_address) for customer_address in document.get('addresses', [])]
+        document['address_ids'] = address_ids
+        del document['addresses']
+
+        self.upsert(item_type, document)
+        return pk
+
+    def _archive_customer_address(self, item_type, document):
         pk = document['id']
         document['_id'] = pk
         del document['id']
