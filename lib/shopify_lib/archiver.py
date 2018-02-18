@@ -137,7 +137,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         del document['image']
         image_ids =[self._archive_product_image('product_image', product_image) for product_image in document.get('images', [])]
         document['image_ids'] = image_ids
-        del document['image_ids']
+        del document['images']
 
         self.upsert(item_type, document)
         return pk
@@ -164,6 +164,11 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         pk = document['id']
         document['_id'] = pk
         del document['id']
+
+        # rewrite customer as foreign key
+        customer_id = document['customer']['id']
+        document['customer_id'] = customer_id
+        del document['customer']
 
         self.upsert(item_type, document)
         return pk
