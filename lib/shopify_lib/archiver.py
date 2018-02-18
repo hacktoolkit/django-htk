@@ -102,7 +102,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         collection_name = collections[item_type]
         return collection_name
 
-    def try_insert(self, item_type, document):
+    def upsert(self, item_type, document):
         collection_name = self.get_collection_name(item_type)
         collection = self.mongo_db[collection_name]
 
@@ -110,10 +110,10 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         pk = key(document)
         if self.already_cached(item_type, document, key):
             if item_type != 'product_image':
-                print 'Skipping duplicate %s: %s' % (item_type, pk,)
+                print 'Skipping duplicate processed in session %s: %s' % (item_type, pk,)
                 print document
         else:
-            collection.insert(document)
+            collection.replace_one({ '_id' : pk, }, document, upsert=True)
 
     def archive_product(self, item_type, product):
         document = json.loads(product.to_json())[item_type]
@@ -139,7 +139,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['image_ids'] = image_ids
         del document['image_ids']
 
-        self.try_insert(item_type, document)
+        self.upsert(item_type, document)
         return pk
 
     def _archive_product_image(self, item_type, document):
@@ -147,7 +147,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['_id'] = pk
         del document['id']
 
-        self.try_insert(item_type, document)
+        self.upsert(item_type, document)
         return pk
 
     def archive_customer(self, item_type, customer):
@@ -156,7 +156,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['_id'] = pk
         del document['id']
 
-        self.try_insert(item_type, document)
+        self.upsert(item_type, document)
         return pk
 
     def archive_order(self, item_type, order):
@@ -165,5 +165,5 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['_id'] = pk
         del document['id']
 
-        self.try_insert(item_type, document)
+        self.upsert(item_type, document)
         return pk
