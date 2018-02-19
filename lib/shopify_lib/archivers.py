@@ -180,7 +180,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
         # rewrite tags as array
         tags_str = document['tags']
-        tags = [tag.strip() for tag in tags_str.split(',')]
+        tags = [tag.strip().lower() for tag in tags_str.split(',')]
         for tag in tags:
             self._archive_product_tag('product_tag', tag)
         document['tags'] = tags
