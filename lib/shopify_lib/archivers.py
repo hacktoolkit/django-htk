@@ -138,12 +138,17 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         preparator = preparators.get(item_type)
         return preparator
 
-    def upsert(self, item_type, document):
+    def _db_upsert(self, item_type, document, pk):
+        """Performs the actual DB upsert
+        """
         self._init_mongodb()
 
         collection_name = self.get_collection_name(item_type)
         collection = self.mongo_db[collection_name]
 
+        collection.replace_one({ '_id' : pk, }, document, upsert=True)
+
+    def upsert(self, item_type, document):
         key = lambda document: document['_id']
         pk = key(document)
         if self.already_cached(item_type, document, key):
@@ -154,7 +159,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
             preparator = self._get_document_preparator(item_type)
             if preparator:
                 preparator(document)
-            collection.replace_one({ '_id' : pk, }, document, upsert=True)
+            self._db_upsert(item_type, document, pk)
 
     def _convert_iso_date_fields(self, document, iso_date_fields):
         """Converts ISO date fields to UNIX timestamp
