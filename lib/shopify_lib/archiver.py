@@ -102,20 +102,28 @@ class HtkShopifyArchiver(object):
 class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
     def __init__(self, mongodb_connection=None, mongodb_name=None, api=None):
         if mongodb_connection is None:
-            mongodb_connection = htk_setting('HTK_MONGODB_CONNECTION')
+            self.mongodb_connection = htk_setting('HTK_MONGODB_CONNECTION')
+        else:
+            self.mongodb_connection = mongodb_connection
         if mongodb_name is None:
-            mongodb_name = htk_setting('HTK_MONGODB_NAME')
+            self.mongodb_name = htk_setting('HTK_MONGODB_NAME')
+        else:
+            self.mongodb_name = mongodb_name
 
-        from pymongo import MongoClient
-        self.mongo_client = MongoClient(mongodb_connection)
-        self.mongo_db = self.mongo_client[mongodb_name]
-
+        self.mongodb_initialized = False
         super(HtkShopifyMongoDBArchiver, self).__init__(api=api)
 
     def get_collection_name(self, item_type):
         collections = htk_setting('HTK_SHOPIFY_MONGODB_COLLECTIONS')
         collection_name = collections[item_type]
         return collection_name
+
+    def _init_mongodb(self):
+        if not self.mongodb_initialized:
+            from pymongo import MongoClient
+            self.mongo_client = MongoClient(self.mongodb_connection)
+            self.mongo_db = self.mongo_client[self.mongodb_name]
+            self.mongodb_initialized = True
 
     def _get_document_preparator(self, item_type):
         preparators = {
@@ -131,6 +139,8 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         return preparator
 
     def upsert(self, item_type, document):
+        self._init_mongodb()
+
         collection_name = self.get_collection_name(item_type)
         collection = self.mongo_db[collection_name]
 
