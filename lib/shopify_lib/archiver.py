@@ -117,6 +117,19 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         collection_name = collections[item_type]
         return collection_name
 
+    def _get_document_preparator(self, item_type):
+        preparators = {
+            'product' : self._prepare_product,
+            'product_tag' : self._prepare_product_tag,
+            'product_image' : self._prepare_product_image,
+            'product_variant' : self._prepare_product_variant,
+            'order' : self._prepare_order,
+            'customer' : self._prepare_customer,
+            'customer_address' : self._prepare_customer_address,
+        }
+        preparator = preparators.get(item_type)
+        return preparator
+
     def upsert(self, item_type, document):
         collection_name = self.get_collection_name(item_type)
         collection = self.mongo_db[collection_name]
@@ -128,7 +141,22 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
                 print 'Skipping duplicate processed in session %s: %s' % (item_type, pk,)
                 print document
         else:
+            preparator = self._get_document_preparator(item_type)
+            if preparator:
+                preparator(document)
             collection.replace_one({ '_id' : pk, }, document, upsert=True)
+
+    def _convert_iso_date_fields(self, document, iso_date_fields):
+        """Converts ISO date fields to UNIX timestamp
+        """
+        from htk.utils.datetime_utils import iso_datetime_to_unix_time
+        for field in iso_date_fields:
+            value = document.get(field)
+            if value is not None:
+                field_name = field[:-3] if field.endswith('_at') else field
+                key = '%s_%s' % (field_name, 'timestamp',)
+                timestamp = iso_datetime_to_unix_time(value)
+                document[key] = timestamp
 
     def archive_product(self, item_type, product):
         document = json.loads(product.to_json())[item_type]
@@ -230,3 +258,27 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
         self.upsert(item_type, document)
         return pk
+
+    ##
+    # Preparation methods
+
+    def _prepare_product(self, document):
+        self._convert_iso_date_fields(document, ['updated_at', 'published_at', 'created_at',])
+
+    def _prepare_product_tag(self, document):
+        pass
+
+    def _prepare_product_image(self, document):
+        self._convert_iso_date_fields(document, ['updated_at', 'created_at',])
+
+    def _prepare_product_variant(self, document):
+        self._convert_iso_date_fields(document, ['updated_at', 'created_at',])
+
+    def _prepare_order(self, document):
+        self._convert_iso_date_fields(document, ['updated_at', 'processed_at',])
+
+    def _prepare_customer(self, document):
+        self._convert_iso_date_fields(document, ['updated_at', 'created_at',])
+
+    def _prepare_customer_address(self, document):
+        pass
