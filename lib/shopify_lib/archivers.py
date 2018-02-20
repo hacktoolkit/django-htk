@@ -49,6 +49,7 @@ class HtkShopifyArchiver(object):
             'product_image' : {},
             'product_variant' : {},
             'order' : {},
+            'order_line_item' : {},
             'customer' : {},
             'customer_address' : {},
         }
@@ -63,6 +64,7 @@ class HtkShopifyArchiver(object):
             'product_image',
             'product_variant',
             'customer_address',
+            'order_line_item',
         )
         return item_types
 
@@ -276,6 +278,11 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['_id'] = pk
         del document['id']
 
+        # rewrite line_items as foreign key
+        line_item_ids = [self._archive_order_line_item('order_line_item', order_line_item, pk) for order_line_item in document.get('line_items', [])]
+        document['line_item_ids'] = line_item_ids
+        del document['line_items']
+
         # rewrite tags as array
         tags_str = document['tags']
         tags = [tag.strip().lower() for tag in tags_str.split(',')]
@@ -288,6 +295,15 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         customer_id = document['customer']['id']
         document['customer_id'] = customer_id
         del document['customer']
+
+        self.upsert(item_type, document)
+        return pk
+
+    def _archive_order_line_item(self, item_type, document, order_id):
+        pk = document['id']
+        del document['id']
+        document['_id'] = pk
+        document['order_id'] = order_id
 
         self.upsert(item_type, document)
         return pk
@@ -309,6 +325,9 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
     def _prepare_order(self, document):
         self._convert_iso_date_fields(document, ['updated_at', 'processed_at',])
+
+    def _prepare_order_line_item(self, document):
+        pass
 
     def _prepare_customer(self, document):
         self._convert_iso_date_fields(document, ['updated_at', 'created_at',])
