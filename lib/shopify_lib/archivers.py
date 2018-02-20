@@ -48,23 +48,34 @@ class HtkShopifyArchiver(object):
             'product_tag' : {},
             'product_image' : {},
             'product_variant' : {},
-            'order' : {},
-            'order_line_item' : {},
+            # customer
             'customer' : {},
             'customer_address' : {},
+            # order, refunds, fulfillments, transactions
+            'order' : {},
+            'order_line_item' : {},
+            'fulfillment' : {},
+            'refund' : {},
+            'transaction' : {},
         }
         self.archive_products()
-        self.archive_orders()
         self.archive_customers()
+        self.archive_orders()
 
     @CachedAttribute
     def fk_item_types(self):
         item_types = (
+            # product-related
             'product_tag',
             'product_image',
             'product_variant',
+            # customer-related
             'customer_address',
+            # order-related
             'order_line_item',
+            'fulfillment',
+            'refund',
+            'transaction',
         )
         return item_types
 
@@ -175,6 +186,9 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
                 timestamp = iso_datetime_to_unix_time(value)
                 document[key] = timestamp
 
+    ######################################################################
+    # Products
+
     def archive_product(self, item_type, product):
         document = json.loads(product.to_json())[item_type]
         pk = document['id']
@@ -238,6 +252,9 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         self.upsert(item_type, document)
         return pk
 
+    ######################################################################
+    # Customers
+
     def archive_customer(self, item_type, customer):
         document = json.loads(customer.to_json())[item_type]
         pk = document['id']
@@ -272,6 +289,9 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         self.upsert(item_type, document)
         return pk
 
+    ######################################################################
+    # Orders
+
     def archive_order(self, item_type, order):
         document = json.loads(order.to_json())[item_type]
         pk = document['id']
@@ -282,6 +302,16 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         line_item_ids = [self._archive_order_line_item('order_line_item', order_line_item, pk) for order_line_item in document.get('line_items', [])]
         document['line_item_ids'] = line_item_ids
         del document['line_items']
+
+        # rewrite fulfillments as foreign key
+        fulfillment_ids = [self._archive_fulfillment('fulfillment', fulfillment, pk) for fulfillment in document.get('fulfillments', [])]
+        document['fulfillment_ids'] = fulfillment_ids
+        del document['fulfillments']
+
+        # rewrite refunds as foreign key
+        refund_ids = [self._archive_refund('refund', refund, pk) for refund in document.get('refunds', [])]
+        document['refund_ids'] = refund_ids
+        del document['refunds']
 
         # rewrite tags as array
         tags_str = document['tags']
@@ -308,7 +338,40 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         self.upsert(item_type, document)
         return pk
 
-    ##
+    def _archive_fulfillment(self, item_type, document, order_id):
+        pk = document['id']
+        del document['id']
+        document['_id'] = pk
+        document['order_id'] = order_id
+
+        self.upsert(item_type, document)
+        return pk
+
+    def _archive_refund(self, item_type, document, order_id):
+        pk = document['id']
+        del document['id']
+        document['_id'] = pk
+        document['order_id'] = order_id
+
+        # rewrite transactions as foreign key
+        refund_ids = [self._archive_refund('refund', refund, order_id, refund_id=pk) for refund in document.get('refunds', [])]
+        document['refund_ids'] = refund_ids
+        del document['refunds']
+
+        self.upsert(item_type, document)
+        return pk
+
+    def _archive_transaction(self, item_type, document, order_id, refund_id=None):
+        pk = document['id']
+        del document['id']
+        document['_id'] = pk
+        document['order_id'] = order_id
+        document['refund_id'] = refund_id
+
+        self.upsert(item_type, document)
+        return pk
+
+    ######################################################################
     # Preparation methods
 
     def _prepare_product(self, document):
