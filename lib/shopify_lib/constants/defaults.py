@@ -9,6 +9,7 @@ HTK_SHOPIFY_MONGODB_COLLECTIONS = {
     'product_image' : 'product_image',
     'product_variant' : 'product_variant',
     'order' : 'order',
+    'order_line_item' : 'order_line_item',
     'customer' : 'customer',
     'customer_address' : 'customer_address',
 }
