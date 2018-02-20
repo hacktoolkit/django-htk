@@ -3,13 +3,14 @@ import pytz
 import time
 
 from django.conf import settings
-from django.utils.timezone import utc
+from django.utils.timezone import is_aware
+from django.utils.timezone import is_naive
 from django.utils.dateparse import parse_datetime as django_parse_datetime
 
 from htk.constants.time import *
 
 def utcnow():
-    now = datetime.datetime.utcnow().replace(tzinfo=utc)
+    now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
     if settings.TEST:
         from htk.test_scaffold.models import TestScaffold
         scaffold = TestScaffold()
@@ -33,6 +34,9 @@ def datetime_to_unix_time(dt):
 
     For Python 2.7, some gymnastics required.
     """
+    if is_aware(dt):
+        # convert an aware datetime to UTC first
+        dt = dt.astimezone(pytz.utc)
     unix_time = time.mktime(dt.timetuple())
     return unix_time
 
