@@ -192,7 +192,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
         # rewrite images as foreign key
         product_image = document['image']
-        image_id = self._archive_product_image('product_image', product_image)
+        image_id = self._archive_product_image('product_image', product_image, pk)
         document['image_id'] = image_id
         del document['image']
         # images -> image_ids (fk)
