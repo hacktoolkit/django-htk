@@ -242,6 +242,14 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['_id'] = pk
         del document['id']
 
+        # rewrite tags as array
+        tags_str = document['tags']
+        tags = [tag.strip().lower() for tag in tags_str.split(',')]
+        # TODO
+        # for tag in tags:
+        #     self._archive_customer_tag('customer_tag', tag)
+        document['tags'] = tags
+
         # rewrite addresses as foreign key
         default_address = document.pop('default_address', None)
         default_address_id = self._archive_customer_address('customer_address', default_address) if default_address else None
@@ -267,6 +275,14 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         pk = document['id']
         document['_id'] = pk
         del document['id']
+
+        # rewrite tags as array
+        tags_str = document['tags']
+        tags = [tag.strip().lower() for tag in tags_str.split(',')]
+        # TODO
+        # for tag in tags:
+        #     self._archive_order_tag('order_tag', tag)
+        document['tags'] = tags
 
         # rewrite customer as foreign key
         customer_id = document['customer']['id']
