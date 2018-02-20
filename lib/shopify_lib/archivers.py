@@ -311,7 +311,8 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         # rewrite refunds as foreign key
         refund_ids = [self._archive_refund('refund', refund, pk) for refund in document.get('refunds', [])]
         document['refund_ids'] = refund_ids
-        del document['refunds']
+        if 'refunds' in document:
+            del document['refunds']
 
         # rewrite tags as array
         tags_str = document['tags']
@@ -354,9 +355,9 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['order_id'] = order_id
 
         # rewrite transactions as foreign key
-        refund_ids = [self._archive_refund('refund', refund, order_id, refund_id=pk) for refund in document.get('refunds', [])]
-        document['refund_ids'] = refund_ids
-        del document['refunds']
+        transaction_ids = [self._archive_transaction('transaction', transaction, order_id, refund_id=pk) for transaction in document.get('transactions', [])]
+        document['transaction_ids'] = transaction_ids
+        del document['transactions']
 
         self.upsert(item_type, document)
         return pk
