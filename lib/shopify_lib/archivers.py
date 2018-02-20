@@ -196,12 +196,12 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['image_id'] = image_id
         del document['image']
         # images -> image_ids (fk)
-        image_ids = [self._archive_product_image('product_image', product_image) for product_image in document.get('images', [])]
+        image_ids = [self._archive_product_image('product_image', product_image, pk) for product_image in document.get('images', [])]
         document['image_ids'] = image_ids
         del document['images']
 
         # rewrite variants as foreign key
-        variant_ids = [self._archive_product_variant('product_variant', product_variant) for product_variant in document.get('variants', [])]
+        variant_ids = [self._archive_product_variant('product_variant', product_variant, pk) for product_variant in document.get('variants', [])]
         document['variant_ids'] = variant_ids
         del document['variants']
         variant_id = variant_ids[0] if len(variant_ids) else None
@@ -218,18 +218,20 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         self.upsert(item_type, document)
         return tag
 
-    def _archive_product_image(self, item_type, document):
+    def _archive_product_image(self, item_type, document, product_id):
         pk = document['id']
         document['_id'] = pk
         del document['id']
+        document['product_id'] = product_id
 
         self.upsert(item_type, document)
         return pk
 
-    def _archive_product_variant(self, item_type, document):
+    def _archive_product_variant(self, item_type, document, product_id):
         pk = document['id']
         document['_id'] = pk
         del document['id']
+        document['product_id'] = product_id
 
         self.upsert(item_type, document)
         return pk
