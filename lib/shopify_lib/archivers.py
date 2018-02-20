@@ -359,6 +359,9 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         document['transaction_ids'] = transaction_ids
         del document['transactions']
 
+        # enforce boolean
+        document['restock'] = bool(document.get('restock'))
+
         self.upsert(item_type, document)
         return pk
 
