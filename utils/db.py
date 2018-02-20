@@ -45,3 +45,34 @@ def close_connection():
     from django.db import connection
     if not connection.in_atomic_block:
         connection.close()
+
+def get_cursor(db_alias):
+    """Returns a DB Cursor that can be used to issue raw SQL statements
+    """
+    from django.db import connections
+    cursor = connections[db_alias].cursor()
+    return cursor
+
+def raw_sql(statement, db_alias='default'):
+    """Execute raw SQL `statement
+
+    Returns the cursor to perform any subsequent queries
+    """
+    cursor = get_cursor(db_alias)
+    cursor.execute(statement)
+    return cursor
+
+def disable_foreign_key_checks():
+    """Disable foreign key constraint checks
+    Useful for bulk data uploads
+
+    https://stackoverflow.com/questions/15501673/how-to-temporarily-disable-a-foreign-key-constraint-in-mysql
+    """
+    raw_sql('SET FOREIGN_KEY_CHECKS=0;')
+
+def enable_foreign_key_checks():
+    """Enable foreign key constraint checks
+
+    Ensure this is called after disable_foreign_key_checks()
+    """
+    raw_sql('SET FOREIGN_KEY_CHECKS=1;')
