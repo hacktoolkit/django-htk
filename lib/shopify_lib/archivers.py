@@ -442,7 +442,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 class HtkShopifySQLArchiver(HtkShopifyMongoDBArchiver):
     def __init__(self, mongodb_dual_archive=False):
         self.mongodb_dual_archive = mongodb_dual_archive
-        super(RevivalShopifyMongoDBArchiver, self).__init__()
+        super(HtkShopifySQLArchiver, self).__init__()
 
     def get_model(self, item_type):
         models = htk_setting('HTK_SHOPIFY_SQL_MODELS')
