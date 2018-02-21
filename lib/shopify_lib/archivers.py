@@ -42,10 +42,7 @@ class HtkShopifyArchiver(object):
             was_cached = False
         return was_cached
 
-    def archive_all(self):
-        """Archives everything
-        """
-        # reset the cache
+    def _reset_cache(self):
         self.items_seen = {
             # products
             'product' : {},
@@ -63,9 +60,17 @@ class HtkShopifyArchiver(object):
             'transaction' : {},
         }
 
-        self._safe_archive(self.archive_products)
-        self._safe_archive(self.archive_customers)
-        self._safe_archive(self.archive_orders)
+    def archive_all(self, include_products=True, include_customers=True, include_orders=True):
+        """Archives everything
+        """
+        self._reset_cache()
+
+        if include_products:
+            self._safe_archive(self.archive_products)
+        if include_customers:
+            self._safe_archive(self.archive_customers)
+        if include_orders:
+            self._safe_archive(self.archive_orders)
 
     def _safe_archive(self, archiver):
         """Safely executes archival of Shopify resources using `archiver`
