@@ -71,7 +71,7 @@ class ShopifyProduct(ShopifyResource):
     published_timestamp = models.PositiveIntegerField(default=0, blank=True, null=True)
 
     handle = models.CharField(max_length=63)
-    title = models.CharField(max_length=63)
+    title = models.CharField(max_length=127)
     sku = models.CharField(max_length=63, blank=True, null=True)
     product_type = models.CharField(max_length=63, blank=True)
 
@@ -142,7 +142,7 @@ class ShopifyProductVariant(ShopifyResource):
     position = models.PositiveIntegerField()
 
     sku = models.CharField(max_length=63, blank=True, null=True)
-    title = models.CharField(max_length=63, blank=True, null=True)
+    title = models.CharField(max_length=127, blank=True, null=True)
     barcode = models.CharField(max_length=63, blank=True, null=True, default=None)
     option1 = models.CharField(max_length=255, blank=True, null=True)
     option2 = jsonfield.JSONField()
@@ -364,9 +364,9 @@ class ShopifyOrderLineItem(ShopifyResource):
     variant = models.ForeignKey('ShopifyProductVariant', blank=True, null=True)
 
     sku = models.CharField(max_length=63, blank=True, null=True)
-    title = models.CharField(max_length=63)
-    variant_title = models.CharField(max_length=63, blank=True, null=True)
-    name = models.CharField(max_length=63)
+    title = models.CharField(max_length=127)
+    variant_title = models.CharField(max_length=127, blank=True, null=True)
+    name = models.CharField(max_length=127)
 
     fulfillable_quantity = models.PositiveIntegerField(default=0)
     fulfillment_service = models.CharField(max_length=63, blank=True, null=True)
