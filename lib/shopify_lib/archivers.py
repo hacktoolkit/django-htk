@@ -1,4 +1,5 @@
 import json
+import rollbar
 
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
@@ -42,6 +43,8 @@ class HtkShopifyArchiver(object):
         return was_cached
 
     def archive_all(self):
+        """Archives everything
+        """
         # reset the cache
         self.items_seen = {
             # products
@@ -59,9 +62,26 @@ class HtkShopifyArchiver(object):
             'refund' : {},
             'transaction' : {},
         }
-        #self.archive_products()
-        #self.archive_customers()
-        self.archive_orders()
+
+        self._safe_archive(self.archive_products)
+        self._safe_archive(self.archive_customers)
+        self._safe_archive(self.archive_orders)
+
+    def _safe_archive(self, archiver):
+        """Safely executes archival of Shopify resources using `archiver`
+
+        Disables foreign key checks before start of archival, and reenables after
+        """
+        from htk.utils.db import disable_foreign_key_checks
+        from htk.utils.db import enable_foreign_key_checks
+
+        try:
+            disable_foreign_key_checks()
+            archiver()
+        except:
+            rollbar.report_exc_info()
+        finally:
+            enable_foreign_key_checks()
 
     @CachedAttribute
     def fk_item_types(self):
@@ -418,3 +438,32 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
     def _prepare_transaction(self, document):
         self._convert_iso_date_fields(document, ['created_at',])
+
+class HtkShopifySQLArchiver(HtkShopifyMongoDBArchiver):
+    def __init__(self, mongodb_dual_archive=False):
+        self.mongodb_dual_archive = mongodb_dual_archive
+        super(RevivalShopifyMongoDBArchiver, self).__init__()
+
+    def get_model(self, item_type):
+        models = htk_setting('HTK_SHOPIFY_SQL_MODELS')
+
+        model_cls = models[item_type]
+        from htk.utils import resolve_model_dynamically
+        model = resolve_model_dynamically(model_cls)
+        return model
+
+    def _db_upsert(self, item_type, document, pk):
+        """Performs the actual DB upsert
+
+        Convert a MongoDB `document` of `item_type` into a Django model instance and upsert it
+        """
+        if self.mongodb_dual_archive:
+            try:
+                super(HtkShopifySQLArchiver, self)._db_upsert(item_type, document, pk)
+            except:
+                rollbar.report_exc_info()
+
+        model = self.get_model(item_type)
+        instance = model.from_document(document)
+        persisted_instance = instance.upsert()
+        return persisted_instance
