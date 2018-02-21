@@ -44,6 +44,7 @@ class HtkShopifyArchiver(object):
     def archive_all(self):
         # reset the cache
         self.items_seen = {
+            # products
             'product' : {},
             'product_tag' : {},
             'product_image' : {},
@@ -58,8 +59,8 @@ class HtkShopifyArchiver(object):
             'refund' : {},
             'transaction' : {},
         }
-        self.archive_products()
-        self.archive_customers()
+        #self.archive_products()
+        #self.archive_customers()
         self.archive_orders()
 
     @CachedAttribute
@@ -140,13 +141,20 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
 
     def _get_document_preparator(self, item_type):
         preparators = {
+            # products
             'product' : self._prepare_product,
             'product_tag' : self._prepare_product_tag,
             'product_image' : self._prepare_product_image,
             'product_variant' : self._prepare_product_variant,
-            'order' : self._prepare_order,
+            # customers
             'customer' : self._prepare_customer,
             'customer_address' : self._prepare_customer_address,
+            # orders, refunds, fulfillments, transactions
+            'order' : self._prepare_order,
+            'order_line_item' : self._prepare_order_line_item,
+            'fulfillment' : self._prepare_fulfillment,
+            'refund' : self._prepare_refund,
+            'transaction' : self._prepare_transaction,
         }
         preparator = preparators.get(item_type)
         return preparator
@@ -379,25 +387,34 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
     # Preparation methods
 
     def _prepare_product(self, document):
-        self._convert_iso_date_fields(document, ['updated_at', 'published_at', 'created_at',])
+        self._convert_iso_date_fields(document, ['created_at', 'updated_at', 'published_at',])
 
     def _prepare_product_tag(self, document):
         pass
 
     def _prepare_product_image(self, document):
-        self._convert_iso_date_fields(document, ['updated_at', 'created_at',])
+        self._convert_iso_date_fields(document, ['created_at', 'updated_at',])
 
     def _prepare_product_variant(self, document):
-        self._convert_iso_date_fields(document, ['updated_at', 'created_at',])
+        self._convert_iso_date_fields(document, ['created_at', 'updated_at',])
+
+    def _prepare_customer(self, document):
+        self._convert_iso_date_fields(document, ['created_at', 'updated_at',])
+
+    def _prepare_customer_address(self, document):
+        pass
 
     def _prepare_order(self, document):
-        self._convert_iso_date_fields(document, ['updated_at', 'processed_at',])
+        self._convert_iso_date_fields(document, ['created_at', 'updated_at',])
 
     def _prepare_order_line_item(self, document):
         pass
 
-    def _prepare_customer(self, document):
-        self._convert_iso_date_fields(document, ['updated_at', 'created_at',])
+    def _prepare_fulfillment(self, document):
+        self._convert_iso_date_fields(document, ['created_at', 'updated_at',])
 
-    def _prepare_customer_address(self, document):
-        pass
+    def _prepare_refund(self, document):
+        self._convert_iso_date_fields(document, ['created_at', 'processed_at',])
+
+    def _prepare_transaction(self, document):
+        self._convert_iso_date_fields(document, ['created_at',])
