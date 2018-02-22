@@ -117,7 +117,7 @@ class HtkShopifyArchiver(object):
     def archive_item_type(self, item_type):
         """Archives a collection of Shopify.Resource of `item_type` using `iterator`
         """
-        msg = 'Archiving %ss' % item_type
+        msg = 'Archiving %ss...' % item_type
         print msg
         slack_notifications_enabled = htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
         if slack_notifications_enabled:
