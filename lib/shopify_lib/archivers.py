@@ -105,15 +105,6 @@ class HtkShopifyArchiver(object):
         )
         return item_types
 
-    def archive_item_type(self, item_type):
-        """Archives a collection of Shopify.Resource of `item_type` using `iterator`
-        """
-        print 'Archiving %ss' % item_type
-        iterator = self._get_iterator_for_item_type(item_type)
-        for item, i, total, page in iterator():
-            print '%s of %s %ss'  % (i, total, item_type,)
-            self.archive_item(item_type, item)
-
     def archive_products(self):
         self.archive_item_type('product')
 
@@ -122,6 +113,29 @@ class HtkShopifyArchiver(object):
 
     def archive_customers(self):
         self.archive_item_type('customer')
+
+    def archive_item_type(self, item_type):
+        """Archives a collection of Shopify.Resource of `item_type` using `iterator`
+        """
+        msg = 'Archiving %ss' % item_type
+        print msg
+        slack_notifications_enabled = htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
+        if slack_notifications_enabled:
+            from htk.utils.notifications import slack_notify
+            slack_notify(msg)
+
+        num_archived = 0
+        iterator = self._get_iterator_for_item_type(item_type)
+        for item, i, total, page in iterator():
+            msg =  '%s of %s %ss'  % (i, total, item_type,)
+            print msg
+            self.archive_item(item_type, item)
+            num_archived = i
+
+        if slack_notifications_enabled:
+            from htk.utils.notifications import slack_notify
+            msg = 'Archived %s %ss' % (num_archived, item_type,)
+            slack_notify(msg)
 
     def archive_item(self, item_type, item):
         """Archives a single Shopify.Resource `item` into some database using `archiver`
