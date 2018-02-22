@@ -4,7 +4,7 @@ class FullContactObject(object):
 
 class FullContactPerson(FullContactObject):
     def __init__(self, email, person_data, *args, **kwargs):
-        self.email = email
+        self.email = email.strip().lower()
         self.data = person_data
 
     def as_slack(self):
