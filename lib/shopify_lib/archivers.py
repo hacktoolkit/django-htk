@@ -250,7 +250,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         tags_str = document['tags']
         tags = [tag.strip().lower() for tag in tags_str.split(',')]
         for tag in tags:
-            self._archive_product_tag('product_tag', tag)
+            self._archive_product_tag('product_tag', tag, pk)
         document['tags'] = tags
 
         # rewrite images as foreign key
@@ -273,7 +273,7 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         self.upsert(item_type, document)
         return pk
 
-    def _archive_product_tag(self, item_type, tag):
+    def _archive_product_tag(self, item_type, tag, product_id):
         document = {
             '_id' : tag,
         }

@@ -80,7 +80,7 @@ class ShopifyProduct(ShopifyResource):
     image = models.ForeignKey('ShopifyProductImage', blank=True, null=True)
 
     vendor = models.CharField(max_length=63)
-    tags = models.ManyToManyField('ShopifyProductTag')
+    tags = jsonfield.JSONField()
     options = jsonfield.JSONField()
     published_scope = models.CharField(max_length=63, blank=True)
 
