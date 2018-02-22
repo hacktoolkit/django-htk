@@ -234,7 +234,7 @@ class ShopifyCustomerAddress(ShopifyResource, AbstractGeolocation):
     address1 = models.CharField(max_length=127, blank=True, null=True)
     address2 = models.CharField(max_length=127, blank=True, null=True)
     city = models.CharField(max_length=63, blank=True, null=True)
-    company = models.CharField(max_length=31, blank=True, null=True)
+    company = models.CharField(max_length=63, blank=True, null=True)
     phone = models.CharField(max_length=16, blank=True, null=True)
     province = models.CharField(max_length=31, blank=True, null=True)
     country = models.CharField(max_length=63, blank=True, null=True)
