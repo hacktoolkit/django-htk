@@ -1,5 +1,7 @@
+import decimal
 import json
 import rollbar
+import time
 
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
@@ -117,6 +119,7 @@ class HtkShopifyArchiver(object):
     def archive_item_type(self, item_type):
         """Archives a collection of Shopify.Resource of `item_type` using `iterator`
         """
+        start_time = time.time()
         msg = 'Archiving %ss...' % item_type
         print msg
         slack_notifications_enabled = htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
@@ -134,7 +137,9 @@ class HtkShopifyArchiver(object):
 
         if slack_notifications_enabled:
             from htk.utils.notifications import slack_notify
-            msg = 'Archived %s %ss' % (num_archived, item_type,)
+            end_time = time.time()
+            duration = Decimal(end_time - start_time).quantize(Decimal(10) ** -2)
+            msg = 'Archived %s %ss in %s seconds' % (num_archived, item_type, duration,)
             slack_notify(msg)
 
     def archive_item(self, item_type, item):
