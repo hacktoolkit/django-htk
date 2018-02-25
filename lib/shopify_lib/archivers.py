@@ -1,7 +1,7 @@
-import decimal
 import json
 import rollbar
 import time
+from decimal import Decimal
 
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
