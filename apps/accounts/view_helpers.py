@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.utils.safestring import mark_safe
 
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.session_keys import *
@@ -36,4 +37,4 @@ def get_resend_confirmation_help_message(resend_confirmation_url_name, email=Non
     }
     resend_confirmation_url = reverse_with_query_params(resend_confirmation_url_name, query_params)
     msg = 'Have you confirmed your email address yet? <a id="resend_confirmation" href="%s">Request another confirmation email</a>.' % resend_confirmation_url
-    return msg
+    return mark_safe(msg)
