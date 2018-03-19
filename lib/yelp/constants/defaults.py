@@ -1,0 +1,3 @@
+HTK_YELP_CLIENT_ID = None
+HTK_YELP_API_KEY = None
+
