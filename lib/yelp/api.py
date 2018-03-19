@@ -19,7 +19,6 @@ class YelpAPI(object):
         headers = {
             'Authorization' : 'Bearer %s' % self.api_key,
         }
-        print url, headers
         response = requests.get(url, headers=headers)
         data = response.json()
         return data
