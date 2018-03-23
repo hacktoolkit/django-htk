@@ -1,8 +1,14 @@
+# Python Standard Library Imports
+from functools import wraps
+
+# Third Party / PIP Imports
 import rollbar
 
+# Django Imports
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 
+# HTK Imports
 from htk.decorators.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
 from htk.utils.request import get_current_request
 
@@ -11,6 +17,7 @@ def deprecated(func):
 
     Use this decorator sparingly, because we'll be charged if we make too many Rollbar notifications
     """
+    @wraps(func)
     def wrapped(*args, **kwargs):
         # try to get a request, may not always succeed
         request = get_current_request()
@@ -42,6 +49,7 @@ class restful_obj_seo_redirect(object):
         self.obj_id_key = obj_id_key
 
     def __call__(self, view_fn):
+        @wraps(view_fn)
         def wrapped(*args, **kwargs):
             obj_id = kwargs.get(self.obj_id_key)
             obj = get_object_or_404(self.cls, id=obj_id)
