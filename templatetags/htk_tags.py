@@ -206,6 +206,16 @@ def get_django_setting(context, key):
         context[key] = value
     return ''
 
+@register.simple_tag()
+def get_request_duration():
+    from htk.middleware.classes import RequestTimerMiddleware
+    timer = RequestTimerMiddleware.get_current_timer()
+    duration = timer.duration()
+    return duration
+
+##
+# Load Assets
+
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base, media=None):
     """Determine whether to use LESS compilation on-the-fly or CSS files, and includes the appropriate one

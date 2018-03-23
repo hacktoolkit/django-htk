@@ -1,10 +1,16 @@
+# Python Standard Library Imports
+import datetime
 import re
 import thread
 
+# Third Party / PIP Imports
+
+# Django Imports
 from django.conf import settings
 from django.shortcuts import redirect
 from django.utils import timezone
 
+# HTK Imports
 from htk.middleware.session_keys import *
 from htk.session_keys import *
 from htk.utils import htk_setting
@@ -60,6 +66,26 @@ class AllowedHostsMiddleware(object):
 
         if redirect_uri:
             return redirect(redirect_uri)
+
+class RequestTimerMiddleware(object):
+    """Timer to observe how long a request takes to process
+    """
+    _threadmap = {}
+
+    @classmethod
+    def get_current_timer(cls):
+        timer = cls._threadmap.get(thread.get_ident())
+        return timer
+
+    def __init__(self):
+        from htk.utils.timer import HtkTimer
+        timer = HtkTimer()
+        timer.start()
+        self.timer = timer
+
+    def process_request(self, request):
+        timer = self.timer
+        self._threadmap[thread.get_ident()] = timer
 
 class RewriteJsonResponseContentTypeMiddleware(object):
     """This middleware exists because IE is a stupid browser and tries to download application/json content type from XHR responses as file

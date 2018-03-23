@@ -7,17 +7,21 @@ class HtkTimer(object):
         self.end_time = None
 
     def start(self):
+        """Starts timer
+        """
         if self.start_time is None:
             self.start_time = time.time()
         else:
             raise Exception('Timer has already started')
 
     def stop(self):
+        """Stops timer
+
+        Idempotent. Can be called multiple times; only the first call will set the `end_time`
+        """
         if self.start_time is not None:
             if self.end_time is None:
                 self.end_time = time.time()
-            else:
-                raise Exception('Timer has already stopped')
         else:
             raise Exception('Timer has not started yet')
 
