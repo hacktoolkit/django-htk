@@ -13,7 +13,7 @@ from htk.utils.notifications import slack_notify
 from htk.utils.timer import HtkTimer
 
 class safe_timed_task(object):
-    def __init__(self, task_name):
+    def __init__(self, task_name, notify=False):
         self.task_name = task_name
 
     def __call__(self, task_fn):
@@ -21,18 +21,18 @@ class safe_timed_task(object):
         @wraps(task_fn)
         def wrapped(*args, **kwargs):
             try:
-                slack_notifications_enabled = htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
-                timer = HtkTimer()
-                timer.start()
-
+                slack_notifications_enabled = notify and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
                 if slack_notifications_enabled:
                     slack_notify('Processing %s...' % self.task_name)
-                result = task_fn(*args, **kwargs)
 
+                timer = HtkTimer()
+                timer.start()
+                result = task_fn(*args, **kwargs)
                 timer.stop()
-                duration = timer.duration()
-                msg = 'Finished processing %s in %s seconds' % (self.task_name, duration,)
+
                 if slack_notifications_enabled:
+                    duration = timer.duration()
+                    msg = 'Finished processing %s in %s seconds' % (self.task_name, duration,)
                     slack_notify(msg)
             except:
                 result = None
