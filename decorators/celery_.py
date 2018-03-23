@@ -15,13 +15,14 @@ from htk.utils.timer import HtkTimer
 class safe_timed_task(object):
     def __init__(self, task_name, notify=False):
         self.task_name = task_name
+        self.notify = notify
 
     def __call__(self, task_fn):
         @shared_task
         @wraps(task_fn)
         def wrapped(*args, **kwargs):
             try:
-                slack_notifications_enabled = notify and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
+                slack_notifications_enabled = self.notify and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
                 if slack_notifications_enabled:
                     slack_notify('Processing %s...' % self.task_name)
 
