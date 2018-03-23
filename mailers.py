@@ -85,14 +85,22 @@ def send_email(
     template=None,
     subject='',
     sender=None,
+    reply_to=None,
     to=None,
     cc=None,
     bcc=None,
     context=None,
-    text_only=False
+    text_only=False,
+    headers=None
 ):
     """Sends a templated email w/ text and HTML
     """
+    if headers is None:
+        headers = {}
+
+    if reply_to is not None:
+        headers['Reply-To'] = reply_to
+
     template = template or 'base'
     sender = sender or htk_setting('HTK_DEFAULT_EMAIL_SENDER', HTK_DEFAULT_EMAIL_SENDER)
     to = to or htk_setting('HTK_DEFAULT_EMAIL_RECIPIENTS', HTK_DEFAULT_EMAIL_RECIPIENTS)
@@ -132,12 +140,15 @@ def send_email(
         else:
             text_content = ''
 
-    msg = EmailMultiAlternatives(subject=subject,
-                                 body=text_content,
-                                 from_email=sender,
-                                 to=to,
-                                 bcc=bcc,
-                                 cc=cc)
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body=text_content,
+        from_email=sender,
+        to=to,
+        bcc=bcc,
+        cc=cc,
+        headers=headers
+    )
 
     if not text_only and html_content:
         msg.attach_alternative(html_content, 'text/html')
