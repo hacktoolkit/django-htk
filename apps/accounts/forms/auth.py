@@ -215,9 +215,8 @@ class ResendConfirmationForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        try:
-            UserEmail.objects.get(email=email)
-        except UserEmail.DoesNotExist:
+        user_emails = UserEmail.objects.filter(email=email)
+        if not user_emails.exists()
             raise forms.ValidationError(_("A user with that email does not exist."))
         return email
 
