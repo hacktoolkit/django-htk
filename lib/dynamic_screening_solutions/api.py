@@ -153,12 +153,22 @@ class Htk321FormsAPI(object):
     def get_companies(self):
         """Returns a JSON response of companies that the user can access
         """
-        # TODO: chunk and paginate
-        # keep getting if number of items returned == limit
-        request_url = self.get_request_url(resource_path=DSS_321FORMS_API_RESOURCE_COMPANY) + "?limit=49"
-        response = self.request_get(request_url)
-        companies = json.loads(response.text)
-        return companies
+        offset = 0
+        limit = 50
+
+        all_companies = []
+
+        done = False
+        while not done:
+            request_url = self.get_request_url(resource_path=DSS_321FORMS_API_RESOURCE_COMPANY) + ("?limit=%s&offset=%s" % (limit, offset,))
+            response = self.request_get(request_url)
+            companies = json.loads(response.text)
+            all_companies += companies
+            if len(companies) < limit:
+                done = True
+            else:
+                offset += limit
+        return all_companies
 
     ##
     # Divisions
