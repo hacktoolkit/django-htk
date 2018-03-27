@@ -79,6 +79,7 @@ from htk.apps.organizations.constants.defaults import *
 from htk.cache.constants.defaults import *
 from htk.forms.constants.defaults import *
 from htk.lib.alexa.constants.defaults import *
+from htk.lib.dynamic_screening_solutions.constants.defaults import *
 from htk.lib.fullcontact.constants.defaults import *
 from htk.lib.iterable.constants.defaults import *
 from htk.lib.mongodb.constants.defaults import *
