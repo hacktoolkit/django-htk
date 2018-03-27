@@ -24,7 +24,7 @@ class safe_timed_task(object):
             try:
                 slack_notifications_enabled = self.notify and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
                 if slack_notifications_enabled:
-                    slack_notify('Processing %s...' % self.task_name)
+                    slack_notify('Processing *%s*...' % self.task_name)
 
                 timer = HtkTimer()
                 timer.start()
@@ -33,7 +33,7 @@ class safe_timed_task(object):
 
                 if slack_notifications_enabled:
                     duration = timer.duration()
-                    msg = 'Finished processing %s in %s seconds' % (self.task_name, duration,)
+                    msg = 'Finished processing *%s* in *%s* seconds' % (self.task_name, duration,)
                     slack_notify(msg)
             except:
                 result = None
