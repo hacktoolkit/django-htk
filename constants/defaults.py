@@ -88,3 +88,4 @@ from htk.lib.slack.constants.defaults import *
 from htk.lib.shopify_lib.constants.defaults import *
 from htk.lib.stripe_lib.constants.defaults import *
 from htk.lib.yelp.constants.defaults import *
+from htk.lib.zuora.constants.defaults import *
