@@ -142,7 +142,10 @@ class RedfinAVM(object):
 
         self.property_value = raw_data.get('predictedValue', 0)
         self.property_value_historical = raw_data.get('predictedValueHistorical', 0)
-        self.property_value_change = self.property_value - self.property_value_historical
+        if self.property_value_historical != 0:
+            self.property_value_change = self.property_value - self.property_value_historical
+        else:
+            self.property_value_change = self.property_value
 
         lat_long = raw_data.get('latLong', {})
         if lat_long:
