@@ -67,18 +67,28 @@ class UnicodeWriter(object):
         for row in rows:
             self.writerow(row)
 
-def get_csv_response_from_collection(collection, row_generator, headings=None, filename='data.csv', utf8=True):
-    from django.http import HttpResponse
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+def buffered_csv_from_collection(f, collection, row_generator, headings=None, utf8=True):
+    """Buffers CSV to the stream `f`
+    """
     # get csv writer
     if utf8:
-        writer = UnicodeWriter(response)
+        writer = UnicodeWriter(f)
     else:
-        writer = csv.writer(response)
+        writer = csv.writer(f)
     # write the column headings
     if headings:
         writer.writerow(headings)
     for item in collection:
         writer.writerow(row_generator(item))
+
+def get_csv_stringbuf_from_collection(collection, row_generator, headings=None, utf8=True):
+    buf = cStringIO.StringIO()
+    buffered_csv_from_collection(buf, collection, row_generator, headings=headings, utf8=utf8)
+    return buf
+
+def get_csv_response_from_collection(collection, row_generator, headings=None, filename='data.csv', utf8=True):
+    from django.http import HttpResponse
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+    buffered_csv_from_collection(response, collection, row_generator, headings=headings, utf8=utf8)
     return response
