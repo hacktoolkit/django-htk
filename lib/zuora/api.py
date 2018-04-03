@@ -23,7 +23,7 @@ class HtkZuoraAPI(object):
         self.client_secret = client_secret
 
         self.access_token = None
-        self.expires_at = None
+        self.access_token_expires_at = None
 
         zuora_country = htk_setting('HTK_ZUORA_COUNTRY')
         zuora_api_mode = 'prod' if htk_setting('HTK_ZUORA_PROD') else 'sandbox'
@@ -60,16 +60,16 @@ class HtkZuoraAPI(object):
         if expires_in:
             # expire 2 minutes earlier to provide a margin of safety
             expires_in = expires_in - 120 if expires_in >= 120 else 0
-            self.expires_at = time.time() + expires_in
         self.access_token = access_token
+        self.access_token_expires_at = time.time() + expires_in
 
     def is_authenticated(self):
-        if self.access_token and self.expires_at:
-            if time.time() < self.expires_at:
+        if self.access_token and self.access_token_expires_at:
+            if time.time() < self.access_token_expires_at:
                 status = True
             else:
                 self.access_token = None
-                self.expires_at = None
+                self.access_token_expires_at = None
                 status = False
         else:
             status = False
@@ -179,4 +179,3 @@ class HtkZuoraAPI(object):
         response = self.do_request('get', resource_path)
         result = response.json()
         return result
-
