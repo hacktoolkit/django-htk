@@ -1,5 +1,6 @@
 # Python Standard Library Imports
 import datetime
+import time
 
 # Third Party / PIP Imports
 import requests
@@ -12,37 +13,79 @@ from htk.lib.zuora.constants import *
 from htk.utils import htk_setting
 
 class HtkZuoraAPI(object):
-    def __init__(self, username=None, password=None):
-        if username is None:
-            username = htk_setting('HTK_ZUORA_USERNAME')
-        if password is None:
-            password = htk_setting('HTK_ZUORA_PASSWORD')
+    def __init__(self, client_id=None, client_secret=None):
+        if client_id is None:
+            client_id = htk_setting('HTK_ZUORA_CLIENT_ID')
+        if client_secret is None:
+            client_secret = htk_setting('HTK_ZUORA_CLIENT_SECRET')
 
-        self.username = username
-        self.password = password
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+        self.access_token = None
+        self.expires_at = None
 
         zuora_country = htk_setting('HTK_ZUORA_COUNTRY')
         zuora_api_mode = 'prod' if htk_setting('HTK_ZUORA_PROD') else 'sandbox'
         self.api_base_url = HTK_ZUORA_API_BASE_URLS[zuora_country][zuora_api_mode]
 
-    def _get_request_headers(self):
-        headers = {
-            'apiAccessKeyId' : self.username,
-            'apiSecretAccessKey' : self.password,
-        }
+        self.authenticate()
+
+    def _get_request_headers(self, headers=None):
+        if headers is None:
+            headers = {}
+        if self.is_authenticated():
+            headers.update({
+                'Authorization' : 'Bearer %s' % self.access_token,
+            })
+        else:
+            pass
         return headers
 
-    def do_request(self, method, resource_path, params=None, payload=None, *args, **kwargs):
+    def authenticate(self):
+        resource_path = 'oauth/token'
+        headers = {
+            'Content-Type' : 'application/x-www-form-urlencoded',
+        }
+        data = {
+            'client_id' : self.client_id,
+            'client_secret' : self.client_secret,
+            'grant_type' : 'client_credentials',
+        }
+        response = self.do_request('post', resource_path, headers=headers, data=data)
+        result = response.json()
+        access_token = result.get('access_token', None)
+        token_type = result.get('token_type', None)
+        expires_in = result.get('expires_in', 0)
+        if expires_in:
+            # expire 2 minutes earlier to provide a margin of safety
+            expires_in = expires_in - 120 if expires_in >= 120 else 0
+            self.expires_at = time.time() + expires_in
+        self.access_token = access_token
+
+    def is_authenticated(self):
+        if self.access_token and self.expires_at:
+            if time.time() < self.expires_at:
+                status = True
+            else:
+                self.access_token = None
+                self.expires_at = None
+                status = False
+        else:
+            status = False
+        return status
+
+    def do_request(self, method, resource_path, headers=None, params=None, data=None, json_data=None, *args, **kwargs):
         method = method.lower()
         action = getattr(requests, method, None)
         if action is None:
             raise Exception('Invalid request method specified: %s' % method)
 
         params = params if params else {}
-        headers = self._get_request_headers()
+        headers = self._get_request_headers(headers=headers)
 
         url = '%s%s' % (self.api_base_url, resource_path)
-        response = action(url, params=params, headers=headers, json=payload, *args, **kwargs)
+        response = action(url, params=params, headers=headers, data=data, json=json_data, *args, **kwargs)
         return response
 
     ##
@@ -61,9 +104,9 @@ class HtkZuoraAPI(object):
     ##
     # Customers
 
-    def create_account(self, payload):
+    def create_account(self, json_data):
         resource_path = 'v1/accounts'
-        response = self.do_request('post', resource_path, payload=payload)
+        response = self.do_request('post', resource_path, json_data=json_data)
         result = response.json()
         return result
 
@@ -98,11 +141,11 @@ class HtkZuoraAPI(object):
                 'ratePlanId' : plan_id,
                 'contractEffectiveDate' : today,
             }
-        payload = {
+        json_data = {
             'remove' : [_format_remove(plan_id) for plan_id in remove_plans],
             'add' : [_format_add(plan_id) for plan_id in add_plans],
         }
-        response = self.do_request('put', resource_path, payload=payload)
+        response = self.do_request('put', resource_path, json_data=json_data)
         result = response.json()
         return result
 
@@ -119,10 +162,10 @@ class HtkZuoraAPI(object):
         if cancellation_policy is None:
             cancellation_policy = 'EndOfCurrentTerm'
 
-        payload = {
+        json_data = {
             'cancellationPolicy' : cancellation_policy,
             'cancellationEffectiveDate' : cancellation_date,
         }
-        response = self.do_request('put', resource_path, payload=payload)
+        response = self.do_request('put', resource_path, json_data=json_data)
         result = response.json()
         return result

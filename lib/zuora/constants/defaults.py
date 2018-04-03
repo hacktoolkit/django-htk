@@ -1,5 +1,9 @@
-HTK_ZUORA_USERNAME = None
-HTK_ZUORA_PASSWORD = None
+# https://www.zuora.com/developer/api-reference
+
+# OAuth
+HTK_ZUORA_CLIENT_ID = None
+HTK_ZUORA_CLIENT_SECRET = None
+
 HTK_ZUORA_COUNTRY = 'US' # 'US' or 'EU'
 HTK_ZUORA_PROD = False
 
