@@ -169,3 +169,14 @@ class HtkZuoraAPI(object):
         response = self.do_request('put', resource_path, json_data=json_data)
         result = response.json()
         return result
+
+    ##
+    # Notifications
+
+    def get_notifications(self):
+        # TODO: implemented correctly, but somehow not returning data
+        resource_path = '/notifications/notification-definitions'
+        response = self.do_request('get', resource_path)
+        result = response.json()
+        return result
+
