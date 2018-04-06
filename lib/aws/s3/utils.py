@@ -25,22 +25,21 @@ class S3Manager(object):
     def _connect(self):
         self.conn = S3Connection(self.access_key, self.secret_key)
 
-    def _get_bucket(self, bucket_id):
+    def _get_bucket(self, bucket_id, validate=True):
         """Returns a boto.s3.bucket.Bucket object pointing at S3:bucket-id
         """
         try:
-            bucket = self.conn.get_bucket(bucket_id)
+            bucket = self.conn.get_bucket(bucket_id, validate=validate)
         except S3ResponseError:
             bucket = None
         return bucket
 
-    def _get_key(self, bucket_id, key_id):
+    def _get_key(self, bucket_id, key_id, validate_bucket=True, validate_key=False):
         """Returns a boto.s3.key.Key object pointing at S3:bucket-id/key-id
         """
-        bucket = self._get_bucket(bucket_id)
+        bucket = self._get_bucket(bucket_id, validate=validate_bucket)
         if bucket:
-            key = Key(bucket)
-            key.key = key_id
+            key = bucket.get_key(key_id, validate=validate_key)
         else:
             key = None
         return key
@@ -57,6 +56,11 @@ class S3Manager(object):
         else:
             bytes_written = 0
         return bytes_written
+
+    def key_exists(self, bucket_id, key_id):
+        key = self._get_key(bucket_id, key_id, validate_key=True)
+        result = key is not None
+        return result
 
     def copy_file(self, src_bucket_id, src_key_id, dest_bucket_id, dest_key_id):
         """Copies a file
