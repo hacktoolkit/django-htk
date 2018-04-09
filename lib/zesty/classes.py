@@ -20,6 +20,25 @@ class ZestyAPI(object):
         url = ZESTY_URLS.get(resource_type) % url_values
         return url
 
+    def get_meal_today(self):
+        """Retrieves today's meal from Zesty API
+        """
+        url = self.get_url('meal_today')
+        response = requests.get(url)
+        meals = None
+        if response.status_code == 200:
+            try:
+                meals_data = response.json()
+                meals = ZestyMeals(self, meals_data)
+            except:
+                extra_data = {
+                    'zesty_id' : self.zesty_id,
+                }
+                rollbar.report_exc_info(extra_data=extra_data)
+        else:
+            pass
+        return meals
+
     def get_meals(self):
         """Retrieves meals from Zesty API
         """

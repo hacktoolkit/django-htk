@@ -4,7 +4,8 @@ def get_zesty_lunch_menu(zesty_id, dt):
     """Get Zesty lunch menu for account `zesty_id` on `dt`
     """
     zesty_api = ZestyAPI(zesty_id)
-    meals = zesty_api.get_meals()
+    #meals = zesty_api.get_meals()
+    meals = zesty_api.get_meal_today()
     attachments = []
 
     if meals is None:
@@ -31,7 +32,8 @@ def get_zesty_lunch_menu_ssml(zesty_id, dt):
     """Get Zesty lunch menu for account `zesty_id` on `dt` formatted as SSML
     """
     zesty_api = ZestyAPI(zesty_id)
-    meals = zesty_api.get_meals()
+    #meals = zesty_api.get_meals()
+    meals = zesty_api.get_meal_today()
     attachments = []
 
     if meals is None:
