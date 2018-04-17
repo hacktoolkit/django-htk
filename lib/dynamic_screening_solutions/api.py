@@ -119,7 +119,22 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
-        users = json.loads(response.text)
+        result = response.json()
+        if type(result) == list:
+            users = result
+        else:
+            users = []
+            if type(result) == dict and 'message' in result:
+                message = result['message']
+            else:
+                message = 'Error retrieving users by company'
+
+            extra_data = {
+                'username' : self.username,
+                'company_id' : company_id,
+                'user_type' : user_type,
+            }
+            rollbar.report_message(message, extra_data=extra_data)
         return users
 
     def create_employee(self, user_id, employee_data):
