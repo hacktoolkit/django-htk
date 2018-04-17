@@ -1,7 +1,6 @@
 # Python Standard Library Imports
 import hashlib
 import hmac
-import json
 import urlparse
 
 # Third Party / PIP Imports
@@ -96,7 +95,7 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
-        user = json.loads(response.text)
+        user = response.json()
         return user
 
     def get_user_everify(self, user_id):
@@ -105,7 +104,7 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
-        everify_status = json.loads(response.text)
+        everify_status = response.json()
         return everify_status
 
     def get_users_by_company(self, company_id, user_type):
@@ -143,7 +142,7 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_post(request_url, employee_data)
-        employee = json.loads(response.text)
+        employee = response.json()
         return employee
 
     def get_hr_staff_users_by_company(self, company_id):
@@ -177,7 +176,7 @@ class Htk321FormsAPI(object):
         while not done:
             request_url = self.get_request_url(resource_path=DSS_321FORMS_API_RESOURCE_COMPANY) + ("?limit=%s&offset=%s" % (limit, offset,))
             response = self.request_get(request_url)
-            companies = json.loads(response.text)
+            companies = response.json()
             all_companies += companies
             if len(companies) < limit:
                 done = True
@@ -197,7 +196,7 @@ class Htk321FormsAPI(object):
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
         try:
-            divisions = json.loads(response.text).get('divisions', [])
+            divisions = response.json().get('divisions', [])
         except:
             divisions = []
         return divisions
@@ -215,7 +214,7 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
-        forms = json.loads(response.text)
+        forms = response.json()
         return forms
 
     def get_form_by_company(self, company_id, form_id):
@@ -227,7 +226,7 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
-        form = json.loads(response.text)
+        form = response.json()
         return form
 
     def get_forms_by_division(self, division_id):
@@ -236,7 +235,7 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
-        forms = json.loads(response.text)
+        forms = response.json()
         return forms
 
     def get_forms_by_user(self, user_id):
@@ -245,7 +244,7 @@ class Htk321FormsAPI(object):
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
-        forms = json.loads(response.text)
+        forms = response.json()
         return forms
 
     def get_form_by_user(self, user_id, form_id, form_type=None):
@@ -257,7 +256,7 @@ class Htk321FormsAPI(object):
         if form_type:
             request_url += '?type=%s' % (form_type,)
         response = self.request_get(request_url)
-        forms = json.loads(response.text)
+        forms = response.json()
         return forms
 
     ##
@@ -269,7 +268,7 @@ class Htk321FormsAPI(object):
         exception_reported = False
 
         try:
-            data = json.loads(response.text)
+            data = response.json()
             sso_key = data.get('SSOKey')
         except:
             sso_key = None
@@ -298,7 +297,7 @@ class Htk321FormsAPI(object):
         exception_reported = False
 
         try:
-            data = json.loads(response.text)
+            data = response.json()
             endpoint = data.get('endpoint')
         except:
             endpoint = None
