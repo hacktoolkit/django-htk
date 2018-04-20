@@ -341,8 +341,7 @@ def ohmygreen(event, **kwargs):
         else:
             from htk.lib.ohmygreen.api import OhMyGreenAPI
             api = OhMyGreenAPI(ohmygreen_id, ohmygreen_company)
-            import datetime
-            dt = user.profile.get_local_time() - datetime.timedelta(days=1)
+            dt = user.profile.get_local_time()
             menu = api.get_menu(dt)
             slack_text = menu.get_slack_message()
     else:
