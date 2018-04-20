@@ -84,6 +84,16 @@ def geoip(**kwargs):
     }
     return usage_dict
 
+def ohmygreen(**kwargs):
+    usage_dict = {
+        'description' : 'Look up OhMyGreen menu',
+        'basic' : 'htk: ohmygreen',
+        'examples' : [
+            'htk: ohmygreen',
+        ],
+    }
+    return usage_dict
+
 def stock(**kwargs):
     usage_dict = {
         'description' : 'Look up most recent stock quotes',

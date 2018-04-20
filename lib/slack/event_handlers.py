@@ -319,6 +319,45 @@ def geoip(event, **kwargs):
     return payload
 
 @preprocess_event
+def ohmygreen(event, **kwargs):
+    """OhMyGreen event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    ohmygreen_slack_payload = {}
+    if command == 'ohmygreen':
+        webhook_settings = event['webhook_settings']
+        user_id = webhook_settings['user']
+        from htk.apps.accounts.utils import get_user_by_id
+        user = get_user_by_id(user_id)
+        ohmygreen_id = user.profile.get_attribute('ohmygreen_id')
+        ohmygreen_company = user.profile.get_attribute('ohmygreen_company')
+        if args:
+            slack_text = '`ohmygreen` does not take any arguments'
+        elif ohmygreen_id is None or ohmygreen_company is None:
+            slack_text = 'Error: Your account does not have an OhMyGreen account id configured. Please check with your Slack admin.'
+        else:
+            from htk.lib.ohmygreen.api import OhMyGreenAPI
+            api = OhMyGreenAPI(ohmygreen_id, ohmygreen_company)
+            import datetime
+            dt = user.profile.get_local_time() - datetime.timedelta(days=1)
+            menu = api.get_menu(dt)
+            slack_text = menu.get_slack_message()
+    else:
+        slack_text = 'Illegal command.'
+
+    channel = event['channel_id']
+
+    payload = {
+        'text' : slack_text,
+        'unfurl_links' : True,
+        'unfurl_media' : True,
+    }
+    return payload
+
+@preprocess_event
 def stock(event, **kwargs):
     """Stock event handler for Slack webhook events
     """
