@@ -1,9 +1,14 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
 import rollbar
 import stripe
 
+# Django Imports
 from django.conf import settings
 from django.db import models
 
+# HTK Imports
 from htk.lib.stripe_lib.enums import StripePlanInterval
 from htk.lib.stripe_lib.utils import _initialize_stripe
 from htk.lib.stripe_lib.utils import safe_stripe_call
@@ -267,7 +272,11 @@ class BaseStripeCustomer(models.Model):
         """
         subscription = self.retrieve_subscription(subscription_id)
         if subscription:
-            subscription.delete()
+            try:
+                subscription.delete()
+            except stripe.error.InvalidRequestError, e:
+                request = get_current_request()
+                rollbar.report_exc_info(request=request)
             was_deleted = True
         else:
             was_deleted = False

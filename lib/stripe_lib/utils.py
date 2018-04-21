@@ -1,9 +1,15 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
 import rollbar
 import stripe
 
+# Django Imports
 from django.conf import settings
 
+# HTK Imports
 from htk.utils import htk_setting
+from htk.utils.request import get_current_request
 
 ##
 # general helpers
@@ -68,24 +74,30 @@ def safe_stripe_call(func, *args, **kwargs):
         ## param is '' in this case
         #print "Param is: %s" % err.get('param')
         #print "Message is: %s" % err.get('message')
-        rollbar.report_exc_info()
+        request = get_current_request()
+        rollbar.report_exc_info(request=request)
     except stripe.error.InvalidRequestError, e:
         # Invalid parameters were supplied to Stripe's API
-        rollbar.report_exc_info()
+        request = get_current_request()
+        rollbar.report_exc_info(request=request)
     except stripe.error.AuthenticationError, e:
         # Authentication with Stripe's API failed
         # (maybe you changed API keys recently)
-        rollbar.report_exc_info()
+        request = get_current_request()
+        rollbar.report_exc_info(request=request)
     except stripe.error.APIConnectionError, e:
         # Network communication with Stripe failed
-        rollbar.report_exc_info()
+        request = get_current_request()
+        rollbar.report_exc_info(request=request)
     except stripe.error.StripeError, e:
         # Display a very generic error to the user, and maybe send
         # yourself an email
-        rollbar.report_exc_info()
+        request = get_current_request()
+        rollbar.report_exc_info(request=request)
     except Exception, e:
         # Something else happened, completely unrelated to Stripe
-        rollbar.report_exc_info()
+        request = get_current_request()
+        rollbar.report_exc_info(request=request)
     return result
 
 ##
