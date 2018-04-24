@@ -229,11 +229,13 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
     ##
     # social auth stuff
 
-    def get_social_auths(self):
+    def get_social_auths(self, provider=None):
         """Gets all associated UserSocialAuth objects
         """
         from social_django.models import UserSocialAuth
         social_auths = UserSocialAuth.objects.filter(user__id=self.user.id)
+        if provider:
+            social_auths = social_auths.filter(provider=provider)
         return social_auths
 
     def get_social_user(self, provider, provider_id=None):
