@@ -1,5 +1,10 @@
+# Python Standard Library Imports
+import time
+
+# Third Party / PIP Imports
 import requests
 
+# HTK Imports
 from htk.lib.google.gmail.constants import GMAIL_RESOURCES
 
 # https://developers.google.com/gmail/api/v1/reference/
@@ -14,10 +19,17 @@ def get_resource_url(resource_name, email=None, **kwargs):
     return url
 
 def get_authorization_header(user, email):
-    g_auth_data = user.profile.get_social_user('google-oauth2', email)
+    g_social_auth = user.profile.get_social_user('google-oauth2', email)
     header = None
-    if g_auth_data:
-        header = '%(token_type)s %(access_token)s' % g_auth_data.extra_data
+    if g_social_auth:
+        # refreshes token if necessary
+        from social_django.utils import load_strategy
+        access_token = g_social_auth.get_access_token(load_strategy())
+        values = {
+            'token_type' : g_social_auth.extra_data['token_type'],
+            'access_token' : access_token,
+        }
+        header = '%(token_type)s %(access_token)s' % values
     return header
 
 ##
@@ -68,7 +80,7 @@ def messages_list(user, email, q=''):
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
         response_json = response.json()
-        messages = response_json['messages']
+        messages = response_json.get('messages', [])
     elif response.status_code == 401:
         # unauthorized
         messages = []
