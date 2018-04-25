@@ -203,6 +203,10 @@ class GmailMessage(object):
             gre.match(r'(.*) <(.*)>', sender)
             if gre.last_match:
                 name = gre.last_match.group(1)
+                # strip off quotes around sender name
+                gre.match(r'"(.*)"', name)
+                if gre.last_match:
+                    name = gre.last_match.group(1)
             else:
                 pass
         return name
