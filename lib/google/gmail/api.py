@@ -18,6 +18,7 @@ class GmailAPI(object):
     def __init__(self, user, email=None):
         self.user = user
         self.email = email
+        self.g_social_auth = user.profile.get_social_user('google-oauth2', email)
 
     def get_resource_url(self, resource_name, **kwargs):
         user_id = self.email if self.email else 'me'
@@ -28,17 +29,16 @@ class GmailAPI(object):
         url = GMAIL_RESOURCES[resource_name] % values
         return url
 
-    def get_authorization_header(self):
-        g_social_auth = self.user.profile.get_social_user('google-oauth2', self.email)
-        header = None
-        if g_social_auth:
+    def get_authorization_headers(self):
+        headers = {}
+        if self.g_social_auth:
             # refreshes token if necessary
-            if g_social_auth.access_token_expired():
+            if self.g_social_auth.access_token_expired():
                 from social_django.utils import load_strategy
-                access_token = g_social_auth.get_access_token(load_strategy())
-                g_social_auth = refresh(g_social_auth)
-            header = '%(token_type)s %(access_token)s' % g_social_auth.extra_data
-        return header
+                access_token = self.g_social_auth.get_access_token(load_strategy())
+                self.g_social_auth = refresh(self.g_social_auth)
+            headers['Authorization'] = '%(token_type)s %(access_token)s' % self.g_social_auth.extra_data
+        return headers
 
     def request_get(self, resource_name, headers=None, params=None, resource_args=None):
         if resource_args is None:
@@ -48,9 +48,7 @@ class GmailAPI(object):
             headers = {}
         if params is None:
             params = {}
-        headers.update({
-            'Authorization' : self.get_authorization_header(),
-        })
+        headers.update(self.get_authorization_headers())
         response = requests.get(url, headers=headers, params=params)
         return response
 
