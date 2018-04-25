@@ -145,7 +145,7 @@ def associate_email(strategy, details, user, social, *args, **kwargs):
     # Should confirm if the email was provided by the social auth provider, not the user
     # i.e. SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL was False
     confirmed = not(strategy.request.session.get(SOCIAL_REGISTRATION_SETTING_MISSING_EMAIL, False))
-    user_email = associate_user_email(user, email, domain, confirmed=confirmed)
+    user_email = associate_user_email(user, email, domain=domain, confirmed=confirmed)
 
     if user_email:
         # need to update the User with the activated one, so that it doesn't get overwritten later on
