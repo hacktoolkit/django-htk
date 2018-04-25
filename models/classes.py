@@ -165,7 +165,9 @@ class AbstractAttributeHolderClassFactory(object):
                 if as_bool:
                     try:
                         value = bool(int(value))
-                    except TypeError, ValueError:
+                    except TypeError:
+                        value = False
+                    except ValueError:
                         value = False
                 return value
 
