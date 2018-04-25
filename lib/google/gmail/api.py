@@ -160,10 +160,17 @@ class GmailMessage(object):
         https://developers.google.com/gmail/api/v1/reference/users/messages/get
         """
         html_part = None
-        for part in self.message_data['payload']['parts']:
-            if part['mimeType'] == 'text/html':
-                html_part = part
-                break
+        payload = self.message_data['payload']
+        if 'parts' in payload:
+            # multipart email
+            # examine each part to get the html_part
+            for part in payload['parts']:
+                if part['mimeType'] == 'text/html':
+                    html_part = part
+                    break
+        else:
+            # regular email, assume just one part
+            html_part = payload
 
         if html_part:
             message_body_data = html_part['body']['data']
@@ -188,16 +195,29 @@ class GmailMessage(object):
         return sender
 
     @property
-    def sender_email(self):
-        email = None
+    def sender_name(self):
         sender = self.sender
+        name = sender
+        if sender:
+            gre = Re()
+            gre.match(r'(.*) <(.*)>', sender)
+            if gre.last_match:
+                name = gre.last_match.group(1)
+            else:
+                pass
+        return name
+
+    @property
+    def sender_email(self):
+        sender = self.sender
+        email = sender
         if sender:
             gre = Re()
             gre.match(r'(?:.*) <(.*)>', sender)
             if gre.last_match:
                 email = gre.last_match.group(1)
             else:
-                email = sender
+                pass
         return email
 
     @property
