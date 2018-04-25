@@ -81,8 +81,8 @@ def messages_list(user, email, q=''):
     if response.status_code == 200:
         response_json = response.json()
         messages = response_json.get('messages', [])
-    elif response.status_code == 401:
-        # unauthorized
+    elif response.status_code in (400, 401,):
+        # bad request, unauthorized
         messages = []
     else:
         messages = []
@@ -101,8 +101,8 @@ def message_get(user, email, message_id):
     if response.status_code == 200:
         response_json = response.json()
         message = response_json
-    elif response.status_code == 401:
-        # unauthorized
+    elif response.status_code in (400, 401,):
+        # bad request, unauthorized
         message = None
     else:
         message = None
