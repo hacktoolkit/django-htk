@@ -8,7 +8,7 @@ import requests
 # HTK Imports
 from htk.lib.google.gmail.constants import GMAIL_RESOURCES
 from htk.utils import refresh
-
+from htk.utils.regex import Re
 
 class GmailAPI(object):
     """Interface to Gmail API
@@ -176,10 +176,36 @@ class GmailMessage(object):
         return message_html
 
     @property
-    def subject(self):
+    def headers(self):
         headers = self.message_data.get('payload', {}).get('headers', [])
+        return headers
+
+    @property
+    def sender(self):
+        sender = None
+        for header in self.headers:
+            if header['name'] == 'From':
+                sender = header['value']
+                break
+        return sender
+
+    @property
+    def sender_email(self):
+        email = None
+        sender = self.sender
+        if sender:
+            gre = Re()
+            gre.match(r'(?:.*) <(.*)>', sender)
+            if gre.last_match:
+                email = gre.last_match.group(1)
+            else:
+                email = sender
+        return email
+
+    @property
+    def subject(self):
         subject = None
-        for header in headers:
+        for header in self.headers:
             if header['name'] == 'Subject':
                 subject = header['value']
                 break
