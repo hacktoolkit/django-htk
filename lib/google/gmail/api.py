@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import base64
 import time
 
 # Third Party / PIP Imports
@@ -115,7 +116,7 @@ class GmailAPI(object):
         response = self.request_get(resource_name, params=params, resource_args=resource_args)
         if response.status_code == 200:
             response_json = response.json()
-            message = response_json
+            message = GmailMessage(response_json)
         elif response.status_code in (400, 401,):
             # bad request, unauthorized
             message = None
@@ -150,3 +151,36 @@ class GmailAPI(object):
     ##
     # Users.settings.sendAs
     # https://developers.google.com/gmail/api/v1/reference/#Users.settings.sendAs
+
+class GmailMessage(object):
+    def __init__(self, message_data):
+        self.message_data = message_data
+
+    def get_html(self):
+        """Returns the HTML part of a message from the API
+
+        https://developers.google.com/gmail/api/v1/reference/users/messages/get
+        """
+        html_part = None
+        for part in self.message_data['payload']['parts']:
+            if part['mimeType'] == 'text/html':
+                html_part = part
+                break
+
+        if html_part:
+            message_body_data = html_part['body']['data']
+            message_html = base64.b64decode(message_body_data.replace('-', '+').replace('_', '/'))
+        else:
+            message_html = None
+
+        return message_html
+
+    @property
+    def subject(self):
+        headers = self.message_data.get('payload', {}).get('headers', [])
+        subject = None
+        for header in headers:
+            if header['name'] == 'Subject':
+                subject = header['value']
+                break
+        return subject
