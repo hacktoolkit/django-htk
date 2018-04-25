@@ -36,5 +36,5 @@ class AddEmailForm(forms.Form):
         user_email = None
         if user:
             email = self.email
-            user_email = associate_user_email(user, email, domain)
+            user_email = associate_user_email(user, email, domain=domain)
         return user_email
