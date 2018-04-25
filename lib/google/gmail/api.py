@@ -6,6 +6,7 @@ import requests
 
 # HTK Imports
 from htk.lib.google.gmail.constants import GMAIL_RESOURCES
+from htk.utils import refresh
 
 
 class GmailAPI(object):
@@ -31,13 +32,11 @@ class GmailAPI(object):
         header = None
         if g_social_auth:
             # refreshes token if necessary
-            from social_django.utils import load_strategy
-            access_token = g_social_auth.get_access_token(load_strategy())
-            values = {
-                'token_type' : g_social_auth.extra_data['token_type'],
-                'access_token' : access_token,
-            }
-            header = '%(token_type)s %(access_token)s' % values
+            if g_social_auth.access_token_expired():
+                from social_django.utils import load_strategy
+                access_token = g_social_auth.get_access_token(load_strategy())
+                g_social_auth = refresh(g_social_auth)
+            header = '%(token_type)s %(access_token)s' % g_social_auth.extra_data
         return header
 
     def request_get(self, resource_name, headers=None, params=None, resource_args=None):
