@@ -40,7 +40,11 @@ class GmailAPI(object):
             headers['Authorization'] = '%(token_type)s %(access_token)s' % self.g_social_auth.extra_data
         return headers
 
-    def request_get(self, resource_name, headers=None, params=None, resource_args=None):
+    def do_request(self, method, resource_name, resource_args=None, headers=None, params=None, data=None, json_data=None):
+        method = method.lower()
+        action = getattr(requests, method, None)
+        if action is None:
+            raise Exception('Invalid request method specified: %s' % method)
         if resource_args is None:
             resource_args = {}
         url = self.get_resource_url(resource_name, **resource_args)
@@ -49,7 +53,7 @@ class GmailAPI(object):
         if params is None:
             params = {}
         headers.update(self.get_authorization_headers())
-        response = requests.get(url, headers=headers, params=params)
+        response = action(url, headers=headers, params=params, data=data, json=json_data)
         return response
 
     ##
@@ -91,7 +95,7 @@ class GmailAPI(object):
         params = {}
         if q:
             params['q'] = q
-        response = self.request_get(resource_name, params=params)
+        response = self.do_request('get', resource_name, params=params)
         if response.status_code == 200:
             response_json = response.json()
             messages = response_json.get('messages', [])
@@ -111,16 +115,32 @@ class GmailAPI(object):
         resource_args = {
             'message_id' : message_id,
         }
-        response = self.request_get(resource_name, params=params, resource_args=resource_args)
+        response = self.do_request('get', resource_name, params=params, resource_args=resource_args)
         if response.status_code == 200:
             response_json = response.json()
-            message = GmailMessage(response_json)
+            message = GmailMessage(self, message_id, response_json)
         elif response.status_code in (400, 401,):
             # bad request, unauthorized
             message = None
         else:
             message = None
         return message
+
+    def message_modify(self, message_id, add_labels=None, remove_labels=None):
+        """https://developers.google.com/gmail/api/v1/reference/users/messages/modify#python
+        """
+        json_data = {}
+        if add_labels:
+            json_data['addLabelIds'] = add_labels
+        if remove_labels:
+            json_data['removeLabelIds'] = remove_labels
+        resource_name = 'message_modify'
+        resource_args = {
+            'message_id' : message_id,
+        }
+        response = self.do_request('post', resource_name, resource_args=resource_args, json_data=json_data)
+        result = response.json()
+        return result
 
     ##
     # Users.messages.attachments
@@ -151,7 +171,9 @@ class GmailAPI(object):
     # https://developers.google.com/gmail/api/v1/reference/#Users.settings.sendAs
 
 class GmailMessage(object):
-    def __init__(self, message_data):
+    def __init__(self, api, message_id, message_data):
+        self.api = api
+        self.message_id = message_id
         self.message_data = message_data
 
     def get_html(self):
@@ -179,6 +201,9 @@ class GmailMessage(object):
             message_html = None
 
         return message_html
+
+    ##
+    # Computed Properties
 
     @property
     def headers(self):
@@ -232,3 +257,23 @@ class GmailMessage(object):
                 subject = header['value']
                 break
         return subject
+
+    ##
+    # Labels
+
+    def change_labels(self, add_labels=None, remove_labels=None):
+        result = self.api.message_modify(self.message_id, add_labels=add_labels, remove_labels=remove_labels)
+        return result
+
+    def add_labels(self, labels):
+        return self.change_labels(add_labels=labels)
+
+    def remove_labels(self, labels):
+        return self.change_labels(remove_labels=labels)
+
+    def mark_read(self):
+        return self.add_labels(['read',])
+
+    def mark_unread(self):
+        return self.add_labels(['unread',])
+
