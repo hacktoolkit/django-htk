@@ -19,6 +19,7 @@ class GmailAPI(object):
         self.user = user
         self.email = email
         self.g_social_auth = user.profile.get_social_user('google-oauth2', email)
+        self.labels_map = None
 
     def get_resource_url(self, resource_name, **kwargs):
         user_id = self.email if self.email else 'me'
@@ -56,6 +57,13 @@ class GmailAPI(object):
         response = action(url, headers=headers, params=params, data=data, json=json_data)
         return response
 
+    def _update_labels_map(self):
+        labels = self.labels_list()
+        self.labels_map = {
+            label['name'] : label['id']
+            for label in labels
+        }
+
     ##
     # Users.drafts
     # https://developers.google.com/gmail/api/v1/reference/#Users.drafts
@@ -72,16 +80,16 @@ class GmailAPI(object):
         """https://developers.google.com/gmail/api/v1/reference/users/labels/list
         """
         resource_name = 'labels_list'
-        response = self.request_get(resource_name)
+        response = self.do_request('get', resource_name)
         if response.status_code == 200:
             response_json = response.json()
             labels = response_json['labels']
             labels = sorted(labels, key=lambda label: label['name'])
         elif response.status_code == 401:
             # unauthorized
-            labels = None
+            labels = []
         else:
-            labels = None
+            labels = []
         return labels
 
     ##
@@ -126,14 +134,22 @@ class GmailAPI(object):
             message = None
         return message
 
-    def message_modify(self, message_id, add_labels=None, remove_labels=None):
-        """https://developers.google.com/gmail/api/v1/reference/users/messages/modify#python
+    def message_modify(self, message_id, add_labels=None, remove_labels=None, refresh_labels=False):
+        """Adds or removes labels to a message
+
+        https://developers.google.com/gmail/api/v1/reference/users/messages/modify#python
         """
+        if self.labels_map is None or refresh_labels:
+            self._update_labels_map()
+
         json_data = {}
         if add_labels:
-            json_data['addLabelIds'] = add_labels
+            add_label_ids = [self.labels_map[label] for label in add_labels]
+            json_data['addLabelIds'] = add_label_ids
         if remove_labels:
-            json_data['removeLabelIds'] = remove_labels
+            remove_label_ids = [self.labels_map[label] for label in remove_labels]
+            json_data['removeLabelIds'] = remove_label_ids
+
         resource_name = 'message_modify'
         resource_args = {
             'message_id' : message_id,
@@ -271,9 +287,15 @@ class GmailMessage(object):
     def remove_labels(self, labels):
         return self.change_labels(remove_labels=labels)
 
+    def archive(self):
+        return self.remove_labels(['INBOX',])
+
+    def move_to_inbox(self):
+        return self.add_labels(['INBOX',])
+
     def mark_read(self):
-        return self.add_labels(['read',])
+        return self.remove_labels(['UNREAD',])
 
     def mark_unread(self):
-        return self.add_labels(['unread',])
+        return self.add_labels(['UNREAD',])
 
