@@ -65,3 +65,19 @@ class restful_obj_seo_redirect(object):
                 response = view_fn(*args, **kwargs)
             return response
         return wrapped
+
+def disable_for_loaddata(signal_handler):
+    """Decorator that turns off signal handlers when loading fixture data.
+
+    See:
+    - https://stackoverflow.com/a/15625121/865091
+    - https://code.djangoproject.com/ticket/17880
+    - https://stackoverflow.com/questions/3499791/how-do-i-prevent-fixtures-from-conflicting-with-django-post-save-signal-code
+    - https://docs.djangoproject.com/en/dev/ref/signals/#post-save
+    """
+    @wraps(signal_handler)
+    def wrapper(*args, **kwargs):
+        if kwargs.get('raw'):
+            return
+        signal_handler(*args, **kwargs)
+    return wrapper

@@ -4,11 +4,13 @@ from django.apps import AppConfig
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 
+from htk.decorators.classes import disable_for_loaddata
 from htk.utils import htk_setting
 
 ################################################################################
 # signals and signal handlers
 
+@disable_for_loaddata
 def create_user_profile(sender, instance, created, **kwargs):
     """signal handler for User post-save
     """
@@ -39,6 +41,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             except:
                 rollbar.report_exc_info()
 
+@disable_for_loaddata
 def process_user_email_association(sender, instance, created, **kwargs):
     """signal handler for UserEmail post-save
     """
