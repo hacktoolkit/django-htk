@@ -56,6 +56,7 @@ HTK_SLACK_NOTIFICATION_CHANNELS = {
     'danger'   : '#alerts-p2-danger',
     'warning'  : '#alerts-p3-warning',
     'info'     : '#alerts-p4-info',
+    'debug'    : '#alerts-p5-debug',
 }
 HTK_SLACK_DEBUG_CHANNEL = '#test'
 
