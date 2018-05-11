@@ -1,0 +1,13 @@
+<div class="async-task" style="margin-bottom: 20px;" data:result-status-url="{% url async_task_pending_result_url_name async_task_pending_result.id %}">
+  <div class="async-task-status async-task-status-pending">
+    <i class="fa fa-spinner fa-spin"></i>
+    <b>Your task is currently being processed...</b><br/>
+  </div>
+  <div class="async-task-status async-task-status-running hidden">
+    <i class="fa fa-spinner fa-spin"></i>
+    <b>Your task is currently being processed...</b><br/>
+  </div>
+  <div class="async-task-status async-task-status-ready hidden">
+    <b>Your task has completed.</b>
+  </div>
+</div>

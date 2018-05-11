@@ -22,3 +22,17 @@ def async_download_result(request, result_id, content_type='text/plain', filenam
             from htk.utils.http.response import HttpResponseAccepted
             response = HttpResponseAccepted()
     return response
+
+def async_task_status(request, result_id):
+    from celery.result import AsyncResult
+    result = AsyncResult(result_id)
+
+    # check if the task is ready
+    from htk.api.utils import json_response
+    response = json_response({
+        # possible states: PENDING | STARTED | RETRY | FAILURE | SUCCESS
+        # see celery/result.py
+        'state' : result.state,
+        'ready' : result.ready(),
+    })
+    return response
