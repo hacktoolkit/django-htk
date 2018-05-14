@@ -171,7 +171,7 @@ class HtkIterableAPIClient(IterableAPIClient):
         """
         # avoid circular import
         from htk.lib.iterable.utils import get_workflow_id
-        sign_up_workflow_id = get_workflow_id('sign_up')
+        sign_up_workflow_id = get_workflow_id('account.sign_up')
         if sign_up_workflow_id is not None:
             payload = {
                 'dataFields' : {
@@ -186,7 +186,7 @@ class HtkIterableAPIClient(IterableAPIClient):
         """
         # avoid circular import
         from htk.lib.iterable.utils import get_workflow_id
-        account_activation_workflow_id = get_workflow_id('account_activation')
+        account_activation_workflow_id = get_workflow_id('account.activation')
         if account_activation_workflow_id is not None:
             payload = {
                 'dataFields' : {
@@ -201,7 +201,7 @@ class HtkIterableAPIClient(IterableAPIClient):
         """
         # avoid circular import
         from htk.lib.iterable.utils import get_workflow_id
-        login_workflow_id = get_workflow_id('login')
+        login_workflow_id = get_workflow_id('account.login')
         if login_workflow_id is not None:
             payload = {
                 'dataFields' : {

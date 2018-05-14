@@ -4,9 +4,9 @@ HTK_ITERABLE_ENABLED = False
 HTK_ITERABLE_LIST_IDS = {}
 
 HTK_ITERABLE_WORKFLOW_IDS = {
-    'sign_up' : None,
-    'account_activation' : None,
-    'login' : None,
+    'account.sign_up' : None,
+    'account.activation' : None,
+    'account.login' : None,
 }
 
 HTK_ITERABLE_OPTIONS = {
