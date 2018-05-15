@@ -92,3 +92,42 @@ def get_csv_response_from_collection(collection, row_generator, headings=None, f
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
     buffered_csv_from_collection(response, collection, row_generator, headings=headings, utf8=utf8)
     return response
+
+class CSVDataExporter(object):
+    def __init__(
+        self,
+        rows,
+        row_generator,
+        headings,
+        filename
+    ):
+        self.rows = rows
+        self.row_generator = row_generator
+        self.headings = headings
+        self.filename = filename
+
+    def get_csv_response(self):
+        """Returns a CSV file response
+        """
+        response = get_csv_response_from_collection(
+            self.rows,
+            self.row_generator,
+            headings=self.headings,
+            filename=self.filename
+        )
+
+        return response
+
+    def get_csv(self):
+        """Returns a CSV string to be used in a stream, other text data source, etc
+        """
+        stringbuf = get_csv_stringbuf_from_collection(
+            self.rows,
+            self.row_generator,
+            headings=self.headings
+        )
+        return stringbuf.getvalue()
+
+    def execute(self):
+        csv_string = self.get_csv()
+        return csv_string
