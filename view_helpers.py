@@ -72,7 +72,10 @@ def get_asset_version():
     asset_version = c.get()
     if asset_version is None:
         now = utcnow()
-        asset_version = now.strftime('%Y%m%d%H')
+        if settings.ENV_DEV:
+            asset_version = now.strftime('%Y%m%d%H%M')
+        else:
+            asset_version = now.strftime('%Y%m%d%H')
     return asset_version
 
 def wrap_data(request, data=None):
