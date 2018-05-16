@@ -20,6 +20,7 @@ from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.utils import encrypt_uid
 from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
+from htk.models import HtkBaseModel
 from htk.utils import extract_request_ip
 from htk.utils import htk_setting
 from htk.utils import utcnow
@@ -46,7 +47,7 @@ UserAttributeHolder = AbstractAttributeHolderClassFactory(
     defaults=htk_setting('HTK_USER_ATTRIBUTE_DEFAULTS')
 ).get_class()
 
-class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserMixin):
+class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserMixin):
     """
     django.contrib.auth.models.User does not have a unique email
     """
@@ -72,6 +73,15 @@ class BaseAbstractUserProfile(models.Model, UserAttributeHolder, HtkCompanyUserM
         #s = '%d: %s' % (self.user.id, self.user.email,)
         s = self.user.__unicode__()
         return s
+
+    def json_encode(self):
+        value = super(BaseAbstractUserProfile, self).json_encode()
+
+        value.update({
+            'username' : self.user.username,
+        })
+
+        return value
 
     ##
     # name
