@@ -9,11 +9,20 @@ from django.http import HttpResponse
 from django.http import QueryDict
 
 from htk.api.constants import *
+from htk.models import HtkBaseModel
 
 class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
     def default(self, obj):
+        from django.contrib.auth import get_user_model
+        UserModel = get_user_model()
+
         if isinstance(obj, datetime.datetime):
             value = int(mktime(obj.timetuple()))
+        elif isinstance(obj, HtkBaseModel):
+            value = obj.json_encode()
+        elif isinstance(obj, UserModel):
+            user = obj
+            value = user.profile.json_encode()
         else:
             try:
                 value = super(HtkJSONEncoder, self).default(obj)
