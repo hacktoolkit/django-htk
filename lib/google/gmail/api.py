@@ -8,7 +8,9 @@ import requests
 # HTK Imports
 from htk.lib.google.gmail.constants import GMAIL_RESOURCES
 from htk.utils import refresh
+from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.regex import Re
+
 
 class GmailAPI(object):
     """Interface to Gmail API
@@ -166,6 +168,44 @@ class GmailAPI(object):
     # Users.threads
     # https://developers.google.com/gmail/api/v1/reference/#Users.threads
 
+    def threads_list(self, q=''):
+        """https://developers.google.com/gmail/api/v1/reference/users/threads/list
+        """
+        resource_name = 'threads_list'
+        params = {}
+        if q:
+            params['q'] = q
+        response = self.do_request('get', resource_name, params=params)
+        if response.status_code == 200:
+            response_json = response.json()
+            threads = response_json.get('threads', [])
+        elif response.status_code in (400, 401,):
+            # bad request, unauthorized
+            threads = []
+        else:
+            threads = []
+        return threads
+
+    def thread_get(self, thread_id, params=None):
+        """https://developers.google.com/gmail/api/v1/reference/users/threads/get
+        """
+        resource_name = 'thread_get'
+        if params is None:
+            params = {}
+        resource_args = {
+            'thread_id' : thread_id,
+        }
+        response = self.do_request('get', resource_name, params=params, resource_args=resource_args)
+        if response.status_code == 200:
+            response_json = response.json()
+            thread = GmailThread(self, thread_id, response_json)
+        elif response.status_code in (400, 401,):
+            # bad request, unauthorized
+            thread = None
+        else:
+            thread = None
+        return thread
+
     ##
     # Users.settings
     # https://developers.google.com/gmail/api/v1/reference/#Users.settings
@@ -185,6 +225,7 @@ class GmailAPI(object):
     ##
     # Users.settings.sendAs
     # https://developers.google.com/gmail/api/v1/reference/#Users.settings.sendAs
+
 
 class GmailMessage(object):
     def __init__(self, api, message_id, message_data):
@@ -274,6 +315,11 @@ class GmailMessage(object):
                 break
         return subject
 
+    @property
+    def snippet(self):
+        snippet = self.message_data['snippet']
+        return snippet
+
     ##
     # Labels
 
@@ -299,3 +345,15 @@ class GmailMessage(object):
     def mark_unread(self):
         return self.add_labels(['UNREAD',])
 
+
+class GmailThread(object):
+    def __init__(self, api, thread_id, thread_data):
+        self.api = api
+        self.thread_id = thread_id
+        self.thread_data = thread_data
+
+    @CachedAttribute
+    def last_message(self):
+        last_message_id = self.thread_data['messages'][0]['id']
+        message = self.api.message_get(last_message_id)
+        return message
