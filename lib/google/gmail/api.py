@@ -353,7 +353,21 @@ class GmailThread(object):
         self.thread_data = thread_data
 
     @CachedAttribute
+    def num_messages(self):
+        num_messages = len(self.thread_data['messages'])
+        return num_messages
+
+    @CachedAttribute
     def last_message(self):
-        last_message_id = self.thread_data['messages'][0]['id']
+        last_message_id = self.thread_data['messages'][-1]['id']
         message = self.api.message_get(last_message_id)
         return message
+
+    @property
+    def messages(self):
+        messages = [
+            self.api.message_get(m['id'])
+            for m
+            in self.thread_data['messages']
+        ]
+        return messages
