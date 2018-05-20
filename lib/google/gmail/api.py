@@ -11,6 +11,8 @@ from htk.utils import refresh
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.regex import Re
 
+class GmailAuthenticationException(Exception):
+    pass
 
 class GmailAPI(object):
     """Interface to Gmail API
@@ -21,6 +23,8 @@ class GmailAPI(object):
         self.user = user
         self.email = email
         self.g_social_auth = user.profile.get_social_user('google-oauth2', email)
+        if self.g_social_auth is None:
+            raise GmailAuthenticationException()
         self.labels_map = None
 
     def get_resource_url(self, resource_name, **kwargs):
@@ -205,6 +209,19 @@ class GmailAPI(object):
         else:
             thread = None
         return thread
+
+    def thread_delete(self, thread_id, params=None):
+        """https://developers.google.com/gmail/api/v1/reference/users/threads/delete
+        """
+        resource_name = 'thread_get'
+        if params is None:
+            params = {}
+        resource_args = {
+            'thread_id' : thread_id,
+        }
+        response = self.do_request('delete', resource_name, params=params, resource_args=resource_args)
+
+        return response
 
     ##
     # Users.settings
