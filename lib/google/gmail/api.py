@@ -26,6 +26,7 @@ class GmailAPI(object):
         if self.g_social_auth is None:
             raise GmailAuthenticationException()
         self.labels_map = None
+        self.label_names_map = None
 
     def get_resource_url(self, resource_name, **kwargs):
         user_id = self.email if self.email else 'me'
@@ -63,10 +64,24 @@ class GmailAPI(object):
         response = action(url, headers=headers, params=params, data=data, json=json_data)
         return response
 
+    def get_labels_map(self, refresh_labels=False):
+        if self.labels_map is None or refresh_labels:
+            self._update_labels_map()
+        return self.labels_map
+
+    def get_label_names_map(self, refresh_labels=False):
+        if self.label_names_map is None or refresh_labels:
+            self._update_labels_map()
+        return self.label_names_map
+
     def _update_labels_map(self):
         labels = self.labels_list()
         self.labels_map = {
             label['name'] : label['id']
+            for label in labels
+        }
+        self.label_names_map = {
+            label['id'] : label['name']
             for label in labels
         }
 
@@ -145,8 +160,7 @@ class GmailAPI(object):
 
         https://developers.google.com/gmail/api/v1/reference/users/messages/modify#python
         """
-        if self.labels_map is None or refresh_labels:
-            self._update_labels_map()
+        self.get_labels_map()
 
         json_data = {}
         if add_labels:
@@ -255,8 +269,7 @@ class GmailAPI(object):
 
         https://developers.google.com/gmail/api/v1/reference/users/threads/modify#python
         """
-        if self.labels_map is None or refresh_labels:
-            self._update_labels_map()
+        self.get_labels_map()
 
         json_data = {}
         if add_labels:
@@ -348,6 +361,7 @@ class GmailMessage(object):
             'sender' : self.sender,
             'subject' : self.subject,
             'snippet' : self.snippet,
+            'labels' : self.labels,
         }
         return data
 
@@ -442,6 +456,12 @@ class GmailMessage(object):
     def snippet(self):
         snippet = self.message_data['snippet']
         return snippet
+
+    @property
+    def labels(self):
+        label_names_map = self.api.get_label_names_map()
+        labels = [label_names_map[label_id] for label_id in self.message_data['labelIds']]
+        return labels
 
     ##
     # Labels
