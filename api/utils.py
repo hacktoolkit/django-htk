@@ -41,10 +41,18 @@ def to_json(obj, encoder=HtkJSONEncoder):
         return json.dumps(obj, cls=encoder)
 
 def json_okay():
-    return { HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_OKAY }
+    data = {
+        HTK_API_JSON_KEY_SUCCESS : True,
+        HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_OKAY,
+    }
+    return data
 
 def json_error():
-    return { HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_ERROR }
+    data = {
+        HTK_API_JSON_KEY_SUCCESS : True,
+        HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_ERROR,
+    }
+    return data
 
 def json_okay_str():
     return to_json(json_okay())

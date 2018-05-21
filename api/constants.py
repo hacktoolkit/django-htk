@@ -11,6 +11,7 @@ HTK_API_VALUE_ANTISPAM_CHALLENGE_RESPONSE = 'notabot'
 # JSON
 
 # keys
+HTK_API_JSON_KEY_SUCCESS = 'success'
 HTK_API_JSON_KEY_STATUS = 'status'
 
 # values
