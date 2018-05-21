@@ -344,6 +344,7 @@ class GmailMessage(object):
     def json_encode(self):
         data = {
             'id' : self.message_id,
+            'date' : self.date,
             'sender' : self.sender,
             'subject' : self.subject,
             'snippet' : self.snippet,
@@ -383,6 +384,11 @@ class GmailMessage(object):
     def headers(self):
         headers = self.message_data.get('payload', {}).get('headers', [])
         return headers
+
+    @property
+    def date(self):
+        date = int(self.message_data.get('internalDate'))
+        return date
 
     @property
     def sender(self):
@@ -474,6 +480,7 @@ class GmailThread(object):
             'id' : self.thread_id,
             'num_messages' : self.num_messages,
             'last_message' : {
+                'date' : self.last_message.date,
                 'sender' : self.last_message.sender,
                 'subject' : self.last_message.subject,
                 'snippet' : self.last_message.snippet,
