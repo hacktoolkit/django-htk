@@ -164,6 +164,46 @@ class GmailAPI(object):
         result = response.json()
         return result
 
+    def message_trash(self, message_id, params=None):
+        """https://developers.google.com/gmail/api/v1/reference/users/messages/trash
+        """
+        resource_name = 'message_trash'
+        if params is None:
+            params = {}
+        resource_args = {
+            'message_id' : message_id,
+        }
+        response = self.do_request('post', resource_name, params=params, resource_args=resource_args)
+        if response.status_code == 200:
+            response_json = response.json()
+            message = GmailMessage(self, message_id, response_json)
+        elif response.status_code in (400, 401,):
+            # bad request, unauthorized
+            message = None
+        else:
+            message = None
+        return message
+
+    def message_untrash(self, message_id, params=None):
+        """https://developers.google.com/gmail/api/v1/reference/users/messages/untrash
+        """
+        resource_name = 'message_untrash'
+        if params is None:
+            params = {}
+        resource_args = {
+            'message_id' : message_id,
+        }
+        response = self.do_request('post', resource_name, params=params, resource_args=resource_args)
+        if response.status_code == 200:
+            response_json = response.json()
+            message = GmailMessage(self, message_id, response_json)
+        elif response.status_code in (400, 401,):
+            # bad request, unauthorized
+            message = None
+        else:
+            message = None
+        return message
+
     ##
     # Users.messages.attachments
     # https://developers.google.com/gmail/api/v1/reference/#Users.messages.attachments
@@ -210,18 +250,69 @@ class GmailAPI(object):
             thread = None
         return thread
 
-    def thread_delete(self, thread_id, params=None):
-        """https://developers.google.com/gmail/api/v1/reference/users/threads/delete
+    def thread_modify(self, thread_id, add_labels=None, remove_labels=None, refresh_labels=False):
+        """Adds or removes labels to a thread
+
+        https://developers.google.com/gmail/api/v1/reference/users/threads/modify#python
         """
-        resource_name = 'thread_get'
+        if self.labels_map is None or refresh_labels:
+            self._update_labels_map()
+
+        json_data = {}
+        if add_labels:
+            add_label_ids = [self.labels_map[label] for label in add_labels]
+            json_data['addLabelIds'] = add_label_ids
+        if remove_labels:
+            remove_label_ids = [self.labels_map[label] for label in remove_labels]
+            json_data['removeLabelIds'] = remove_label_ids
+
+        resource_name = 'thread_modify'
+        resource_args = {
+            'thread_id' : thread_id,
+        }
+        response = self.do_request('post', resource_name, resource_args=resource_args, json_data=json_data)
+        result = response.json()
+        return result
+
+    def thread_trash(self, thread_id, params=None):
+        """https://developers.google.com/gmail/api/v1/reference/users/threads/trash
+        """
+        resource_name = 'thread_trash'
         if params is None:
             params = {}
         resource_args = {
             'thread_id' : thread_id,
         }
-        response = self.do_request('delete', resource_name, params=params, resource_args=resource_args)
+        response = self.do_request('post', resource_name, params=params, resource_args=resource_args)
+        if response.status_code == 200:
+            response_json = response.json()
+            thread = GmailThread(self, thread_id, response_json)
+        elif response.status_code in (400, 401,):
+            # bad request, unauthorized
+            thread = None
+        else:
+            thread = None
+        return thread
 
-        return response
+    def thread_untrash(self, thread_id, params=None):
+        """https://developers.google.com/gmail/api/v1/reference/users/threads/untrash
+        """
+        resource_name = 'thread_untrash'
+        if params is None:
+            params = {}
+        resource_args = {
+            'thread_id' : thread_id,
+        }
+        response = self.do_request('post', resource_name, params=params, resource_args=resource_args)
+        if response.status_code == 200:
+            response_json = response.json()
+            thread = GmailThread(self, thread_id, response_json)
+        elif response.status_code in (400, 401,):
+            # bad request, unauthorized
+            thread = None
+        else:
+            thread = None
+        return thread
 
     ##
     # Users.settings
