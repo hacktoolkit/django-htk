@@ -460,6 +460,18 @@ class GmailThread(object):
         self.thread_id = thread_id
         self.thread_data = thread_data
 
+    def json_encode(self):
+        data = {
+            'id' : self.thread_id,
+            'num_messages' : self.num_messages,
+            'last_message' : {
+                'sender' : self.last_message.sender,
+                'subject' : self.last_message.subject,
+                'snippet' : self.last_message.snippet,
+            },
+        }
+        return data
+
     @CachedAttribute
     def num_messages(self):
         num_messages = len(self.thread_data['messages'])
