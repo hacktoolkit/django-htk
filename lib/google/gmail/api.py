@@ -509,3 +509,28 @@ class GmailThread(object):
             in self.thread_data['messages']
         ]
         return messages
+
+    ##
+    # Labels
+
+    def change_labels(self, add_labels=None, remove_labels=None):
+        result = self.api.thread_modify(self.thread_id, add_labels=add_labels, remove_labels=remove_labels)
+        return result
+
+    def add_labels(self, labels):
+        return self.change_labels(add_labels=labels)
+
+    def remove_labels(self, labels):
+        return self.change_labels(remove_labels=labels)
+
+    def archive(self):
+        return self.remove_labels(['INBOX',])
+
+    def move_to_inbox(self):
+        return self.add_labels(['INBOX',])
+
+    def mark_read(self):
+        return self.remove_labels(['UNREAD',])
+
+    def mark_unread(self):
+        return self.add_labels(['UNREAD',])
