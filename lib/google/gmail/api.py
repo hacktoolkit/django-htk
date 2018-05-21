@@ -341,6 +341,15 @@ class GmailMessage(object):
         self.message_id = message_id
         self.message_data = message_data
 
+    def json_encode(self):
+        data = {
+            'id' : self.message_id,
+            'sender' : self.sender,
+            'subject' : self.subject,
+            'snippet' : self.snippet,
+        }
+        return data
+
     def get_html(self):
         """Returns the HTML part of a message from the API
 
@@ -460,7 +469,7 @@ class GmailThread(object):
         self.thread_id = thread_id
         self.thread_data = thread_data
 
-    def json_encode(self):
+    def json_encode(self, inflate_messages=False):
         data = {
             'id' : self.thread_id,
             'num_messages' : self.num_messages,
@@ -470,6 +479,8 @@ class GmailThread(object):
                 'snippet' : self.last_message.snippet,
             },
         }
+        if inflate_messages:
+            data['messages'] = [message.json_encode() for message in self.messages]
         return data
 
     @CachedAttribute
