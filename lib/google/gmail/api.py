@@ -504,6 +504,7 @@ class GmailThread(object):
                 'sender' : self.last_message.sender,
                 'subject' : self.last_message.subject,
                 'snippet' : self.last_message.snippet,
+                'labels' : self.last_message.labels,
             },
         }
         if inflate_messages:
