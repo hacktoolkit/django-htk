@@ -675,6 +675,20 @@ class UserEmail(models.Model):
         self._reset_activation_key(resend=resend)
         activation_email(self, domain=domain, template=template, subject=subject, sender=sender)
 
+    def get_activation_uri(self, use_https=False, domain=None):
+        domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
+
+        values = {
+            'protocol' : 'https' if use_https else 'http',
+            'domain' : domain,
+            'confirm_email_path' : reverse(
+                htk_setting('HTK_ACCOUNTS_CONFIRM_EMAIL_URL_NAME'),
+                args=(self.activation_key,)
+            ),
+        }
+        activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % values
+        return activation_uri
+
     def send_activation_reminder_email(self, template=None, subject=None, sender=None):
         """Sends an account activation reminder email
 

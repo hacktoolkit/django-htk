@@ -51,11 +51,8 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
         'email': email,
         'protocol': use_https and 'https' or 'http', 
         'domain': domain,
+        'activation_uri': user_email.get_activation_uri(use_https=use_https, domain=domain),
         'site_name': htk_setting('HTK_SITE_NAME'),
-        'confirm_email_path': reverse(
-            htk_setting('HTK_ACCOUNTS_CONFIRM_EMAIL_URL_NAME'),
-            args=(user_email.activation_key,)
-        ),
     }
 
     if template is None:
@@ -64,8 +61,6 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
     if subject is None:
         subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_ACTIVATION') % context
 
-    activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % context
-    context['activation_uri'] = activation_uri
     if htk_setting('HTK_ACCOUNT_EMAIL_BCC_ACTIVATION'):
         bcc = htk_setting('HTK_DEFAULT_EMAIL_BCC')
     else:
