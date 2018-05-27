@@ -41,6 +41,18 @@ def create_user_profile(sender, instance, created, **kwargs):
             except:
                 rollbar.report_exc_info()
 
+def pre_delete_user(sender, instance, using, **kwargs):
+    user = instance
+    if htk_setting('HTK_ITERABLE_ENABLED'):
+        try:
+            from htk.lib.iterable.utils import get_iterable_api_client
+            itbl = get_iterable_api_client()
+            emails = list(set([user.email] + [user_email.email for user_email in user.profile.get_confirmed_emails()]))
+            for email in emails:
+                itbl.delete_user(email)
+        except:
+            rollbar.report_exc_info()
+
 @disable_for_loaddata
 def process_user_email_association(sender, instance, created, **kwargs):
     """signal handler for UserEmail post-save
@@ -64,5 +76,7 @@ class HtkAccountsAppConfig(AppConfig):
         # Upon saving a User object, create a UserProfile object if it doesn't already exist
         signals.post_save.connect(create_user_profile, sender=UserModel)
         # See AUTH_PROFILE_MODULE in settings.py
+
+        signals.pre_delete.connect(pre_delete_user, sender=UserModel)
 
         signals.post_save.connect(process_user_email_association, sender=UserEmail)
