@@ -673,7 +673,31 @@ class UserEmail(models.Model):
         """
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         self._reset_activation_key(resend=resend)
-        activation_email(self, domain=domain, template=template, subject=subject, sender=sender)
+
+        try:
+            should_send_activation_email = True
+
+            if htk_setting('HTK_ITERABLE_ENABLED'):
+                from htk.lib.iterable.utils import get_iterable_api_client
+                from htk.lib.iterable.utils import get_campaign_id
+
+                itbl_campaign_id = get_campaign_id('triggered.account.sign_up_confirm_email')
+
+                if itbl_campaign_id:
+                    should_send_activation_email = False
+
+                    data = {
+                        'activation_uri' : self.get_activation_uri(domain=domain),
+                    }
+
+                    itbl = get_iterable_api_client()
+                    itbl.send_triggered_email(self.email, itbl_campaign_id, data=data)
+
+            if should_send_activation_email:
+                activation_email(self, domain=domain, template=template, subject=subject, sender=sender)
+        except:
+            request = get_current_request()
+            rollbar.report_exc_info(request=request)
 
     def get_activation_uri(self, use_https=False, domain=None):
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
