@@ -2,6 +2,9 @@ ITERABLE_API_BASE_URL = 'https://api.iterable.com/api'
 
 ITERABLE_API_RESOURCES = {
     ##
+    # email
+    'email_target' : '/email/target',
+    ##
     # events
     'event_track' : '/events/track',
     ##

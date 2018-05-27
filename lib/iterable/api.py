@@ -114,6 +114,22 @@ class IterableAPIClient(object):
         return response
 
     ##
+    # sends
+
+    def send_triggered_email(self, email, campaign_id, data=None):
+        if data is None:
+            data = {}
+
+        payload = {
+            'recipientEmail' : email,
+            'campaignId' : campaign_id,
+            'dataFields' : data,
+        }
+
+        response = self.post('email_target', payload=payload)
+        return response
+
+    ##
     # users
 
     def update_user_email(self, current_email, new_email):
