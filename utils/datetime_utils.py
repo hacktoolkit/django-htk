@@ -34,6 +34,9 @@ def datetime_to_unix_time(dt):
 
     For Python 2.7, some gymnastics required.
     """
+    if isinstance(dt, datetime.date):
+        dt = datetime.datetime.combine(dt, datetime.datetime.min.time())
+
     if is_aware(dt):
         # convert an aware datetime to UTC first
         dt = dt.astimezone(pytz.utc)
