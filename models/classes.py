@@ -35,6 +35,20 @@ class HtkBaseModel(models.Model):
         }
         return value
 
+    def json_decode(self, payload):
+        """Iterates over a flat dictionary `payload` and updates the attributes on `self`
+        """
+        was_updated = False
+        for key, value in payload.iteritems():
+            if hasattr(self, key):
+                was_updated = True
+                setattr(self, key, value)
+
+        if was_updated:
+            self.save()
+
+        return was_updated
+
     ##
     # Crypto
 
