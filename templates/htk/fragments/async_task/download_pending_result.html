@@ -1,10 +1,10 @@
-<div class="async-download" style="margin-bottom: 20px;" data:result-url="{% url async_download_pending_result_url_name async_download_pending_result.id %}">
+<div class="async-download" style="margin-bottom: 20px;"  data:result-url="{{ async_download_pending_result_url }}">
   <div class="async-download-loading">
     <i class="fa fa-spinner fa-spin"></i>
     <b>Please wait while your file is being generated...</b><br/>
     (<b>NOTE: Do not resubmit the form or reload the page, or your request will take longer to complete</b>.)
         </div>
   <div class="async-download-ready hidden">
-    <b>Your file is ready.</b> <a href="{% url async_download_pending_result_url_name async_download_pending_result.id %}" target="_blank">Click to download</a>.
+    <b>Your file is ready.</b> <a href="{{ async_download_pending_result_url }}" target="_blank">Click to download</a>.
   </div>
 </div>
