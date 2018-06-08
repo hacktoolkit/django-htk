@@ -47,11 +47,13 @@ def json_okay():
     }
     return data
 
-def json_error():
-    data = {
+def json_error(data=None):
+    if data is None:
+        data = {}
+    data.update({
         HTK_API_JSON_KEY_SUCCESS : False,
         HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_ERROR,
-    }
+    })
     return data
 
 def json_okay_str():
@@ -71,8 +73,7 @@ def json_response_okay():
     return response
 
 def json_response_error(data=None, status=400):
-    if data is None:
-        data = json_error()
+    data = json_error(data=data)
     response = json_response(data, status=status)
     return response
 
