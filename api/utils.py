@@ -49,7 +49,7 @@ def json_okay():
 
 def json_error():
     data = {
-        HTK_API_JSON_KEY_SUCCESS : True,
+        HTK_API_JSON_KEY_SUCCESS : False,
         HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_ERROR,
     }
     return data
