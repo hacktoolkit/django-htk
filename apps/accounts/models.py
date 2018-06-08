@@ -346,6 +346,10 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         organizations = Organization.objects.filter(members__user=self.user, members__active=True)
         return organizations
 
+    def is_organization_member(self, organization):
+        is_member = organization.has_member(user)
+        return is_member
+
     ##
     # meta stuff
 
