@@ -50,6 +50,18 @@ def _get_model_fn():
         from django.db.models.loading import get_model
     return get_model
 
+def strtobool_safe(value):
+    """Returns a `bool` based on `value`
+
+    Wrapper around `distutils.util.strtobool` that handles ValueError
+    """
+    try:
+        from distutils.util import strtobool
+        result = bool(strtobool(value))
+    except ValueError:
+        result = False
+    return result
+
 @memoized
 def resolve_model_dynamically(module_str):
     (module_name, attr_name,) = get_module_name_parts(module_str)
