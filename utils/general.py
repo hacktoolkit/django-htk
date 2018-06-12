@@ -53,12 +53,14 @@ def _get_model_fn():
 def strtobool_safe(value):
     """Returns a `bool` based on `value`
 
-    Wrapper around `distutils.util.strtobool` that handles ValueError
+    Wrapper around `distutils.util.strtobool`
+
+    Returns `False` if any `Exception` occurs
     """
     try:
         from distutils.util import strtobool
         result = bool(strtobool(value))
-    except ValueError:
+    except:
         result = False
     return result
 
