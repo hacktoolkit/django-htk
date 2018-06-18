@@ -10,6 +10,7 @@ from django.db import models
 
 # HTK Imports
 from htk.lib.stripe_lib.enums import StripePlanInterval
+from htk.lib.stripe_lib.enums import StripeProductType
 from htk.lib.stripe_lib.utils import _initialize_stripe
 from htk.lib.stripe_lib.utils import safe_stripe_call
 from htk.lib.stripe_lib.constants.general import *
@@ -303,9 +304,43 @@ class BaseStripeCustomer(models.Model):
         else:
             pass
 
+class BaseStripeProduct(models.Model):
+    stripe_id = models.CharField(max_length=255)
+    live_mode = models.BooleanField(default=False)
+    name = models.CharField(max_length=64)
+    product_type = models.PositiveIntegerField()
+    active = models.BooleanField(default=True)
+    statement_descriptor = models.CharField(max_length=22)
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
+        return value
+
+    def create(self):
+        """Tries to create a product
+
+        Will fail if product with the same Stripe id already exists
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+        stripe_product = safe_stripe_call(
+            stripe.Product.create,
+            **{
+                'id' : self.stripe_id,
+                'name' : self.name,
+                'type' : StripeProductType(self.product_type).name,
+                'active' : self.active,
+                'statement_descriptor' : self.statement_descriptor,
+            }
+        )
+        return stripe_product
+
 class BaseStripePlan(models.Model):
     stripe_id = models.CharField(max_length=255)
     live_mode = models.BooleanField(default=False)
+    product_id = models.CharField(max_length=255)
     amount = models.PositiveIntegerField(default=0)
     currency = models.CharField(max_length=3, default=DEFAULT_STRIPE_CURRENCY)
     interval = models.PositiveIntegerField()
