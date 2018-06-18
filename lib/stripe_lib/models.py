@@ -345,12 +345,15 @@ class BaseStripePlan(models.Model):
     currency = models.CharField(max_length=3, default=DEFAULT_STRIPE_CURRENCY)
     interval = models.PositiveIntegerField()
     interval_count = models.PositiveIntegerField(default=1)
-    name = models.CharField(max_length=64)
+    nickname = models.CharField(max_length=64, blank=True)
     trial_period_days = models.PositiveIntegerField(default=0)
-    statement_description = models.CharField(max_length=15)
 
     class Meta:
         abstract = True
+
+        unique_together = (
+            ('stripe_id', 'live_mode',),
+        )
 
     def __unicode__(self):
         value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
@@ -378,13 +381,13 @@ class BaseStripePlan(models.Model):
             stripe.Plan.create,
             **{
                 'id' : self.stripe_id,
+                'product' : self.product_id,
                 'amount' : self.amount,
                 'currency' : self.currency,
                 'interval' : StripePlanInterval(self.interval).name,
                 'interval_count' : self.interval_count,
-                'name' : self.name,
+                'nickname' : self.nickname,
                 'trial_period_days' : self.trial_period_days,
-                'statement_description' : self.statement_description,
             }
         )
         return stripe_plan
