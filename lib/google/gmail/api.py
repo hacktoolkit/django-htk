@@ -362,6 +362,7 @@ class GmailMessage(object):
             'subject' : self.subject,
             'snippet' : self.snippet,
             'labels' : self.labels,
+            'html' : self.get_html(),
         }
         return data
 
