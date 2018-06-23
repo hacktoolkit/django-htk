@@ -267,6 +267,30 @@ class BaseStripeCustomer(models.Model):
             pass
         return subscription
 
+    def free_upgrade_or_downgrade(self, subscription_id, new_plan):
+        """Updates the plan on a Subscription for this Customer
+
+        Does an immediate upgrade or downgrade to the new plan, but does
+        not charge the Customer.
+        This can be used, for example, when providing a free upgrade as
+        a courtesy, or for admin-initiated subscription plan changes.
+
+        If intending to charge the customer immediately at time of change
+        or with proration, use `change_subscription_plan()` instead.
+
+        https://stripe.com/docs/billing/subscriptions/prorations#disable-prorations
+        https://stripe.com/docs/api#update_subscription
+        """
+        subscription = self.retrieve_subscription(subscription_id)
+        if subscription:
+            subscription.plan = new_plan
+            subscription.prorate = False
+            subscription.save()
+            # DO NOT CREATE AN INVOICE
+        else:
+            pass
+        return subscription
+
     def cancel_subscription(self, subscription_id):
         """Cancels a Subscription for this Customer
 
