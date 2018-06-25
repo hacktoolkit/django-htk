@@ -1,4 +1,18 @@
-def async_download_result(request, result_id, content_type='text/plain', filename=None):
+# Python Standard Library Imports
+import base64
+import json
+
+# Third Party / PIP Imports
+
+# Django Imports
+
+# HTK Imports
+
+def async_download_result(request, result_id, result_is_json=False, content_type='text/plain', filename=None):
+    """View to download the result of an async task as a file
+
+    If `result_is_json` is `True`, infer filename and content_type
+    """
     from celery.result import AsyncResult
     result = AsyncResult(result_id)
 
@@ -12,11 +26,21 @@ def async_download_result(request, result_id, content_type='text/plain', filenam
         # attempt to download file
         if result.ready():
             from django.http import HttpResponse
-            response = HttpResponse(result.get(), content_type=content_type)
-            if filename is None:
-                from htk.apps.async_task.constants import CONTENT_TYPE_FILE_EXTENSIONS
-                file_extension = '.%s' % CONTENT_TYPE_FILE_EXTENSIONS.get(content_type, 'txt')
-                filename = 'result' % file_extension
+            result_data = result.get()
+            if result_is_json:
+                from htk.apps.async_task.utils import extract_async_task_result_json_values
+                content, content_type, filename = extract_async_task_result_json_values(result_data)
+            else:
+                if filename is None:
+                    from htk.apps.async_task.constants import CONTENT_TYPE_FILE_EXTENSIONS
+                    file_extension = '.%s' % CONTENT_TYPE_FILE_EXTENSIONS.get(content_type, 'txt')
+                    filename = 'result' % file_extension
+                else:
+                    pass
+
+                content = result_data
+
+            response = HttpResponse(content, content_type=content_type)
             response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         else:
             from htk.utils.http.response import HttpResponseAccepted
