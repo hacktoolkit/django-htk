@@ -15,8 +15,7 @@ class OhMyGreenAPI(object):
         self.company = company
 
     def get_web_url(self):
-        url = 'http://catering.ohmygreen.com/?id1=%s&id2=%s' % (
-            self.company_id,
+        url = 'https://www.ohmygreen.com/%s/catering_menu' % (
             self.company,
         )
         return url
@@ -24,8 +23,9 @@ class OhMyGreenAPI(object):
     def get_menu(self, dt):
         url = OHMYGREEN_API_RESOURCES['menu']
         data = {
-            'company' : self.company,
-            'date' : '%s/%s/%s' % (dt.month, dt.day, dt.year,),
+            #'company' : self.company,
+            'company_id' : self.company_id,
+            'date' : dt.strftime('%m/%d/%Y'),
         }
         response = requests.post(url, data=data)
         menu_data = response.json().get('menu', {})
