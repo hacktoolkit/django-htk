@@ -7,12 +7,17 @@ from htk.lib.oembed.cachekeys import OembedResponseCache
 from htk.lib.oembed.constants import *
 from htk.utils.request import get_current_request
 
-def get_oembed_html(url):
+def get_oembed_html(url, autoplay=False):
     """Gets the oEmbed HTML for a URL, if it is an oEmbed type
     """
     oembed_type = get_oembed_type(url)
+
     if oembed_type:
-        html = get_oembed_html_for_service(url, oembed_type)
+        if oembed_type == 'youtube':
+            autoplay = autoplay
+            html = youtube_oembed(url, autoplay)
+        else:
+            html = get_oembed_html_for_service(url, oembed_type)
     else:
         html = None
     return html
