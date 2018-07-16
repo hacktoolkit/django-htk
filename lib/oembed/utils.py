@@ -14,8 +14,7 @@ def get_oembed_html(url, autoplay=False):
 
     if oembed_type:
         if oembed_type == 'youtube':
-            autoplay = autoplay
-            html = youtube_oembed(url, autoplay)
+            html = youtube_oembed(url, autoplay=autoplay)
         else:
             html = get_oembed_html_for_service(url, oembed_type)
     else:
