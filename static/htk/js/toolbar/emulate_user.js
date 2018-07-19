@@ -64,7 +64,7 @@ $(function() {
     }
 
     function handleEmulateUserButtonClicked(buttonName) {
-        var input = $('.emulate-form-' + buttonName + ' .emulate-input');
+        var input = $('.emulate-' + buttonName + '-form .emulate-input');
         var cookieName = getCookieName(buttonName);
         var cookieVal = input.val();
         $.cookie(cookieName, cookieVal, { expires: get_expire_date() });
