@@ -1,27 +1,29 @@
 $(function() {
-    // Toolbar Handlers
-    var htkToolbarHandle = $('.htk-toolbar-handle');
+    // Toolbar Elements
     var htkToolbar = $('.htk-toolbar');
     var htkToolbarHideButton = $('.htk-toolbar-hide');
+    var htkToolbarTab = $('.htk-toolbar-tab');
+
+    // Toolbar Constants
+    var EMULATE_USER_ID = 'emulate_user_id';
+    var EMULATE_USERNAME = 'emulate_user_username';
     var HTK_EMULATE_USER_COOKIE_EXPIRE_TIME_SECONDS = 15 * 60 * 1000 // 15 minutes
 
     // User ID elements
+    var emulateUserIDButton = $('.emulate-user-id-form .emulate-button');
     var emulateUserIDContainer = $('.emulate-user-id');
-    var emulateUserIDButton = $('.emulate-form-user-id .emulate-button');
     var emulateUserIDStopButton = $('.emulate-user-id-stop');
-    var EMULATE_USER_ID = 'emulate_user_id';
 
     // Username elements
     var emulateUsernameContainer = $('.emulate-username');
-    var emulateUsernameButton = $('.emulate-form-username .emulate-button');
+    var emulateUsernameButton = $('.emulate-username-form .emulate-button');
     var emulateUsernameStopButton = $('.emulate-username-stop');
-    var EMULATE_USERNAME = 'emulate_user_username';
 
     function setPulsatingHtkToolBarHandle() {
         if ($.cookie(EMULATE_USER_ID) || $.cookie(EMULATE_USERNAME)) {
-            htkToolbarHandle.addClass('pulsating-htk-toolbar-handle');
+            htkToolbarTab.addClass('pulsating-htk-toolbar-tab');
         } else {
-            htkToolbarHandle.removeClass('pulsating-htk-toolbar-handle');
+            htkToolbarTab.removeClass('pulsating-htk-toolbar-tab');
         }
     }
 
@@ -37,7 +39,7 @@ $(function() {
     }
 
     function toggleForm(formName) {
-        var form = $('.emulate-form-' + formName);
+        var form = $('.emulate-' + formName + '-form');
         var stopButton = $('.emulate-' + formName + '-stop');
         var cookieName = getCookieName(formName);
         if ($.cookie(cookieName)) {
@@ -56,12 +58,12 @@ $(function() {
     }
 
     function getCookieName(name) {
-        var cookieNameSplit = name.split('-');
-        var cookieName = 'emulate_user_' + cookieNameSplit[cookieNameSplit.length - 1];
+        var cookieNameParts = name.split('-');
+        var cookieName = 'emulate_user_' + cookieNameParts[cookieNameParts.length - 1];
         return cookieName;
     }
 
-    function emulateButtonClicked(buttonName) {
+    function handleEmulateUserButtonClicked(buttonName) {
         var input = $('.emulate-form-' + buttonName + ' .emulate-input');
         var cookieName = getCookieName(buttonName);
         var cookieVal = input.val();
@@ -69,28 +71,28 @@ $(function() {
         location.reload();
     }
 
-    function removeCookie(cookieName) {
+    function handleEmulateUserStopButtonClicked(cookieName) {
         $.removeCookie(cookieName, null);
         location.reload();
     }
 
-    function toggleToolbar() {
+    function handleToggleToolbar() {
         if (htkToolbar.is(':visible')) {
             htkToolbar.hide();
-            htkToolbarHandle.show();
+            htkToolbarTab.show();
         } else {
             htkToolbar.show();
-            htkToolbarHandle.hide();
+            htkToolbarTab.hide();
         }
     }
 
     function initEventHandlers() {
-        htkToolbarHandle.click(toggleToolbar);
-        htkToolbarHideButton.click(toggleToolbar);
-        emulateUserIDButton.click(emulateButtonClicked.bind(null, 'user-id'));
-        emulateUsernameButton.click(emulateButtonClicked.bind(null, 'username'));
-        emulateUserIDStopButton.click(removeCookie.bind(null, EMULATE_USER_ID));
-        emulateUsernameStopButton.click(removeCookie.bind(null, EMULATE_USERNAME));
+        emulateUserIDButton.click(handleEmulateUserButtonClicked.bind(null, 'user-id'));
+        emulateUserIDStopButton.click(handleEmulateUserStopButtonClicked.bind(null, EMULATE_USER_ID));
+        emulateUsernameButton.click(handleEmulateUserButtonClicked.bind(null, 'username'));
+        emulateUsernameStopButton.click(handleEmulateUserStopButtonClicked.bind(null, EMULATE_USERNAME));
+        htkToolbarTab.click(handleToggleToolbar);
+        htkToolbarHideButton.click(handleToggleToolbar);
     }
 
     function init() {
