@@ -1,0 +1,14 @@
+{% if user and user.profile and user.profile.can_emulate_user %}
+<div class="htk-toolbar" style="display: none;">
+  <ul class="htk-toolbar-panel">
+    <li class="htk-toolbar-hide htk-toolbar-list-item">Hide »</li>
+    {% include 'htk/fragments/toolbar/emulate_user.html' %}
+  </ul>
+</div>
+<a class="htk-toolbar-handle" style="display: block;">
+  <span>HTK</span>
+  <i class="fa fa-chevron-up" aria-hidden="true"></i>
+</a>
+{% load htk_tags %}
+{% loadjs '/static/htk/js/toolbar/emulate_user.js' %}
+{% endif %}

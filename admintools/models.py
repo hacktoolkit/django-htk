@@ -49,3 +49,8 @@ class HtkCompanyUserMixin(object):
         company_email_domains_re = '|'.join([domain.replace(r'\.', r'\.') for domain in company_email_domains])
         value = bool(re.match(r'^[A-Za-z0-9\.\+_-]+@(%s)' % company_email_domains_re, self.user.email))
         return value
+
+    def can_emulate_user(self):
+        from htk.utils.request import get_current_request
+        request = get_current_request()
+        return self.user.profile.is_company_employee or request.original_user.profile.is_company_employee
