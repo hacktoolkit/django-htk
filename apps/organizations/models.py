@@ -55,7 +55,12 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
 
     def get_members(self):
         sort_order = htk_setting('HTK_ORGANIZATION_MEMBERS_SORT_ORDER')
-        members = [organization_member.user for organization_member in self.members.filter(active=True).order_by(*sort_order)]
+        members = self.members.filter(
+            active=True,
+            user__is_active=True
+        ).order_by(
+            *sort_order
+        )
         return members
 
     ##
