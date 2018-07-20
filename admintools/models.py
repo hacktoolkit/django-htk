@@ -53,4 +53,5 @@ class HtkCompanyUserMixin(object):
     def can_emulate_user(self):
         from htk.utils.request import get_current_request
         request = get_current_request()
-        return self.user.profile.is_company_employee or request.original_user.profile.is_company_employee
+        can_emulate = self.user.profile.is_company_employee or request.original_user.profile.is_company_employee
+        return can_emulate
