@@ -7,7 +7,7 @@ $(function() {
     // Toolbar Constants
     var EMULATE_USER_ID = 'emulate_user_id';
     var EMULATE_USERNAME = 'emulate_user_username';
-    var HTK_EMULATE_USER_COOKIE_EXPIRE_TIME_SECONDS = 15 * 60 * 1000 // 15 minutes
+    var HTK_EMULATE_USER_COOKIE_EXPIRE_TIME_SECONDS = HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES * 60 * 1000;
 
     // User ID elements
     var emulateUserIDButton = $('.emulate-user-id-form .emulate-button');
