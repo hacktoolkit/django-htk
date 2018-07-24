@@ -23,6 +23,12 @@ class HtkEmulateUserMiddleware(object):
                     emulated_user = get_user_by_id(user_id)
                 elif username:
                     emulated_user = get_user_by_username(username)
-                if emulated_user:
+                if emulated_user and not emulated_user.profile.is_company_officer:
                     request.original_user = request.user
                     request.user = emulated_user
+
+    def process_response(self, request, response):
+        if self._can_emulate_another_user(request):
+            response.delete_cookie('emulate_user_id')
+            response.delete_cookie('emulate_user_username')
+        return response
