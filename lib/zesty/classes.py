@@ -227,7 +227,9 @@ class ZestyMeal(object):
 
     def get_pretty_menu(self, include_dishes=True, slack_attachments=False):
         meal_dict = self._get_meal_dict(include_dishes=include_dishes, slack_attachments=slack_attachments)
-        menu_str = """*%(day_of_week)s %(meal_type)s, %(time)s - %(date)s* at %(delivery_location_address)s""" % meal_dict
+        menu_str = """*%(day_of_week)s %(meal_type)s, %(time)s - %(date)s*""" % meal_dict
+        if 'delivery_location_address' in meal_dict:
+            menu_str += """  at %(delivery_location_address)s""" % meal_dict
         attachments = []
         if slack_attachments:
             restaurant_attachment = {
