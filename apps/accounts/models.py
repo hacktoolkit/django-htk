@@ -343,7 +343,13 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     def organizations(self):
         from htk.utils.general import resolve_model_dynamically
         Organization = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MODEL'))
-        organizations = Organization.objects.filter(members__user=self.user, members__active=True)
+        organizations = Organization.objects.filter(
+            members__user=self.user,
+            members__active=True
+        ).order_by(
+            'name',
+            'handle',
+        )
         return organizations
 
     def is_organization_member(self, organization):
