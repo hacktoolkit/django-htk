@@ -47,3 +47,7 @@ def can_emulate_another_user(user):
         except:
             rollbar.report_exc_info(request=request)
     return can_emulate
+
+def can_emulate_user(original_user, targeted_user):
+    can_emulate = original_user and targeted_user and not targeted_user.profile.is_company_officer
+    return can_emulate

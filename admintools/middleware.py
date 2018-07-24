@@ -1,4 +1,5 @@
 from htk.admintools.utils import can_emulate_another_user
+from htk.admintools.utils import can_emulate_user
 
 class HtkEmulateUserMiddleware(object):
     def process_request(self, request):
@@ -12,7 +13,7 @@ class HtkEmulateUserMiddleware(object):
                     emulated_user = get_user_by_id(user_id)
                 elif username:
                     emulated_user = get_user_by_username(username)
-                if emulated_user and not emulated_user.profile.is_company_officer:
+                if can_emulate_user(request.user, emulated_user):
                     request.original_user = request.user
                     request.user = emulated_user
 
