@@ -207,7 +207,7 @@ def get_django_setting(context, key):
     return ''
 
 @register.simple_tag()
-def get_htk_setting(key):
+def htk_setting(key):
     from htk.utils import htk_setting
     value = htk_setting(key)
     return value

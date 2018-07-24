@@ -9,9 +9,8 @@
   <span>{h}</span>
 </a>
 {% load htk_tags %}
-{% loadjs '/static/htk/js/toolbar/emulate_user.js' %}
-
 <script type="text/javascript">
-var HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES = {% get_htk_setting 'HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES' %};
+  var HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES = {% htk_setting 'HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES' %}
 </script>
+{% loadjs '/static/htk/js/toolbar/emulate_user.js' %}
 {% endif %}
