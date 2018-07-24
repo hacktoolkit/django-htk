@@ -208,8 +208,6 @@ def get_django_setting(context, key):
 
 @register.simple_tag()
 def get_htk_setting(key):
-    """Retrieves a Django setting and sets it on the context dictionary
-    """
     from htk.utils import htk_setting
     value = htk_setting(key)
     return value
