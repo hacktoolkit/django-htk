@@ -1,3 +1,5 @@
+import rollbar
+
 from htk.admintools.cachekeys import HtkCompanyEmployeesCache
 from htk.admintools.cachekeys import HtkCompanyOfficersCache
 from htk.apps.accounts.utils import get_user_by_email
@@ -34,3 +36,14 @@ def get_company_employees_id_email_map():
                 employees_map[user.id] = email
         c.cache_store(employees_map)
     return employees_map
+
+def can_emulate_another_user(user):
+    can_emulate = False
+    if user.is_authenticated():
+        try:
+            user_profile = user.profile
+            if user_profile.is_company_officer:
+                can_emulate = True
+        except:
+            rollbar.report_exc_info(request=request)
+    return can_emulate
