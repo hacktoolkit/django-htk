@@ -18,7 +18,7 @@ class HtkEmulateUserMiddleware(object):
                     request.user = emulated_user
 
     def process_response(self, request, response):
-        if can_emulate_another_user(request.user):
+        if not (hasattr(request, 'original_user') or can_emulate_another_user(request.user)):
             response.delete_cookie('emulate_user_id')
             response.delete_cookie('emulate_user_username')
         return response
