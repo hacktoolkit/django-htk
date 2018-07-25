@@ -1,19 +1,9 @@
-import rollbar
+from htk.admintools.utils import can_emulate_another_user
+from htk.admintools.utils import can_emulate_user
 
 class HtkEmulateUserMiddleware(object):
-    def _can_emulate_another_user(self, request):
-        can_emulate = False
-        if request.user.is_authenticated():
-            try:
-                user_profile = request.user.profile
-                if user_profile.is_company_officer:
-                    can_emulate = True
-            except:
-                rollbar.report_exc_info(request=request)
-        return can_emulate
-
     def process_request(self, request):
-        if self._can_emulate_another_user(request):
+        if can_emulate_another_user(request.user):
             from htk.apps.accounts.utils import get_user_by_id
             from htk.apps.accounts.utils import get_user_by_username
             user_id = request.COOKIES.get('emulate_user_id')
@@ -23,6 +13,12 @@ class HtkEmulateUserMiddleware(object):
                     emulated_user = get_user_by_id(user_id)
                 elif username:
                     emulated_user = get_user_by_username(username)
-                if emulated_user:
+                if can_emulate_user(request.user, emulated_user):
                     request.original_user = request.user
                     request.user = emulated_user
+
+    def process_response(self, request, response):
+        if not (hasattr(request, 'original_user') or can_emulate_another_user(request.user)):
+            response.delete_cookie('emulate_user_id')
+            response.delete_cookie('emulate_user_username')
+        return response

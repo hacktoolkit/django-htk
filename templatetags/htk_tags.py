@@ -207,6 +207,12 @@ def get_django_setting(context, key):
     return ''
 
 @register.simple_tag()
+def htk_setting(key):
+    from htk.utils import htk_setting as _htk_setting
+    value = _htk_setting(key)
+    return value
+
+@register.simple_tag()
 def get_request_duration():
     from htk.middleware.classes import RequestTimerMiddleware
     timer = RequestTimerMiddleware.get_current_timer()
