@@ -28,7 +28,8 @@ $(function() {
     }
 
     function setPulsatingHtkToolBarHandle() {
-        if ($.cookie(EMULATE_USER_ID) || $.cookie(EMULATE_USERNAME)) {
+        var activeCookie = getActiveCookie();
+        if (activeCookie) {
             htkToolbarTab.addClass('pulsating-htk-toolbar-tab');
         } else {
             htkToolbarTab.removeClass('pulsating-htk-toolbar-tab');
@@ -55,22 +56,17 @@ $(function() {
         var cookieVal = emulateUserInput.val();
         if (cookieVal === '' || (cookieName === EMULATE_USER_ID && isNaN(cookieVal))) {
             showError();
-            return;
+        } else {
+            emulateUserMessage.hide();
+            $.cookie(cookieName, cookieVal, { expires: getExpireDate() });
+            location.reload();
         }
 
-        emulateUserMessage.hide();
-        $.cookie(cookieName, cookieVal, { expires: getExpireDate() });
-        location.reload();
     }
 
     function handleEmulateUserStopButtonClicked() {
-        var cookieName;
-        if ($.cookie(EMULATE_USER_ID)) {
-            cookieName = EMULATE_USER_ID;
-        } else if ($.cookie(EMULATE_USERNAME)) {
-            cookieName = EMULATE_USERNAME;
-        }
-        $.removeCookie(cookieName, null);
+        $.removeCookie(EMULATE_USER_ID, null);
+        $.removeCookie(EMULATE_USERNAME, null);
         location.reload();
     }
 
