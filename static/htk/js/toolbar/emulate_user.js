@@ -15,6 +15,7 @@ $(function() {
     var emulateUsernameButton = $('.emulate-user-form button.username');
     var emulateUserStopButton = $('.emulate-user-stop');
     var emulateUserInput = $('.emulate-user-form input');
+    var emulateUserMessage = $('.emulate-user-message');
 
     function getActiveCookie() {
         return $.cookie(EMULATE_USER_ID) || $.cookie(EMULATE_USERNAME);
@@ -45,8 +46,19 @@ $(function() {
         }
     }
 
+    function showError() {
+        emulateUserMessage.html('Invalid Username or User ID');
+        emulateUserMessage.show();
+    }
+
     function handleEmulateUserButtonClicked(cookieName) {
         var cookieVal = emulateUserInput.val();
+        if (cookieVal === '' || (cookieName === EMULATE_USER_ID && isNaN(cookieVal))) {
+            showError();
+            return;
+        }
+
+        emulateUserMessage.hide();
         $.cookie(cookieName, cookieVal, { expires: getExpireDate() });
         location.reload();
     }
