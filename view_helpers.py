@@ -22,15 +22,7 @@ def render_to_response_custom(template_name, data=None, template_prefix=''):
 
     Puts additional information needed onto the context dictionary
     """
-    if data is None:
-        data = {}
-
-    # pre-render
-    data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
-    _build_meta_content(data)
-    _build_breadcrumbs(data)
-
-    # render
+    data = _data_processor(data, template_name, template_prefix)
     response = render_to_response(template_name, data)
     return response
 
@@ -40,15 +32,7 @@ def render_custom(request, template_name, data=None, template_prefix=''):
 
     Puts additional information needed onto the context dictionary
     """
-    if data is None:
-        data = {}
-
-    # pre-render
-    data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
-    _build_meta_content(data)
-    _build_breadcrumbs(data)
-
-    # render
+    data = _data_processor(data, template_name, template_prefix)
     response = render(request, template_name, data)
     return response
 
@@ -223,6 +207,18 @@ def _javascript_reloader(request, data):
     data['JS_RELOADS'] = {
         'yui' : request.session[YUI_RELOAD_ATTEMPTS],
     }
+
+
+def _data_processor(data, template_name, template_prefix):
+    if data is None:
+        data = {}
+
+    # pre-render
+    data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
+    _build_meta_content(data)
+    _build_breadcrumbs(data)
+
+    return data
 
 
 def _build_meta_content(data):
