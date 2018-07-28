@@ -15,6 +15,7 @@ $(function() {
     var emulateUsernameButton = $('.emulate-user-form button.username');
     var emulateUserStopButton = $('.emulate-user-stop');
     var emulateUserInput = $('.emulate-user-form input');
+    var emulateUserTitle = $('.emulate-user-title');
     var emulateUserMessage = $('.emulate-user-message');
 
     function getActiveCookie() {
@@ -39,6 +40,7 @@ $(function() {
     function toggleForm() {
         var activeCookie = getActiveCookie();
         if (activeCookie) {
+            emulateUserTitle.html(`Emulating User: ${activeCookie}`);
             emulateUserForm.hide();
             emulateUserStopButton.show();
         } else  {
@@ -61,7 +63,6 @@ $(function() {
             $.cookie(cookieName, cookieVal, { expires: getExpireDate() });
             location.reload();
         }
-
     }
 
     function handleEmulateUserStopButtonClicked() {
@@ -80,6 +81,13 @@ $(function() {
         }
     }
 
+    function setDjangoAlertMessageToSlide() {
+        // If Django messaging is enabled, this will make the message slide up after 5 seconds
+        $(".alert.alert-dismissible").fadeTo(5000, 500).slideUp(500, function(){
+            $(".alert.alert-dismissible").slideUp(500);
+        });
+    }
+
     function initEventHandlers() {
         emulateUserIDButton.click(handleEmulateUserButtonClicked.bind(null, EMULATE_USER_ID));
         emulateUsernameButton.click(handleEmulateUserButtonClicked.bind(null, EMULATE_USERNAME));
@@ -91,6 +99,7 @@ $(function() {
     function init() {
         toggleForm();
         setPulsatingHtkToolBarHandle();
+        setDjangoAlertMessageToSlide();
     }
 
     initEventHandlers();
