@@ -83,9 +83,9 @@ $(function() {
 
     function setDjangoFlashMessageToSlide() {
         // If Django messaging is enabled, this will make the message slide up after 5 seconds
-        var ANIMATION_DELAY = 5000; // 5 seconds
+        var FADE_DURATION = 5000; // 5 seconds
         var ANIMATION_DURATION = 500 // 0.5 seconds
-        $('.alert.flash-message').fadeTo(ANIMATION_DELAY, 1).slideUp(ANIMATION_DURATION, function(){
+        $('.alert.flash-message').fadeTo(FADE_DURATION, 1).slideUp(ANIMATION_DURATION, function(){
             $('.alert.flash-message').remove();
         });
     }
