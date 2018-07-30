@@ -85,8 +85,8 @@ $(function() {
         // If Django messaging is enabled, this will make the message slide up after 5 seconds
         var timeUntilSlideUp = 5000; // 5 seconds
         var timeToSlideUp = 500 // 0.5 seconds
-        $(".alert.flash-message").fadeTo(timeUntilSlideUp, 1).slideUp(timeToSlideUp, function(){
-            $(".alert.flash-message").remove();
+        $('.alert.flash-message').fadeTo(timeUntilSlideUp, 1).slideUp(timeToSlideUp, function(){
+            $('.alert.flash-message').remove();
         });
     }
 
