@@ -17,6 +17,16 @@ from htk.utils import htk_setting
 from htk.utils import utcnow
 
 
+def render_custom(request, template_name, data=None, template_prefix=''):
+    """Wrapper function for django.shortcuts.render
+
+    Puts additional information needed onto the context dictionary
+    """
+    data = _data_processor(data, template_name, template_prefix)
+    response = render(request, template_name, data)
+    return response
+
+
 def render_to_response_custom(template_name, data=None, template_prefix=''):
     """Wrapper function for django.shortcuts.render_to_response
 
@@ -24,16 +34,6 @@ def render_to_response_custom(template_name, data=None, template_prefix=''):
     """
     data = _data_processor(data, template_name, template_prefix)
     response = render_to_response(template_name, data)
-    return response
-
-
-def render_custom(request, template_name, data=None, template_prefix=''):
-    """Wrapper function for django.shortcuts.render_to_response
-
-    Puts additional information needed onto the context dictionary
-    """
-    data = _data_processor(data, template_name, template_prefix)
-    response = render(request, template_name, data)
     return response
 
 

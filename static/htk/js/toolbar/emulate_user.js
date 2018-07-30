@@ -81,10 +81,12 @@ $(function() {
         }
     }
 
-    function setDjangoAlertMessageToSlide() {
+    function setDjangoFlashMessageToSlide() {
         // If Django messaging is enabled, this will make the message slide up after 5 seconds
-        $(".alert.alert-dismissible").fadeTo(5000, 500).slideUp(500, function(){
-            $(".alert.alert-dismissible").slideUp(500);
+        var timeUntilSlideUp = 5000; // 5 seconds
+        var timeToSlideUp = 500 // 0.5 seconds
+        $(".alert.flash-message").fadeTo(timeUntilSlideUp, 1).slideUp(timeToSlideUp, function(){
+            $(".alert.flash-message").remove();
         });
     }
 
@@ -99,7 +101,7 @@ $(function() {
     function init() {
         toggleForm();
         setPulsatingHtkToolBarHandle();
-        setDjangoAlertMessageToSlide();
+        setDjangoFlashMessageToSlide();
     }
 
     initEventHandlers();
