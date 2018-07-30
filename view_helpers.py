@@ -4,6 +4,7 @@ import rollbar
 from socket import gethostname
 
 from django.conf import settings
+from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import loader
 from django.template import TemplateDoesNotExist
@@ -15,22 +16,26 @@ from htk.session_keys import *
 from htk.utils import htk_setting
 from htk.utils import utcnow
 
+
+def render_custom(request, template_name, data=None, template_prefix=''):
+    """Wrapper function for django.shortcuts.render
+
+    Puts additional information needed onto the context dictionary
+    """
+    data = _data_processor(data, template_name, template_prefix)
+    response = render(request, template_name, data)
+    return response
+
+
 def render_to_response_custom(template_name, data=None, template_prefix=''):
     """Wrapper function for django.shortcuts.render_to_response
 
     Puts additional information needed onto the context dictionary
     """
-    if data is None:
-        data = {}
-
-    # pre-render
-    data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
-    _build_meta_content(data)
-    _build_breadcrumbs(data)
-
-    # render
+    data = _data_processor(data, template_name, template_prefix)
     response = render_to_response(template_name, data)
     return response
+
 
 def get_javascripts(template_name, template_prefix=''):
     """Get a list of JavaScript includes for the specified `template_name`
@@ -62,6 +67,7 @@ def get_javascripts(template_name, template_prefix=''):
 
     return javascripts
 
+
 def get_asset_version():
     """Get asset_version from cache
     This value is updated whenever we deploy. See fab_helpers.py
@@ -77,6 +83,7 @@ def get_asset_version():
         else:
             asset_version = now.strftime('%Y%m%d%H')
     return asset_version
+
 
 def wrap_data(request, data=None):
     """Puts commonly used values into the template context dictionary, `data`
@@ -172,6 +179,7 @@ def wrap_data(request, data=None):
 
     return data
 
+
 def update_top_level_constants(context):
     """Updates top-level key-values in `context` from `context['constants']`
     """
@@ -184,6 +192,7 @@ def update_top_level_constants(context):
         for key in keys:
             if key in constants:
                 context[key] = constants[key]
+
 
 def _javascript_reloader(request, data):
     """Since pages may depend on JavaScript to function properly,
@@ -198,6 +207,19 @@ def _javascript_reloader(request, data):
     data['JS_RELOADS'] = {
         'yui' : request.session[YUI_RELOAD_ATTEMPTS],
     }
+
+
+def _data_processor(data, template_name, template_prefix):
+    if data is None:
+        data = {}
+
+    # pre-render
+    data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
+    _build_meta_content(data)
+    _build_breadcrumbs(data)
+
+    return data
+
 
 def _build_meta_content(data):
     """Build page title and META description and keywords before rendering
@@ -216,6 +238,7 @@ def _build_meta_content(data):
                 request = data.get('request', {}).get('request')
                 rollbar.report_exc_info(request=request)
 
+
 def _build_breadcrumbs(data):
     if data.get('has_dynamic_breadcrumbs', False):
         request = data.get('request', {}).get('request')
@@ -232,6 +255,7 @@ def _build_breadcrumbs(data):
                     })
 
             data['breadcrumbs'] = inverted_breadcrumbs[::-1]
+
 
 def _update_meta_content(meta_type, value, update_type='set', data=None):
     if data is None:
@@ -251,6 +275,7 @@ def _update_meta_content(meta_type, value, update_type='set', data=None):
             pass
     else:
         pass
+
 
 def _add_static_meta_content(meta_type, data=None):
     """Tries to add static meta content
@@ -276,12 +301,14 @@ def _add_static_meta_content(meta_type, data=None):
     else:
         pass
 
+
 def set_page_title(title, data=None):
     """Sets the page title
 
     Overwrites any previously set or added title
     """
     _update_meta_content('title', title, update_type='set', data=data)
+
 
 def add_page_title(title, data=None, url_name=None):
     """Adds an additional phrase to page title
@@ -292,6 +319,7 @@ def add_page_title(title, data=None, url_name=None):
     if url_name and data:
         add_breadcrumb_mapping(url_name, title, data)
 
+
 def set_meta_description(description, data=None):
     """Sets the META description
 
@@ -299,10 +327,12 @@ def set_meta_description(description, data=None):
     """
     _update_meta_content('description', description, update_type='set', data=data)
 
+
 def add_meta_description(description, data=None):
     """Adds an additional sentence or phrase to META description
     """
     _update_meta_content('description', description, update_type='add', data=data)
+
 
 def set_meta_keywords(keywords, data=None):
     """Sets the META keywords
@@ -311,6 +341,7 @@ def set_meta_keywords(keywords, data=None):
     """
     _update_meta_content('keywords', keywords, update_type='set', data=data)
 
+
 def add_meta_keywords(keywords, data=None):
     """Adds an additional keyword to META keywords
 
@@ -318,9 +349,11 @@ def add_meta_keywords(keywords, data=None):
     """
     _update_meta_content('keywords', keywords, update_type='add', data=data)
 
+
 def add_breadcrumb_mapping(url_name, title, data):
     url_names_to_breadcrumbs = data.get('meta', {}).get('breadcrumbs', {}).get('url_names_to_breadcrumbs', {})
     url_names_to_breadcrumbs[url_name] = title
+
 
 def get_resolver_matches_chain(request, data=None):
     """Walk the current request URL path up to the top, attempting to resolve along the way
@@ -348,6 +381,7 @@ def get_resolver_matches_chain(request, data=None):
             # '/' substring not found
             break
     return resolver_matches_chain
+
 
 def generate_nav_links(request, nav_links_cfg):
     """Generate navigation menu links from a configuration dictionary

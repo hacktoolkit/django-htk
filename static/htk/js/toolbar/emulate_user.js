@@ -9,70 +9,65 @@ $(function() {
     var EMULATE_USERNAME = 'emulate_user_username';
     var HTK_EMULATE_USER_COOKIE_EXPIRE_TIME_SECONDS = HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES * 60 * 1000;
 
-    // User ID elements
-    var emulateUserIDButton = $('.emulate-user-id-form .emulate-button');
-    var emulateUserIDContainer = $('.emulate-user-id');
-    var emulateUserIDStopButton = $('.emulate-user-id-stop');
+    // Elements
+    var emulateUserForm = $('.emulate-user-form');
+    var emulateUserIDButton = $('.emulate-user-form button.user-id');
+    var emulateUsernameButton = $('.emulate-user-form button.username');
+    var emulateUserStopButton = $('.emulate-user-stop');
+    var emulateUserInput = $('.emulate-user-form input');
+    var emulateUserTitle = $('.emulate-user-title');
+    var emulateUserMessage = $('.emulate-user-message');
 
-    // Username elements
-    var emulateUsernameContainer = $('.emulate-username');
-    var emulateUsernameButton = $('.emulate-username-form .emulate-button');
-    var emulateUsernameStopButton = $('.emulate-username-stop');
+    function getActiveCookie() {
+        return $.cookie(EMULATE_USER_ID) || $.cookie(EMULATE_USERNAME);
+    }
+
+    function getExpireDate() {
+        var date = new Date();
+        date.setTime(date.getTime() + HTK_EMULATE_USER_COOKIE_EXPIRE_TIME_SECONDS);
+        return date;
+    }
 
     function setPulsatingHtkToolBarHandle() {
-        if ($.cookie(EMULATE_USER_ID) || $.cookie(EMULATE_USERNAME)) {
+        var activeCookie = getActiveCookie();
+        if (activeCookie) {
             htkToolbarTab.addClass('pulsating-htk-toolbar-tab');
         } else {
             htkToolbarTab.removeClass('pulsating-htk-toolbar-tab');
         }
     }
 
-    function toggleContainers() {
-        if ($.cookie(EMULATE_USER_ID)) {
-            emulateUsernameContainer.hide();
-        } else if ($.cookie(EMULATE_USERNAME)) {
-            emulateUserIDContainer.hide();
-        } else {
-            emulateUserIDContainer.show();
-            emulateUsernameContainer.show();
-        }
-    }
-
-    function toggleForm(formName) {
-        var form = $('.emulate-' + formName + '-form');
-        var stopButton = $('.emulate-' + formName + '-stop');
-        var cookieName = getCookieName(formName);
-        if ($.cookie(cookieName)) {
-            form.hide();
-            stopButton.show();
+    function toggleForm() {
+        var activeCookie = getActiveCookie();
+        if (activeCookie) {
+            emulateUserTitle.html(`Emulating User: ${activeCookie}`);
+            emulateUserForm.hide();
+            emulateUserStopButton.show();
         } else  {
-            form.show();
-            stopButton.hide();
+            emulateUserForm.show();
+            emulateUserStopButton.hide();
         }
     }
 
-    function get_expire_date() {
-        var date = new Date();
-        date.setTime(date.getTime() + HTK_EMULATE_USER_COOKIE_EXPIRE_TIME_SECONDS);
-        return date;
+    function showError() {
+        emulateUserMessage.html('Invalid Username or User ID');
+        emulateUserMessage.show();
     }
 
-    function getCookieName(name) {
-        var cookieNameParts = name.split('-');
-        var cookieName = 'emulate_user_' + cookieNameParts[cookieNameParts.length - 1];
-        return cookieName;
+    function handleEmulateUserButtonClicked(cookieName) {
+        var cookieVal = emulateUserInput.val();
+        if (cookieVal === '' || (cookieName === EMULATE_USER_ID && isNaN(cookieVal))) {
+            showError();
+        } else {
+            emulateUserMessage.hide();
+            $.cookie(cookieName, cookieVal, { expires: getExpireDate() });
+            location.reload();
+        }
     }
 
-    function handleEmulateUserButtonClicked(buttonName) {
-        var input = $('.emulate-' + buttonName + '-form .emulate-input');
-        var cookieName = getCookieName(buttonName);
-        var cookieVal = input.val();
-        $.cookie(cookieName, cookieVal, { expires: get_expire_date() });
-        location.reload();
-    }
-
-    function handleEmulateUserStopButtonClicked(cookieName) {
-        $.removeCookie(cookieName, null);
+    function handleEmulateUserStopButtonClicked() {
+        $.removeCookie(EMULATE_USER_ID, null);
+        $.removeCookie(EMULATE_USERNAME, null);
         location.reload();
     }
 
@@ -86,20 +81,27 @@ $(function() {
         }
     }
 
+    function setDjangoFlashMessageToSlide() {
+        // If Django messaging is enabled, this will make the message slide up after 5 seconds
+        var FADE_DURATION = 5000; // 5 seconds
+        var ANIMATION_DURATION = 500 // 0.5 seconds
+        $('.alert.flash-message').fadeTo(FADE_DURATION, 1).slideUp(ANIMATION_DURATION, function(){
+            $('.alert.flash-message').remove();
+        });
+    }
+
     function initEventHandlers() {
-        emulateUserIDButton.click(handleEmulateUserButtonClicked.bind(null, 'user-id'));
-        emulateUserIDStopButton.click(handleEmulateUserStopButtonClicked.bind(null, EMULATE_USER_ID));
-        emulateUsernameButton.click(handleEmulateUserButtonClicked.bind(null, 'username'));
-        emulateUsernameStopButton.click(handleEmulateUserStopButtonClicked.bind(null, EMULATE_USERNAME));
+        emulateUserIDButton.click(handleEmulateUserButtonClicked.bind(null, EMULATE_USER_ID));
+        emulateUsernameButton.click(handleEmulateUserButtonClicked.bind(null, EMULATE_USERNAME));
+        emulateUserStopButton.click(handleEmulateUserStopButtonClicked);
         htkToolbarTab.click(handleToggleToolbar);
         htkToolbarHideButton.click(handleToggleToolbar);
     }
 
     function init() {
-        toggleContainers();
-        toggleForm('user-id');
-        toggleForm('username');
+        toggleForm();
         setPulsatingHtkToolBarHandle();
+        setDjangoFlashMessageToSlide();
     }
 
     initEventHandlers();
