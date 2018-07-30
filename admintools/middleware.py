@@ -33,20 +33,20 @@ class HtkEmulateUserMiddleware(object):
                     rollbar.report_message('Impossible case: attempting to emulate another user but not specified')
 
                 if targeted_user is None:
-                    messages.error(request, 'Cannot Emulate: User does not exist')
+                    messages.error(request, 'Cannot Emulate: User does not exist', fail_silently=True)
                     pass
                 else:
                     if is_allowed_to_emulate(request.user, targeted_user):
                         request.original_user = request.user
                         request.user = targeted_user
                     else:
-                        messages.error(request, 'Cannot Emulate: Not allowed to emulate that user')
+                        messages.error(request, 'Cannot Emulate: Not allowed to emulate that user', fail_silently=True)
                         pass
             else:
                 # not attempting to emulate
                 pass
         else:
-            messages.error(request, 'Cannot Emulate: Not allowed to emulate that user')
+            messages.error(request, 'Cannot Emulate: Not allowed to emulate that user', fail_silently=True)
             pass
 
 
