@@ -44,7 +44,8 @@ class HtkEmulateUserMiddleware(object):
                 # not attempting to emulate
                 pass
         else:
-            messages.error(request, 'Cannot Emulate: Not allowed to emulate that user', fail_silently=True)
+            # is not allowed or is not attempting to emulate users
+            pass
 
 
     def process_response(self, request, response):
