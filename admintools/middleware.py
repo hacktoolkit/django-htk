@@ -44,7 +44,7 @@ class HtkEmulateUserMiddleware(object):
                 # not attempting to emulate
                 pass
         else:
-            # is not allowed to emulate users
+            # is not allowed or is not attempting to emulate users
             pass
 
 
