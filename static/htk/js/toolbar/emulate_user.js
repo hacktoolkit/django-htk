@@ -60,7 +60,7 @@ $(function() {
             showError();
         } else {
             emulateUserMessage.hide();
-            $.cookie(cookieName, cookieVal, { expires: getExpireDate() });
+            $.cookie(cookieName, cookieVal, { expires: getExpireDate(), path: '/' });
             location.reload();
         }
     }
