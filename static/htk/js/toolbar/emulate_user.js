@@ -66,8 +66,8 @@ $(function() {
     }
 
     function handleEmulateUserStopButtonClicked() {
-        $.removeCookie(EMULATE_USER_ID, null);
-        $.removeCookie(EMULATE_USERNAME, null);
+        $.removeCookie(EMULATE_USER_ID, { path: '/'});
+        $.removeCookie(EMULATE_USERNAME, { path: '/'});
         location.reload();
     }
 
