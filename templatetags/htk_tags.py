@@ -220,18 +220,6 @@ def get_request_duration():
     duration = timer.duration()
     return duration
 
-@register.simple_tag(takes_context=True)
-def has_permission(context, codename):
-    request_meta_data = context.get('request', None)
-    request = request_meta_data.get('request', None)
-    user = request.user
-    permission = Permission.objects.get(codename=codename)
-    app_label = permission.content_type.app_label
-    permission_key = '%s.%s' % (app_label, codename)
-    has_permission = user.has_perm(permission_key)
-
-    return has_permission
-
 ##
 # Load Assets
 
@@ -284,6 +272,20 @@ def is_editable_by_context_user(context, obj):
     else:
         is_editable = False
     return is_editable
+
+@register.simple_tag(takes_context=True)
+def has_permission(context, permission_codename):
+    request = context.get('request', {}).get('request', None)
+    if request and request.user:
+        user = request.user
+        permission = Permission.objects.get(codename=permission_codename)
+        app_label = permission.content_type.app_label
+        permission_key = '%s.%s' % (app_label, permission_codename)
+        has_permission = user.has_perm(permission_key)
+    else:
+        has_permission = False
+
+    return has_permission
 
 ##
 # Organizations
