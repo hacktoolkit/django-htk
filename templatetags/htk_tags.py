@@ -219,6 +219,26 @@ def get_request_duration():
     duration = timer.duration()
     return duration
 
+@register.simple_tag(takes_context=True)
+def has_permission(context, codename):
+    user = context.get('user', None)
+    # UserModel = get_user_model()
+    # user = UserModel.objects.get(id=user_id)
+    has_permission = False
+
+    # Check if user has permission explicitly given
+    for permission in user.user_permissions.all():
+        if permission.codename == codename:
+            has_permission = True
+
+    # Check if user has permission from group
+    for group in user.groups.all():
+        for permission in group.permissions.all():
+            if permission.codename == codename:
+                has_permission = True
+
+    return has_permission
+
 ##
 # Load Assets
 
