@@ -3,6 +3,7 @@ import re
 import urllib
 
 from django import template
+from django.contrib.auth.models import Permission
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -221,21 +222,13 @@ def get_request_duration():
 
 @register.simple_tag(takes_context=True)
 def has_permission(context, codename):
-    user = context.get('user', None)
-    # UserModel = get_user_model()
-    # user = UserModel.objects.get(id=user_id)
-    has_permission = False
-
-    # Check if user has permission explicitly given
-    for permission in user.user_permissions.all():
-        if permission.codename == codename:
-            has_permission = True
-
-    # Check if user has permission from group
-    for group in user.groups.all():
-        for permission in group.permissions.all():
-            if permission.codename == codename:
-                has_permission = True
+    request_meta_data = context.get('request', None)
+    request = request_meta_data.get('request', None)
+    user = request.user
+    permission = Permission.objects.get(codename=codename)
+    app_label = permission.content_type.app_label
+    permission_key = '%s.%s' % (app_label, codename)
+    has_permission = user.has_perm(permission_key)
 
     return has_permission
 
