@@ -274,17 +274,11 @@ def is_editable_by_context_user(context, obj):
     return is_editable
 
 @register.simple_tag(takes_context=True)
-def has_permission(context, permission_codename):
+def has_permission(context, permission_key):
     request = context.get('request', {}).get('request', None)
     user = request.user
     if request and user.is_authenticated():
-        try:
-            permission = Permission.objects.get(codename=permission_codename)
-            app_label = permission.content_type.app_label
-            permission_key = '%s.%s' % (app_label, permission_codename)
-            has_permission = user.has_perm(permission_key)
-        except Permission.DoesNotExist:
-            has_permission = False
+        has_permission = user.has_perm(permission_key)
     else:
         has_permission = False
 
