@@ -278,10 +278,13 @@ def has_permission(context, permission_codename):
     request = context.get('request', {}).get('request', None)
     user = request.user
     if request and user.is_authenticated():
-        permission = Permission.objects.get(codename=permission_codename)
-        app_label = permission.content_type.app_label
-        permission_key = '%s.%s' % (app_label, permission_codename)
-        has_permission = user.has_perm(permission_key)
+        try:
+            permission = Permission.objects.get(codename=permission_codename)
+            app_label = permission.content_type.app_label
+            permission_key = '%s.%s' % (app_label, permission_codename)
+            has_permission = user.has_perm(permission_key)
+        except Permission.DoesNotExist:
+            has_permission = False
     else:
         has_permission = False
 
