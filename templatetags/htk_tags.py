@@ -272,6 +272,17 @@ def is_editable_by_context_user(context, obj):
         is_editable = False
     return is_editable
 
+@register.simple_tag(takes_context=True)
+def has_permission(context, permission_key):
+    request = context.get('request', {}).get('request', None)
+    user = request.user
+    if request and user.is_authenticated():
+        has_permission = user.has_perm(permission_key)
+    else:
+        has_permission = False
+
+    return has_permission
+
 ##
 # Organizations
 
