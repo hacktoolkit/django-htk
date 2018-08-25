@@ -3,7 +3,6 @@ import re
 import urllib
 
 from django import template
-from django.contrib.auth.models import Permission
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
 from django.utils.safestring import mark_safe
