@@ -75,6 +75,9 @@ class BaseTask(object):
                     self.reset_cooldown(user)
             except:
                 extra_data = {
-                    'user' : user,
+                    'user' : {
+                        'id' : user.id,
+                        'username' : user.username,
+                    },
                 }
                 rollbar.report_exc_info(extra_data=extra_data)
