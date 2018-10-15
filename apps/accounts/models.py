@@ -1,15 +1,21 @@
+# Python Standard Library Imports
 import datetime
-import pytz
 import random
-import rollbar
+import uuid
 from hashlib import sha1
 
+# Third Party / PIP Imports
+import pytz
+import rollbar
+
+# Django Imports
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+# HTK Imports
 from htk.admintools.models import HtkCompanyUserMixin
 from htk.apps.accounts.cachekeys import UserFollowersCache
 from htk.apps.accounts.cachekeys import UserFollowingCache
@@ -53,6 +59,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     """
     # TODO: related_name="%(app_label)s_%(class)s_related"
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
+    salt = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     has_username_set = models.BooleanField(default=False)
 
     timezone = models.CharField(max_length=64, choices=[(tz, tz,) for tz in pytz.common_timezones], blank=True, default='America/Los_Angeles')
@@ -464,13 +471,13 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
 
     def update_locale_info_by_ip_from_request(self, request):
         """Update user info by IP Address
-        
+
         Store last_login_ip only when logging in
         Store country resolved from IP
         Store timezone resolved from IP
-        
+
         Caller: api.auth.decorators.register_or_login_user
-        
+
         Unknown whether this code throws an exception, but catch it upstream if any
         """
         try:
