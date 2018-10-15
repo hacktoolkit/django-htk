@@ -445,6 +445,45 @@ class GmailMessage(object):
         return email
 
     @property
+    def reply_to(self):
+        sender = None
+        for header in self.headers:
+            if header['name'] == 'Reply-To':
+                sender = header['value']
+                break
+        return sender
+
+    @property
+    def reply_to_name(self):
+        reply_to = self.reply_to
+        name = reply_to
+        if reply_to:
+            gre = Re()
+            gre.match(r'(.*) <(.*)>', reply_to)
+            if gre.last_match:
+                name = gre.last_match.group(1)
+                # strip off quotes around reply_to name
+                gre.match(r'"(.*)"', name)
+                if gre.last_match:
+                    name = gre.last_match.group(1)
+            else:
+                pass
+        return name
+
+    @property
+    def reply_to_email(self):
+        reply_to = self.reply_to
+        email = reply_to
+        if reply_to:
+            gre = Re()
+            gre.match(r'(?:.*) <(.*)>', reply_to)
+            if gre.last_match:
+                email = gre.last_match.group(1)
+            else:
+                pass
+        return email
+
+    @property
     def subject(self):
         subject = None
         for header in self.headers:
