@@ -371,15 +371,36 @@ class GmailMessage(object):
 
         https://developers.google.com/gmail/api/v1/reference/users/messages/get
         """
+        content_type = self.content_type
+        #is_multipart_alternative = content_type == 'multipart/alternative'
+        #is_multipart_mixed = content_type = 'multipart/mixed'
+
         html_part = None
         payload = self.message_data['payload']
+
+        def _extract_html_part(parts):
+            # extract the HTML part out of a multipart email
+            # examine each part and check the `mimeType`
+            html_part = None
+            for part in parts:
+                mime_type = part['mimeType']
+                has_nested_parts = 'parts' in part
+
+                if mime_type == 'text/html':
+                    html_part = part
+                elif mime_type == 'multipart/alternative' and has_nested_parts:
+                    nested_parts = part['parts']
+                    html_part = _extract_html_part(nested_parts)
+                else:
+                    pass
+
+                if html_part is not None:
+                    break
+            return html_part
+
         if 'parts' in payload:
             # multipart email
-            # examine each part to get the html_part
-            for part in payload['parts']:
-                if part['mimeType'] == 'text/html':
-                    html_part = part
-                    break
+            html_part = _extract_html_part(payload['parts'])
         else:
             # regular email, assume just one part
             html_part = payload
