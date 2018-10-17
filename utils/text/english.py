@@ -1,8 +1,8 @@
 """Utilities for formatting Python objects as English phrases and sentences
 """
 
-def oxford_comma(items):
-    """Given a list of items, properly comma and 'and' them together
+def oxford_comma(items, conjunction='and'):
+    """Given a list of items, properly comma and 'and' or 'or' them together
 
     Expects `items` to be a list of strings
     """
@@ -13,9 +13,9 @@ def oxford_comma(items):
     elif len(items) == 1:
         result = items[0]
     elif len(items) == 2:
-        result = ' and '.join(items)
+        result = (' %s ' % conjunction).join(items)
     elif len(items) > 2:
-        result = ', and '.join([', '.join(items[:-1]), items[-1],])
+        result = (', %s ' % conjunction).join([', '.join(items[:-1]), items[-1],])
     else:
         raise Exception('oxford_comma: Illegal arguments')
 
