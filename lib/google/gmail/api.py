@@ -406,6 +406,15 @@ class GmailMessage(object):
         return date
 
     @property
+    def content_type(self):
+        content_type = None
+        for header in self.headers:
+            if header['name'] == 'Content-Type':
+                content_type = header['value']
+                break
+        return content_type
+
+    @property
     def sender(self):
         sender = None
         for header in self.headers:
