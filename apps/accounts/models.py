@@ -33,6 +33,7 @@ from htk.utils import utcnow
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.request import get_current_request
 
+
 class UserAttribute(AbstractAttribute):
     holder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='attributes')
 
@@ -47,11 +48,13 @@ class UserAttribute(AbstractAttribute):
         value = '%s (%s)' % (self.key, self.holder)
         return value
 
+
 UserAttributeHolder = AbstractAttributeHolderClassFactory(
     UserAttribute,
     holder_resolver=lambda self: self.user,
     defaults=htk_setting('HTK_USER_ATTRIBUTE_DEFAULTS')
 ).get_class()
+
 
 class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserMixin):
     """
@@ -364,7 +367,14 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         return is_member
 
     ##
-    # meta stuff
+    # Account, Auth, ACLs
+
+    def get_user_token_auth_token(self):
+        """Returns the token to auth/log in the `user`
+        """
+        from htk.apps.accounts.utils.auth import get_user_token_auth_token
+        token = get_user_token_auth_token(self.user)
+        return token
 
     def activate(self, email_template=None, email_subject=None, email_sender=None):
         """Activate the User if not already activated
@@ -500,6 +510,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
             # error extracting IP or saving
             rollbar.report_exc_info(request=request)
 
+
 class AbstractUserProfile(BaseAbstractUserProfile):
     share_name = models.BooleanField(default=False)
 
@@ -601,6 +612,7 @@ class AbstractUserProfile(BaseAbstractUserProfile):
         unfollow_user_url_name = htk_setting('HTK_API_USERS_UNFOLLOW_URL_NAME')
         unfollow_uri = reverse(unfollow_user_url_name, args=(encrypt_uid(self.user),))
         return unfollow_uri
+
 
 class UserEmail(models.Model):
     """A User can have multiple email addresses using this table
@@ -759,6 +771,7 @@ class UserEmail(models.Model):
         # NOTE: Be careful to not delete the wrong ones!
         UserEmail.objects.filter(email=self.email, is_confirmed=False).delete()
         return was_activated
+
 
 ####################
 # Import these last to prevent circular import

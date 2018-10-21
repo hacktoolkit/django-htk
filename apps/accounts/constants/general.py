@@ -13,5 +13,3 @@ SOCIAL_AUTHS = [
     { 'key': SOCIAL_AUTH_PROVIDER_FACEBOOK, 'name': 'Facebook' },
     { 'key': SOCIAL_AUTH_PROVIDER_TWITTER, 'name': 'Twitter' }
 ]
-
-UID_XOR = 314159265

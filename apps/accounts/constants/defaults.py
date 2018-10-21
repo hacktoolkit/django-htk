@@ -24,6 +24,14 @@ HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE = 'accounts/activation_reminder'
 HTK_ACCOUNT_ACTIVATE_UPON_REGISTRATION = False
 
 ##
+# Auth and Security
+
+HTK_USER_ID_XOR = 314159265
+
+HTK_USER_TOKEN_AUTH_ENCRYPTION_KEY = 'htk:someRandomCryptoKey'
+HTK_USER_TOKEN_AUTH_EXPIRES_MINUTES = 15
+
+##
 # Account Email Subjects
 HTK_ACCOUNT_EMAIL_SUBJECT_ACTIVATION = 'Confirm your email address, %(email)s'
 HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_CHANGED = 'Password changed on %(site_name)s'

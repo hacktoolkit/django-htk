@@ -1,13 +1,19 @@
+# Python Standard Library Imports
 import datetime
-import pytz
 import time
 
+# Third Party / PIP Imports
+import pytz
+
+# Django Imports
 from django.conf import settings
 from django.utils.timezone import is_aware
 from django.utils.timezone import is_naive
 from django.utils.dateparse import parse_datetime as django_parse_datetime
 
+# HTK Imports
 from htk.constants.time import *
+
 
 def utcnow():
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
@@ -19,20 +25,29 @@ def utcnow():
             now = fake_time
     return now
 
+
 def tznow(timezone_name='America/Los_Angeles'):
     tz = pytz.timezone(timezone_name)
     local_datetime = utcnow().astimezone(tz)
     return local_datetime
 
+
 def parse_datetime(dt_str):
     return django_parse_datetime(dt_str)
 
+
 def datetime_to_unix_time(dt):
-    """http://stackoverflow.com/questions/2775864/python-create-unix-timestamp-five-minutes-in-the-future
+    """Converts a datetime to a Unix timestamp
+
+    Essentially performs the inverse of datetime.datetime.fromtimestamp(timestamp)
+
+    http://stackoverflow.com/questions/2775864/python-create-unix-timestamp-five-minutes-in-the-future
 
     Python 3.3 can simply do `dt.timestamp()`
 
     For Python 2.7, some gymnastics required.
+
+    # TODO: for Python 3 compatibility, check hasattr(dt, 'timestamp') and that it is a method
     """
     if isinstance(dt, datetime.date):
         dt = datetime.datetime.combine(dt, datetime.datetime.min.time())
@@ -43,12 +58,19 @@ def datetime_to_unix_time(dt):
     unix_time = time.mktime(dt.timetuple())
     return unix_time
 
+
+def unix_time_to_datetime(timestamp, tzinfo=pytz.utc):
+    dt = datetime.datetime.fromtimestamp(timestamp).replace(tzinfo=tzinfo)
+    return dt
+
+
 def iso_datetime_to_unix_time(iso):
     """Converts an ISO datetime string to UNIX timestamp
     """
     dt = parse_datetime(iso)
     unix_time = datetime_to_unix_time(dt)
     return unix_time
+
 
 def iso_to_gregorian(iso_year, iso_week, iso_day):
     """
@@ -65,6 +87,7 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
     )
     gregorian = fourth_jan + delta
     return gregorian
+
 
 def is_within_hour_bounds_for_timezone(start_hour, end_hour, timezone_name='America/Los_Angeles'):
     """Determine if the local time for given `timezone_name` is currently within `start_hour` and `end_hour` bounds
@@ -88,6 +111,7 @@ def is_morning_hours_for_timezone(timezone_name='America/Los_Angeles'):
     """
     is_morning_hours = is_within_hour_bounds(MORNING_HOURS_START, MORNING_HOURS_END, timezone_name=timezone_name)
     return is_morning_hours
+
 
 def get_timezones_within_current_local_time_bounds(start, end, isoweekdays=None):
     """Get a list of all timezone names whose current local time is within `start` and `end`
