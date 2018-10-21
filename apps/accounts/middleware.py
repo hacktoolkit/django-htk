@@ -5,6 +5,7 @@ from social_django.middleware import SocialAuthExceptionMiddleware
 
 # Django Imports
 from django.contrib.auth import authenticate
+from django.contrib.auth import logout
 
 # HTK Imports
 from htk.apps.accounts.utils.auth import login_authenticated_user
