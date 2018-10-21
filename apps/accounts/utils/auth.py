@@ -19,11 +19,11 @@ from htk.utils.datetime_utils import datetime_to_unix_time
 from htk.utils.datetime_utils import unix_time_to_datetime
 
 
-def login_authenticated_user(request, authenticated_user):
+def login_authenticated_user(request, authenticated_user, backend=None):
     """Logs in an authenticated user and performs related updates
     `authenticated_user` has already been authenticated via one of the login backends
     """
-    login(request, authenticated_user)
+    login(request, authenticated_user, backend=backend)
     authenticated_user.profile.update_locale_info_by_ip_from_request(request)
 
     if htk_setting('HTK_ITERABLE_ENABLED'):

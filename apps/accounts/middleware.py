@@ -1,6 +1,39 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
 from social_django.middleware import SocialAuthExceptionMiddleware
 
+# Django Imports
+from django.contrib.auth import authenticate
+
+# HTK Imports
+from htk.apps.accounts.utils.auth import login_authenticated_user
 from htk.utils import htk_setting
+
+
+class HtkUserTokenAuthMiddleware(object):
+    """Custom Authentication Middleware to attempt logging in with a securely generated token
+
+    See:
+    - htk.apps.accounts.backends.HtkUserTokenAuthBackend
+    - htk.apps.accounts.utils.validate_user_token_auth_token
+    """
+    def process_request(self, request):
+        already_logged_in_user = request.user if hasattr(request, 'user') and request.user.is_authenticated() else None
+
+        token = request.GET.get('token', None)
+        token_user = authenticate(request=request, token=token) if token else None
+
+        if token_user:
+            if already_logged_in_user and token_user != already_logged_in_user:
+                # mismatch between logged-in user and token user
+                logout(request)
+            else:
+                login_authenticated_user(request, token_user)
+        else:
+            # no valid user found from token
+            pass
+
 
 class HtkSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
     def get_redirect_uri(self, request, exception):
