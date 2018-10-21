@@ -35,7 +35,7 @@ def login_authenticated_user(request, authenticated_user, backend=None):
             rollbar.report_exc_info()
 
 
-def get_user_token_auth_token(user):
+def get_user_token_auth_token(user, expires_minutes=None):
     """Returns the token to auth/log in the `user`
 
     Typically would want to include the generated token in an email
@@ -43,7 +43,7 @@ def get_user_token_auth_token(user):
     """
     encrypted_uid = encrypt_uid(user)
 
-    expires_minutes = htk_setting('HTK_USER_TOKEN_AUTH_EXPIRES_MINUTES')
+    expires_minutes = expires_minutes if expires_minutes else htk_setting('HTK_USER_TOKEN_AUTH_EXPIRES_MINUTES')
     expires = utcnow() + datetime.timedelta(minutes=expires_minutes)
     expires_timestamp = datetime_to_unix_time(expires)
 

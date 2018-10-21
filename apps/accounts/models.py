@@ -369,11 +369,11 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     ##
     # Account, Auth, ACLs
 
-    def get_user_token_auth_token(self):
+    def get_user_token_auth_token(self, expires_minutes=None):
         """Returns the token to auth/log in the `user`
         """
         from htk.apps.accounts.utils.auth import get_user_token_auth_token
-        token = get_user_token_auth_token(self.user)
+        token = get_user_token_auth_token(self.user, expires_minutes=expires_minutes)
         return token
 
     def activate(self, email_template=None, email_subject=None, email_sender=None):
