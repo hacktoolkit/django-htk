@@ -5,8 +5,8 @@ django-grappelli==2.5.3
 pygeoip==0.2.6
 redis==2.7.5
 reportlab==3.1.8
-requests==2.18.4
-requests-oauthlib==0.8.0
+requests==2.20.0
+requests-oauthlib==1.0.0
 rollbar==0.8.2
 stripe==1.19.0
 xhtml2pdf==0.0.6
