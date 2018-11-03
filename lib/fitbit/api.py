@@ -8,6 +8,7 @@ import rollbar
 # HTK Imports
 from htk.lib.fitbit.constants import *
 from htk.utils import refresh
+from htk.utils import utcnow
 
 
 class FitbitAPI(object):
@@ -21,16 +22,21 @@ class FitbitAPI(object):
         `client_id` OAuth2 Client Id from Fitbit App settings
         `client_secret` OAuth2 Client Secret from Fitbit App settings
         """
+        self.user = social_auth_user.user
         self.social_auth_user = social_auth_user
         self.client_id = client_id
         self.client_secret = client_secret
 
-    def get_resource_url(self, resource_type):
+    def get_resource_url(self, resource_type, resource_args=None):
         """Returns the resource URL for `resource_type`
         """
+        resource_path = FITBIT_API_RESOURCES.get(resource_type)
+        if resource_args:
+            resource_path = resource_path(*resource_args)
+
         url = '%s%s' % (
             FITBIT_API_BASE_URL,
-            FITBIT_API_RESOURCES.get(resource_type),
+            resource_path,
         )
         return url
 
@@ -60,21 +66,25 @@ class FitbitAPI(object):
         headers = _headers
         return headers
 
-    def get(self, resource_type, params, headers=None, auth_type='bearer', refresh_token=True):
+    def get(self, resource_type, resource_args=None, params=None, headers=None, auth_type='bearer', refresh_token=True):
         """Performs a Fitbit API GET request
         `auth_type` the string 'basic' or 'bearer'
         `refresh_token` if True, will refresh the OAuth token when needed
         """
-        url = self.get_resource_url(resource_type)
-        headers = self.make_headers(auth_type, headers=headers)
+        url = self.get_resource_url(resource_type, resource_args=resource_args)
+
+        if headers is None:
+            headers = self.make_headers(auth_type, headers=headers)
+
         response = requests.get(url, headers=headers, params=params)
+
         if response.status_code == 401:
             # TODO: deprecate. should proactively refresh
             if refresh_token:
                 was_refreshed = self.refresh_oauth2_token()
                 if was_refreshed:
                     # if token was successfully refreshed, repeat request
-                    response = self.get(resource_type, params, auth_type=auth_type, refresh_token=False)
+                    response = self.get(resource_type, resource_args=resource_args, params=params, headers=headers, auth_type=auth_type, refresh_token=False)
                 else:
                     pass
             else:
@@ -94,16 +104,16 @@ class FitbitAPI(object):
 
         return response
 
-    def post(self, resource_type, params, headers=None, auth_type='bearer'):
+    def post(self, resource_type, resource_args=None, params=None, headers=None, auth_type='bearer'):
         """Performs a Fitbit API POST request
         `auth_type` the string 'basic' or 'bearer'
         """
-        url = self.get_resource_url(resource_type)
+        url = self.get_resource_url(resource_type, resource_args=resource_args)
         headers = self.make_headers(auth_type, headers=headers)
         response = requests.post(url, headers=headers, params=params)
         return response
 
-    ##
+    ##################################################
     # Permissions API calls
 
     def refresh_oauth2_token(self):
@@ -142,22 +152,12 @@ class FitbitAPI(object):
             was_revoked = False
         return was_revoked
 
-    ##
+    ##################################################
     # Regular API calls
 
-    def get_devices(self):
-        """Get a list of Devices
-
-        Requires the 'settings' permission
-        https://dev.fitbit.com/docs/devices/
-        """
-        params = {}
-        response = self.get('devices', params)
-        if response.status_code == 200:
-            devices = response.json()
-        else:
-            devices = []
-        return devices
+    ##
+    # Activity
+    # https://dev.fitbit.com/build/reference/web-api/activity/
 
     def get_activity_steps_past_month(self):
         """Get Steps for past month
@@ -165,11 +165,66 @@ class FitbitAPI(object):
         Requires the 'activity' permission'
         https://dev.fitbit.com/docs/activity/
         """
-        params = {}
-        response = self.get('activity-steps-monthly', params)
+        response = self.get('activity-steps-monthly')
         if response.status_code == 200:
             activity = response.json()['activities-steps']
             activity = activity[::-1]
         else:
             activity = None
         return activity
+
+    ##
+    # Body & Weight
+    # https://dev.fitbit.com/build/reference/web-api/body/
+
+    def get_body_fat_logs_past_day(self):
+        """Get Body Fat logs for the past day
+        """
+        resource_args = (
+            utcnow().strftime('%Y-%m-%d'),
+            '1d',
+        )
+        response = self.get('fat', resource_args=resource_args)
+        if response.status_code == 200:
+            fat_logs = response.json()['fat']
+            fat_logs = fat_logs[::-1]
+        else:
+            fat_logs = None
+        return fat_logs
+
+    def get_weight_logs_past_day(self):
+        """Get Weight logs for the past day
+        """
+        resource_args = (
+            utcnow().strftime('%Y-%m-%d'),
+            '1d',
+        )
+        response = self.get('weight', resource_args=resource_args)
+        if response.status_code == 200:
+            weight_logs = response.json()['weight']
+            weight_logs = weight_logs[::-1]
+        else:
+            weight_logs = None
+        return weight_logs
+
+    def get_most_recent_weight(self):
+        weight_logs = self.get_weight_logs_past_day()
+        weight_log = weight_logs[0]
+        return weight_log
+
+    ##
+    # Devices
+    # https://dev.fitbit.com/build/reference/web-api/devices/
+
+    def get_devices(self):
+        """Get a list of Devices
+
+        Requires the 'settings' permission
+        https://dev.fitbit.com/docs/devices/
+        """
+        response = self.get('devices')
+        if response.status_code == 200:
+            devices = response.json()
+        else:
+            devices = []
+        return devices
