@@ -1,8 +1,14 @@
+# Python Standard Library Imports
 import base64
+
+# Third Party / PIP Imports
 import requests
 import rollbar
 
+# HTK Imports
 from htk.lib.fitbit.constants import *
+from htk.utils import refresh
+
 
 class FitbitAPI(object):
     """
@@ -34,6 +40,12 @@ class FitbitAPI(object):
 
         https://dev.fitbit.com/docs/basics/#language
         """
+        # refreshes token if necessary
+        if self.social_auth_user.access_token_expired():
+            from social_django.utils import load_strategy
+            access_token = self.social_auth_user.get_access_token(load_strategy())
+            self.social_auth_user = refresh(self.social_auth_user)
+
         if auth_type == 'bearer':
             auth_header = 'Bearer %s' % self.social_auth_user.extra_data['access_token']
         else:
@@ -57,6 +69,7 @@ class FitbitAPI(object):
         headers = self.make_headers(auth_type, headers=headers)
         response = requests.get(url, headers=headers, params=params)
         if response.status_code == 401:
+            # TODO: deprecate. should proactively refresh
             if refresh_token:
                 was_refreshed = self.refresh_oauth2_token()
                 if was_refreshed:
@@ -94,6 +107,7 @@ class FitbitAPI(object):
     # Permissions API calls
 
     def refresh_oauth2_token(self):
+        # TODO: deprecate
         params = {
             'grant_type' : 'refresh_token',
             'refresh_token' : self.social_auth_user.extra_data['refresh_token'],
