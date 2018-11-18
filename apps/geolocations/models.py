@@ -5,7 +5,9 @@ from htk.apps.geolocations.constants import *
 from htk.apps.geolocations.enums import DistanceUnit
 from htk.apps.geolocations.utils import get_bounding_box
 from htk.apps.geolocations.utils import get_latlng
+from htk.apps.geolocations.utils import haversine
 from htk.models.classes import HtkBaseModel
+
 
 class AbstractGeolocation(HtkBaseModel):
     latitude = models.FloatField(null=True, blank=True)
@@ -175,6 +177,18 @@ class AbstractGeolocation(HtkBaseModel):
             limit=limit
         )
         return nearby_objects
+
+    def distance_from(self, lat, lng):
+        """Calculates the distance from this AbstractGeolocation to (`lat`, `lng`)
+        """
+        distance = haversine(
+            lat,
+            self.get_latitude(),
+            lng,
+            self.get_longitude()
+        )
+        return distance
+
 
 class BaseUSZipCode(AbstractGeolocation):
     zip_code = models.CharField(max_length=10)
