@@ -117,6 +117,9 @@ class IterableAPIClient(object):
     # sends
 
     def send_triggered_email(self, email, campaign_id, data=None):
+        assert(email is not None)
+        assert(campaign_id is not None)
+
         if data is None:
             data = {}
 

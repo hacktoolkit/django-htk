@@ -1,7 +1,20 @@
 HTK_ITERABLE_API_KEY = None
 HTK_ITERABLE_ENABLED = False
 
-HTK_ITERABLE_CAMPAIGN_IDS = {}
+HTK_ITERABLE_CAMPAIGN_IDS = {
+    'triggered' : {
+        'transactional' : {
+            'account' : {
+            },
+        },
+        'notifications' : {
+            'account' : {
+            },
+        },
+        'recurring' : {
+        },
+    },
+}
 
 HTK_ITERABLE_LIST_IDS = {}
 
