@@ -113,12 +113,12 @@ def is_morning_hours_for_timezone(timezone_name='America/Los_Angeles'):
     return is_morning_hours
 
 
-def get_timezones_within_current_local_time_bounds(start, end, isoweekdays=None):
-    """Get a list of all timezone names whose current local time is within `start` and `end`
+def get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweekdays=None):
+    """Get a list of all timezone names whose current local time is within `start_hour` and `end_hour`
 
     If `isoweekdays` specified, also checks that it falls on one of the days of the week (Monday = 1, Sunday = 7)
 
-    `start` and `end` are naive times
+    `start_hour` and `end_hour` are naive times
     """
     all_timezones = pytz.all_timezones
     timezone_names = []
@@ -126,7 +126,7 @@ def get_timezones_within_current_local_time_bounds(start, end, isoweekdays=None)
     def _is_within_time_bounds(tz_name):
         tz = pytz.timezone(tz_name)
         tz_datetime = now.astimezone(tz)
-        result = start < tz_datetime.hour < end and (isoweekdays is None or now.isoweekday() in isoweekdays)
+        result = start_hour <= tz_datetime.hour < end_hour and (isoweekdays is None or now.isoweekday() in isoweekdays)
         return result
     timezone_names = filter(_is_within_time_bounds, all_timezones)
     return timezone_names
