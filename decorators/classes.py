@@ -12,6 +12,7 @@ from django.shortcuts import redirect
 from htk.decorators.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
 from htk.utils.request import get_current_request
 
+
 def deprecated(func):
     """Decorator for reporting deprecated function calls
 
@@ -40,6 +41,7 @@ def deprecated(func):
         return func(*args, **kwargs)
     return wrapped
 
+
 class restful_obj_seo_redirect(object):
     """Decorator for redirecting a RESTful object view to its SEO canonical URL
     if not already using it
@@ -65,6 +67,7 @@ class restful_obj_seo_redirect(object):
                 response = view_fn(*args, **kwargs)
             return response
         return wrapped
+
 
 def disable_for_loaddata(signal_handler):
     """Decorator that turns off signal handlers when loading fixture data.
