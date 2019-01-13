@@ -6,6 +6,9 @@ class StripeCustomerAdmin(admin.ModelAdmin):
         'stripe_id',
         'live_mode',
     )
+    list_filter = (
+        'live_mode',
+    )
     readonly_fields = (
         'id',
         'cards',
