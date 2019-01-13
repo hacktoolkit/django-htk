@@ -14,10 +14,12 @@ from htk.utils.request import get_current_request
 ##
 # general helpers
 
+
 def _initialize_stripe(live_mode=False):
     stripe.api_key = get_stripe_secret_key(live_mode=live_mode)
     stripe.api_version = htk_setting('HTK_STRIPE_API_VERSION')
     return stripe
+
 
 def get_stripe_public_key(live_mode=False):
     if not live_mode or settings.TEST or not htk_setting('HTK_STRIPE_LIVE_MODE'):
@@ -33,6 +35,7 @@ def get_stripe_secret_key(live_mode=False):
         secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_LIVE')
     return secret_key
 
+
 def get_stripe_customer_model():
     if hasattr(settings, 'HTK_STRIPE_CUSTOMER_MODEL'):
         from htk.utils.general import resolve_model_dynamically
@@ -40,6 +43,7 @@ def get_stripe_customer_model():
     else:
         StripeCustomerModel = None
     return StripeCustomerModel
+
 
 def get_stripe_customer_model_instance(customer_id, live_mode=False):
     """Gets the StripeCustomerModel object for `customer_id` if available
@@ -54,6 +58,7 @@ def get_stripe_customer_model_instance(customer_id, live_mode=False):
         customer = None
     return customer
 
+
 def safe_stripe_call(func, *args, **kwargs):
     """Wrapper function for calling Stripe API
 
@@ -63,7 +68,7 @@ def safe_stripe_call(func, *args, **kwargs):
     result = None
     try:
         result = func(*args, **kwargs)
-    except stripe.error.CardError, e:
+    except stripe.error.CardError as e:
         # Since it's a decline, stripe.error.CardError will be caught
         #body = e.json_body
         #err  = body['error']
@@ -76,32 +81,34 @@ def safe_stripe_call(func, *args, **kwargs):
         #print "Message is: %s" % err.get('message')
         request = get_current_request()
         rollbar.report_exc_info(request=request)
-    except stripe.error.InvalidRequestError, e:
+    except stripe.error.InvalidRequestError as e:
         # Invalid parameters were supplied to Stripe's API
         request = get_current_request()
         rollbar.report_exc_info(request=request)
-    except stripe.error.AuthenticationError, e:
+    except stripe.error.AuthenticationError as e:
         # Authentication with Stripe's API failed
         # (maybe you changed API keys recently)
         request = get_current_request()
         rollbar.report_exc_info(request=request)
-    except stripe.error.APIConnectionError, e:
+    except stripe.error.APIConnectionError as e:
         # Network communication with Stripe failed
         request = get_current_request()
         rollbar.report_exc_info(request=request)
-    except stripe.error.StripeError, e:
+    except stripe.error.StripeError as e:
         # Display a very generic error to the user, and maybe send
         # yourself an email
         request = get_current_request()
         rollbar.report_exc_info(request=request)
-    except Exception, e:
+    except Exception as e:
         # Something else happened, completely unrelated to Stripe
         request = get_current_request()
         rollbar.report_exc_info(request=request)
     return result
 
+
 ##
 # Stripe API
+
 
 def create_token(card_dict, live_mode=False):
     _initialize_stripe(live_mode=live_mode)
@@ -112,6 +119,7 @@ def create_token(card_dict, live_mode=False):
         }
     )
     return token
+
 
 def charge_card(card, amount, description='', live_mode=False):
     """Charges a card, one time
@@ -133,6 +141,7 @@ def charge_card(card, amount, description='', live_mode=False):
         }
     )
     return charge
+
 
 def create_customer(card=None, email=None, description=''):
     """Create a Customer
@@ -169,8 +178,10 @@ def create_customer(card=None, email=None, description=''):
         customer = None
     return customer, stripe_customer
 
+
 ##
 # events and webhooks
+
 
 def retrieve_event(event_id, live_mode=False):
     """Retrieve the Stripe event by `event_id`
@@ -189,6 +200,7 @@ def retrieve_event(event_id, live_mode=False):
     )
     return event
 
+
 def get_event_type(event):
     """Gets the event type
 
@@ -199,6 +211,7 @@ def get_event_type(event):
     else:
         event_type = event.type
     return event_type
+
 
 def get_event_handler(event):
     """Gets the event handler for a Stripe webhook event, if available
@@ -213,6 +226,7 @@ def get_event_handler(event):
         event_handler = None
     return event_handler
 
+
 def handle_event(event, request=None):
     """Handles a Stripe webhook event
 
@@ -226,6 +240,7 @@ def handle_event(event, request=None):
         log_event(event, request=request)
     else:
         pass
+
 
 def log_event(event, request=None, log_level='info', message=None):
     """Log the Stripe event `event`
@@ -242,6 +257,7 @@ def log_event(event, request=None, log_level='info', message=None):
     else:
         # do nothing
         pass
+
 
 def _log_event_rollbar(event, request=None, log_level='info', message=None):
     """Log the Stripe event `event` to Rollbar
