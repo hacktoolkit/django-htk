@@ -10,10 +10,10 @@ class HtkCompanyUserMixin(object):
         """Determines whether this User is a company officer
 
         Officer list is in HTK_COMPANY_OFFICER_EMAILS
-        User.is_staff=True is also considered a company officer
+        (User.is_staff and User.is_superuser)=True is also considered a company officer
         """
         is_officer = False
-        if self.user.is_staff:
+        if self.user.is_staff and self.user.is_superuser:
             is_officer = True
         else:
             from htk.admintools.utils import get_company_officers_id_email_map
@@ -31,7 +31,7 @@ class HtkCompanyUserMixin(object):
         User.is_staff=True is also considered a company employee
         """
         is_employee = False
-        if self.user.is_staff or self.is_company_officer:
+        if (self.user.is_staff and self.user.is_superuser) or self.is_company_officer:
             is_employee = True
         else:
             from htk.admintools.utils import get_company_employees_id_email_map
