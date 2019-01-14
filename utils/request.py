@@ -1,12 +1,20 @@
+# Python Standard Library Imports
 import re
 
+# Third Party / PIP Imports
+
+# Django Imports
+
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils.constants import *
+
 
 def get_current_request():
     from htk.middleware.classes import GlobalRequestMiddleware
     request = GlobalRequestMiddleware.get_current_request()
     return request
+
 
 def extract_request_ip(request):
     # copied from django_ratchet.middleware.py
@@ -20,6 +28,7 @@ def extract_request_ip(request):
     if real_ip:
         return real_ip
     return request.environ['REMOTE_ADDR']
+
 
 def get_request_metadata(request):
     path = request.path
@@ -42,12 +51,14 @@ def get_request_metadata(request):
     }
     return request_metadata
 
+
 def get_custom_http_headers(request):
     custom_http_headers = []
     for header_name in request.META.keys():
         if re.match(r'^HTTP', header_name) and header_name not in REQUEST_HTTP_HEADERS_STANDARD:
             custom_http_headers.append(header_name)
     return custom_http_headers
+
 
 def build_dict_from_request(request):
     """Build a dictionary from `request` that can be serialized to JSON
@@ -66,6 +77,7 @@ def build_dict_from_request(request):
     }
     return obj
 
+
 def is_domain_meta_view(request):
     """Determines whether the request is for a domain meta view
 
@@ -78,6 +90,7 @@ def is_domain_meta_view(request):
     else:
         pass
     return False
+
 
 def is_allowed_host(host):
     """Determines whether this `host` is explicitly allowed

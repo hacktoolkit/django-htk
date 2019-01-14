@@ -1,14 +1,21 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
 import rollbar
 
+# Django Imports
 from django.apps import AppConfig
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 
+# HTK Imports
 from htk.decorators.classes import disable_for_loaddata
 from htk.utils import htk_setting
 
+
 ################################################################################
 # signals and signal handlers
+
 
 @disable_for_loaddata
 def create_user_profile(sender, instance, created, **kwargs):
@@ -41,6 +48,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             except:
                 rollbar.report_exc_info()
 
+
 def pre_delete_user(sender, instance, using, **kwargs):
     user = instance
     if htk_setting('HTK_ITERABLE_ENABLED'):
@@ -53,6 +61,7 @@ def pre_delete_user(sender, instance, using, **kwargs):
         except:
             rollbar.report_exc_info()
 
+
 @disable_for_loaddata
 def process_user_email_association(sender, instance, created, **kwargs):
     """signal handler for UserEmail post-save
@@ -62,6 +71,7 @@ def process_user_email_association(sender, instance, created, **kwargs):
         user = user_email.user
         email = user_email.email
         #associate_invitations(user, email)
+
 
 class HtkAccountsAppConfig(AppConfig):
     name = 'htk.apps.accounts'
