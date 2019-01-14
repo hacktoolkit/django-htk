@@ -1,8 +1,15 @@
+# Python Standard Library Imports
 import sys
 
 from importlib import import_module
 
+# Third Party / PIP Imports
+
+# Django Imports
+
+# HTK Imports
 from htk.utils.cache_descriptors import memoized
+
 
 def htk_setting(key, default=None):
     from django.conf import settings
@@ -17,6 +24,7 @@ def htk_setting(key, default=None):
         value = None
     return value
 
+
 def get_module_name_parts(module_str):
     """Gets the name parts of a module string
     `module_str` in the form of module.submodule.method or module.submodule.class
@@ -30,6 +38,7 @@ def get_module_name_parts(module_str):
         values = (None, None,)
     return values
 
+
 @memoized
 def resolve_method_dynamically(module_str):
     """Returns the method for a module
@@ -42,6 +51,7 @@ def resolve_method_dynamically(module_str):
         method = None
     return method
 
+
 def _get_model_fn():
     try:
         from django.apps import apps
@@ -49,6 +59,7 @@ def _get_model_fn():
     except:
         from django.db.models.loading import get_model
     return get_model
+
 
 def strtobool_safe(value):
     """Returns a `bool` based on `value`
@@ -63,6 +74,7 @@ def strtobool_safe(value):
     except:
         result = False
     return result
+
 
 @memoized
 def resolve_model_dynamically(module_str):

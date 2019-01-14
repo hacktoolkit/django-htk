@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import signals
 
 # HTK Imports
+from htk.apps.sites.utils import get_site_name
 from htk.decorators.classes import disable_for_loaddata
 from htk.utils import htk_setting
 
@@ -31,7 +32,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             try:
                 from htk.utils.notifications import slack_notify
                 slack_notify('A new user has registered on the site %s: *%s <%s>*' % (
-                    htk_setting('HTK_SITE_NAME'),
+                    get_site_name(),
                     user.profile.get_display_name(),
                     user.email,
                 ))
