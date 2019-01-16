@@ -1,6 +1,12 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
+
+# Django Imports
 from django.db import models
 from django.utils.safestring import mark_safe
 
+# HTK Imports
 from htk.apps.geolocations.constants import *
 from htk.apps.geolocations.enums import DistanceUnit
 from htk.apps.geolocations.utils import get_bounding_box
@@ -26,6 +32,8 @@ class AbstractGeolocation(HtkBaseModel):
 
     def has_latlng(self):
         """Determines whether this object has a latitude and longitude
+
+        NOTE: Do not cache this, as we may (re-)invoke `self.geocode()` within the same session
         """
         result = self.latitude is not None and self.longitude is not None
         return result
