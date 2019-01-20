@@ -166,9 +166,9 @@ def obfuscate_mailto(value, text=False):
 # Oembed
 
 @register.filter(is_safe=True)
-def oembed(value):
+def oembed(value, autoplay=False):
     from htk.lib.oembed.utils import get_oembed_html
-    html = get_oembed_html(value)
+    html = get_oembed_html(value, autoplay=autoplay)
     html = mark_safe(html)
     return html
 
