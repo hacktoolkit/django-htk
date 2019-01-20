@@ -26,7 +26,7 @@ from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
 from htk.forms.utils import set_input_attrs
 from htk.utils import htk_setting
 from htk.utils import utcnow
-from htk.view_helpers import render_to_response_custom as _r
+from htk.view_helpers import render_custom as _r
 from htk.view_helpers import wrap_data
 
 ################################################################################
@@ -71,7 +71,7 @@ def login_view(
         response = redirect(next_uri)
     else:
         data['auth_form'] = auth_form
-        response = renderer(template, data)
+        response = renderer(request, template, data=data)
 
     return response
 
@@ -126,7 +126,7 @@ def register_social_email(
             response = redirect_to_social_auth_complete(request)
     else:
         data['email_form'] = email_form
-        response = renderer(template, data)
+        response = renderer(request, template, data=data)
     return response
 
 def register_social_login(
@@ -168,7 +168,7 @@ def register_social_login(
         response = redirect_to_social_auth_complete(request)
     else:
         data['auth_form'] = auth_form
-        response = renderer(template, data)
+        response = renderer(request, template, data=data)
     return response
 
 def register_social_already_linked(
@@ -184,7 +184,7 @@ def register_social_already_linked(
 
     email = request.session.get(SOCIAL_REGISTRATION_SETTING_EMAIL)
     data['email'] = email
-    response = renderer(template, data)
+    response = renderer(request, template, data=data)
     return response
 
 def register(
@@ -238,7 +238,7 @@ def register(
     if success:
         response = redirect(reverse(success_url_name))
     else:
-        response = renderer(template, data)
+        response = renderer(request, template, data=data)
     return response
 
 def register_done(
@@ -250,7 +250,7 @@ def register_done(
     if data is None:
         data = wrap_data(request)
 
-    response = renderer(template, data)
+    response = renderer(request, template, data=data)
     return response
 
 def resend_confirmation(
@@ -293,7 +293,7 @@ def resend_confirmation(
     if 'input_attrs' in data:
         set_input_attrs(resend_confirmation_form, attrs=data['input_attrs'])
     data['resend_confirmation_form'] = resend_confirmation_form
-    response = renderer(template, data)
+    response = renderer(request, template, data=data)
     return response
 
 @require_GET
@@ -329,7 +329,7 @@ def confirm_email(
         data['was_activated'] = was_activated
         data['success'] = True
 
-    response = renderer(template, data)
+    response = renderer(request, template, data=data)
     return response
 
 ########################################################################
@@ -365,11 +365,11 @@ def forgot_password(
             for error in form.non_field_errors():
                 data['errors'].append(error)
             data['form'] = form
-            response = renderer(template, data)
+            response = renderer(request, template, data=data)
     else:
         form = PasswordResetFormHtmlEmail()
         data['form'] = form
-        response = renderer(template, data)
+        response = renderer(request, template, data=data)
     return response
 
 def password_reset_done(
@@ -381,7 +381,7 @@ def password_reset_done(
     if data is None:
         data = wrap_data(request)
 
-    response = renderer(template, data)
+    response = renderer(request, template, data=data)
     return response
 
 # Doesn't need csrf_protect since no one can guess the URL
@@ -440,7 +440,7 @@ def reset_password(
     if success:
         response = redirect(reverse(redirect_url_name))
     else:
-        response = renderer(template, data)
+        response = renderer(request, template, data=data)
     return response
 
 def password_reset_success(
@@ -452,5 +452,5 @@ def password_reset_success(
     if data is None:
         data = wrap_data(request)
 
-    response = renderer(template, data)
+    response = renderer(request, template, data=data)
     return response

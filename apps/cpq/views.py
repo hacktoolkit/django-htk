@@ -1,8 +1,14 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
+
+# Django Imports
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+# HTK Imports
 from htk.api.utils import json_response_error
 from htk.api.utils import json_response_okay
 from htk.apps.cpq.decorators import cpq_admin_required
@@ -11,8 +17,8 @@ from htk.lib.stripe_lib.utils import get_stripe_public_key
 from htk.utils import htk_setting
 from htk.utils.templates import get_renderer
 from htk.utils.templates import get_template_context_generator
-from htk.view_helpers import render_to_response_custom as _r
 from htk.view_helpers import wrap_data as htk_wrap_data
+
 
 def index(request):
     data = htk_wrap_data(request)
@@ -23,8 +29,10 @@ def index(request):
         response = redirect('index')
     return response
 
+
 ##
 # public views
+
 
 def cpq_view(request, cpq_code, cpq_type, template_name):
     """Renders an invoice, quote, or group quote
@@ -66,25 +74,30 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
         response = renderer(template_name, data)
     return response
 
+
 def groupquote(request, quote_code):
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_GROUP_QUOTE')
     response = cpq_view(request, quote_code, CPQType.GROUP_QUOTE, template_name)
     return response
+
 
 def groupquote_all(request, quote_code):
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_GROUP_QUOTE_ALL')
     response = cpq_view(request, quote_code, CPQType.GROUP_QUOTE, template_name)
     return response
 
+
 def invoice(request, invoice_code):
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_INVOICE')
     response = cpq_view(request, invoice_code, CPQType.INVOICE, template_name)
     return response
 
+
 def quote(request, quote_code):
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_QUOTE')
     response = cpq_view(request, quote_code, CPQType.QUOTE, template_name)
     return response
+
 
 @require_POST
 def cpq_pay(request, cpq_code, cpq_type):
@@ -112,9 +125,11 @@ def cpq_pay(request, cpq_code, cpq_type):
         response = json_response_error()
     return response
 
+
 @require_POST
 def quote_pay(request, quote_code):
     return cpq_pay(request, quote_code, CPQType.QUOTE)
+
 
 ##
 # admin views
@@ -133,6 +148,7 @@ def dashboard(request):
     response = renderer(template_name, data)
     return response
 
+
 @cpq_admin_required
 def receivables(request, year=None):
     renderer = get_renderer()
@@ -148,8 +164,9 @@ def receivables(request, year=None):
             data['receivables'] = receivables
             data['total'] = sum([invoice.get_total() for invoice in receivables])
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_RECEIVABLES')
-    response = renderer(template_name, data)
+    response = renderer(request, template_name, data=data)
     return response
+
 
 @cpq_admin_required
 def import_customers(request):
@@ -174,5 +191,5 @@ def import_customers(request):
     data['import_customers_form'] = import_customers_form
     data['success'] = success
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_IMPORT_CUSTOMERS')
-    response = renderer(template_name, data)
+    response = renderer(request, template_name, data=data)
     return response
