@@ -1,6 +1,12 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
+
+# Django Imports
 from django.conf import settings
 from django.db import models
 
+# HTK Imports
 from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.apps.organizations.enums import OrganizationTeamMemberRoles
 from htk.apps.organizations.utils import get_organization_member_role_choices
@@ -9,6 +15,7 @@ from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
 from htk.models import HtkBaseModel
 from htk.utils import htk_setting
+
 
 class OrganizationAttribute(AbstractAttribute):
     holder = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='attributes')
@@ -24,10 +31,12 @@ class OrganizationAttribute(AbstractAttribute):
         value = '%s (%s)' % (self.key, self.holder)
         return value
 
+
 OrganizationAttributeHolder = AbstractAttributeHolderClassFactory(
     OrganizationAttribute,
     holder_resolver=lambda self: self
 ).get_class()
+
 
 class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
     name = models.CharField(max_length=128)
@@ -49,7 +58,7 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
             'handle' : self.handle,
         })
         return value
- 
+
     ##
     # Accessors
 
@@ -92,6 +101,7 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
         )
         return self._has_member_with_role(user, roles=roles)
 
+
 class BaseAbstractOrganizationMember(HtkBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organizations')
     organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='members')
@@ -101,6 +111,7 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
     class Meta:
         abstract = True
         verbose_name = 'Organization Member'
+
 
 class BaseAbstractOrganizationInvitation(HtkBaseModel):
     organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='invitations')
@@ -114,6 +125,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
         abstract = True
         verbose_name = 'Organization Invitation'
 
+
 class BaseAbstractOrganizationTeam(HtkBaseModel):
     name = models.CharField(max_length=128)
     organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='teams')
@@ -126,6 +138,7 @@ class BaseAbstractOrganizationTeam(HtkBaseModel):
         value = '%s (%s)' % (self.name, self.organization.name,)
         return value
 
+
 class BaseAbstractOrganizationTeamMember(HtkBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organization_teams')
     team = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MODEL'), related_name='members')
@@ -135,3 +148,34 @@ class BaseAbstractOrganizationTeamMember(HtkBaseModel):
         abstract = True
         unique_together = ('user', 'team',)
         verbose_name = 'Organization Team Member'
+
+    def __unicode__(self):
+        value = '%s - %s' % (self.user, self.team.__unicode__(),)
+        return value
+
+
+class BaseAbstractOrganizationTeamPosition(HtkBaseModel):
+    name = models.CharField(max_length=128)
+    team = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MODEL'), related_name='positions')
+
+    class Meta:
+        abstract = True
+        unique_together = ('name', 'team',)
+        verbose_name = 'Organization Team Position'
+
+    def __unicode__(self):
+        value = '%s - %s' % (self.name, self.team.__unicode__(),)
+        return value
+
+
+class BaseAbstractOrganizationTeamMemberPosition(HtkBaseModel):
+    member = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_MODEL'), related_name='positions')
+    position = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_POSITION_MODEL'), related_name='team_members')
+
+    class Meta:
+        abstract = True
+        verbose_name = 'Organization Team Member Position'
+
+    def __unicode__(self):
+        value = '%s - %s' % (self.position.name, self.member.__unicode__(),)
+        return value
