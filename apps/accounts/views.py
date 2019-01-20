@@ -126,7 +126,7 @@ def register_social_email(
             response = redirect_to_social_auth_complete(request)
     else:
         data['email_form'] = email_form
-        response = _r(template, data)
+        response = renderer(template, data)
     return response
 
 def register_social_login(
@@ -198,7 +198,7 @@ def register(
     template='account/register.html',
     email_template=None,
     email_subject=None,
-    email_sender=None,    
+    email_sender=None,
     renderer=_r
 ):
     if data is None:
@@ -259,7 +259,7 @@ def resend_confirmation(
     template='account/resend_confirmation.html',
     email_template=None,
     email_subject=None,
-    email_sender=None,    
+    email_sender=None,
     renderer=_r
 ):
     if data is None:
