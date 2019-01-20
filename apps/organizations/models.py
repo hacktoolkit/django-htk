@@ -138,6 +138,19 @@ class BaseAbstractOrganizationTeam(HtkBaseModel):
         value = '%s (%s)' % (self.name, self.organization.name,)
         return value
 
+    ##
+    # Accessors
+
+    def get_members(self):
+        sort_order = htk_setting('HTK_ORGANIZATION_TEAM_MEMBERS_SORT_ORDER')
+        members = self.members.filter(
+            #active=True, # TODO: exclude users that are not active at the organization level
+            user__is_active=True
+        ).order_by(
+            *sort_order
+        )
+        return members
+
 
 class BaseAbstractOrganizationTeamMember(HtkBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organization_teams')

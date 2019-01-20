@@ -11,3 +11,9 @@ HTK_ORGANIZATION_MEMBERS_SORT_ORDER = (
     'user__last_name',
     'user__username',
 )
+
+HTK_ORGANIZATION_TEAM_MEMBERS_SORT_ORDER = (
+    'user__first_name',
+    'user__last_name',
+    'user__username',
+)
