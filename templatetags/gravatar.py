@@ -11,8 +11,10 @@ from htk.lib.gravatar.utils import get_gravatar_hash
 # http://en.gravatar.com/site/implement/images/
 GRAVATAR_URL_PREFIX = getattr(settings, 'GRAVATAR_URL_PREFIX', 'http://www.gravatar.com')
 GRAVATAR_DEFAULT_IMAGE = getattr(settings, 'GRAVATAR_DEFAULT_IMAGE', 'mm')
+GRAVATAR_DEFAULT_SIZE = 80
 
 register = template.Library()
+
 
 def get_user(user):
     UserModel = get_user_model()
@@ -25,10 +27,15 @@ def get_user(user):
     return user
 
 @register.simple_tag
-def gravatar_for_email(email, size=80):
+def gravatar_for_email(email, size=GRAVATAR_DEFAULT_SIZE):
     """
     https://en.gravatar.com/site/implement/images/
     """
+    try:
+        size = int(size)
+    except ValueError:
+        size = GRAVATAR_DEFAULT_SIZE
+
     url = '%s/avatar/%s?' % (
         GRAVATAR_URL_PREFIX,
         get_gravatar_hash(email),
@@ -39,17 +46,16 @@ def gravatar_for_email(email, size=80):
             'default': GRAVATAR_DEFAULT_IMAGE,
         }
     )
-    url = escape(url)
     return url
 
 @register.simple_tag
-def gravatar_for_user(user, size=80):
+def gravatar_for_user(user, size=GRAVATAR_DEFAULT_SIZE):
     user = get_user(user)
     url = gravatar_for_email(user.email, size=size)
     return url
 
 @register.simple_tag
-def gravatar_img_for_email(email, size=80):
+def gravatar_img_for_email(email, size=GRAVATAR_DEFAULT_SIZE):
     url = gravatar_for_email(email, size)
     img = '<img src="%s" height="%s" width="%s" />' % (
         escape(url),
@@ -59,7 +65,7 @@ def gravatar_img_for_email(email, size=80):
     return img
 
 @register.simple_tag
-def gravatar_img_for_user(user, size=80):
+def gravatar_img_for_user(user, size=GRAVATAR_DEFAULT_SIZE):
     user = get_user(user)
     url = gravatar_for_user(user, size=size)
     img = '<img src="%s" alt="Gravatar for %s" height="%s" width="%s" />' % (
@@ -72,7 +78,7 @@ def gravatar_img_for_user(user, size=80):
     return img
 
 @register.simple_tag
-def gravatar(user, size=80):
+def gravatar(user, size=GRAVATAR_DEFAULT_SIZE):
     # backward compatibility
     img = gravatar_img_for_user(user, size=size)
     return img
