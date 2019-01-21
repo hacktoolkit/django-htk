@@ -1,4 +1,5 @@
 import datetime
+import json
 import re
 import urllib
 
@@ -18,6 +19,7 @@ def field_clsname(field):
     clsname = field.field.widget.__class__.__name__
     return clsname
 
+
 @register.filter(is_safe=True)
 def label_with_classes(value, arg):
     attrs = {
@@ -26,6 +28,7 @@ def label_with_classes(value, arg):
     }
     html = value.label_tag(attrs=attrs)
     return html
+
 
 @register.filter(is_safe=True)
 def react_field(field):
@@ -37,7 +40,9 @@ def react_field(field):
     html = mark_safe(html)
     return html
 
+
 # Dictionary Utilities
+
 
 @register.filter()
 def get_item(dictionary, key):
@@ -46,10 +51,12 @@ def get_item(dictionary, key):
 
 # String Utilities
 
+
 @register.filter(is_safe=True)
 def concat(value, arg):
     result = str(value) + str(arg)
     return result
+
 
 @register.filter()
 def zeropad(value, num_digits):
@@ -58,6 +65,7 @@ def zeropad(value, num_digits):
     padded = str(value).zfill(num_digits)
     return padded
 
+
 @register.filter(is_safe=True)
 def markdownify(value):
     """Converts string to markdown
@@ -65,6 +73,7 @@ def markdownify(value):
     import markdown
     html = markdown.markdown(value)
     return html
+
 
 @register.filter()
 def atob(value):
@@ -75,6 +84,7 @@ def atob(value):
     value = base64.b64decode(value)
     return value
 
+
 @register.filter()
 def btoa(value):
     """Base64 encode
@@ -84,27 +94,34 @@ def btoa(value):
     value = base64.b64encode(value)
     return value
 
+
 # Maths
+
 
 @register.filter()
 def int_divide(value, arg):
     return int(value) / int(arg)
 
+
 @register.filter()
 def float_divide(value, arg):
     return 1.0 * int(value) / int(arg)
+
 
 @register.filter()
 def make_range(value):
     return xrange(value)
 
+
 # Formatters
+
 
 @register.filter()
 def currency(value):
     from decimal import Decimal
     value = Decimal(value).quantize(Decimal('0.01'))
     return value
+
 
 @register.filter()
 def currency_symbol(value, symbol):
@@ -117,6 +134,7 @@ def currency_symbol(value, symbol):
     result = '%s%s%s' % (sign, symbol, abs_value,)
     return result
 
+
 @register.filter()
 def timestamp(value):
     try:
@@ -124,6 +142,7 @@ def timestamp(value):
     except AttributeError:
         formatted = ''
     return formatted
+
 
 @register.filter()
 def phonenumber(value, country='US'):
@@ -136,6 +155,7 @@ def phonenumber(value, country='US'):
         formatted = value
     return formatted
 
+
 @register.filter(is_safe=True)
 def obfuscate(value):
     """Obfuscates a string
@@ -143,6 +163,7 @@ def obfuscate(value):
     from htk.utils.obfuscate import html_obfuscate_string
     result = html_obfuscate_string(value)
     return result
+
 
 @register.filter(is_safe=True)
 def obfuscate_mailto(value, text=False):
@@ -163,7 +184,9 @@ def obfuscate_mailto(value, text=False):
     )
     return result
 
+
 # Oembed
+
 
 @register.filter(is_safe=True)
 def oembed(value, autoplay=False):
@@ -172,14 +195,24 @@ def oembed(value, autoplay=False):
     html = mark_safe(html)
     return html
 
+
 # Javascript-related
+
 
 @register.filter()
 def jsbool(value):
     js_value = 'true' if bool(value) else 'false'
     return js_value
 
+
+@register.filter()
+def jsondumps(value):
+    js_value = mark_safe(json.dumps(value))
+    return js_value
+
+
 # Requests
+
 
 @register.filter()
 def http_header(value):
@@ -193,8 +226,10 @@ def http_header(value):
     formatted = '-'.join(header_parts)
     return formatted
 
+
 ##################################################
 # Tags
+
 
 @register.simple_tag(takes_context=True)
 def get_django_setting(context, key):
@@ -206,11 +241,13 @@ def get_django_setting(context, key):
         context[key] = value
     return ''
 
+
 @register.simple_tag()
 def htk_setting(key):
     from htk.utils import htk_setting as _htk_setting
     value = _htk_setting(key)
     return value
+
 
 @register.simple_tag()
 def get_request_duration():
@@ -219,8 +256,10 @@ def get_request_duration():
     duration = timer.duration()
     return duration
 
+
 ##
 # Load Assets
+
 
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base, media=None):
@@ -236,6 +275,7 @@ def lesscss(context, css_file_path_base, media=None):
     html = '<link type="text/css" rel="%(css_rel)s" href="%(css_file_path_base)s.%(css_ext)s" %(media)s/>' % values
     html = mark_safe(html)
     return html
+
 
 @register.simple_tag(takes_context=True)
 def loadjs(context, js_file_path, jsx=False):
@@ -255,13 +295,16 @@ def loadjs(context, js_file_path, jsx=False):
     html = mark_safe(html)
     return html
 
+
 @register.simple_tag(takes_context=True)
 def loadjsx(context, js_file_path):
     html = loadjs(context, js_file_path, jsx=True)
     return html
 
+
 ##
 # ACL Tags
+
 
 @register.assignment_tag(takes_context=True)
 def is_editable_by_context_user(context, obj):
@@ -271,6 +314,7 @@ def is_editable_by_context_user(context, obj):
     else:
         is_editable = False
     return is_editable
+
 
 @register.simple_tag(takes_context=True)
 def has_permission(context, permission_key):
@@ -283,8 +327,10 @@ def has_permission(context, permission_key):
 
     return has_permission
 
+
 ##
 # Organizations
+
 
 @register.simple_tag(takes_context=True)
 def is_user_organization_owner(context, organization):
@@ -295,6 +341,7 @@ def is_user_organization_owner(context, organization):
         is_owner = False
     return is_owner
 
+
 @register.simple_tag(takes_context=True)
 def is_user_organization_admin(context, organization):
     user = context.get('user', None)
@@ -303,6 +350,7 @@ def is_user_organization_admin(context, organization):
     else:
         is_admin = False
     return is_admin
+
 
 @register.simple_tag(takes_context=True)
 def is_user_organization_member(context, organization):
@@ -313,8 +361,10 @@ def is_user_organization_member(context, organization):
         is_member = False
     return is_member
 
+
 ##
 # Util Tags
+
 
 @register.simple_tag()
 def qrcode_image_url(qr_data):
@@ -337,6 +387,7 @@ def qrcode_image_url(qr_data):
     else:
         image_url = None
     return image_url
+
 
 @register.simple_tag()
 def credit_card_icon(credit_card_brand):
