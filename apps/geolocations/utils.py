@@ -1,5 +1,11 @@
+# Python Standard Library Imports
 import math
 
+# Third Party / PIP Imports
+
+# Django Imports
+
+# HTK Imports
 from htk.apps.geolocations.cachekeys import GeocodeCache
 from htk.apps.geolocations.constants import *
 from htk.apps.geolocations.enums import DistanceUnit
@@ -8,7 +14,8 @@ from htk.utils.maths.trigonometry import deg2rad
 from htk.utils.maths.trigonometry import rad2deg
 from htk.utils.text.transformers import seo_tokenize
 
-def get_latlng(location_name):
+
+def get_latlng(location_name, refresh=False):
     """Geocodes a `location_name` and caches the result
 
     For now, uses Google maps geocode API
@@ -16,7 +23,7 @@ def get_latlng(location_name):
     prekey = seo_tokenize(location_name)
     c = GeocodeCache(prekey=prekey)
     latlng = c.get()
-    if latlng is None:
+    if latlng is None or refresh:
         latlng = get_latlng_google(location_name)
         if latlng is None:
             # an exception occurred; possibly hit Google API limit
@@ -24,6 +31,7 @@ def get_latlng(location_name):
         else:
             c.cache_store(latlng)
     return latlng
+
 
 def WGS84EarthRadius(lat):
     """Earth radius at a given latitude, according to the WGS-84 ellipsoid [m]
@@ -37,6 +45,7 @@ def WGS84EarthRadius(lat):
     Bd = WGS84_b * math.sin(lat)
     radius = math.sqrt( (An*An + Bn*Bn)/(Ad*Ad + Bd*Bd) )
     return radius
+
 
 def get_bounding_box(latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT):
     """Get the bounding box surrounding the point at given coordinates,
@@ -85,8 +94,9 @@ def get_bounding_box(latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distan
     )
     return bounding_box
 
+
 def haversine(lat1, lon1, lat2, lon2):
-    """Calculate the great circle distance between two points 
+    """Calculate the great circle distance between two points
     on the earth (specified in decimal degrees)
     From: http://stackoverflow.com/questions/15736995/how-can-i-quickly-estimate-the-distance-between-two-latitude-longitude-points
 

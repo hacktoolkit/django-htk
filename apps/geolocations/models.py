@@ -38,14 +38,14 @@ class AbstractGeolocation(HtkBaseModel):
         result = self.latitude is not None and self.longitude is not None
         return result
 
-    def geocode(self):
+    def geocode(self, refresh=False):
         """Geocodes the address
         """
         address = self.get_address_string()
         if not address:
             latitude, longitude = (None, None,)
         else:
-            latitude, longitude = get_latlng(address)
+            latitude, longitude = get_latlng(address, refresh=refresh)
             if latitude and longitude:
                 update_fields = []
                 if self.latitude != latitude:
