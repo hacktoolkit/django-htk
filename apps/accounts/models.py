@@ -68,7 +68,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     timezone = models.CharField(max_length=64, choices=[(tz, tz,) for tz in pytz.common_timezones], blank=True, default='America/Los_Angeles')
 
     # tracking
-    last_login_ip = models.CharField(max_length=15, blank=True)
+    last_login_ip = models.CharField(max_length=39, blank=True) # IPv4: 4*3 + 3; IPv6: 8*4 + 7
     # http://en.wikipedia.org/wiki/ISO_3166-2
     detected_country = models.CharField(max_length=2, blank=True)
     detected_timezone = models.CharField(max_length=36, blank=True)
