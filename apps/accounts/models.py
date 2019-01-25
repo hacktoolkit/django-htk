@@ -697,6 +697,22 @@ class UserEmail(models.Model):
             result = False
         return result
 
+    def delete_replaced_email(self):
+        """Deletes an email that was replaced
+        """
+        success = False
+        if self.is_confirmed and self.replacing is not None:
+            try:
+                old_email = UserEmail.objects.get(
+                    user=self.user,
+                    email=self.replacing
+                )
+                old_email.delete()
+                success = True
+            except UserEmail.DoesNotExist:
+                pass
+        return success
+
     def send_activation_email(self, domain=None, resend=False, template=None, subject=None, sender=None):
         """Sends an activation email
         """
@@ -764,7 +780,9 @@ class UserEmail(models.Model):
             self.save()
             if self.replacing:
                 from htk.apps.accounts.utils.notifiers import notify_user_email_update
-                notify_user_email_update(self.user, self.replacing, self.email)
+                success = notify_user_email_update(self.user, self.replacing, self.email)
+                if success:
+                    self.delete_replaced_email()
 
         was_activated = self.user.profile.activate(email_template=email_template, email_subject=email_subject, email_sender=email_sender)
         # purge all other records with same email addresses that aren't confirmed
