@@ -1,3 +1,5 @@
+# Django Imports
+from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout
@@ -11,6 +13,7 @@ from django.utils.http import base36_to_int
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 
+# HTK Imports
 from htk.apps.accounts.decorators import logout_required
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.apps.accounts.forms.auth import ResendConfirmationForm
@@ -306,14 +309,18 @@ def confirm_email(
     email_template=None,
     email_subject=None,
     email_sender=None,
+    success_url_name=None,
+    success_message=None,
     renderer=_r
 ):
     if data is None:
         data = wrap_data(request)
 
     user = request.user
-    user_email = get_object_or_404(UserEmail,
-                                   activation_key=activation_key)
+    user_email = get_object_or_404(
+        UserEmail,
+        activation_key=activation_key
+    )
     if user and user != user_email.user:
         # for a mismatched user, force logout
         logout(request)
@@ -329,7 +336,13 @@ def confirm_email(
         data['was_activated'] = was_activated
         data['success'] = True
 
-    response = renderer(request, template, data=data)
+    if data.get('success') and success_url_name is not None:
+        if success_message is not None:
+            messages.success(request, success_message)
+        response = redirect(reverse(success_url_name))
+    else:
+        response = renderer(request, template, data=data)
+
     return response
 
 ########################################################################
