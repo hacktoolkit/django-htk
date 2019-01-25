@@ -780,9 +780,8 @@ class UserEmail(models.Model):
             self.save()
             if self.replacing:
                 from htk.apps.accounts.utils.notifiers import notify_user_email_update
-                success = notify_user_email_update(self.user, self.replacing, self.email)
-                if success:
-                    self.delete_replaced_email()
+                notify_user_email_update(self.user, self.replacing, self.email)
+                self.delete_replaced_email()
 
         was_activated = self.user.profile.activate(email_template=email_template, email_subject=email_subject, email_sender=email_sender)
         # purge all other records with same email addresses that aren't confirmed
