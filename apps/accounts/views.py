@@ -197,6 +197,7 @@ def register(
     reg_form_kwargs=None,
     auth_form_model=UsernameEmailAuthenticationForm,
     success_url_name='account_register_done',
+    success_message=None,
     login_if_success=False,
     template='account/register.html',
     email_template=None,
@@ -239,6 +240,8 @@ def register(
         auth_form = auth_form_model(None)
         data['auth_form'] = auth_form
     if success:
+        if success_message is not None:
+            messages.success(request, success_message)
         response = redirect(reverse(success_url_name))
     else:
         response = renderer(request, template, data=data)
