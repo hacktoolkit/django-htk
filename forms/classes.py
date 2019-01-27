@@ -22,6 +22,8 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         self.attrs = kwargs.pop('attrs', {})
         self.use_react = kwargs.pop('use_react', False)
         self.instance = instance
+        self._save_fields_lookup = kwargs.pop('save_fields_lookup', {})
+
         super(AbstractModelInstanceUpdateForm, self).__init__(instance=instance, *args, **kwargs)
         self._set_save_fields(*args)
 
@@ -38,12 +40,11 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
-    def _set_save_fields(self, *args, **kwargs):
+    def _set_save_fields(self, *args):
         """Determine the subset of fields that we want to save
 
         Called by self.__init__()
         """
-        save_fields_lookup = kwargs.pop('save_fields_lookup', {})
         for arg in args:
             if hasattr(arg, '__iter__'):
                 # arg is an iterable
@@ -51,13 +52,13 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
                 for key, value in arg.items():
                     # only save this field if it is recognized in both this form and the model instance
                     if key in self.fields and hasattr(self.instance, key):
-                        save_fields_lookup[key] = True
+                        self._save_fields_lookup[key] = True
                     else:
                         pass
             else:
                 pass
-        self._save_fields_lookup = save_fields_lookup
-        self._save_fields = save_fields_lookup.keys()
+
+        self._save_fields = self._save_fields_lookup.keys()
 
     def save(self, commit=True, should_refresh=True, *args, **kwargs):
         """Saves this form
