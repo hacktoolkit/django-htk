@@ -20,6 +20,7 @@ if 'htk.apps.maintenance_mode' in settings.INSTALLED_APPS:
 
 if settings.TEST or settings.ENV_DEV:
     urlpatterns += (
+        url(r'^400$', views.error_view, name='error_400'),
         url(r'^403$', views.error_view, name='error_403'),
         url(r'^404$', views.error_view, name='error_404'),
         url(r'^500$', views.error_view, name='error_500'),
