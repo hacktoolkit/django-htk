@@ -18,6 +18,7 @@ HTK_ACCOUNTS_RESET_PASSWORD_URL_NAME = 'account_reset_password'
 HTK_USER_PROFILE_MODEL = None
 
 HTK_VALID_USERNAME_REGEX = r'^[A-Za-z0-9_-]{1,30}$'
+HTK_USERNAME_HELP_TEXT = 'Required. 30 characters or fewer. Letters, digits and -/_ only.'
 
 HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE = 'accounts/activation_reminder'
 

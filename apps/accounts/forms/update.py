@@ -26,6 +26,10 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
             'password',
         )
 
+        help_texts = {
+            'username' : htk_setting('HTK_USERNAME_HELP_TEXT'),
+        }
+
     def __init__(self, instance, *args, **kwargs):
         user = instance
         user_profile = user.profile
@@ -74,7 +78,7 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
         else:
             pass
         return user
-        
+
 class UserProfileUpdateForm(AbstractModelInstanceUpdateForm):
     class Meta:
         model = UserProfile
