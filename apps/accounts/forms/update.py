@@ -1,11 +1,16 @@
+# Python Standard Library Imports
 import re
+
+# Third Party / PIP Imports
 import rollbar
 
+# Django Imports
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm
 
+# HTK Imports
 from htk.apps.accounts.emails import password_changed_email
 from htk.forms import AbstractModelInstanceUpdateForm
 from htk.forms.utils import set_input_attrs
