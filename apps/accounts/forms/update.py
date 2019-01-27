@@ -19,8 +19,10 @@ from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
 from htk.utils.geo import get_us_state_abbreviation_choices
 
+
 UserModel = get_user_model()
 UserProfile = resolve_model_dynamically(settings.AUTH_PROFILE_MODULE)
+
 
 class UserUpdateForm(AbstractModelInstanceUpdateForm):
     class Meta:
@@ -84,6 +86,7 @@ class UserUpdateForm(AbstractModelInstanceUpdateForm):
             pass
         return user
 
+
 class UserProfileUpdateForm(AbstractModelInstanceUpdateForm):
     class Meta:
         model = UserProfile
@@ -94,6 +97,7 @@ class UserProfileUpdateForm(AbstractModelInstanceUpdateForm):
             'state': forms.widgets.Select(choices=get_us_state_abbreviation_choices()),
         }
 
+
 class ChangeUsernameForm(UserUpdateForm):
     class Meta:
         model = UserModel
@@ -103,6 +107,7 @@ class ChangeUsernameForm(UserUpdateForm):
         help_texts = {
             'username' : 'Usernames can only contain alphanumerics (letters (a-z) or digits (0-9)), underscores (_), and hyphens (-).',
         }
+
 
 class ChangePasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
