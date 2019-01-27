@@ -15,22 +15,29 @@ Examples:
     701 1st Avenue, Sunnyvale, CA 94089, USA
 """
 
+# Python Standard Library Imports
 import getopt
 import json
-import requests
 import sys
 import urllib
 
+# Third Party / PIP Imports
+import requests
+
+# HTK Imports
 from htk.lib.google.utils import get_server_api_key
+
 
 GOOGLE_GEOCODING_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
 #GOOGLE_GEOCODING_API_BASE_URL = 'https://maps.googleapis.com/maps/api/geocode/%(format)s?sensor=%(sensor)s&'
 #GOOGLE_GEOCODING_API_GEOCODE_URL = GOOGLE_GEOCODING_API_BASE_URL + 'address=%(address)s'
 #GOOGLE_GEOCODING_API_REVERSE_URL = GOOGLE_GEOCODING_API_BASE_URL + 'latlng=%(latlng)s'
 
+
 class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
+
 
 def main(argv = None):
     OPT_STR = 'hgr'
@@ -70,11 +77,20 @@ def main(argv = None):
             print address
         else:
             raise Usage('Incorrect arguments')
-                
+
     except Usage, err:
         print >> sys.stderr, err.msg
         print >> sys.stderr, "for help use --help"
         return 3.14159
+
+
+def _report_exc_info():
+    try:
+        import rollbar
+        rollbar.report_exc_info(extra_data=extra_data)
+    except:
+        pass
+
 
 def get_latlng(address):
     params = {
@@ -95,15 +111,18 @@ def get_latlng(address):
         except KeyError, k:
             latitude = None
             longitude = None
+            _report_exc_info(extra_data={'address' : address,})
         except IndexError:
             # address could not be geocoded
             # most likely did not have data['results'][0]
             latitude = None
             longitude = None
+            _report_exc_info(extra_data={'address' : address,})
         latlng = (latitude, longitude,)
     else:
         latlng = None
     return latlng
+
 
 def reverse_geocode(latitude, longitude):
     params = {
@@ -120,7 +139,9 @@ def reverse_geocode(latitude, longitude):
         address = location['formatted_address']
     except KeyError, k:
         address = None
+        _report_exc_info(extra_data={'latitude' : latitude, 'longitude' : longitude,})
     return address
+
 
 if __name__ == '__main__':
     main()
