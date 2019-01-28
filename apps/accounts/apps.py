@@ -5,6 +5,7 @@ import rollbar
 
 # Django Imports
 from django.apps import AppConfig
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import signals
 
@@ -28,7 +29,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfileModel = get_user_profile_model()
         profile = UserProfileModel.objects.create(user=user)
         profile.save()
-        if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+        if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
             try:
                 from htk.utils.notifications import slack_notify
                 slack_notify('A new user has registered on the site %s: *%s <%s>*' % (
@@ -41,7 +42,7 @@ def create_user_profile(sender, instance, created, **kwargs):
             except:
                 rollbar.report_exc_info()
 
-        if htk_setting('HTK_ITERABLE_ENABLED'):
+        if not settings.TEST and htk_setting('HTK_ITERABLE_ENABLED'):
             try:
                 from htk.lib.iterable.utils import get_iterable_api_client
                 itbl = get_iterable_api_client()
@@ -52,7 +53,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 def pre_delete_user(sender, instance, using, **kwargs):
     user = instance
-    if htk_setting('HTK_ITERABLE_ENABLED'):
+    if not settings.TEST and htk_setting('HTK_ITERABLE_ENABLED'):
         try:
             from htk.lib.iterable.utils import get_iterable_api_client
             itbl = get_iterable_api_client()

@@ -1,7 +1,7 @@
 import re
 
 from django.test.client import Client
-# https://docs.djangoproject.com/en/1.5/topics/testing/overview/#provided-test-case-classes
+# https://docs.djangoproject.com/en/1.11/topics/testing/overview/#provided-test-case-classes
 from django.test import TestCase
 from django.urls import NoReverseMatch
 from django.urls import reverse
@@ -173,4 +173,3 @@ class BaseWebTestCase(BaseTestCase):
 
     def test_basic(self):
         self.assertTrue(True)
-
