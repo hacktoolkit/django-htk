@@ -11,6 +11,13 @@ def get_iterable_api_client():
     return itbl
 
 
+def list_campaign_keys():
+    from htk.utils.json_utils import find_all_json_paths
+    campaign_ids = htk_setting('HTK_ITERABLE_CAMPAIGN_IDS')
+    keys = find_all_json_paths(campaign_ids)
+    return keys
+
+
 def get_campaign_id(key):
     """Get a campaign id by `key`
     """
