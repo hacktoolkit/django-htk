@@ -47,8 +47,7 @@ class BaseWebTestCase(BaseTestCase):
     def setUp(self):
         super(BaseWebTestCase, self).setUp()
         # disable prelaunch mode for unit tests
-        scaffold = TestScaffold()
-        scaffold.set_fake_prelaunch(prelaunch_mode=False, prelaunch_host=False)
+        TestScaffold.set_fake_prelaunch(prelaunch_mode=False, prelaunch_host=False)
 
     def _get_user_session(self):
         """Returns an authenticated user, its password, and authenticated client

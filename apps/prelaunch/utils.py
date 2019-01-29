@@ -20,8 +20,7 @@ def is_prelaunch_mode():
     is_prelaunch = htk_setting('HTK_PRELAUNCH_MODE', HTK_PRELAUNCH_MODE)
     if settings.TEST:
         from htk.test_scaffold.models import TestScaffold
-        scaffold = TestScaffold()
-        fake_prelaunch_mode = scaffold.get_fake_prelaunch_mode()
+        fake_prelaunch_mode = TestScaffold.get_fake_prelaunch_mode()
         if fake_prelaunch_mode is not None:
             is_prelaunch = fake_prelaunch_mode
     return is_prelaunch
@@ -36,8 +35,7 @@ def is_prelaunch_host(host):
             break
     if settings.TEST:
         from htk.test_scaffold.models import TestScaffold
-        scaffold = TestScaffold()
-        fake_prelaunch_host = scaffold.get_fake_prelaunch_host()
+        fake_prelaunch_host = TestScaffold.get_fake_prelaunch_host()
         if fake_prelaunch_host is not None:
             is_prelaunch = fake_prelaunch_host
     return is_prelaunch
