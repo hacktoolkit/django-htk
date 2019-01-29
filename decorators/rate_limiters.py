@@ -27,7 +27,15 @@ class rate_limit_instance_method(object):
     def __call__(self, instance_method):
         @wraps(instance_method)
         def wrapped(*args, **kwargs):
-            instance = instance_method.__self__
+            instance = getattr(
+                instance_method,
+                '__self__',
+                getattr(
+                    instance_method,
+                    'im_self',
+                    None
+                )
+            )
             assert(instance is not None)
 
             # set up buckets per instance method
