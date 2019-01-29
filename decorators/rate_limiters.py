@@ -27,6 +27,8 @@ class rate_limit_instance_method(object):
     def __call__(self, instance_method):
         @wraps(instance_method)
         def wrapped(*args, **kwargs):
+            # TODO: somehow this decorator turns `instance_method` into a `function`, which loses its `__self__` attribute
+            # the workaround (?) is to assume that the first argument to the function is the `instance` (which makes sense)
             instance = getattr(
                 instance_method,
                 '__self__',
@@ -35,7 +37,7 @@ class rate_limit_instance_method(object):
                     'im_self',
                     None
                 )
-            )
+            ) or args[0]
             assert(instance is not None)
 
             # set up buckets per instance method
