@@ -6,7 +6,7 @@ from htk.utils.request import get_current_request
 def slack_notify(message, level=None):
     """Send a Slack notification message
 
-    `level` is one of ['critical', 'severe', 'danger', 'warning', 'info']
+    `level` is one of ['critical', 'severe', 'danger', 'warning', 'info', 'debug',]
     """
     from htk.lib.slack.utils import webhook_call as slack_webhook_call
     try:
