@@ -62,9 +62,9 @@ class rate_limit_instance_method(object):
             bucket['last_check'] = current
             bucket['allowance'] += time_passed * (self.rate / self.per)
 
-            if bucket['allowance'] > rate:
+            if bucket['allowance'] > self.rate:
                 # throttle
-                bucket['allowance'] = rate
+                bucket['allowance'] = self.rate
 
             if bucket['allowance'] < 1.0:
                 # discard message, do nothing
