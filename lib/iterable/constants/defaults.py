@@ -5,6 +5,8 @@ HTK_ITERABLE_CAMPAIGN_IDS = {
     'triggered' : {
         'transactional' : {
             'account' : {
+                'sign_up_confirm_email' : None,
+                'confirm_email_resend' : None,
             },
         },
         'notifications' : {

@@ -746,7 +746,11 @@ class UserEmail(models.Model):
                 from htk.lib.iterable.utils import get_iterable_api_client
                 from htk.lib.iterable.utils import get_campaign_id
 
-                itbl_campaign_id = get_campaign_id('triggered.transactional.account.sign_up_confirm_email')
+                if resend:
+                    campaign_key = 'triggered.transactional.account.confirm_email_resend'
+                else:
+                    campaign_key = 'triggered.transactional.account.sign_up_confirm_email'
+                itbl_campaign_id = get_campaign_id(campaign_key)
 
                 if itbl_campaign_id:
                     should_send_activation_email = False
