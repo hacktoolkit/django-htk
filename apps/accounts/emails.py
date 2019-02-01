@@ -49,7 +49,7 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
         'first_name': user.first_name,
         'last_name': user.last_name,
         'email': email,
-        'protocol': use_https and 'https' or 'http', 
+        'protocol': use_https and 'https' or 'http',
         'domain': domain,
         'activation_uri': user_email.get_activation_uri(use_https=use_https, domain=domain),
         'site_name': htk_setting('HTK_SITE_NAME'),
@@ -77,7 +77,7 @@ def activation_email(user_email, use_https=False, domain=None, template=None, su
 def welcome_email(user, template=None, subject=None, sender=None):
     context = {
         'user': user,
-        'email': user.email,
+        'email': user.profile.confirmed_email or user.email,
         'first_name': user.first_name,
         'last_name': user.last_name,
         'site_name': htk_setting('HTK_SITE_NAME'),
@@ -101,8 +101,8 @@ def password_reset_email(user, token_generator, use_https=False, domain=None, te
     domain = domain or htk_setting('HTK_DEFAULT_DOMAIN')
     context = {
         'user': user,
-        'email': user.email,
-        'protocol': use_https and 'https' or 'http', 
+        'email': user.profile.confirmed_email or user.email,
+        'protocol': use_https and 'https' or 'http',
         'domain': domain,
         'site_name': htk_setting('HTK_SITE_NAME'),
         'reset_path': reverse(htk_setting('HTK_ACCOUNTS_RESET_PASSWORD_URL_NAME')),
@@ -125,7 +125,7 @@ def password_reset_email(user, token_generator, use_https=False, domain=None, te
 def password_changed_email(user):
     context = {
         'user': user,
-        'email': user.email,
+        'email': user.profile.confirmed_email or user.email,
         'domain': htk_setting('HTK_DEFAULT_DOMAIN'),
         'site_name': htk_setting('HTK_SITE_NAME'),
     }
@@ -133,6 +133,6 @@ def password_changed_email(user):
     send_email(
         template='accounts/password_changed',
         subject=subject,
-        to=[user.email],
+        to=[user.profile.confirmed_email or user.email],
         context=context
     )

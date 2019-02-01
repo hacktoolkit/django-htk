@@ -52,7 +52,7 @@ def gravatar_for_email(email, size=GRAVATAR_DEFAULT_SIZE):
 @register.simple_tag
 def gravatar_for_user(user, size=GRAVATAR_DEFAULT_SIZE):
     user = get_user(user)
-    url = gravatar_for_email(user.email, size=size)
+    url = gravatar_for_email(user.profile.confirmed_email or user.email, size=size)
     return url
 
 @register.simple_tag

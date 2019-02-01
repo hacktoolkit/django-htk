@@ -198,7 +198,7 @@ class HtkIterableAPIClient(IterableAPIClient):
                     'date_joined' : user.date_joined.strftime(ITERABLE_DATE_FORMAT),
                 },
             }
-            self.trigger_workflow(user.email, sign_up_workflow_id, payload=payload)
+            self.trigger_workflow(user.profile.confirmed_email or user.email, sign_up_workflow_id, payload=payload)
 
     def notify_account_activation(self, user):
         """Notify Iterable of a `user` activation event
@@ -213,7 +213,7 @@ class HtkIterableAPIClient(IterableAPIClient):
                     'date_activated' : utcnow().strftime(ITERABLE_DATE_FORMAT),
                 },
             }
-            self.trigger_workflow(user.email, account_activation_workflow_id, payload=payload)
+            self.trigger_workflow(user.profile.confirmed_email or user.email, account_activation_workflow_id, payload=payload)
 
     def notify_login(self, user):
         """Notify Iterable of a `user` login event
@@ -228,4 +228,4 @@ class HtkIterableAPIClient(IterableAPIClient):
                     'last_login' : user.last_login.strftime(ITERABLE_DATE_FORMAT),
                 },
             }
-            self.trigger_workflow(user.email, login_workflow_id, payload=payload)
+            self.trigger_workflow(user.profile.confirmed_email or user.email, login_workflow_id, payload=payload)

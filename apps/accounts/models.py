@@ -128,7 +128,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         """
         display_name = self.get_display_name()
         if display_name.strip() == '':
-            display_name = self.user.username if self.has_username_set else self.user.email
+            display_name = self.user.username if self.has_username_set else (self.user.profile.confirmed_email or self.user.email)
         return display_name
 
     def get_org_display_name(self):

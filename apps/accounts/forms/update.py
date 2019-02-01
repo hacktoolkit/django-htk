@@ -125,7 +125,7 @@ class ChangePasswordForm(SetPasswordForm):
             request = get_current_request()
             extra_data = {
                 'user' : user,
-                'email' : user.email,
+                'email' : user.profile.confirmed_email or email,
             }
             rollbar.report_exc_info(request=request, extra_data=extra_data)
         return user
