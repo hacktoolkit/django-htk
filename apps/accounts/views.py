@@ -32,8 +32,10 @@ from htk.utils import utcnow
 from htk.view_helpers import render_custom as _r
 from htk.view_helpers import wrap_data
 
+
 ################################################################################
 # login and logout
+
 
 def login_view(
     request,
@@ -78,6 +80,7 @@ def login_view(
 
     return response
 
+
 def logout_view(
     request,
     redirect_url_name='home',
@@ -88,8 +91,10 @@ def logout_view(
     response = redirect(redirect_url_name, *args)
     return response
 
+
 ################################################################################
 # registration and activation
+
 
 def register_social_email(
     request,
@@ -131,6 +136,7 @@ def register_social_email(
         data['email_form'] = email_form
         response = renderer(request, template, data=data)
     return response
+
 
 def register_social_login(
     request,
@@ -174,6 +180,7 @@ def register_social_login(
         response = renderer(request, template, data=data)
     return response
 
+
 def register_social_already_linked(
     request,
     data=None,
@@ -189,6 +196,7 @@ def register_social_already_linked(
     data['email'] = email
     response = renderer(request, template, data=data)
     return response
+
 
 def register(
     request,
@@ -247,6 +255,7 @@ def register(
         response = renderer(request, template, data=data)
     return response
 
+
 def register_done(
     request,
     data=None,
@@ -258,6 +267,7 @@ def register_done(
 
     response = renderer(request, template, data=data)
     return response
+
 
 def resend_confirmation(
     request,
@@ -301,6 +311,7 @@ def resend_confirmation(
     data['resend_confirmation_form'] = resend_confirmation_form
     response = renderer(request, template, data=data)
     return response
+
 
 @require_GET
 def confirm_email(
@@ -348,8 +359,10 @@ def confirm_email(
 
     return response
 
+
 ########################################################################
 # password reset
+
 
 def forgot_password(
     request,
@@ -388,6 +401,7 @@ def forgot_password(
         response = renderer(request, template, data=data)
     return response
 
+
 def password_reset_done(
     request,
     data=None,
@@ -399,6 +413,7 @@ def password_reset_done(
 
     response = renderer(request, template, data=data)
     return response
+
 
 # Doesn't need csrf_protect since no one can guess the URL
 @csrf_exempt
@@ -458,6 +473,7 @@ def reset_password(
     else:
         response = renderer(request, template, data=data)
     return response
+
 
 def password_reset_success(
     request,
