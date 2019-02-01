@@ -217,6 +217,26 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
             user_emails = self.user.emails.order_by('-is_confirmed', 'id')
         return user_emails
 
+    @CachedAttribute
+    def confirmed_email(self):
+        """Returns one confirmed email
+
+        If the `User`'s primary is email is confirmed, return that
+        Otherwise, return any other email that is confirmed
+        """
+        primary_email = self.get_primary_email()
+        if primary_email:
+            email = primary_email
+        else:
+            confirmed_emails = self.get_confirmed_emails()
+            if confirmed_emails.exists():
+
+                email = confirmed_emails.first().email
+            else:
+                email = None
+
+        return email
+
     def get_confirmed_emails(self):
         user = self.user
         user_emails = user.emails.filter(is_confirmed=True)
