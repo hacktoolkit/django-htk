@@ -52,6 +52,12 @@ class HtkInvitation(HtkBaseModel):
         return result
 
     ##
+    # Outbound Actions
+
+    def send(self):
+        pass
+
+    ##
     # Lifecycle Methods
 
     def connect_user(self, user):
