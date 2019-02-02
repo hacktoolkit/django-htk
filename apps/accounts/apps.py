@@ -86,9 +86,9 @@ class HtkAccountsAppConfig(AppConfig):
         from htk.apps.accounts.models import UserEmail
 
         # Upon saving a User object, create a UserProfile object if it doesn't already exist
-        signals.post_save.connect(create_user_profile, sender=UserModel)
+        signals.post_save.connect(create_user_profile, sender=UserModel, dispatch_uid='htk_create_user_profile')
         # See AUTH_PROFILE_MODULE in settings.py
 
-        signals.pre_delete.connect(pre_delete_user, sender=UserModel)
+        signals.pre_delete.connect(pre_delete_user, sender=UserModel, dispatch_uid='htk_pre_delete_user')
 
-        signals.post_save.connect(process_user_email_association, sender=UserEmail)
+        signals.post_save.connect(process_user_email_association, sender=UserEmail, dispatch_uid='htk_process_user_email_association')
