@@ -86,6 +86,7 @@ def resolve_model_dynamically(module_str):
         model = None
     return model
 
+
 def refresh(django_obj):
     refreshed = django_obj.__class__.objects.get(id=django_obj.id)
     return refreshed

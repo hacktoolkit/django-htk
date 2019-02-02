@@ -129,3 +129,31 @@ def get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweek
         return result
     timezone_names = filter(_is_within_time_bounds, all_timezones)
     return timezone_names
+
+
+def relative_time(dt1, dt2=None):
+    if dt2 is None:
+        dt2 = utcnow()
+
+    td = dt2 - dt1
+
+    result_parts = []
+
+    if td.days > 0:
+        result_parts.append('%s days' % td.days)
+
+    remaining_seconds = td.seconds
+
+    if remaining_seconds / 3600 > 1:
+        hours = remaining_seconds / 3600
+        remaining_seconds -= hours * 3600
+        result_parts.append('%s hours' % hours)
+    else:
+        hours = 0
+
+    minutes = remaining_seconds / 60
+    if minutes > 0:
+        result_parts.append('%s minutes' % minutes)
+
+    result = '%s ago' % ', '.join(result_parts)
+    return result

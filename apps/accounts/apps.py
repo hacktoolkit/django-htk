@@ -50,6 +50,11 @@ def create_user_profile(sender, instance, created, **kwargs):
             except:
                 rollbar.report_exc_info()
 
+        if htk_setting('HTK_INVITATIONS_LIFECYCLE_SIGNALS_ENABLED'):
+            from htk.apps.invitations.services import InvitationsService
+            invitations_service = InvitationsService()
+            invitations_service.process_user_created(user)
+
 
 def pre_delete_user(sender, instance, using, **kwargs):
     user = instance
@@ -70,9 +75,10 @@ def process_user_email_association(sender, instance, created, **kwargs):
     """
     user_email = instance
     if user_email.is_confirmed:
-        user = user_email.user
-        email = user_email.email
-        #associate_invitations(user, email)
+        if htk_setting('HTK_INVITATIONS_LIFECYCLE_SIGNALS_ENABLED'):
+            from htk.apps.invitations.services import InvitationsService
+            invitations_service = InvitationsService()
+            invitations_service.process_user_email_confirmation(user_email)
 
 
 class HtkAccountsAppConfig(AppConfig):
