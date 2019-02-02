@@ -55,7 +55,8 @@ class HtkInvitation(HtkBaseModel):
     # Outbound Actions
 
     def send(self):
-        pass
+        self.status = InvitationStatus.EMAIL_SENT.value
+        self.save()
 
     ##
     # Lifecycle Methods
