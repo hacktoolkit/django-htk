@@ -3,11 +3,19 @@
 Look up users by various complex logic
 """
 
-from django.contrib.auth import get_user_model
+# Python Standard Library Imports
 
+# Third Party / PIP Imports
+
+# Django Imports
+from django.contrib.auth import get_user_model
+from django.db import models
+
+# HTK Imports
 import htk.apps.accounts.filters as _filters
 from htk.utils import utcnow
 from htk.utils.datetime_utils import get_timezones_within_current_local_time_bounds
+
 
 def get_all_users(active=True):
     """Returns all users
@@ -18,12 +26,14 @@ def get_all_users(active=True):
         users = _filters.active_users(users, active=active)
     return users
 
+
 def get_inactive_users():
     """Returns all inactive users
     """
     UserModel = get_user_model()
     inactive_users = _filters.inactive_users(UserModel.objects)
     return inactive_users
+
 
 def get_users_with_attribute_value(key, value, as_bool=False, active=True):
     UserModel = get_user_model()
@@ -33,6 +43,7 @@ def get_users_with_attribute_value(key, value, as_bool=False, active=True):
     if active is not None:
         users = _filters.active_users(users, active=active)
     return users
+
 
 def get_users_currently_at_local_time(start_hour, end_hour, isoweekdays=None, active=True):
     """Returns a Queryset of Users whose current local time is within a time range
@@ -51,4 +62,14 @@ def get_users_currently_at_local_time(start_hour, end_hour, isoweekdays=None, ac
 
     if active is not None:
         users = _filters.active_users(users, active=active)
+    return users
+
+
+def get_users_with_no_confirmed_emails():
+    UserModel = get_user_model()
+
+    users = UserModel.objects.exclude(
+        models.Q(emails__is_confirmed=True)
+    )
+
     return users
