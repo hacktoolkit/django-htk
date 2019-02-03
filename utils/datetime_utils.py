@@ -155,5 +155,8 @@ def relative_time(dt1, dt2=None):
     if minutes > 0:
         result_parts.append('%s minutes' % minutes)
 
+    if len(result_parts) == 0:
+        result_parts.append('a couple seconds')
+
     result = '%s ago' % ', '.join(result_parts)
     return result
