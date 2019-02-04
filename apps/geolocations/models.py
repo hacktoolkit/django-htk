@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 # HTK Imports
 from htk.apps.geolocations.constants import *
 from htk.apps.geolocations.enums import DistanceUnit
+from htk.apps.geolocations.utils import convert_meters
 from htk.apps.geolocations.utils import get_bounding_box
 from htk.apps.geolocations.utils import get_latlng
 from htk.apps.geolocations.utils import haversine
@@ -186,15 +187,20 @@ class AbstractGeolocation(HtkBaseModel):
         )
         return nearby_objects
 
-    def distance_from(self, lat, lng):
+    def distance_from(self, lat, lng, distance_unit=DistanceUnit.METER):
         """Calculates the distance from this AbstractGeolocation to (`lat`, `lng`)
+
+        Returns the distance in `distance_unit`
         """
-        distance = haversine(
+        distance_meters = haversine(
             lat,
-            self.get_latitude(),
             lng,
+            self.get_latitude(),
             self.get_longitude()
         )
+
+        distance = convert_meters(distance_meters, distance_unit)
+
         return distance
 
 

@@ -34,7 +34,7 @@ def get_latlng(location_name, refresh=False):
 
 
 def WGS84EarthRadius(lat):
-    """Earth radius at a given latitude, according to the WGS-84 ellipsoid [m]
+    """Earth radius in meters at a given latitude, according to the WGS-84 ellipsoid [m]
 
     - http://en.wikipedia.org/wiki/Earth_radius
     - https://en.wikipedia.org/wiki/Great-circle_distance
@@ -43,8 +43,42 @@ def WGS84EarthRadius(lat):
     Bn = WGS84_b * WGS84_b * math.sin(lat)
     Ad = WGS84_a * math.cos(lat)
     Bd = WGS84_b * math.sin(lat)
-    radius = math.sqrt( (An*An + Bn*Bn)/(Ad*Ad + Bd*Bd) )
+    radius = math.sqrt( (An*An + Bn*Bn) / (Ad*Ad + Bd*Bd) )
     return radius
+
+
+def convert_distance_to_meters(distance, distance_unit):
+    """Converts `distance` in `distance_unit` to meters
+    """
+    if distance_unit == DistanceUnit.MILE:
+        distance_meters = distance * METERS_PER_MILE
+    elif distance_unit == DistanceUnit.KILOMETER:
+        distance_meters = distance * METERS_PER_KM
+    elif distance_unit == DistanceUnit.FEET:
+        distance_meters = distance * METERS_PER_FEET
+    elif distance_unit == DistanceUnit.METER:
+        distance_meters = distance
+    else:
+        raise Exception('Unknown distance unit specified: %s' % distance_unit)
+
+    return distance_meters
+
+
+def convert_meters(distance_meters, distance_unit):
+    """Converts `distance_meters` in meters to `distance_unit`
+    """
+    if distance_unit == DistanceUnit.MILE:
+        distance = distance_meters / METERS_PER_MILE
+    elif distance_unit == DistanceUnit.KILOMETER:
+        distance = distance_meters / METERS_PER_KM
+    elif distance_unit == DistanceUnit.FEET:
+        distance = distance_meters / METERS_PER_FEET
+    elif distance_unit == DistanceUnit.METER:
+        distance = distance_meters
+    else:
+        raise Exception('Unknown distance unit specified: %s' % distance_unit)
+
+    return distance
 
 
 def get_bounding_box(latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT):
@@ -66,16 +100,8 @@ def get_bounding_box(latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distan
     """
     lat = deg2rad(latitude)
     lon = deg2rad(longitude)
-    if distance_unit == DistanceUnit.MILE:
-        distance_meters = distance * KM_PER_MILE * METERS_PER_KM
-    elif distance_unit == DistanceUnit.KILOMETER:
-        distance_meters = distance * METERS_PER_KM
-    elif distance_unit == DistanceUnit.FEET:
-        distance_meters = distance / FEET_PER_MILE * KM_PER_MILE * METERS_PER_KM
-    elif distance_unit == DistanceUnit.METER:
-        distance_meters = distance
-    else:
-        raise Exception('Unknown distance unit specified: %s' % distance_unit)
+
+    distance_meters = convert_distance_to_meters(distance, distance_unit)
 
     # Radius of Earth at given latitude
     radius = WGS84EarthRadius(lat)
@@ -108,12 +134,12 @@ def haversine(lat1, lon1, lat2, lon2):
     Returns distance between two geocoordinates in meters
     """
     # convert decimal degrees to radians
-    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2,])
 
     # haversine formula
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+    a = math.sin(dlat / 2.)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2.)**2
     arclength = 2 * math.asin(math.sqrt(a))
 
     avg_lat = (lat1 + lat2) / 2.0

@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class DistanceUnit(Enum):
     MILE = 1
     KILOMETER = 2
