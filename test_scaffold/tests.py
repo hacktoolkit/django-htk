@@ -71,7 +71,7 @@ class BaseWebTestCase(BaseTestCase):
         user_email.set_primary_email()
         return (user, email, password, client,)
 
-    def _get(self, view_name, client=None, params=None, follow=False, view_args=None, view_kwargs=None, **extra):
+    def _get(self, view_name, client=None, params=None, follow=False, view_args=None, view_kwargs=None, secure=False, **extra):
         """Wrapper for performing an HTTP GET request
         """
         params = {} if params is None else params
@@ -80,7 +80,8 @@ class BaseWebTestCase(BaseTestCase):
         path = reverse(view_name, args=view_args, kwargs=view_kwargs)
         if type(client) != Client:
             client = Client()
-        response = client.get(path, data=params, follow=follow, **extra)
+
+        response = client.get(path, data=params, follow=follow, secure=secure, **extra)
         return response
 
     def _post(self, view_name, client=None, params=None, get_params=None, follow=False, view_args=None, view_kwargs=None, **extra):
@@ -131,8 +132,10 @@ class BaseWebTestCase(BaseTestCase):
         """Check that response.redirect_chain is behaving correctly
         """
         redirect_chain = response.redirect_chain
-        self.assertTrue(len(redirect_chain) > 0,
-                        '[%s] did not redirect to [%s]. %s' % (view_name, another, extra_message,))
+        self.assertTrue(
+            len(redirect_chain) > 0,
+            '[%s] did not redirect to [%s]. %s' % (view_name, another, extra_message,)
+        )
         self.assertEqual(302, redirect_chain[0][1])
 
         protocol_pattern = r'^https://' if secure else r'^http://'
@@ -143,13 +146,17 @@ class BaseWebTestCase(BaseTestCase):
             # `another` is a view name
             protocol_pattern = protocol_pattern + '%s%s'
             pattern = protocol_pattern % (TESTSERVER, reverse(another),)
-        actual = redirect_chain[0][0]
+
+        actual = redirect_chain[-1][0]
         match = re.match(pattern, actual)
-        self.assertIsNotNone(match,
-                             '[%s] redirected to [%s] instead of [%s]' %
-                             (view_name,
-                              actual,
-                              another,))
+        self.assertIsNotNone(
+            match,
+            '[%s] redirected to [%s] instead of [%s]' % (
+                view_name,
+                actual,
+                another,
+            )
+        )
 
     def _check_view_redirects_to_another(self, view_name, another, client=None, params=None, view_args=None, view_kwargs=None, method='get', secure=False):
         """Perform an HTTP request and check that the redirect_chain behaves correctly for a page that is expected to redirect
