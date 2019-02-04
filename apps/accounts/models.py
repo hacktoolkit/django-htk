@@ -243,13 +243,22 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         return user_emails
 
     def get_gravatar_hash(self):
-        primary_email = self.get_primary_email()
+        primary_email = self.get_primary_email(verified_only=False)
         if primary_email:
             from htk.lib.gravatar.utils import get_gravatar_hash
             gravatar_hash = get_gravatar_hash(primary_email)
         else:
             gravatar_hash = ''
         return gravatar_hash
+
+    def get_gravatar(self, size=80):
+        primary_email = self.get_primary_email(verified_only=False)
+        if primary_email:
+            from htk.lib.gravatar.utils import get_gravatar_for_email
+            gravatar = get_gravatar_for_email(primary_email, size=size)
+        else:
+            gravatar = ''
+        return gravatar
 
     # send emails
 
