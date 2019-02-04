@@ -140,7 +140,7 @@ class AbstractGeolocation(HtkBaseModel):
             longitude__lte=longitude_max
         )
         if limit > 0:
-            neaby_objects = nearby_objects[offset:limit]
+            nearby_objects = nearby_objects[offset:limit]
         return nearby_objects
 
     @classmethod
