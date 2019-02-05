@@ -46,9 +46,9 @@ class IterableAPIClient(object):
             pass
         else:
             extra_data = {
-                'response' : response.json()
+                'response' : response.json(),
             }
-            rollbar.report_message('Unexpected response from Iterable API GET request', extra_data=extra_data)
+            rollbar.report_message('Unexpected response from Iterable API GET request', level='info', extra_data=extra_data)
         return response
 
     def post(self, resource_type, payload=None, params=None, headers=None):
@@ -67,9 +67,9 @@ class IterableAPIClient(object):
             pass
         else:
             extra_data = {
-                'response' : response.json()
+                'response' : response.json(),
             }
-            rollbar.report_message('Unexpected response from Iterable API POST request', extra_data=extra_data)
+            rollbar.report_message('Unexpected response from Iterable API POST request', level='info', extra_data=extra_data)
         return response
 
     def delete(self, resource_type, resource_params=None, params=None, headers=None):
@@ -135,7 +135,7 @@ class IterableAPIClient(object):
     ##
     # users
 
-    def update_user_email(self, current_email, new_email):
+    def update_user_email(self, current_email, new_email, force=False, is_retry=False):
         """Updates a user's email address
         https://api.iterable.com/api/docs#!/users/updateEmail_post_1
         """
@@ -144,6 +144,22 @@ class IterableAPIClient(object):
             'newEmail' : new_email,
         }
         response = self.post('update_email', payload=payload)
+
+        if response.status_code != 200:
+            response_json = response.json()
+            code = response_json.get('code', None)
+            if code == 'EmailAlreadyExists':
+                if force and not is_retry:
+                    # delete the email, and retry the update
+                    self.delete_user(new_email)
+                    self.update_user_email(current_email, new_email, force=False, is_retry=True)
+                else:
+                    # not forcing or is retry, do nothing
+                    pass
+            else:
+                # unknown code, do nothing
+                pass
+
         return response
 
     def delete_user(self, email):
