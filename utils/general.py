@@ -6,6 +6,7 @@ from importlib import import_module
 # Third Party / PIP Imports
 
 # Django Imports
+from django.contrib import messages
 
 # HTK Imports
 from htk.utils.cache_descriptors import memoized
@@ -90,3 +91,11 @@ def resolve_model_dynamically(module_str):
 def refresh(django_obj):
     refreshed = django_obj.__class__.objects.get(id=django_obj.id)
     return refreshed
+
+
+def clear_messages(request):
+    # clear messages by iterating
+    # https://docs.djangoproject.com/en/1.11/ref/contrib/messages/#expiration-of-messages
+    storage = messages.get_messages(request)
+    for message in storage:
+        pass

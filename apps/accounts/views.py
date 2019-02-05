@@ -29,6 +29,7 @@ from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
 from htk.forms.utils import set_input_attrs
 from htk.utils import htk_setting
 from htk.utils import utcnow
+from htk.utils.general import clear_messages
 from htk.view_helpers import render_custom as _r
 from htk.view_helpers import wrap_data
 
@@ -351,6 +352,7 @@ def confirm_email(
         data['success'] = True
 
     if data.get('success') and success_url_name is not None:
+        clear_messages(request)
         if success_message is not None:
             messages.success(request, success_message)
         response = redirect(reverse(success_url_name))
