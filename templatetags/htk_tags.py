@@ -363,6 +363,34 @@ def is_user_organization_member(context, organization):
 
 
 ##
+# Geolocations
+
+@register.simple_tag()
+def distance_from(obj, lat, lng, unit='mile'):
+    from htk.apps.geolocations.enums import DistanceUnit
+    from htk.apps.geolocations.models import AbstractGeolocation
+
+    if not isinstance(obj, AbstractGeolocation) and not hasattr(obj, 'distance_from'):
+        raise Exception('Not a Geolocation object or does not have a distance_from method')
+
+    distance_unit_map = {
+        'meter' : DistanceUnit.METER,
+        'kilometer' : DistanceUnit.KILOMETER,
+        'feet' : DistanceUnit.FEET,
+        'mile' : DistanceUnit.MILE,
+    }
+
+    distance_unit = distance_unit_map.get(unit)
+
+    if distance_unit is None:
+        raise Exception('Unknown distance unit: %s' % unit)
+
+    distance = obj.distance_from(lat, lng, distance_unit=distance_unit)
+
+    return distance
+
+
+##
 # Util Tags
 
 
