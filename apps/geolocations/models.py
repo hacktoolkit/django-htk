@@ -117,7 +117,7 @@ class AbstractGeolocation(HtkBaseModel):
     # Calculations
 
     @classmethod
-    def find_near_latlng(cls, latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, offset=0, limit=0):
+    def find_near_latlng(cls, latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, extra_filters=None, offset=0, limit=0):
         """Given the geopoint pair `latitude` and `longitude`, find nearby AbstractGeolocation objects of type `cls`
 
         `distance` a float value
@@ -140,12 +140,14 @@ class AbstractGeolocation(HtkBaseModel):
             longitude__gte=longitude_min,
             longitude__lte=longitude_max
         )
+        if extra_filters is not None:
+            nearby_objects = nearby_objects.filter(**extra_filters)
         if limit > 0:
             nearby_objects = nearby_objects[offset:limit]
         return nearby_objects
 
     @classmethod
-    def find_near_location(cls, location_name, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, offset=0, limit=0):
+    def find_near_location(cls, location_name, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, extra_filters=None, offset=0, limit=0):
         """Given the geocode-able string `location_name`, find nearby AbstractGeolocation objects of type `cls`
 
         `distance` a float value
@@ -159,12 +161,13 @@ class AbstractGeolocation(HtkBaseModel):
             longitude,
             distance=distance,
             distance_unit=distance_unit,
+            extra_filters=extra_filters,
             offset=offset,
             limit=limit
         )
         return nearby_objects
 
-    def find_nearby(self, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, cls=None, offset=0, limit=0):
+    def find_nearby(self, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, cls=None, extra_filters=None, offset=0, limit=0):
         """Finds nearby AbstractGeolocation objects to this one
 
         If `cls` is specified, looks for AbstractGeolocation objects of type `cls`, otherwise this class
@@ -181,9 +184,9 @@ class AbstractGeolocation(HtkBaseModel):
             self.get_longitude(),
             distance=distance,
             distance_unit=distance_unit,
-            cls=cls,
+            extra_filters=extra_filters,
             offset=offset,
-            limit=limit
+            limit=limit,
         )
         return nearby_objects
 
