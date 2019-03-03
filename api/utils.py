@@ -29,6 +29,8 @@ class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
         elif isinstance(obj, UserModel):
             user = obj
             value = user.profile.json_encode()
+        elif hasattr(obj, 'json_encode'):
+            value = obj.json_encode()
         else:
             try:
                 value = super(HtkJSONEncoder, self).default(obj)
