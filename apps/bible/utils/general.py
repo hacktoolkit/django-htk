@@ -28,6 +28,12 @@ def get_bible_verse_model():
     return bible_verse_model
 
 
+def get_bible_passage_model():
+    model_name = htk_setting('HTK_BIBLE_PASSAGE_MODEL')
+    bible_passage_model = resolve_model_dynamically(model_name)
+    return bible_passage_model
+
+
 def lookup_bible_verse(book, chapter, verse):
     BibleVerse = get_bible_verse_model()
     try:
