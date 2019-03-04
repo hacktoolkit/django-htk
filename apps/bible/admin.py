@@ -45,3 +45,21 @@ class AbstractBibleVerseAdmin(admin.ModelAdmin):
         'chapter',
         'verse',
     )
+
+
+class AbstractBiblePassageAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'book',
+        'chapter_start',
+        'verse_start',
+        'chapter_end',
+        'verse_end',
+    )
+    readonly_fields = (
+        'book',
+        'chapter_start',
+        'verse_start',
+        'chapter_end',
+        'verse_end',
+    )
