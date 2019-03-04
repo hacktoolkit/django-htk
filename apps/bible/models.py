@@ -33,7 +33,7 @@ class AbstractBibleBook(models.Model):
 class AbstractBibleChapter(models.Model):
     """AbstractBibleChapter model
     """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'))
+    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), related_name='chapters')
     chapter = models.PositiveIntegerField()
 
     class Meta:
@@ -55,8 +55,8 @@ class AbstractBibleChapter(models.Model):
 class AbstractBibleVerse(models.Model):
     """AbstractBibleVerse model
     """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'))
-    chapter = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'))
+    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), related_name='verses')
+    chapter = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), related_name='verses')
     verse = models.PositiveIntegerField()
 
     class Meta:
