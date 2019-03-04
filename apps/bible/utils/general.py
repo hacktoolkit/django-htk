@@ -16,6 +16,12 @@ def get_bible_book_model():
     return bible_book_model
 
 
+def get_bible_chapter_model():
+    model_name = htk_setting('HTK_BIBLE_CHAPTER_MODEL')
+    bible_chapter_model = resolve_model_dynamically(model_name)
+    return bible_chapter_model
+
+
 def get_bible_verse_model():
     model_name = htk_setting('HTK_BIBLE_VERSE_MODEL')
     bible_verse_model = resolve_model_dynamically(model_name)
@@ -50,7 +56,7 @@ def resolve_bible_verse_reference(reference):
 def get_bible_chapter_data(book, chapter):
     BibleVerse = get_bible_verse_model()
     data = {
-        'num_verses' : BibleVerse.objects.filter(book=book, chapter=chapter).count(),
+        'num_verses' : BibleVerse.objects.filter(book__name=book, chapter__chapter=chapter).count(),
     }
     return data
 
