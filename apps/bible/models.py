@@ -32,6 +32,17 @@ class AbstractBibleBook(models.Model):
         value = u'%s' % self.name
         return value
 
+    @classmethod
+    def from_reference(cls, reference):
+        from htk.apps.bible.constants.aliases import BIBLE_BOOKS_ALIAS_MAPPINGS
+
+        book_name = BIBLE_BOOKS_ALIAS_MAPPINGS.get(reference, reference)
+        try:
+            book = cls.objects.get(name=book_name)
+        except cls.DoesNotExist:
+            book = None
+        return book
+
 
 class AbstractBibleChapter(models.Model):
     """AbstractBibleChapter model
@@ -160,7 +171,7 @@ class AbstractBiblePassage(models.Model):
             BibleBook = get_bible_book_model()
             BibleChapter = get_bible_chapter_model()
 
-            book = BibleBook.objects.get(name=book_name)
+            book = BibleBook.from_reference(book_name)
             chapter_start_obj = BibleChapter.objects.get(
                 book=book,
                 chapter=chapter_start
