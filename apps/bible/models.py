@@ -186,7 +186,7 @@ class AbstractBiblePassage(models.Model):
             else:
                 chapter_end_obj = None
 
-            bible_passage = cls.objects.get_or_create(
+            bible_passage, was_created = cls.objects.get_or_create(
                 book=book,
                 chapter_start=chapter_start_obj,
                 verse_start=verse_start,
