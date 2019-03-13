@@ -40,7 +40,7 @@ $(function() {
     function toggleForm() {
         var activeCookie = getActiveCookie();
         if (activeCookie) {
-            emulateUserTitle.html(`Emulating User: ${activeCookie}`);
+            emulateUserTitle.html('Emulating User: ' + activeCookie);
             emulateUserForm.hide();
             emulateUserStopButton.show();
         } else  {
