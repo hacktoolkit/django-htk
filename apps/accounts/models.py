@@ -601,7 +601,7 @@ class AbstractUserProfile(BaseAbstractUserProfile):
         c = UserFollowingCache(prekey=self.user.id)
         following = c.get()
         if following is None:
-            following = self.following.all()
+            following = list(self.following.all())
             c.cache_store(following)
         return following
 
