@@ -8,6 +8,7 @@ from htk.admintools.cachekeys import HtkCompanyEmployeesCache
 from htk.admintools.cachekeys import HtkCompanyOfficersCache
 from htk.apps.accounts.utils import get_user_by_email
 from htk.utils import htk_setting
+from htk.utils.request import get_current_request
 
 
 def get_company_officers_id_email_map():
@@ -54,6 +55,7 @@ def is_allowed_to_emulate_users(user):
             if user_profile.is_company_officer:
                 allowed = True
         except:
+            request = get_current_request()
             rollbar.report_exc_info(request=request)
     return allowed
 
