@@ -107,23 +107,35 @@ def get_latlng(address):
 
     response = requests.get(GOOGLE_GEOCODING_API_URL, params=params)
     if response.status_code == requests.codes.okay:
+        # initialize latitude, longitude to None
+        latitude = None
+        longitude = None
+
         data = json.loads(response.text)
         try:
-            location = data['results'][0]['geometry']['location']
-            latitude = location['lat']
-            longitude = location['lng']
+            #location = data['results'][0]['geometry']['location']
+            results = data.get('results', [])
+            if len(results) > 0:
+                result = results[0]
+                location = result.get('geometry', {}).get('location', None)
+                if location is None:
+                    # address could not be geocoded
+                    extra_data['error'] = 'Address could not be geocoded'
+                else:
+                    latitude = location['lat']
+                    longitude = location['lng']
+            else:
+                extra_data['error'] = 'No results found'
+                _report_exc_info(extra_data=extra_data)
+        except ValueError, e:
+            # likely to be caused by invalid JSON
+            extra_data['error'] = '%s' % e
+            _report_exc_info(extra_data=extra_data)
         except KeyError, e:
-            latitude = None
-            longitude = None
+            # likely to be caused by location missing 'lat' or 'lng'
             extra_data['error'] = '%s' % e
             _report_exc_info(extra_data=extra_data)
-        except IndexError, e:
-            # address could not be geocoded
-            # most likely did not have data['results'][0]
-            latitude = None
-            longitude = None
-            extra_data['error'] = '%s' % e
-            _report_exc_info(extra_data=extra_data)
+
         latlng = (latitude, longitude,)
     else:
         latlng = None
