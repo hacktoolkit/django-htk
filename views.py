@@ -36,7 +36,7 @@ def browser_info(request, data=None, template_name=None, renderer=None):
     from htk.utils.request import get_custom_http_headers
     data['standard_http_headers'] = REQUEST_HTTP_HEADERS_STANDARD
     data['custom_http_headers'] = get_custom_http_headers(request)
-    response = renderer(template_name, data)
+    response = renderer(request, template_name, data=data)
     return response
 
 

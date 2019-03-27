@@ -22,7 +22,7 @@ def render_custom(request, template_name, data=None, template_prefix=''):
 
     Puts additional information needed onto the context dictionary
     """
-    data = _data_processor(data, template_name, template_prefix)
+    data = _data_processor(data, template_name, template_prefix=template_prefix)
     response = render(request, template_name, data)
     return response
 
@@ -32,7 +32,7 @@ def render_to_response_custom(template_name, data=None, template_prefix=''):
 
     Puts additional information needed onto the context dictionary
     """
-    data = _data_processor(data, template_name, template_prefix)
+    data = _data_processor(data, template_name, template_prefix=template_prefix)
     response = render_to_response(template_name, data)
     return response
 
@@ -209,7 +209,7 @@ def _javascript_reloader(request, data):
     }
 
 
-def _data_processor(data, template_name, template_prefix):
+def _data_processor(data, template_name, template_prefix=''):
     if data is None:
         data = {}
 
