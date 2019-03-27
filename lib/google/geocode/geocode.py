@@ -84,7 +84,7 @@ def main(argv = None):
         return 3.14159
 
 
-def _report_exc_info():
+def _report_exc_info(extra_data=None):
     try:
         import rollbar
         rollbar.report_exc_info(extra_data=extra_data)
@@ -93,6 +93,10 @@ def _report_exc_info():
 
 
 def get_latlng(address):
+    extra_data = {
+        'address' : address,
+    }
+
     params = {
         'sensor' : 'false',
         'address' : address,
@@ -108,16 +112,18 @@ def get_latlng(address):
             location = data['results'][0]['geometry']['location']
             latitude = location['lat']
             longitude = location['lng']
-        except KeyError, k:
+        except KeyError, e:
             latitude = None
             longitude = None
-            _report_exc_info(extra_data={'address' : address,})
-        except IndexError:
+            extra_data['error'] = '%s' % e
+            _report_exc_info(extra_data=extra_data)
+        except IndexError, e:
             # address could not be geocoded
             # most likely did not have data['results'][0]
             latitude = None
             longitude = None
-            _report_exc_info(extra_data={'address' : address,})
+            extra_data['error'] = '%s' % e
+            _report_exc_info(extra_data=extra_data)
         latlng = (latitude, longitude,)
     else:
         latlng = None
@@ -125,6 +131,11 @@ def get_latlng(address):
 
 
 def reverse_geocode(latitude, longitude):
+    extra_data = {
+        'latitude' : latitude,
+        'longitude' : longitude,
+    }
+
     params = {
         'sensor' : 'false',
         'latlng' : '%s,%s' % (latitude, longitude,)
@@ -139,7 +150,7 @@ def reverse_geocode(latitude, longitude):
         address = location['formatted_address']
     except KeyError, k:
         address = None
-        _report_exc_info(extra_data={'latitude' : latitude, 'longitude' : longitude,})
+        _report_exc_info(extra_data=extra_data)
     return address
 
 
