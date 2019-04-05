@@ -83,11 +83,26 @@ def main(argv = None):
         print >> sys.stderr, "for help use --help"
         return 3.14159
 
-
-def _report_exc_info(extra_data=None):
+def _report_message(message, level='error', extra_data=None):
+    """Wrapper for rollbar.report_message
+    """
     try:
         import rollbar
-        rollbar.report_exc_info(extra_data=extra_data)
+        from htk.utils.request import get_current_request
+        request = get_current_request()
+        rollbar.report_message(message, level=level, request=request, extra_data=extra_data)
+    except:
+        pass
+
+
+def _report_exc_info(extra_data=None):
+    """Wrapper for rollbar.report_exc_info
+    """
+    try:
+        import rollbar
+        from htk.utils.request import get_current_request
+        request = get_current_request()
+        rollbar.report_exc_info(request=request, extra_data=extra_data)
     except:
         pass
 
@@ -113,20 +128,23 @@ def get_latlng(address):
 
         data = json.loads(response.text)
         try:
+            extra_data['response_data'] = data
+
             #location = data['results'][0]['geometry']['location']
             results = data.get('results', [])
-            if len(results) > 0:
+            if data.get('status') != 'OK':
+                _report_message('Geocode address failure', level='error', extra_data=extra_data)
+            elif len(results) > 0:
                 result = results[0]
                 location = result.get('geometry', {}).get('location', None)
                 if location is None:
                     # address could not be geocoded
-                    extra_data['error'] = 'Address could not be geocoded'
+                    _report_message('Geocode address failure: Address could not be geocoded', level='info', extra_data=extra_data)
                 else:
                     latitude = location['lat']
                     longitude = location['lng']
             else:
-                extra_data['error'] = 'No results found'
-                _report_exc_info(extra_data=extra_data)
+                _report_message('Geocode address failure: No results found', level='info', extra_data=extra_data)
         except ValueError, e:
             # likely to be caused by invalid JSON
             extra_data['error'] = '%s' % e
