@@ -71,7 +71,7 @@ def cpq_view(request, cpq_code, cpq_type, template_name):
         from htk.utils.pdf_utils import render_to_pdf_response
         response = render_to_pdf_response(template_name, data, show_content_in_browser=False)
     else:
-        response = renderer(template_name, data)
+        response = renderer(request, template_name, data)
     return response
 
 
