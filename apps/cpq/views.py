@@ -145,7 +145,7 @@ def dashboard(request):
     data['reporting_urls'] = get_reporting_urls()
     data['tools_urls'] = get_tools_urls()
     template_name = htk_setting('HTK_CPQ_TEMPLATE_NAME_DASHBOARD')
-    response = renderer(template_name, data)
+    response = renderer(request, template_name, data)
     return response
 
 
