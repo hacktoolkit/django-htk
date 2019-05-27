@@ -28,6 +28,7 @@ def get_stripe_public_key(live_mode=False):
         public_key = htk_setting('HTK_STRIPE_API_PUBLIC_KEY_LIVE')
     return public_key
 
+
 def get_stripe_secret_key(live_mode=False):
     if not live_mode or settings.TEST or not htk_setting('HTK_STRIPE_LIVE_MODE'):
         secret_key = htk_setting('HTK_STRIPE_API_SECRET_KEY_TEST')
@@ -66,6 +67,13 @@ def safe_stripe_call(func, *args, **kwargs):
     https://stripe.com/docs/api/python#errors
     """
     result = None
+
+    def _log_error():
+        request = get_current_request()
+        extra_data = {
+        }
+        rollbar.report_exc_info(request=request, extra_data=extra_data)
+
     try:
         result = func(*args, **kwargs)
     except stripe.error.CardError as e:
@@ -79,30 +87,25 @@ def safe_stripe_call(func, *args, **kwargs):
         ## param is '' in this case
         #print "Param is: %s" % err.get('param')
         #print "Message is: %s" % err.get('message')
-        request = get_current_request()
-        rollbar.report_exc_info(request=request)
+        _log_error()
     except stripe.error.InvalidRequestError as e:
         # Invalid parameters were supplied to Stripe's API
-        request = get_current_request()
-        rollbar.report_exc_info(request=request)
+        _log_error()
     except stripe.error.AuthenticationError as e:
         # Authentication with Stripe's API failed
         # (maybe you changed API keys recently)
-        request = get_current_request()
-        rollbar.report_exc_info(request=request)
+        _log_error()
     except stripe.error.APIConnectionError as e:
         # Network communication with Stripe failed
-        request = get_current_request()
-        rollbar.report_exc_info(request=request)
+        _log_error()
     except stripe.error.StripeError as e:
         # Display a very generic error to the user, and maybe send
         # yourself an email
-        request = get_current_request()
-        rollbar.report_exc_info(request=request)
+        _log_error()
     except Exception as e:
         # Something else happened, completely unrelated to Stripe
-        request = get_current_request()
-        rollbar.report_exc_info(request=request)
+        _log_error()
+
     return result
 
 
