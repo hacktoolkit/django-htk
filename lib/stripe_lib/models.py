@@ -17,6 +17,7 @@ from htk.lib.stripe_lib.constants.general import *
 from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 
+
 class BaseStripeCustomer(models.Model):
     stripe_id = models.CharField(max_length=255)
     live_mode = models.BooleanField(default=False)
@@ -236,16 +237,24 @@ class BaseStripeCustomer(models.Model):
 
         https://stripe.com/docs/api#retrieve_subscription
         """
-        stripe_customer = self.retrieve()
-        if stripe_customer:
-            subscription = safe_stripe_call(
-                stripe_customer.subscriptions.retrieve,
-                **{
-                    'id' : subscription_id,
-                }
-            )
+        subscription = None
+
+        if subscription_id:
+            stripe_customer = self.retrieve()
+            if stripe_customer:
+                subscription = safe_stripe_call(
+                    stripe_customer.subscriptions.retrieve,
+                    **{
+                        'id' : subscription_id,
+                    }
+                )
+            else:
+                # missing Stripe customer
+                pass
         else:
-            subscription = None
+            # missing subscription id
+            pass
+
         return subscription
 
     def change_subscription_plan(self, subscription_id, new_plan):
@@ -295,14 +304,14 @@ class BaseStripeCustomer(models.Model):
         """Cancels a Subscription for this Customer
 
         https://stripe.com/docs/api#cancel_subscription
+
+        Returns:
+        - True if `subscription_id` was canceled
+        - False if `subscription_id` was not found
         """
         subscription = self.retrieve_subscription(subscription_id)
         if subscription:
-            try:
-                subscription.delete()
-            except stripe.error.InvalidRequestError, e:
-                request = get_current_request()
-                rollbar.report_exc_info(request=request)
+            subscription.delete()
             was_deleted = True
         else:
             was_deleted = False
@@ -327,6 +336,7 @@ class BaseStripeCustomer(models.Model):
                 pass
         else:
             pass
+
 
 class BaseStripeProduct(models.Model):
     stripe_id = models.CharField(max_length=255)
@@ -360,6 +370,7 @@ class BaseStripeProduct(models.Model):
             }
         )
         return stripe_product
+
 
 class BaseStripePlan(models.Model):
     stripe_id = models.CharField(max_length=255)
@@ -415,6 +426,7 @@ class BaseStripePlan(models.Model):
             }
         )
         return stripe_plan
+
 
 class AbstractStripeCustomerHolder(models.Model):
     stripe_customer = models.OneToOneField(
