@@ -17,7 +17,13 @@ def find_json_value(obj, path):
             level_key = parts[0]
             key = '.'.join(parts[1:])
 
-            node = node.get(level_key, None)
+            try:
+                # check if key is actually a list index
+                index = int(level_key)
+                node = node[index]
+            except (ValueError, KeyError,) as e:
+                # key is just a str
+                node = node.get(level_key, None)
 
     return value
 
