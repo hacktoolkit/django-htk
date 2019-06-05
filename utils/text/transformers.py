@@ -1,7 +1,10 @@
 import re
 
 from htk.utils.text.constants import *
+from htk.utils.text.general import is_ascii
+from htk.utils.text.general import is_ascii_extended
 from htk.utils.text.unicode import unicode_to_ascii
+
 
 def get_sentences(paragraph):
     """Returns a list of sentences from a paragraph
@@ -13,6 +16,7 @@ def get_sentences(paragraph):
     sentences = [sentence.strip() for sentence in punctuation.split(paragraph)]
     sentences = filter(lambda x: x, sentences)
     return sentences
+
 
 def summarize(paragraph, num_sentences=SUMMARY_NUM_SENTENCES):
     """Returns a summary of a paragraph
@@ -39,6 +43,7 @@ def summarize(paragraph, num_sentences=SUMMARY_NUM_SENTENCES):
             # we actually summarized it
             summary = '.'.join(summary_sentences) + '...'
     return summary
+
 
 def ellipsize(text, max_len=100, truncate=False):
     """
@@ -93,7 +98,8 @@ def ellipsize(text, max_len=100, truncate=False):
 
     return text
 
-def seo_tokenize(title, lower=True):
+
+def seo_tokenize(title, lower=True, preserve_unicode=False):
     """Get SEO-tokenized version of a string, typically a name or title
 
     `title` the string to tokenize
@@ -108,14 +114,33 @@ def seo_tokenize(title, lower=True):
     """
     cleaned_title = title.strip()
     try:
-        cleaned_title = unicode_to_ascii(cleaned_title)
+        if preserve_unicode:
+            # do nothing, keep unicode in title
+            pass
+        else:
+            cleaned_title = unicode_to_ascii(cleaned_title)
     except:
         pass
     if lower:
         cleaned_title = cleaned_title.lower()
     else:
         pass
-    # allow only spaces, hyphens, alpha-numeric
-    cleaned_title = re.sub('[^ \-A-Za-z0-9]', '', cleaned_title)
+
+    def _repl(matchobj):
+        c = matchobj.group(0)
+        if is_ascii(c) or is_ascii_extended(c):
+            # it is ASCII, but not one of the accepted ASCII characters
+            replaced_c = ''
+        elif preserve_unicode:
+            replaced_c = c
+        else:
+            # it is not ASCII (and therefore, Unicode), and not preserving unicode
+            replaced_c = ''
+        return replaced_c
+
+    cleaned_title = re.sub(r'[^ \-A-Za-z0-9]', _repl, cleaned_title)
+
+    # replace whitespace in string with hyphens
     tokenized_title = '-'.join(cleaned_title.split())
+
     return tokenized_title
