@@ -115,8 +115,8 @@ def seo_tokenize(title, lower=True, preserve_ascii_extended=False, preserve_unic
     """
     cleaned_title = title.strip()
     try:
-        if preserve_unicode:
-            # do nothing, keep unicode in title
+        if preserve_ascii_extended or preserve_unicode:
+            # do nothing, keep extended ASCII and Unicode in title
             pass
         else:
             cleaned_title = unicode_to_ascii(cleaned_title)
