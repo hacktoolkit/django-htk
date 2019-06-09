@@ -99,12 +99,13 @@ def ellipsize(text, max_len=100, truncate=False):
     return text
 
 
-def seo_tokenize(title, lower=True, preserve_unicode=False):
+def seo_tokenize(title, lower=True, preserve_ascii_extended=False, preserve_unicode=False):
     """Get SEO-tokenized version of a string, typically a name or title
 
     `title` the string to tokenize
     `lower` whether to lowercase the string
-
+    `preserve_ascii_extended` will preserve extended ASCII characters if `True`
+    `preserve_unicode` will preserve Unicode if `True`
     e.g.
     <- "The World's Greatest Establishment"
     -> 'the-worlds-greatest-establishment'
@@ -128,14 +129,13 @@ def seo_tokenize(title, lower=True, preserve_unicode=False):
 
     def _repl(matchobj):
         c = matchobj.group(0)
-        if is_ascii(c) or is_ascii_extended(c):
+        if is_ascii_extended(c):
+            replaced_c = c if preserve_ascii_extended else ''
+        elif is_ascii(c):
             # it is ASCII, but not one of the accepted ASCII characters
             replaced_c = ''
-        elif preserve_unicode:
-            replaced_c = c
         else:
-            # it is not ASCII (and therefore, Unicode), and not preserving unicode
-            replaced_c = ''
+            replaced_c = c if preserve_unicode else ''
         return replaced_c
 
     cleaned_title = re.sub(r'[^ \-A-Za-z0-9]', _repl, cleaned_title)
