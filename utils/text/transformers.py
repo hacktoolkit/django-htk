@@ -129,8 +129,8 @@ def seo_tokenize(title, lower=True, preserve_unicode=False):
     def _repl(matchobj):
         c = matchobj.group(0)
         if is_ascii(c) or is_ascii_extended(c):
-            # it is ASCII, but not one of the accepted ASCII characters
-            replaced_c = ''
+            # it is an accepted ASCII character
+            replaced_c = c
         elif preserve_unicode:
             replaced_c = c
         else:
