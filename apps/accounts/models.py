@@ -388,7 +388,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         ).order_by(
             'name',
             'handle',
-        )
+        ).distinct()
         return organizations
 
     def is_organization_member(self, organization):
