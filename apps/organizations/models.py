@@ -11,11 +11,12 @@ from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.apps.organizations.enums import OrganizationTeamMemberRoles
 from htk.apps.organizations.utils import get_organization_member_role_choices
 from htk.apps.organizations.utils import get_organization_team_member_role_choices
+from htk.extensions.data_structures import OrderedSet
 from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
 from htk.models import HtkBaseModel
 from htk.utils import htk_setting
-from htk.extensions.data_structures import OrderedSet
+
 
 class OrganizationAttribute(AbstractAttribute):
     holder = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='attributes')
