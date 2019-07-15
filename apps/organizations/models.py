@@ -11,6 +11,7 @@ from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.apps.organizations.enums import OrganizationTeamMemberRoles
 from htk.apps.organizations.utils import get_organization_member_role_choices
 from htk.apps.organizations.utils import get_organization_team_member_role_choices
+from htk.extensions.data_structures import OrderedSet
 from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
 from htk.models import HtkBaseModel
@@ -71,6 +72,12 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
             *sort_order
         )
         return members
+
+    def get_distinct_members(self):
+        members = self.get_members()
+        users_set = OrderedSet([member.user for member in members])
+        users = list(users_set)
+        return users
 
     ##
     # ACLs
