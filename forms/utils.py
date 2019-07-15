@@ -1,6 +1,9 @@
+# Django Imports
 from django import forms
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 TEXT_STYLE_INPUTS = (
     forms.TextInput,
@@ -10,6 +13,7 @@ TEXT_STYLE_INPUTS = (
     forms.Textarea,
     forms.URLInput,
 )
+
 
 def clean_model_instance_field(form_obj, field_name, cls):
     """Called from within the clean method of a ModelInstanceField or CharField
@@ -25,6 +29,7 @@ def clean_model_instance_field(form_obj, field_name, cls):
     except cls.DoesNotExist:
         raise forms.ValidationError()
     return instance
+
 
 def set_input_attrs(form, attrs=None):
     """Set various attributes on form input fields
@@ -58,6 +63,7 @@ def set_input_attrs(form, attrs=None):
             else:
                 field.widget.attrs[key] = value
 
+
 def set_input_placeholder_labels(form):
     """Set placeholder attribute to the field label on form input fields, if it doesn't have a placeholder set
     """
@@ -71,6 +77,7 @@ def set_input_placeholder_labels(form):
             if not field.widget.attrs.get('placeholder'):
                 placeholder_value = custom_labels.get(name, field.label)
                 field.widget.attrs['placeholder'] = placeholder_value
+
 
 def get_form_errors(form):
     """Return a list of errors on the form
@@ -88,6 +95,21 @@ def get_form_errors(form):
             field_errors = (field.name, field.errors,)
             all_field_errors.append(field_errors)
     return (all_errors, all_field_errors,)
+
+
+def get_combined_form_errors(form):
+    combined_errors = []
+
+    for error in form.non_field_errors():
+        combined_errors.append(error)
+
+    for field in form:
+        if field.errors:
+            for error in field.errors:
+                combined_errors.append(error)
+
+    return combined_errors
+
 
 def get_form_error(form):
     """Return the first error of a form

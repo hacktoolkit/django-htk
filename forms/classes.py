@@ -1,8 +1,13 @@
+# Django Imports
 from django import forms
 
+# HTK Imports
+from htk.forms.utils import get_form_errors
+from htk.forms.utils import get_combined_form_errors
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
 from htk.utils.cache_descriptors import CachedAttribute
+
 
 class AbstractModelInstanceUpdateForm(forms.ModelForm):
     """An abstract class for manipulating Model instances
@@ -60,6 +65,14 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
 
         self._save_fields = self._save_fields_lookup.keys()
 
+    def get_errors(self):
+        errors = get_form_errors(self)
+        return errors
+
+    def get_combined_errors(self):
+        errors = get_combined_form_errors(self)
+        return errors
+
     def save(self, commit=True, should_refresh=True, *args, **kwargs):
         """Saves this form
 
@@ -91,6 +104,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
                 from htk.utils.general import refresh
                 instance = refresh(instance)
         return instance
+
 
 class AbstractModelInstanceAttributesFormMixin(object):
     def __init__(self, instance):
@@ -137,6 +151,15 @@ class AbstractModelInstanceAttributesFormMixin(object):
                 pass
         return was_updated
 
+    def get_errors(self):
+        errors = get_form_errors(self)
+        return errors
+
+    def get_combined_errors(self):
+        errors = get_combined_form_errors(self)
+        return errors
+
+
 class AbstractModelInstanceAttributesForm(forms.Form, AbstractModelInstanceAttributesFormMixin):
     def __init__(self, instance, *args, **kwargs):
         AbstractModelInstanceAttributesFormMixin.__init__(self, instance)
@@ -146,6 +169,7 @@ class AbstractModelInstanceAttributesForm(forms.Form, AbstractModelInstanceAttri
     def save(self):
         was_updated = self.save_instance_attributes()
         return was_updated
+
 
 class AbstractModelInstanceUpdateFormWithAttributes(
     AbstractModelInstanceUpdateForm,

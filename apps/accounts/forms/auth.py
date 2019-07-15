@@ -1,5 +1,9 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
 import rollbar
 
+# Django Imports
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm
@@ -8,6 +12,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.translation import ugettext_lazy as _
 
+# HTK Imports
 from htk.apps.accounts.emails import password_reset_email
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
@@ -22,6 +27,7 @@ from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 
 UserModel = get_user_model()
+
 
 class UpdatePasswordForm(SetPasswordForm):
     """A subclass of Django's SetPasswordForm
@@ -42,6 +48,7 @@ class UpdatePasswordForm(SetPasswordForm):
             request = get_current_request()
             rollbar.report_exc_info(request=request)
         return user
+
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(label=_('Email'))
@@ -159,6 +166,7 @@ class UserRegistrationForm(UserCreationForm):
                 lock.release()
         return user
 
+
 class NameEmailUserRegistrationForm(UserRegistrationForm):
     first_name = forms.CharField(label='First Name', required=True)
     last_name = forms.CharField(label='Last Name', required=True)
@@ -205,6 +213,7 @@ class NameEmailUserRegistrationForm(UserRegistrationForm):
                 user_profile.send_welcome_email()
         return user
 
+
 class ResendConfirmationForm(forms.Form):
     email = forms.EmailField(label='Email')
 
@@ -219,6 +228,7 @@ class ResendConfirmationForm(forms.Form):
         if not user_emails.exists():
             raise forms.ValidationError(_("A user with that email does not exist."))
         return email
+
 
 class PasswordResetFormHtmlEmail(PasswordResetForm):
     """Modeled after django.contrib.auth.forms.PasswordResetForm
@@ -274,6 +284,7 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
             subject=email_subject,
             sender=email_sender
         )
+
 
 class UsernameEmailAuthenticationForm(forms.Form):
     """Based on django.contrib.auth.forms.AuthenticationForm
@@ -351,8 +362,10 @@ class UsernameEmailAuthenticationForm(forms.Form):
     def get_user(self):
         return self.user_cache
 
+
 ################################################################################
 # Social registration
+
 
 class SocialRegistrationEmailForm(forms.Form):
     email = forms.EmailField(label='Email')
@@ -390,6 +403,7 @@ class SocialRegistrationEmailForm(forms.Form):
         request.session[SOCIAL_REGISTRATION_SETTING_EMAIL] = email
         return email
 
+
 class SocialRegistrationAuthenticationForm(UsernameEmailAuthenticationForm):
     password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder': 'Password',}))
 
@@ -403,6 +417,7 @@ class SocialRegistrationAuthenticationForm(UsernameEmailAuthenticationForm):
         password = self.cleaned_data.get('password')
         cleaned_data = super(SocialRegistrationAuthenticationForm, self).clean(username_email=email, password=password)
         return cleaned_data
+
 
 class SocialRegistrationTermsAgreementForm(forms.Form):
     agreed_to_terms = forms.BooleanField(required=True)
