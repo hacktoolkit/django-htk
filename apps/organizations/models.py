@@ -9,6 +9,7 @@ from django.db import models
 # HTK Imports
 from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.apps.organizations.enums import OrganizationTeamMemberRoles
+from htk.apps.organizations.utils import get_model_organization_member
 from htk.apps.organizations.utils import get_organization_member_role_choices
 from htk.apps.organizations.utils import get_organization_team_member_role_choices
 from htk.extensions.data_structures import OrderedSet
@@ -107,6 +108,21 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
             OrganizationMemberRoles.MEMBER,
         )
         return self._has_member_with_role(user, roles=roles)
+
+    def add_member(self, user, role):
+        OrganizationMember = get_model_organization_member()
+        new_member = OrganizationMember.objects.create(
+            user=user,
+            organization=self,
+            role=role.value,
+            active=True
+        )
+        return new_member
+
+    def add_owner(self, user):
+        OrganizationMember = get_model_organization_member()
+        new_owner = self.add_member(user, OrganizationMemberRoles.OWNER)
+        return new_owner
 
 
 class BaseAbstractOrganizationMember(HtkBaseModel):
