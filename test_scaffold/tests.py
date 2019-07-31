@@ -84,7 +84,7 @@ class BaseWebTestCase(BaseTestCase):
         response = client.get(path, data=params, follow=follow, secure=secure, **extra)
         return response
 
-    def _post(self, view_name, client=None, params=None, get_params=None, follow=False, view_args=None, view_kwargs=None, **extra):
+    def _post(self, view_name, client=None, params=None, get_params=None, follow=False, view_args=None, view_kwargs=None, secure=False, **extra):
         """Wrapper for performing an HTTP POST request
         """
         params = {} if params is None else params
@@ -98,7 +98,7 @@ class BaseWebTestCase(BaseTestCase):
 
         if type(client) != Client:
             client = Client()
-        response = client.post(path, data=params, follow=follow, **extra)
+        response = client.post(path, data=params, follow=follow, secure=secure, **extra)
         return response
 
     def _check_view_is_okay(self, view_name, client=None, params=None, follow=False, secure=False):
