@@ -11,6 +11,7 @@ from htk.utils import refresh
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.regex import Re
 
+
 class GmailAuthenticationException(Exception):
     pass
 

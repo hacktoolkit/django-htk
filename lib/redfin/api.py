@@ -1,8 +1,14 @@
+# Python Standard Library Imports
 import json
-import requests
 
+# Third Party / PIP Imports
+import requests
+import rollbar
+
+# HTK Imports
 from htk.lib.redfin.constants import *
 from htk.utils.urls import build_url_with_query_params
+
 
 class RedfinAPI(object):
     def __init__(self):
