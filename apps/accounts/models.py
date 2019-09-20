@@ -772,7 +772,17 @@ class UserEmail(models.Model):
                     itbl.send_triggered_email(self.email, itbl_campaign_id, data=data)
 
             if should_send_activation_email:
-                activation_email(self, domain=domain, template=template, subject=subject, sender=sender)
+                from htk.utils.security import should_use_https
+                use_https = should_use_https()
+
+                activation_email(
+                    self,
+                    use_https=use_https,
+                    domain=domain,
+                    template=template,
+                    subject=subject,
+                    sender=sender
+                )
         except:
             request = get_current_request()
             rollbar.report_exc_info(request=request)
