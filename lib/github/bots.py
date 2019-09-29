@@ -16,22 +16,33 @@ import urllib
 
 from github import Github
 
+
 class GitHubReminderBot(object):
     """GitHub Reminder bot
 
     Uses PyGithub as a base API client - http://pygithub.readthedocs.io/en/latest/index.html
     """
 
-    def __init__(self, github_access_token, organization):
+    def __init__(self, github_access_token, organizations=None, repositories=None):
         """Initializes the GitHub API client and prefetches the `organization` and repositories
         """
         self.github_access_token = github_access_token
-        self.organization = organization
+        self.organizations = organizations
+        self.repositories = repositories
 
         self.cli = Github(self.github_access_token)
-        self.org = self.cli.get_organization(organization)
-        # http://pygithub.readthedocs.io/en/latest/github_objects/Organization.html#github.Organization.Organization.get_repos
-        self.repos = self.org.get_repos(type='all')
+
+        self.repos = []
+
+        if organizations:
+            for organization in organizations:
+                # http://pygithub.readthedocs.io/en/latest/github_objects/Organization.html#github.Organization.Organization.get_repos
+                org = self.cli.get_organization(organization)
+                self.repos.extend(org.get_repos(type='all'))
+
+        if repositories:
+            # https://pygithub.readthedocs.io/en/latest/github.html#github.MainClass.Github.get_repo
+            self.repos.extend([self.cli.get_repo(repository) for repository in repositories])
 
     def pull_request_reminder(self):
         """Returns a Markdown-formatted message for this organization's pull requests
@@ -131,9 +142,21 @@ Let's review some pull requests!""" % context
         ]
         return (markdown_content, attachments,)
 
+
 class GitHubReminderSlackBot(GitHubReminderBot):
-    def __init__(self, github_access_token, organization, slack_webhook_url, slack_channel):
-        super(GitHubReminderSlackBot, self).__init__(github_access_token, organization)
+    def __init__(
+        self,
+        slack_webhook_url,
+        slack_channel,
+        github_access_token,
+        organizations=None,
+        repositories=None
+    ):
+        super(GitHubReminderSlackBot, self).__init__(
+            github_access_token,
+            organizations=organizations,
+            repositories=repositories
+        )
         self.slack_webhook_url = slack_webhook_url
         self.slack_channel = slack_channel
 
@@ -152,9 +175,11 @@ class GitHubReminderSlackBot(GitHubReminderBot):
             unfurl_links=False
         )
 
+
 class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
+
 
 def main(argv = None):
     OPT_STR = 'ht:o:'

@@ -1,6 +1,7 @@
 from htk.constants.time import *
 from htk.tasks import BaseTask
 
+
 class GitHubReminderTask(BaseTask):
     def __init__(self):
         from htk.lib.github.cachekeys import GitHubReminderCooldown
@@ -21,16 +22,30 @@ class GitHubReminderTask(BaseTask):
 
     def execute(self, user):
         now = user.profile.get_local_time()
+
         github_organizations = user.profile.get_attribute('github_organizations').split('\n')
         github_organizations = [organization.strip() for organization in github_organizations]
-        for organization in github_organizations:
-            self.send_github_reminders(user, organization)
 
-    def send_github_reminders(self, user, organization):
+        github_repositories = user.profile.get_attribute('github_repositories').split('\n')
+        github_repositories = [repo.strip() for repo in github_repositories]
+
+        self.send_github_reminders(
+            user,
+            organizations=github_organizations,
+            repositories=github_repositories
+        )
+
+    def send_github_reminders(self, user, organizations=None, repositories=None):
         github_access_token = user.profile.get_attribute('github_access_token')
         slack_webhook_url = user.profile.get_attribute('slack_webhook_url')
         slack_channel = user.profile.get_attribute('github_reminders_slack_channel')
 
         from htk.lib.github.bots import GitHubReminderSlackBot
-        bot = GitHubReminderSlackBot(github_access_token, organization, slack_webhook_url, slack_channel)
+        bot = GitHubReminderSlackBot(
+            slack_webhook_url,
+            slack_channel,
+            github_access_token,
+            organizations=organizations,
+            repositories=repositories
+        )
         bot.remind_pull_requests()
