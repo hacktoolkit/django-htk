@@ -3,12 +3,17 @@
 #
 # Examples: https://teslamotorsclub.com/tmc/threads/egauge-3-system-review-energy-monitoring.57844/
 
-from bs4 import BeautifulSoup
+# Python Standard Library Imports
 import datetime
-import requests
 import time
 
+# Third Party / PIP Imports
+import requests
+from bs4 import BeautifulSoup
+
+# HTK Imports
 from htk.utils.datetime_utils import tznow
+
 
 class EgaugeAPI(object):
     def __init__(self, name, *args, **kwargs):
