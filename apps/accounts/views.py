@@ -340,6 +340,8 @@ def confirm_email(
         UserEmail,
         activation_key=activation_key
     )
+    data['email'] = user_email.email
+
     if user and user != user_email.user:
         # for a mismatched user, force logout
         logout(request)
