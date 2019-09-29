@@ -1,0 +1,9 @@
+{# https://developers.google.com/recaptcha/docs/v3 #}
+<script src="https://www.google.com/recaptcha/api.js?render={{ google_recaptcha_v3_site_key }}"></script>
+<script>
+grecaptcha.ready(function() {
+    grecaptcha.execute('{{ google_recaptcha_v3_site_key }}', {action: '{{ action|default:'pageview' }}'}).then(function(token) {
+        $('#id_recaptcha').val(token);
+    });
+});
+</script>

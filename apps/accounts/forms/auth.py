@@ -52,6 +52,7 @@ class UpdatePasswordForm(SetPasswordForm):
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(label=_('Email'))
+    recaptcha = forms.CharField(required=False, widget=forms.HiddenInput)
 
     error_messages = {
         'duplicate_username': _('A user with that username already exists.'),
@@ -291,6 +292,7 @@ class UsernameEmailAuthenticationForm(forms.Form):
     """
     username_email = forms.CharField(label=_('Username or Email'))
     password = forms.CharField(label=_('Password'), widget=forms.PasswordInput)
+    recaptcha = forms.CharField(required=False, widget=forms.HiddenInput)
 
     error_messages = {
         'invalid_login': _('Please enter a correct %(username_email)s and %(password)s. Note that password is case-sensitive.'),

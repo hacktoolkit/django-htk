@@ -34,6 +34,7 @@ from htk.forms.utils import set_input_attrs
 from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.utils.general import clear_messages
+from htk.utils.request import extract_request_ip
 from htk.view_helpers import render_custom as _r
 from htk.view_helpers import wrap_data
 
@@ -56,9 +57,24 @@ def login_view(
     data.update(csrf(request))
     success = False
     if request.method == 'POST':
+        recaptcha_success = True
+
+        google_recaptcha_response_token = request.POST.get('recaptcha', None)
+        if google_recaptcha_response_token:
+            from htk.lib.google.recaptcha.utils import google_recaptcha_site_verification
+            request_ip = extract_request_ip(request)
+            recaptcha_data = google_recaptcha_site_verification(google_recaptcha_response_token, request_ip)
+            recaptcha_success = recaptcha_data.get('success', False)
+
         auth_form = auth_form_model(None, request.POST)
         if auth_form.is_valid():
             user = auth_form.get_user()
+            if not recaptcha_success:
+                from htk.apps.accounts.events import failed_recaptcha_on_login
+                failed_recaptcha_on_login(user, request=request)
+            else:
+                pass
+
             login_authenticated_user(request, user)
             success = True
             default_next_uri = reverse(default_next_url_name)
@@ -224,10 +240,26 @@ def register(
     data.update(csrf(request))
     success = False
     if request.method == 'POST':
+        recaptcha_success = True
+
+        google_recaptcha_response_token = request.POST.get('recaptcha', None)
+        if google_recaptcha_response_token:
+            from htk.lib.google.recaptcha.utils import google_recaptcha_site_verification
+            request_ip = extract_request_ip(request)
+            recaptcha_data = google_recaptcha_site_verification(google_recaptcha_response_token, request_ip)
+            recaptcha_success = recaptcha_data.get('success', False)
+
         if reg_form_kwargs is None:
             reg_form_kwargs = {}
         reg_form = reg_form_model(request.POST, **reg_form_kwargs)
-        if reg_form.is_valid():
+
+
+        if not recaptcha_success:
+            from htk.apps.accounts.events import failed_recaptcha_on_account_register
+            failed_recaptcha_on_account_register(request=request)
+
+            data['errors'].append('Suspicious registration detected.')
+        elif reg_form.is_valid():
             domain = request.get_host()
             new_user = reg_form.save(domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
             if login_if_success:
@@ -247,6 +279,7 @@ def register(
                 #data['errors'].append(error)
     else:
         reg_form = reg_form_model(None)
+
     data['reg_form'] = reg_form
     if auth_form_model:
         # register page also has an auth form
