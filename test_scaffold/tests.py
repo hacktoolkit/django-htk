@@ -128,7 +128,16 @@ class BaseWebTestCase(BaseTestCase):
                          len(redirect_chain),
                          'Unexpected redirect, should have stayed on [%s]. %s' % (view_name, extra_message,))
 
-    def _check_response_redirect_chain(self, view_name, another, response, extra_message='', secure=False):
+    def _check_response_redirect_chain(
+        self,
+        view_name,
+        another,
+        response,
+        extra_message='',
+        secure=False,
+        redirect_chain_offset=-1,
+        **kwargs
+    ):
         """Check that response.redirect_chain is behaving correctly
         """
         redirect_chain = response.redirect_chain
@@ -147,7 +156,7 @@ class BaseWebTestCase(BaseTestCase):
             protocol_pattern = protocol_pattern + '%s%s'
             pattern = protocol_pattern % (TESTSERVER, reverse(another),)
 
-        actual = redirect_chain[-1][0]
+        actual = redirect_chain[redirect_chain_offset][0]
         match = re.match(pattern, actual)
         self.assertIsNotNone(
             match,
@@ -158,7 +167,18 @@ class BaseWebTestCase(BaseTestCase):
             )
         )
 
-    def _check_view_redirects_to_another(self, view_name, another, client=None, params=None, view_args=None, view_kwargs=None, method='get', secure=False):
+    def _check_view_redirects_to_another(
+        self,
+        view_name,
+        another,
+        client=None,
+        params=None,
+        view_args=None,
+        view_kwargs=None,
+        method='get',
+        secure=False,
+        **kwargs
+    ):
         """Perform an HTTP request and check that the redirect_chain behaves correctly for a page that is expected to redirect
         """
         if method == 'get':
@@ -167,7 +187,13 @@ class BaseWebTestCase(BaseTestCase):
             response = self._post(view_name, client=client, params=params, view_args=view_args, view_kwargs=view_kwargs, follow=True, secure=secure)
         else:
             raise Exception('Unknown HTTP method: %s' % method)
-        self._check_response_redirect_chain(view_name, another, response, secure=secure)
+        self._check_response_redirect_chain(
+            view_name,
+            another,
+            response,
+            secure=secure,
+            **kwargs
+        )
 
     def _check_view_redirects_to_login(self, view_name, client=None, login_url_name='account_login', secure=False):
         self._check_view_redirects_to_another(view_name, login_url_name, client=client, secure=secure)
