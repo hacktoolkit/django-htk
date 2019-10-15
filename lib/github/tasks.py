@@ -23,11 +23,11 @@ class GitHubReminderTask(BaseTask):
     def execute(self, user):
         now = user.profile.get_local_time()
 
-        github_organizations = user.profile.get_attribute('github_organizations').split('\n')
-        github_organizations = [organization.strip() for organization in github_organizations]
+        github_organizations = (user.profile.get_attribute('github_organizations') or '').split('\n')
+        github_organizations = filter(None, [organization.strip() for organization in github_organizations])
 
-        github_repositories = user.profile.get_attribute('github_repositories').split('\n')
-        github_repositories = [repo.strip() for repo in github_repositories]
+        github_repositories = (user.profile.get_attribute('github_repositories') or '').split('\n')
+        github_repositories = filter(None, [repo.strip() for repo in github_repositories])
 
         self.send_github_reminders(
             user,
