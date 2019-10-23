@@ -9,6 +9,7 @@ Examples:
 
 import getopt
 import json
+import random
 import re
 import requests
 import sys
@@ -111,35 +112,54 @@ class GitHubReminderBot(object):
                     pr_list = pull_requests_change if has_change else pull_requests_merge if has_multiple_approvals else pull_requests_approve if has_approval else pull_requests_review
                     add_pull_request(repo, pull_request, reviews, has_approval, has_change, pr_list)
 
-        context = {
-            'greeting' : greeting,
-        }
-        markdown_content = u"""<!here> %(greeting)s Team!
+        attachments = []
 
-Let's review some pull requests!""" % context
-
-        attachments = [
-            {
+        if len(pull_requests_review) > 0:
+            attachments.append({
                 'title' : '%s Pull Requests need to be reviewed:' % len(pull_requests_review),
                 'text' : '\n'.join(pull_requests_review),
                 'color' : 'warning',
-            },
-            {
+            })
+
+        if len(pull_requests_change) > 0:
+            attachments.append({
                 'title' : '%s Pull Requests require changes:' % len(pull_requests_change),
                 'text' : '\n'.join(pull_requests_change),
                 'color' : 'danger',
-            },
-            {
+            })
+
+        if len(pull_requests_approve) > 0:
+            attachments.append({
                 'title' : '%s Pull Requests need additional approvals:' % len(pull_requests_approve),
                 'text' : '\n'.join(pull_requests_approve),
                 'color' : '#439fe0',
-            },
-            {
+            })
+
+        if len(pull_requests_merge) > 0:
+            attachments.append({
                 'title' : '%s Pull Requests are ready to merge!' % len(pull_requests_merge),
                 'text' : '\n'.join(pull_requests_merge),
                 'color' : 'good',
-            },
+            })
+
+        PR_PRESENT_MESSAGES = [
+            "Let's review some pull requests!",
+            "It's code review time!",
         ]
+
+        PR_ABSENT_MESSAGES = [
+            "It's code review time... but what a shame, there are no pull requests to review :disappointed:. Let us write more code!",
+            'No code reviews today. Enjoy the extra time! :sunglasses:',
+        ]
+
+        context = {
+            'here' : '<!here> ' if len(attachments) > 0 else '',
+            'greeting' : greeting,
+            'message' : random.choice(PR_PRESENT_MESSAGES) if len(attachments) > 0 else random.choice(PR_ABSENT_MESSAGES),
+        }
+
+        markdown_content = u'%(here)s%(greeting)s Team!\n\n%(message)s' % context
+
         return (markdown_content, attachments,)
 
 
