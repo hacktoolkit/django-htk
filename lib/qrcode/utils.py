@@ -1,12 +1,17 @@
+# Python Standard Library Imports
 import hashlib
-import qrcode
 
+# Third Party / PIP Imports
+import qrcode
 from PIL import Image
 
+# Django Imports
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def qrcode_image_response(data=''):
     """Returns a QR Code image as an HTTP response
@@ -22,6 +27,7 @@ def qrcode_image_response(data=''):
     response = HttpResponse(content_type='image/png')
     img.save(response, 'png')
     return response
+
 
 def restricted_qrcode_image_response(data='', key=None, require_key=True):
     is_valid = False
@@ -42,11 +48,14 @@ def restricted_qrcode_image_response(data='', key=None, require_key=True):
 
     return response
 
-def make_qr_code_image(data='',
-                       version=1,
-                       error_correction=qrcode.constants.ERROR_CORRECT_M,
-                       box_size=10,
-                       border=4):
+
+def make_qr_code_image(
+    data='',
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_M,
+    box_size=10,
+    border=4
+):
     """Generates a QR Code image
 
     Documentation: https://pypi.python.org/pypi/qrcode
@@ -82,6 +91,7 @@ def make_qr_code_image(data='',
     img = qr.make_image()
     return img
 
+
 def solid_color_image(width=1, height=1, r=0, g=0, b=0, a=0):
     """
     TODO: Alpha channel is not working right now, for some reason; RGB channels work fine
@@ -91,6 +101,7 @@ def solid_color_image(width=1, height=1, r=0, g=0, b=0, a=0):
     img = Image.new('RGBA', (width, height,), color=(r, g, b,))
 #    img = Image.new('RGBA', (width, height,), color=(r, g, b,a,))
     return img
+
 
 def generate_qr_key(data):
     key = hashlib.md5('%s|%s' % (htk_setting('HTK_QR_SECRET'), data,)).hexdigest()[:5]

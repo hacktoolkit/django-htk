@@ -1,17 +1,22 @@
+# Python Standard Library Imports
 import datetime
 import json
 import re
 import urllib
 
+# Django Imports
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+
 register = template.Library()
+
 
 ##################################################
 # Filters
+
 
 # Form Utilities
 @register.filter()
@@ -48,6 +53,7 @@ def react_field(field):
 def get_item(dictionary, key):
     value = dictionary.get(key)
     return value
+
 
 # String Utilities
 
