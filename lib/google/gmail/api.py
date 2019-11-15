@@ -414,6 +414,54 @@ class GmailMessage(object):
 
         return message_html
 
+    def get_text(self):
+        """Returns the text part of the message from the API
+
+        https://developers.google.com/gmail/api/v1/reference/users/messages/get
+        """
+        content_type = self.content_type
+        #is_multipart_alternative = content_type == 'multipart/alternative'
+        #is_multipart_mixed = content_type = 'multipart/mixed'
+
+        html_part = None
+        payload = self.message_data['payload']
+
+        def _extract_text_part(parts):
+            # extract the HTML part out of a multipart email
+            # examine each part and check the `mimeType`
+            text_part = None
+            for part in parts:
+                mime_type = part['mimeType']
+                has_nested_parts = 'parts' in part
+
+                if mime_type == 'text/plain':
+                    text_part = part
+                elif mime_type == 'multipart/alternative' and has_nested_parts:
+                    nested_parts = part['parts']
+                    text_part = _extract_text_part(nested_parts)
+                else:
+                    pass
+
+                if text_part is not None:
+                    break
+            return text_part
+
+        if 'parts' in payload:
+            # multipart email
+            text_part = _extract_text_part(payload['parts'])
+        else:
+            # regular email, assume just one part
+            text_part = payload
+
+        if text_part:
+            message_body_data = text_part['body']['data']
+            message_text = base64.b64decode(message_body_data.replace('-', '+').replace('_', '/'))
+        else:
+            # fallback to HTML
+            message_text = self.get_html()
+
+        return message_text
+
     ##
     # Computed Properties
 
