@@ -80,7 +80,7 @@ class SongSelectSong(object):
 
         chords = song_section_html.select('code.chord')
         for chord in chords:
-            chord.string = '[%s]' % chord.string
+            chord.string = '[%s]' % chord.text
             chord.unwrap()
 
         lyrics = song_section_html.select('span.chordLyrics')
