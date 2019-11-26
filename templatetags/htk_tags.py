@@ -74,7 +74,7 @@ def zeropad(value, num_digits):
 
 @register.filter(is_safe=True)
 def markdownify(value):
-    """Converts string to markdown
+    """Converts Markdown string to HTML
     """
     import markdown
     html = markdown.markdown(value)
