@@ -6,6 +6,7 @@ import rollbar
 from htk.lib.zesty.constants import *
 from htk.utils.text.ssml import ssml_sanitized
 
+
 class ZestyAPI(object):
     def __init__(self, zesty_id):
         self.zesty_id = zesty_id
