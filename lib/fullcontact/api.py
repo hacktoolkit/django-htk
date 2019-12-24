@@ -1,11 +1,16 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
 import requests
 import rollbar
 
+# HTK Imports
 from htk.lib.fullcontact.constants import *
 from htk.utils import htk_setting
 from htk.utils import resolve_method_dynamically
 
-class FullContactAPI(object):
+
+class FullContactAPIV2(object):
     """
     https://www.fullcontact.com/developer/docs/
     """
