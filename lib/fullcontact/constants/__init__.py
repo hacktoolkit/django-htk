@@ -1,6 +1,12 @@
-FULLCONTACT_API_BASE_URL = 'https://api.fullcontact.com/v2'
+FULLCONTACT_API_V3_BASE_URL = 'https://api.fullcontact.com/v3'
 
-FULLCONTACT_API_RESOURCES = {
+FULLCONTACT_API_V3_RESOURCES = {
+    'person' : '/person.json',
+}
+
+FULLCONTACT_API_V2_BASE_URL = 'https://api.fullcontact.com/v2'
+
+FULLCONTACT_API_V2_RESOURCES = {
     'batch' : '/batch.json',
     'person' : '/person.json',
 }

@@ -21,8 +21,8 @@ class FullContactAPIV2(object):
         """Returns the resource URL for `resource_type`
         """
         url = '%s%s' % (
-            FULLCONTACT_API_BASE_URL,
-            FULLCONTACT_API_RESOURCES.get(resource_type),
+            FULLCONTACT_API_V2_BASE_URL,
+            FULLCONTACT_API_V2_RESOURCES.get(resource_type),
         )
         return url
 
