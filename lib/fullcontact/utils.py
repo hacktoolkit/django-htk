@@ -3,6 +3,7 @@ import time
 
 
 from htk.lib.fullcontact.api import FullContactAPIV2
+from htk.lib.fullcontact.api import FullContactAPIV3
 from htk.utils import chunks
 from htk.utils import htk_setting
 
@@ -13,6 +14,12 @@ def get_full_contact_api_v3_key():
     api_keys = htk_setting('HTK_FULLCONTACT_API_V3_KEYS')
     api_key = random.choice(api_keys)
     return api_key
+
+
+def get_full_contact_api_v3():
+    api_key = get_full_contact_api_v3_key()
+    api = FullContactAPIV3(api_key)
+    return api
 
 
 def get_full_contact_api_v2_key():
@@ -32,7 +39,7 @@ def get_full_contact_api_v2():
 def find_person_by_email(email):
     """Retrieve a person object by `email`
     """
-    api = get_full_contact_api_v2()
+    api = get_full_contact_api_v3()
     person = api.get_person(email)
     return person
 

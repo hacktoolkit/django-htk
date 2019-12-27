@@ -1,7 +1,7 @@
 FULLCONTACT_API_V3_BASE_URL = 'https://api.fullcontact.com/v3'
 
 FULLCONTACT_API_V3_RESOURCES = {
-    'person' : '/person.json',
+    'person' : '/person.enrich',
 }
 
 FULLCONTACT_API_V2_BASE_URL = 'https://api.fullcontact.com/v2'

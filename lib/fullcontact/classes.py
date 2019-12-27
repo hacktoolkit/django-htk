@@ -1,16 +1,77 @@
+from collections import defaultdict
+
+
 class FullContactObject(object):
     def __init__(self, *args, **kwargs):
         pass
 
+
 class FullContactPerson(FullContactObject):
-    def __init__(self, email, person_data, *args, **kwargs):
+    def __init__(self, email, person_data, version='v3', *args, **kwargs):
         self.email = email.strip().lower()
         self.data = person_data
+        self.version = version
 
     def as_slack(self):
-        """Formats this person's data as a Slack string
+        if self.version == 'v2':
+            result = self.as_slack_v2()
+        elif self.version == 'v3':
+            result = self.as_slack_v3()
+        else:
+            raise Exception('Unknown FullContactPerson version')
+        return result
+
+    def as_slack_v3(self):
+        """Formats this person's FullContact V3 data as a Slack string
         """
-        from collections import defaultdict
+        values = defaultdict(lambda: 'N/A')
+        values.update(self.data)
+
+        details = defaultdict(lambda: 'N/A')
+        details.update(self.data.get('details', {}))
+
+        name = defaultdict(lambda: 'N/A')
+        name.update(details.get('name', {}))
+
+        values['age'] = details['age'] or 'N/A'
+        values['ageRange'] = values['ageRange'] or 'N/A'
+        values['organization'] = values['organization'] or 'N/A'
+
+        values['familyName'] = name['family']
+        values['givenName'] = name['given']
+
+        photos = self.data.get('details', {}).get('photos', [])
+        photos_rendered = '\n'.join([photo['value'] for photo in photos]) if photos else 'None'
+        values['photos_rendered'] = photos_rendered
+
+        social_profiles = details.get('profiles', {}).values()
+        social_rendered = '\n'.join([
+            '*{service}*: {url}'.format(**social)
+            for social
+            in social_profiles
+        ])
+        values['social_rendered'] = social_rendered
+
+        s = """*Basic Information*:
+{fullName} ({familyName}, {givenName})
+Age: {age} ({ageRange}), Gender: {gender}
+Location: {location}
+
+Website: {website}
+
+*Photos*:
+{photos_rendered}
+
+*Social Profiles*:
+{social_rendered}
+
+*Organization*: {organization}
+""".format(**values)
+        return s
+
+    def as_slack_v2(self):
+        """Formats this person's FullContact V2 data as a Slack string
+        """
         demographics = self.data.get('demographics', {})
         contact_info = self.data.get('contactInfo', {})
         values = defaultdict(lambda: 'N/A')

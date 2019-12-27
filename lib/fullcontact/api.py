@@ -10,6 +10,64 @@ from htk.utils import htk_setting
 from htk.utils import resolve_method_dynamically
 
 
+class FullContactAPIV3(object):
+    """
+    https://www.fullcontact.com/developer/docs/
+    """
+    def __init__(self, api_key):
+        self.api_key = api_key
+
+    def get_resource_url(self, resource_type):
+        """Returns the resource URL for `resource_type`
+        """
+        url = '%s%s' % (
+            FULLCONTACT_API_V3_BASE_URL,
+            FULLCONTACT_API_V3_RESOURCES.get(resource_type),
+        )
+        return url
+
+    def post(self, resource_type, json_data):
+        """Performs a FullContact API POST request
+        """
+        url = self.get_resource_url(resource_type)
+        headers = {
+            'Authorization' : 'Bearer {}'.format(self.api_key),
+            'Content-Type' : 'application/json',
+        }
+        response = requests.post(url, headers=headers, json=json_data)
+        return response
+
+    def get_person(self, email):
+        """
+        https://www.fullcontact.com/developer/docs/person/
+        """
+        person = None
+        json_data = {
+            'email' : email,
+        }
+        response = self.post('person', json_data)
+        if response.status_code == 200:
+            try:
+                person_data = response.json()
+                FullContactPerson = resolve_method_dynamically(htk_setting('HTK_FULLCONTACT_PERSON_CLASS'))
+                person = FullContactPerson(email, person_data, version='v3')
+            except:
+                rollbar.report_exc_info(extra_data={'response' : response,})
+        else:
+            print response.content
+            pass
+        return person
+
+    def get_persons(self, emails):
+        """Retrieves a batch of Person objects based on `emails`
+
+        Returns a dictionary mapping emails to Person objects
+        """
+        rollbar.report_message('Not supported yet in FullContact V3', level='info')
+        persons = {}
+        return persons
+
+
 class FullContactAPIV2(object):
     """
     https://www.fullcontact.com/developer/docs/
@@ -64,7 +122,7 @@ class FullContactAPIV2(object):
             try:
                 data = response.json()
                 FullContactPerson = resolve_method_dynamically(htk_setting('HTK_FULLCONTACT_PERSON_CLASS'))
-                person = FullContactPerson(email, data)
+                person = FullContactPerson(email, data, version='v2')
             except:
                 rollbar.report_exc_info(extra_data={'response' : response,})
         else:
@@ -87,10 +145,10 @@ class FullContactAPIV2(object):
             responses = response.json()['responses']
             for email, request_url in email_api_request_urls.iteritems():
                 if request_url in responses:
-                    person_response = responses[request_url]
-                    if person_response['status'] == 200:
+                    person_data = responses[request_url]
+                    if person_data['status'] == 200:
                         FullContactPerson = resolve_method_dynamically(htk_setting('HTK_FULLCONTACT_PERSON_CLASS'))
-                        persons[email] = FullContactPerson(email, person_response)
+                        persons[email] = FullContactPerson(email, person_data, version='v2')
         else:
             pass
         return persons
