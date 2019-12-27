@@ -31,12 +31,13 @@ class FullContactPerson(FullContactObject):
         details.update(self.data.get('details', {}))
 
         name = defaultdict(lambda: 'N/A')
-        name.update(details.get('name', {}))
+        name.update(details.get('name') or {})
 
         values['age'] = details['age'] or 'N/A'
         values['ageRange'] = values['ageRange'] or 'N/A'
         values['organization'] = values['organization'] or 'N/A'
 
+        values['fullName'] = name['full']
         values['familyName'] = name['family']
         values['givenName'] = name['given']
 
