@@ -47,27 +47,27 @@ class FullContactPerson(FullContactObject):
 
         social_profiles = details.get('profiles', {}).values()
         social_rendered = '\n'.join([
-            '*{service}*: {url}'.format(**social)
+            '*%(service)s*: %(url)s' % social
             for social
             in social_profiles
         ])
         values['social_rendered'] = social_rendered
 
         s = """*Basic Information*:
-{fullName} ({familyName}, {givenName})
-Age: {age} ({ageRange}), Gender: {gender}
-Location: {location}
+%(fullName)s (%(familyName)s, %(givenName)s)
+Age: %(age)s (%(ageRange)s), Gender: %(gender)s
+Location: %(location)s
 
-Website: {website}
+Website: %(website)s
 
 *Photos*:
-{photos_rendered}
+%(photos_rendered)s
 
 *Social Profiles*:
-{social_rendered}
+%(social_rendered)s
 
-*Organization*: {organization}
-""".format(**values)
+*Organization*: %(organization)s
+""" % values
         return s
 
     def as_slack_v2(self):
