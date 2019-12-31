@@ -20,7 +20,7 @@ class S3Manager(object):
             self.secret_key = AWSCredentials.HEADLESS_S3_SECRET_KEY
             self._connect()
         except:
-            print 'Unable to connect to AWS or missing AWSCredentials'
+            print('Unable to connect to AWS or missing AWSCredentials')
 
     def _connect(self):
         self.conn = S3Connection(self.access_key, self.secret_key)

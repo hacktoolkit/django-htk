@@ -35,15 +35,15 @@ def rollbar_record_deploy(access_token, env='other'):
     }, timeout=3)
 
     if resp.status_code == 200:
-        print "Deploy recorded successfully."
+        print("Deploy recorded successfully.")
     else:
-        print "Error recording deploy:", resp.text
+        print("Error recording deploy:", resp.text)
 
 class AbstractFabricTaskManager(object):
     def deploy(self):
         """Default deploy task
         """
-        print 'I am a dummy task'
+        print('I am a dummy task')
 
     def _get_hosts(self):
         hosts = []

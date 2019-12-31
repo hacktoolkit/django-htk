@@ -56,7 +56,7 @@ class OhMyGreenMenu(object):
             return tpl % data
 
         meal_strings = []
-        for meal, meal_data in self.data.iteritems():
+        for meal, meal_data in self.data.items():
             meal_strings.append(_build_meal_string(meal, meal_data))
 
         if len(meal_strings):

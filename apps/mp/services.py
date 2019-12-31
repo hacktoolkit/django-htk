@@ -199,7 +199,7 @@ class MaterializedPropertySubstitution(object):
                     if settings.MATERIALIZED_PROPERTIES_STRICT_CHECK:
                         raise Exception(message)
                     else:
-                        print message
+                        print(message)
                         traceback.print_stack()
                 return cached
             else:
@@ -236,12 +236,12 @@ class MaterializedPropertySubstitution(object):
                 depends_on_mp = registered_mps.get(model, {}).get(attr, None)
                 if depends_on_mp:
                     if EXTRA_VERBOSITY:
-                        print 'MP dependency found: {}->{}'.format(self.name, attr)
+                        print('MP dependency found: {}->{}'.format(self.name, attr))
                     depends_on_mp.dependent_mps.append((self, path))
                     continue
 
                 if EXTRA_VERBOSITY:
-                    print 'Parsing dependency cls=%s, model=%s attr=%s path=%s' % (self.cls, model, attr, path)
+                    print('Parsing dependency cls=%s, model=%s attr=%s path=%s' % (self.cls, model, attr, path))
                 dependent_models[model].add(attr)
                 if attr != '*':
                     try:
@@ -280,7 +280,7 @@ class MaterializedPropertySubstitution(object):
         upd = {self.field_name: value}
         if self.use_is_set_field:
             upd[self.is_set_field_name] = True
-        for k, v in upd.iteritems():
+        for k, v in upd.items():
             setattr(instance, k, v)
         if force is not None:
             force.update(upd.keys())
@@ -512,15 +512,15 @@ def invalidate_for_instances(instances, mps, save=False):
 
 
 def default_dbg(x):
-    print x
+    print(x)
 
 
 def default_stat(failed, total, not_set):
-    print 'failed {} of {}, not set on {}'.format(failed, total, not_set)
+    print('failed {} of {}, not set on {}'.format(failed, total, not_set))
 
 
 def default_exception(err, instance):
-    print 'Failed to evaluate for {}: {}'.format(fmt(instance), err)
+    print('Failed to evaluate for {}: {}'.format(fmt(instance), err))
 
 
 class Throttler(object):

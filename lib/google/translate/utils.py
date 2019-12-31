@@ -6,7 +6,7 @@ from htk.lib.google.translate.constants import *
 
 def get_language_code(language):
     language_code = None
-    for code, lang in LANGUAGES.iteritems():
+    for code, lang in LANGUAGES.items():
         if lang.lower() == language.lower():
             language_code = code
             break

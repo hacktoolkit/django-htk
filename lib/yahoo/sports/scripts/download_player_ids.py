@@ -78,12 +78,12 @@ def download_players(sport, letter):
 
 if __name__ == '__main__':
     for sport in SPORTS:
-        print sport
+        print(sport)
         for letter in LETTERS:
             players = download_players(sport, letter)
             for player in players:
                 try:
-                    print player
+                    print(player)
                 except:
                     pass
         time.sleep(0.2)

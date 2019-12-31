@@ -37,7 +37,7 @@ def import_organization_customers_from_csv_file(organization_customer, csv_file)
     # csv.DictReader reads the first row as fieldnames
     reader = csv.DictReader(csv_file.file.read().splitlines())
     for row in reader:
-        customer_data = { k : v.strip() for k, v in row.iteritems() }
+        customer_data = { k : v.strip() for k, v in row.items() }
         if 'last_name, first_name' in customer_data:
             (last_name, first_name,) = [name.strip() for name in customer_data['last_name, first_name'].split(',', 1)]
             customer_data['first_name'] = first_name

@@ -71,7 +71,7 @@ def get_oembed_type(url):
     """Determines the type of oEmbed this URL is, if it exists
     """
     oembed_type = None
-    for service, pattern in OEMBED_URL_SCHEME_REGEXPS.iteritems():
+    for service, pattern in OEMBED_URL_SCHEME_REGEXPS.items():
         if re.match(pattern, url, flags=re.I):
             oembed_type = service
             break

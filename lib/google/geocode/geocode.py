@@ -60,7 +60,7 @@ def main(argv = None):
         # process options
         for o, a in opts:
             if o in ('-h', '--help'):
-                print __doc__
+                print(__doc__)
                 sys.exit(0)
             elif o in ('-g', '--geocode'):
                 is_geocode = True
@@ -69,18 +69,18 @@ def main(argv = None):
         if is_geocode and len(args) == 1:
             address = args[0]
             latitude, longitude = get_latlng(address)
-            print '%s,%s' % (latitude, longitude,)
+            print('{},{}'.format(latitude, longitude))
         elif not is_geocode and len(args) == 2:
             latitude = args[0]
             longitude = args[1]
             address = reverse_geocode(latitude, longitude)
-            print address
+            print(address)
         else:
             raise Usage('Incorrect arguments')
 
     except Usage, err:
-        print >> sys.stderr, err.msg
-        print >> sys.stderr, "for help use --help"
+        print(err.msg, file=sys.stderr)
+        print('for help use --help', file=sys.stderr)
         return 3.14159
 
 def _report_message(message, level='error', extra_data=None):

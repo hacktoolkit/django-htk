@@ -14,7 +14,7 @@ def get_bart_stations():
     stations = [
         { 'abbrev' : station_abbrev, 'name' : get_station_name(station_abbrev), }
         for station_abbrev, station_name
-        in BART_STATION_ABBREVIATIONS.iteritems()
+        in BART_STATION_ABBREVIATIONS.items()
     ]
     stations = sorted(stations, key=lambda x: x['name'])
     return stations

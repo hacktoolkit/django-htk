@@ -42,7 +42,7 @@ class YahooFantasySportsAPIResponse(object):
         # players = r.get(path=(('leagues', 1), ('teams', 1), ('roster', 0), ('players', 0)))
         # for p in players:
         #     o = YahooResponseObject(p)
-        #     # print o.name['full']
+        #     # print(o.name['full'])
         """
         items = []
         path_length = len(path)
@@ -119,7 +119,7 @@ class YahooFantasySportsAPIClient(YahooOAuthClient):
 
     def get_user_leagues(self, game_keys='nfl,mlb,nba,nhl'):
         """
-        `game_keys` - comma-separated list of game codes, 
+        `game_keys` - comma-separated list of game codes,
         default is to all full games for the current season
 
         game codes of full games: nfl, mlb, nba, nhl
@@ -130,7 +130,7 @@ class YahooFantasySportsAPIClient(YahooOAuthClient):
             subresource = 'games;game_keys=%s/leagues' % game_keys
         else:
             subresource = 'games/leagues'
-        
+
         result = self.get_user(subresource=subresource)
         return result
 

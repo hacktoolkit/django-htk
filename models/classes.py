@@ -39,7 +39,7 @@ class HtkBaseModel(models.Model):
         """Iterates over a flat dictionary `payload` and updates the attributes on `self`
         """
         was_updated = False
-        for key, value in payload.iteritems():
+        for key, value in payload.items():
             if hasattr(self, key):
                 was_updated = True
                 setattr(self, key, value)

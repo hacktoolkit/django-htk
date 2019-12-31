@@ -69,16 +69,16 @@ class CachedAttribute(object):
         foo = Foo()
 
         # will evaluate bar() from above the first time it's used
-        print 'first', foo.bar
+        print('first', foo.bar)
 
         # will return the cached value of bar()
-        print 'second', foo.bar
+        print('second', foo.bar)
 
         # will remove all of the cached attributes from the foo instance
         foo.clear_all_cached_attributes()
 
         # will evaluate bar()
-        print 'third', foo.bar
+        print('third', foo.bar)
         """
         if inst is None:
             return self

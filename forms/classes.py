@@ -140,7 +140,7 @@ class AbstractModelInstanceAttributesFormMixin(object):
         initial_values = self.initial
         boolean_attributes = self.boolean_attributes_lookup
         was_updated = False
-        for key, old_value in initial_values.iteritems():
+        for key, old_value in initial_values.items():
             new_value = self.cleaned_data.get(key, '')
             if type(new_value) == str:
                 new_value = new_value.strip()

@@ -143,7 +143,7 @@ class FullContactAPIV2(object):
         persons = {}
         if response.status_code == 200:
             responses = response.json()['responses']
-            for email, request_url in email_api_request_urls.iteritems():
+            for email, request_url in email_api_request_urls.items():
                 if request_url in responses:
                     person_data = responses[request_url]
                     if person_data['status'] == 200:

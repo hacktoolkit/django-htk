@@ -81,12 +81,12 @@ def safe_stripe_call(func, *args, **kwargs):
         #body = e.json_body
         #err  = body['error']
 
-        #print "Status is: %s" % e.http_status
-        #print "Type is: %s" % err.get('type')
-        #print "Code is: %s" % err.get('code')
+        #print('Status is: {}'.format(e.http_status))
+        #print('Type is: {}'.format(err.get('type')))
+        #print('Code is: {}'.format(err.get('code')))
         ## param is '' in this case
-        #print "Param is: %s" % err.get('param')
-        #print "Message is: %s" % err.get('message')
+        #print('Param is: {}'.format(err.get('param')))
+        #print('Message is: {}'.format(err.get('message')))
         _log_error()
     except stripe.error.InvalidRequestError as e:
         # Invalid parameters were supplied to Stripe's API

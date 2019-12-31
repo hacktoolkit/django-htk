@@ -12,4 +12,4 @@ class GoogleCloudMessagingLibraryTestCase(unittest.TestCase):
         if htk_setting('HTK_GCM_API_KEY', None):
             self.assertIsNotNone(gcm)
         else:
-            print 'No HTK_GCM_API_KEY defined'
+            print('No HTK_GCM_API_KEY defined')

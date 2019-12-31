@@ -38,7 +38,7 @@ class EgaugeAPI(object):
           <r t="P" n="Test CT3"><v>238673736</v></r>
         </data>
         """
-        #print '\n'.join([response.url, response.status_code, response.content,])
+        #print('\n'.join([response.url, response.status_code, response.content,]))
         soup = BeautifulSoup(response.content, 'xml')
         data = {
             'ts' : int(soup.find('ts').string),
@@ -78,7 +78,7 @@ class EgaugeAPI(object):
           </data>
         </group>
         """
-        #print '\n'.join([response.url, str(response.status_code), response.content,])
+        #print('\n'.join([response.url, str(response.status_code), response.content,]))
         soup = BeautifulSoup(response.content, 'xml')
         data = {
             'column_names' : [cname.string for cname in soup.find_all('cname')],

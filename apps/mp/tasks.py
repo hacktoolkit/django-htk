@@ -27,7 +27,7 @@ CHUNKS = 40
 #@periodic_task(run_every=crontab(minute='0', hour='3',))  # Once a day at 3 AM
 @safe_timed_task('Verify Materialized Properties', notify=True)
 def verify_materialized_properties():
-    for cls, mps in registered_mps.iteritems():
+    for cls, mps in registered_mps.items():
         if cls._meta.abstract:
             for child in (x for x in apps.get_models() if issubclass(x, cls) and not x._meta.abstract):
                 verify_cls(child, mps)
