@@ -138,7 +138,7 @@ def seo_tokenize(title, lower=True, preserve_ascii_extended=False, preserve_unic
             replaced_c = c if preserve_unicode else ''
         return replaced_c
 
-    cleaned_title = re.sub(r'[^ \-A-Za-z0-9]', _repl, cleaned_title)
+    cleaned_title = re.sub(r'[^ \-A-Za-z0-9]', _repl, cleaned_title.decode())
 
     # replace whitespace in string with hyphens
     tokenized_title = '-'.join(cleaned_title.split())
