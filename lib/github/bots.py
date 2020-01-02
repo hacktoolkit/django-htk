@@ -218,7 +218,7 @@ def main(argv = None):
             opts, args = getopt.getopt(argv[1:],
                                        OPT_STR,
                                        OPT_LIST)
-        except getopt.error, msg:
+        except getopt.error as msg:
              raise Usage(msg)
         # process options
         for o, a in opts:
@@ -235,7 +235,7 @@ def main(argv = None):
         else:
             raise Usage('Incorrect arguments')
 
-    except Usage, err:
+    except Usage as err:
         print(err.msg, file=sys.stderr)
         print('for help use --help', file=sys.stderr)
         return 3.14159
