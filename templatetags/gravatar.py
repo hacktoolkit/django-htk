@@ -25,7 +25,7 @@ def get_user(user):
             user = UserModel.objects.get(username=user)
         except UserModel.DoesNotExist:
             # TODO: make better? smarter? strong? maybe give it wheaties?
-            raise Exception, 'Bad user for gravatar.'
+            raise Exception('Bad user for gravatar.')
     return user
 
 
