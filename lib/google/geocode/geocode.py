@@ -55,12 +55,12 @@ def main(argv = None):
             opts, args = getopt.getopt(argv[1:],
                                        OPT_STR,
                                        OPT_LIST)
-        except getopt.error, msg:
+        except getopt.error as msg:
              raise Usage(msg)
         # process options
         for o, a in opts:
             if o in ('-h', '--help'):
-                print __doc__
+                print(__doc__)
                 sys.exit(0)
             elif o in ('-g', '--geocode'):
                 is_geocode = True
@@ -69,18 +69,18 @@ def main(argv = None):
         if is_geocode and len(args) == 1:
             address = args[0]
             latitude, longitude = get_latlng(address)
-            print '%s,%s' % (latitude, longitude,)
+            print('{},{}'.format(latitude, longitude))
         elif not is_geocode and len(args) == 2:
             latitude = args[0]
             longitude = args[1]
             address = reverse_geocode(latitude, longitude)
-            print address
+            print(address)
         else:
             raise Usage('Incorrect arguments')
 
-    except Usage, err:
-        print >> sys.stderr, err.msg
-        print >> sys.stderr, "for help use --help"
+    except Usage as err:
+        print(err.msg, file=sys.stderr)
+        print('for help use --help', file=sys.stderr)
         return 3.14159
 
 def _report_message(message, level='error', extra_data=None):
@@ -145,11 +145,11 @@ def get_latlng(address):
                     longitude = location['lng']
             else:
                 _report_message('Geocode address failure: No results found', level='info', extra_data=extra_data)
-        except ValueError, e:
+        except ValueError as e:
             # likely to be caused by invalid JSON
             extra_data['error'] = '%s' % e
             _report_exc_info(extra_data=extra_data)
-        except KeyError, e:
+        except KeyError as e:
             # likely to be caused by location missing 'lat' or 'lng'
             extra_data['error'] = '%s' % e
             _report_exc_info(extra_data=extra_data)
@@ -178,7 +178,7 @@ def reverse_geocode(latitude, longitude):
     try:
         location = data['results'][0]
         address = location['formatted_address']
-    except KeyError, k:
+    except KeyError as e:
         address = None
         _report_exc_info(extra_data=extra_data)
     return address

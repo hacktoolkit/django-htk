@@ -121,7 +121,7 @@ class HtkShopifyArchiver(object):
         """
         start_time = time.time()
         msg = 'Archiving %ss...' % item_type
-        print msg
+        print(msg)
         slack_notifications_enabled = htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
         if slack_notifications_enabled:
             from htk.utils.notifications import slack_notify
@@ -131,7 +131,7 @@ class HtkShopifyArchiver(object):
         iterator = self._get_iterator_for_item_type(item_type)
         for item, i, total, page in iterator():
             msg =  '%s of %s %ss'  % (i, total, item_type,)
-            print msg
+            print(msg)
             self.archive_item(item_type, item)
             num_archived = i
 
@@ -218,8 +218,8 @@ class HtkShopifyMongoDBArchiver(HtkShopifyArchiver):
         pk = key(document)
         if self.already_cached(item_type, document, key):
             if item_type not in self.fk_item_types:
-                print 'Skipping duplicate processed in session %s: %s' % (item_type, pk,)
-                print document
+                print('Skipping duplicate processed in session {}: {}'.format(item_type, pk))
+                print(document)
         else:
             preparator = self._get_document_preparator(item_type)
             if preparator:

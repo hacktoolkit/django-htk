@@ -343,7 +343,7 @@ except ImportError as exp:
             return None
         @classmethod
         def gds_reverse_node_mapping(cls, mapping):
-            return dict(((v, k) for k, v in mapping.iteritems()))
+            return dict(((v, k) for k, v in mapping.items()))
 
 
 #

@@ -27,9 +27,9 @@ def refresh_token_if_needed(func):
         expires = self.user_social_auth.extra_data['expires']
         expires_time = int(expires) - 300 if expires else 0
         now = int(time.time())
-        # print 'comparing n: {0} vs expire: {1}'.format(now, expires)
+        # print('comparing n: {0} vs expire: {1}'.format(now, expires))
         if expires is None or expires < now:
-            #print '------ Refreshing Token ------'
+            #print('------ Refreshing Token ------')
             r = self.oauth.get_raw_access_token(
                 request_token=self.access_token['oauth_token'],
                 request_token_secret=self.access_token['oauth_token_secret'],
@@ -44,7 +44,7 @@ def refresh_token_if_needed(func):
             self.user_social_auth.extra_data['access_token'] = self.access_token
             current_time = int(time.time())
             self.user_social_auth.extra_data['expires'] = current_time + int(self.access_token['oauth_expires_in'])
-            # print 'current time: {0}, expiring oauth at {1}'.format(current_time, self.user_social_auth.extra_data['expires'])
+            # print('current time: {0}, expiring oauth at {1}'.format(current_time, self.user_social_auth.extra_data['expires']))
             self.user_social_auth.save()
 
             token = (self.access_token['oauth_token'], self.access_token['oauth_token_secret'])

@@ -44,7 +44,7 @@ class RedfinAPI(object):
         }
 
         response = requests.get(url, params=params, headers=headers, cookies=cookies, timeout=3)
-        #print response.text
+        #print(response.text)
         return response
 
     def _get_api_endpoint_url(self, endpoint_name):

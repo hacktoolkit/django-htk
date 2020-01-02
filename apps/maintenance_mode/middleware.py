@@ -1,10 +1,18 @@
+# Python Standard Library Imports
+
+# Third Party / PIP Imports
+
+# Django Imports
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils.deprecation import MiddlewareMixin
 
+# HTK Imports
 from htk.apps.maintenance_mode.utils import is_maintenance_mode
 from htk.utils import htk_setting
 
-class MaintenanceModeMiddleware(object):
+
+class MaintenanceModeMiddleware(MiddlewareMixin):
     """Checks whether HTK_MAINTENANCE_MODE is set
 
     If so, redirects to the HTK_MAINTENANCE_MODE_URL_NAME page

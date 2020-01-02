@@ -35,7 +35,7 @@ def get_event_handlers(event):
 
     # add in additional event group handlers
     extra_event_handlers = htk_setting('HTK_ALEXA_SKILL_EVENT_HANDLERS_EXTRAS')
-    for event_group, handlers in extra_event_handlers.iteritems():
+    for event_group, handlers in extra_event_handlers.items():
         event_handlers.update(handlers)
 
     return event_handlers

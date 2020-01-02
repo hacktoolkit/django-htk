@@ -130,12 +130,12 @@ def get_event_handlers(event):
 
     # add in additional event group handlers
     extra_event_handlers = htk_setting('HTK_SLACK_EVENT_HANDLERS_EXTRAS')
-    for event_group, handlers in extra_event_handlers.iteritems():
+    for event_group, handlers in extra_event_handlers.items():
         if webhook_settings.get(event_group, False) is True:
             event_handlers.update(handlers)
 
     # remove any disabled commands
-    disabled_commands = [k for k, v in webhook_settings.iteritems() if v is False and k in event_handlers]
+    disabled_commands = [k for k, v in webhook_settings.items() if v is False and k in event_handlers]
     for command in disabled_commands:
         del event_handlers[command]
     return event_handlers
@@ -146,7 +146,7 @@ def get_event_handler_usages(event):
 
     # add in additional event group handler usages
     extra_event_handler_usages = htk_setting('HTK_SLACK_EVENT_HANDLER_USAGES_EXTRA')
-    for event_group, usages in extra_event_handler_usages.iteritems():
+    for event_group, usages in extra_event_handler_usages.items():
         if webhook_settings.get(event_group, False) is True:
             event_handler_usages.update(usages)
     return event_handler_usages

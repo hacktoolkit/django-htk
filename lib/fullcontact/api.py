@@ -46,16 +46,19 @@ class FullContactAPIV3(object):
             'email' : email,
         }
         response = self.post('person', json_data)
-        if response.status_code == 200:
-            try:
-                person_data = response.json()
+
+        try:
+            response_json = response.json()
+            if response.status_code == 200:
+                person_data = person_data
                 FullContactPerson = resolve_method_dynamically(htk_setting('HTK_FULLCONTACT_PERSON_CLASS'))
                 person = FullContactPerson(email, person_data, version='v3')
-            except:
-                rollbar.report_exc_info(extra_data={'response' : response,})
-        else:
-            print response.content
-            pass
+            else:
+                rollbar.report_message(extra_data={'response' : response.json(),})
+                pass
+        except ValueError:
+            rollbar.report_exc_info(extra_data={'response' : response,})
+
         return person
 
     def get_persons(self, emails):
@@ -143,7 +146,7 @@ class FullContactAPIV2(object):
         persons = {}
         if response.status_code == 200:
             responses = response.json()['responses']
-            for email, request_url in email_api_request_urls.iteritems():
+            for email, request_url in email_api_request_urls.items():
                 if request_url in responses:
                     person_data = responses[request_url]
                     if person_data['status'] == 200:

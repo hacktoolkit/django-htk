@@ -18,7 +18,7 @@ class ShopifyResource(HtkBaseModel):
         document['id'] = pk
         del document['_id']
 
-        for key, value in document.iteritems():
+        for key, value in document.items():
             if hasattr(instance, key):
                 value = instance.deserialize_value(key, value)
                 setattr(instance, key, value)

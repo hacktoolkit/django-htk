@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
-from email.MIMEImage import MIMEImage
+from email.mime.image import MIMEImage
 
 from htk.constants.defaults import *
 from htk.utils import htk_setting

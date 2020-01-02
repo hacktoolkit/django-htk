@@ -257,7 +257,7 @@ BIBLE_BOOKS_ALIASES = {
 # Programmatically build mappings from common Bible book abbreviations or aliases to canonical name, including uppercase and lowercase variants
 BIBLE_BOOKS_ALIAS_MAPPINGS = {}
 
-for book_name, aliases in BIBLE_BOOKS_ALIASES.iteritems():
+for book_name, aliases in BIBLE_BOOKS_ALIASES.items():
     for alias in aliases:
         variants = (
             book_name.lower(),

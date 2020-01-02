@@ -54,7 +54,7 @@ def set_input_attrs(form, attrs=None):
                 field.widget.attrs['class'] = input_classes
         if field.required:
             field.widget.attrs['required'] = 'required'
-        for key, value in attrs.iteritems():
+        for key, value in attrs.items():
             if key == 'class':
                 if 'class' not in field.widget.attrs:
                     # only override if widget does not have class explicitly set

@@ -19,7 +19,7 @@ def job_runner(f):
     try:
         ensure_mysql_connection_usable()
         result = f()
-    except MySQLdb.OperationalError, e:
+    except MySQLdb.OperationalError as e:
         extra_data = {
             'caught_exception' : True,
             'attempt_reconnect' : True,

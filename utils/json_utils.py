@@ -35,7 +35,7 @@ def find_all_json_paths(json_obj):
 
     def _walk(node, path=''):
         if type(node) == dict:
-            for k, v in node.iteritems():
+            for k, v in node.items():
                 next_path = '%s.%s' % (path, k,)
                 _walk(v, path=next_path)
         elif type(node) == list:
@@ -44,7 +44,7 @@ def find_all_json_paths(json_obj):
         elif type(node) in (str, unicode, int,):
             paths.append(path)
 
-    for k, v in json_obj.iteritems():
+    for k, v in json_obj.items():
         _walk(v, k)
 
     paths = sorted(paths)

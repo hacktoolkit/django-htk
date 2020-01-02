@@ -107,7 +107,7 @@ class GitHubReminderBot(object):
                         elif review.state == 'COMMENTED':
                             pass
                         else:
-                            print review.state
+                            print(review.state)
 
                     pr_list = pull_requests_change if has_change else pull_requests_merge if has_multiple_approvals else pull_requests_approve if has_approval else pull_requests_review
                     add_pull_request(repo, pull_request, reviews, has_approval, has_change, pr_list)
@@ -218,12 +218,12 @@ def main(argv = None):
             opts, args = getopt.getopt(argv[1:],
                                        OPT_STR,
                                        OPT_LIST)
-        except getopt.error, msg:
+        except getopt.error as msg:
              raise Usage(msg)
         # process options
         for o, a in opts:
             if o in ('-h', '--help'):
-                print __doc__
+                print(__doc__)
                 sys.exit(0)
             elif o in ('-t', '--token'):
                 token = a
@@ -231,13 +231,13 @@ def main(argv = None):
                 org = a
         if token and org:
             bot = GitHubReminderBot(token, org)
-            print bot.pull_request_reminder()
+            print(bot.pull_request_reminder())
         else:
             raise Usage('Incorrect arguments')
 
-    except Usage, err:
-        print >> sys.stderr, err.msg
-        print >> sys.stderr, "for help use --help"
+    except Usage as err:
+        print(err.msg, file=sys.stderr)
+        print('for help use --help', file=sys.stderr)
         return 3.14159
 
 if __name__ == '__main__':
