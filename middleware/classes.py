@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import datetime
 import re
-import thread
+import _thread
 
 # Third Party / PIP Imports
 
@@ -16,6 +16,7 @@ from htk.session_keys import *
 from htk.utils import htk_setting
 from htk.utils.request import is_allowed_host
 
+
 class GlobalRequestMiddleware(object):
     """Stores the request object so that it is accessible globally
 
@@ -26,21 +27,21 @@ class GlobalRequestMiddleware(object):
 
     @classmethod
     def get_current_request(cls):
-        request = cls._threadmap.get(thread.get_ident())
+        request = cls._threadmap.get(_thread.get_ident())
         return request
 
     def process_request(self, request):
-        self._threadmap[thread.get_ident()] = request
+        self._threadmap[_thread.get_ident()] = request
 
     def process_exception(self, request, exception):
         try:
-            del self._threadmap[thread.get_ident()]
+            del self._threadmap[_thread.get_ident()]
         except KeyError:
             pass
 
     def process_response(self, request, response):
         try:
-            del self._threadmap[thread.get_ident()]
+            del self._threadmap[_thread.get_ident()]
         except KeyError:
             pass
         return response
@@ -67,6 +68,7 @@ class AllowedHostsMiddleware(object):
         if redirect_uri:
             return redirect(redirect_uri)
 
+
 class RequestTimerMiddleware(object):
     """Timer to observe how long a request takes to process
     """
@@ -74,7 +76,7 @@ class RequestTimerMiddleware(object):
 
     @classmethod
     def get_current_timer(cls):
-        timer = cls._threadmap.get(thread.get_ident())
+        timer = cls._threadmap.get(_thread.get_ident())
         return timer
 
     def __init__(self):
@@ -85,7 +87,8 @@ class RequestTimerMiddleware(object):
 
     def process_request(self, request):
         timer = self.timer
-        self._threadmap[thread.get_ident()] = timer
+        self._threadmap[_thread.get_ident()] = timer
+
 
 class RewriteJsonResponseContentTypeMiddleware(object):
     """This middleware exists because IE is a stupid browser and tries to download application/json content type from XHR responses as file
@@ -103,6 +106,7 @@ class RewriteJsonResponseContentTypeMiddleware(object):
         user_agent = request.META.get('HTTP_USER_AGENT', '')
         is_msie = bool(re.match('.*MSIE.*', user_agent))
         return is_msie
+
 
 class TimezoneMiddleware(object):
     def process_request(self, request):
