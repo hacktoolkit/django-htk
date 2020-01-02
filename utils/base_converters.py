@@ -1,9 +1,10 @@
 import copy
-import string
 
 
-BASE_62_LIST = string.digits + string.ascii_letters
-BASE_52_LIST = copy.copy(string.ascii_letters)
+DIGITS = '0123456789'
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+BASE_62_LIST = DIGITS + LETTERS
+BASE_52_LIST = copy.copy(LETTERS)
 
 
 def build_base_dict(base_list):
@@ -20,7 +21,7 @@ def base_encode(integer, base_list):
     value = ''
     while integer != 0:
         value = base_list[integer % base] + value
-        integer /= base
+        integer //= base
 
     return value
 
