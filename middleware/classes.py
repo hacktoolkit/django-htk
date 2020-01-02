@@ -7,6 +7,7 @@ import _thread
 
 # Django Imports
 from django.conf import settings
+from django.utils.deprecation import MiddlewareMixin
 from django.shortcuts import redirect
 from django.utils import timezone
 
@@ -17,7 +18,7 @@ from htk.utils import htk_setting
 from htk.utils.request import is_allowed_host
 
 
-class GlobalRequestMiddleware(object):
+class GlobalRequestMiddleware(MiddlewareMixin):
     """Stores the request object so that it is accessible globally
 
     Makes an assumption that one request runs entirely in one thread
@@ -46,7 +47,7 @@ class GlobalRequestMiddleware(object):
             pass
         return response
 
-class AllowedHostsMiddleware(object):
+class AllowedHostsMiddleware(MiddlewareMixin):
     """Checks that host is inside ALLOWED_HOST_REGEXPS
 
     If not, will redirect to HTK_DEFAULT_DOMAIN
@@ -69,7 +70,7 @@ class AllowedHostsMiddleware(object):
             return redirect(redirect_uri)
 
 
-class RequestTimerMiddleware(object):
+class RequestTimerMiddleware(MiddlewareMixin):
     """Timer to observe how long a request takes to process
     """
     _threadmap = {}
@@ -90,7 +91,7 @@ class RequestTimerMiddleware(object):
         self._threadmap[_thread.get_ident()] = timer
 
 
-class RewriteJsonResponseContentTypeMiddleware(object):
+class RewriteJsonResponseContentTypeMiddleware(MiddlewareMixin):
     """This middleware exists because IE is a stupid browser and tries to download application/json content type from XHR responses as file
     """
     def process_response(self, request, response):
@@ -108,7 +109,7 @@ class RewriteJsonResponseContentTypeMiddleware(object):
         return is_msie
 
 
-class TimezoneMiddleware(object):
+class TimezoneMiddleware(MiddlewareMixin):
     def process_request(self, request):
         #django_timezone = request.session.get(DJANGO_TIMEZONE, None)
         #if not django_timezone and request.user.is_authenticated():
