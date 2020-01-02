@@ -47,6 +47,7 @@ class GlobalRequestMiddleware(MiddlewareMixin):
             pass
         return response
 
+
 class AllowedHostsMiddleware(MiddlewareMixin):
     """Checks that host is inside ALLOWED_HOST_REGEXPS
 
