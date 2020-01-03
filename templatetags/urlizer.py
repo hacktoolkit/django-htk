@@ -13,7 +13,7 @@ def redir_url(url):
     redir_view = htk_setting('HTK_REDIRECT_URL_NAME')
     url = '%(path)s?url=%(url)s' % {
         'path' : reverse(redir_view),
-        'url' : base64.urlsafe_b64encode(url),
+        'url' : base64.urlsafe_b64encode(url.encode()).decode(),
     }
     return url
 
