@@ -35,7 +35,7 @@ class BasePostalAddress(AbstractGeolocation):
         verbose_name = 'Postal Address'
         verbose_name_plural = 'Postal Addresses'
 
-    def __unicode__(self):
+    def __str__(self):
         value = self.get_address_string()
         return value
 
@@ -97,7 +97,7 @@ class BasePostalAddress(AbstractGeolocation):
     def get_formatted_address(self):
         street_component = self.get_address_street_component()
         municipal_component = self.get_address_municipal_component()
-        formatted = '%s\n%s' % (street_component, municipal_component,)        
+        formatted = '%s\n%s' % (street_component, municipal_component,)
         return formatted
 
     ##
@@ -112,7 +112,7 @@ class BasePostalAddress(AbstractGeolocation):
         """
         width = 301
         height = 234
-        str_value = self.__unicode__()
+        str_value = self.__str__()
         base_url = 'http://maps.googleapis.com/maps/api/staticmap?'
         query = urllib.urlencode(
             {

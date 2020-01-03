@@ -20,7 +20,7 @@ class CustomerAttribute(AbstractAttribute):
             ('holder', 'key',),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s (%s)' % (self.key, self.holder)
         return value
 
@@ -38,7 +38,7 @@ class OrganizationCustomerAttribute(AbstractAttribute):
             ('holder', 'key',),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s (%s)' % (self.key, self.holder)
         return value
 
@@ -61,7 +61,7 @@ class BaseCustomer(models.Model, CustomerAttributeHolder):
         abstract = True
         verbose_name = 'Customer'
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'Customer %s: %s' % (self.id, self.name,)
         return value
 
@@ -87,7 +87,7 @@ class BaseOrganizationCustomer(models.Model):
         abstract = True
         verbose_name = 'Organization Customer'
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'Organization Customer %s: %s' % (self.id, self.name,)
         return value
 

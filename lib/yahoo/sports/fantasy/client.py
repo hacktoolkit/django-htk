@@ -80,11 +80,13 @@ class YahooFantasySportsAPIResponse(object):
 
         return items
 
-    def __unicode__ (self):
+    def __str__ (self):
         value = json.dumps(self.json_data, indent=2)
         return value
 
+
 from htk.lib.yahoo.oauth import refresh_token_if_needed
+
 
 class YahooFantasySportsAPIClient(YahooOAuthClient):
     BASE_URL = 'http://fantasysports.yahooapis.com/fantasy/v2/'

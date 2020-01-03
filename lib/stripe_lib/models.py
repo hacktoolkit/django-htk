@@ -25,7 +25,7 @@ class BaseStripeCustomer(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
         return value
 
@@ -349,7 +349,7 @@ class BaseStripeProduct(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
         return value
 
@@ -390,7 +390,7 @@ class BaseStripePlan(models.Model):
             ('stripe_id', 'live_mode',),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
         return value
 

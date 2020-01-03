@@ -28,7 +28,7 @@ class AbstractBibleBook(models.Model):
             'id',
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = u'%s' % self.name
         return value
 
@@ -61,7 +61,7 @@ class AbstractBibleChapter(models.Model):
             'chapter',
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = u'%s %s' % (self.book.name, self.chapter,)
         return value
 
@@ -85,7 +85,7 @@ class AbstractBibleVerse(models.Model):
             'verse',
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s %s:%s' % (self.book.name, self.chapter.chapter, self.verse,)
         return value
 
@@ -115,7 +115,7 @@ class AbstractBiblePassage(models.Model):
             'verse_end',
         )
 
-    def __unicode__(self):
+    def __str__(self):
         ends_in_different_chapter = self.chapter_end is not None and self.chapter_end != self.chapter_start
 
         value = '%(book)s %(chapter_start)s%(verse_start_separator)s%(verse_start)s%(separator)s%(chapter_end)s%(verse_end_separator)s%(verse_end)s' % {

@@ -43,10 +43,6 @@ class YahooSportsPlayer(object):
         return player
 
     def __str__(self):
-        value = self.__unicode__()
-        return value
-
-    def __unicode__(self):
         value = u'%s::%s::%s::%s::%s' % (
             self.player_id,
             self.player_name,

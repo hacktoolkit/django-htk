@@ -33,7 +33,7 @@ class HtkInvitation(HtkBaseModel):
         abstract = True
         verbose_name = 'Invitation'
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s (invited by %s)' % (
             self.email,
             self.invited_by.email,

@@ -24,7 +24,7 @@ class Feedback(HtkBaseModel):
         verbose_name = 'Feedback'
         verbose_name_plural = 'Feedback'
 
-    def __unicode__(self):
+    def __str__(self):
         s = '%s, %s, [%s]' % (
             self.created_on.strftime('%Y-%m-%d %H:%M:%S'),
             self.uri,
