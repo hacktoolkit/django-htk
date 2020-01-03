@@ -39,7 +39,7 @@ def scrape_company_reviews(review_url_base, num_reviews=None):
     if num_reviews:
         reviews_per_page = 10
         num_pages = int(math.ceil(num_reviews / float(reviews_per_page)))
-        for i in xrange(1, num_pages + 1):
+        for i in range(1, num_pages + 1):
             review_url = '%s_P%d%s' % (review_url_base, i, review_url_ext,)
             review_urls.append(review_url)
 

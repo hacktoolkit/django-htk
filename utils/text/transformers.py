@@ -78,7 +78,7 @@ def ellipsize(text, max_len=100, truncate=False):
     max_len = max_len - len(ellipsis)
 
     last_break = 0 # store candidate index for break point
-    for i in xrange(text_len):
+    for i in range(text_len):
         c = text[i]
         if c in boundary_chars:
             last_break = i

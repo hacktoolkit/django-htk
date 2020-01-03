@@ -25,7 +25,7 @@ class BaseTestCase(TestCase):
         self._create_batch_test_users()
 
     def _create_batch_test_users(self):
-        for x in xrange(5):
+        for x in range(5):
             self.users.append(create_test_user())
 
     def _assign_test_user(self):

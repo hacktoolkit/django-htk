@@ -36,6 +36,6 @@ class StarRatingRadioSelect(forms.RadioSelect):
 
     def get_choices(self, min_value, max_value):
         choices = [('', '',),]
-        for rating in xrange(min_value, max_value + 1):
+        for rating in range(min_value, max_value + 1):
             choices.append((rating, rating,))
         return choices

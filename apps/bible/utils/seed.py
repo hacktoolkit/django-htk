@@ -36,7 +36,7 @@ def seed_bible_chapters():
 
     for book_data in BIBLE_BOOKS_DATA:
         book = BibleBook.objects.get(name=book_data['name'])
-        for i in xrange(book_data['chapters']):
+        for i in range(book_data['chapters']):
             chapter = BibleChapter.objects.create(
                 book=book,
                 chapter=i + 1

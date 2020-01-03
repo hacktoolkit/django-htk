@@ -4,7 +4,7 @@ import requests
 import time
 
 SPORTS = ['nfl', 'mlb', 'nba', 'nhl',]
-LETTERS = [chr(x) for x in xrange(ord('A'), ord('Z') + 1)]
+LETTERS = [chr(x) for x in range(ord('A'), ord('Z') + 1)]
 
 PLAYERS_BASE_URL = 'http://sports.yahoo.com/%(sport)s/players?type=lastname&query=%(letter)s'
 

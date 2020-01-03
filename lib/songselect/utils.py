@@ -33,7 +33,7 @@ class SongSelectSong(object):
             parts = [s.strip() for s in tempo_time.split(' ')]
             parts = filter(lambda x: x not in ('|', '-'), parts)
             mode = None
-            for i in xrange(len(parts)):
+            for i in range(len(parts)):
                 value = parts[i]
                 if value in ('Tempo', 'Time',):
                     mode = value

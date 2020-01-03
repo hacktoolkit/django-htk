@@ -31,7 +31,7 @@ class HtkShopifyAPIClient(object):
 
         i = 0
         start_time = time.time()
-        for page in xrange(1, num_pages + 1):
+        for page in range(1, num_pages + 1):
             if page > 1:
                 # implement leaky bucket to avoid 429 TOO MANY REQUESTS
                 stop_time = time.time()

@@ -31,6 +31,6 @@ class StarRatingField(forms.IntegerField):
 
     def get_choices(self):
         choices = [('', '',),]
-        for rating in xrange(self.min_value, self.max_value + 1):
+        for rating in range(self.min_value, self.max_value + 1):
             choices.append((rating, rating,))
         return choices

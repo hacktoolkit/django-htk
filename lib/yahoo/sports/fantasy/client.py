@@ -57,7 +57,7 @@ class YahooFantasySportsAPIResponse(object):
                 if current_node[collection_key].has_key('count'):
                     count = current_node[collection_key]['count']
                     collection_item_key = self._get_collection_item_key(collection_key)
-                    for i in xrange(count):
+                    for i in range(count):
                         child = current_node[collection_key][str(i)][collection_item_key][payload_index]
                         if depth + 1 == path_length:
                             # reached the leaf node (last element along path), which is the item we want

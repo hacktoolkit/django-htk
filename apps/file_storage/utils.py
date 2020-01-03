@@ -56,6 +56,6 @@ def store_uploaded_file(f, file_type, file_id):
     return True
 
 def create_directories():
-    for x in xrange(256):
+    for x in range(256):
         dirname = '%s/%02x' % (settings.MEDIA_ROOT, x)
         os.mkdir(dirname)

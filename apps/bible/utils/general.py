@@ -71,7 +71,7 @@ def get_all_chapters():
     from htk.apps.bible.constants import BIBLE_BOOKS_DATA
     chapters = []
     for book_data in BIBLE_BOOKS_DATA:
-        for i in xrange(book_data['chapters']):
+        for i in range(book_data['chapters']):
             chapter = '%s %s' % (book_data['name'], i + 1,)
             chapters.append(chapter)
     return chapters

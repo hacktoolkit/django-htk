@@ -119,7 +119,7 @@ def float_divide(value, arg):
 
 @register.filter()
 def make_range(value):
-    return xrange(value)
+    return range(value)
 
 
 # Formatters
