@@ -684,8 +684,8 @@ class UserEmail(models.Model):
 
         if should_reset:
             user = self.user
-            salt = sha1(str(random.random())).hexdigest()[:5]
-            activation_key = sha1(salt + user.username).hexdigest()
+            salt = sha1(str(random.random()).encode('utf-8')).hexdigest()[:5]
+            activation_key = sha1((salt + user.username).encode('utf-8')).hexdigest()
             key_expires = utcnow() + datetime.timedelta(hours=EMAIL_ACTIVATION_KEY_EXPIRATION_HOURS)
 
             self.activation_key = activation_key

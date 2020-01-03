@@ -1,14 +1,19 @@
-from hashlib import sha1
+# Python Standard Library Imports
 import datetime
 import random
 
+# Third Party / PIP Imports
+
+# Django Imports
 from django.urls import reverse
 from django.utils.http import int_to_base36
 
+# HTK Imports
 from htk.emails import BaseBatchRelationshipEmails
 from htk.mailers import send_email
 from htk.utils import htk_setting
 from htk.utils import utcnow
+
 
 class AccountActivationReminderEmails(BaseBatchRelationshipEmails):
     def __init__(self):
@@ -36,6 +41,7 @@ class AccountActivationReminderEmails(BaseBatchRelationshipEmails):
         """
         user = recipient
         user.profile.send_activation_reminder_email()
+
 
 def activation_email(user_email, use_https=False, domain=None, template=None, subject=None, sender=None):
     """Sends an activation/confirmation email for user to confirm email address
@@ -97,6 +103,7 @@ def welcome_email(user, template=None, subject=None, sender=None):
         bcc=bcc
     )
 
+
 def password_reset_email(user, token_generator, use_https=False, domain=None, template=None, subject=None, sender=None):
     domain = domain or htk_setting('HTK_DEFAULT_DOMAIN')
     context = {
@@ -121,6 +128,7 @@ def password_reset_email(user, token_generator, use_https=False, domain=None, te
         to=[context['email']],
         context=context
     )
+
 
 def password_changed_email(user):
     context = {

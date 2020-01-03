@@ -1,9 +1,12 @@
+# Python Standard Library Imports
 import hashlib
 
+# Django Imports
 from django.conf import settings
 from django.utils.http import base36_to_int
 from django.utils.http import int_to_base36
 
+# HTK Imports
 from htk.apps.cpq.enums import CPQType
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
@@ -25,7 +28,7 @@ def compute_cpq_code(cpq):
     return cpq_code
 
 def compute_cpq_code_check_hash(cpq_code):
-    check_hash = hashlib.md5(cpq_code).hexdigest()[:CPQ_CHECK_HASH_LENGTH]
+    check_hash = hashlib.md5(cpq_code.encode()).hexdigest()[:CPQ_CHECK_HASH_LENGTH]
     return check_hash
 
 def is_valid_cpq_code_check_hash(cpq_code, check_hash):

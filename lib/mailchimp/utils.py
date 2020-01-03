@@ -1,13 +1,19 @@
+# Python Standard Library Imports
 import hashlib
 import json
+
+# Third Party / PIP Imports
 import requests
 import rollbar
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def get_api_key():
     api_key = htk_setting('HTK_MAILCHIMP_API_KEY')
     return api_key
+
 
 def get_api_data_center(api_key):
     """Determine the Mailchimp API Data Center for `api_key`
@@ -16,6 +22,7 @@ def get_api_data_center(api_key):
     """
     data_center = api_key.split('-')[1]
     return data_center
+
 
 def get_api_url(resource, api_key):
     """Determine the Mailchimp API Url for `api_key`
@@ -29,6 +36,7 @@ def get_api_url(resource, api_key):
     }
     api_url = BASE_URL % data
     return api_url
+
 
 def api_call(method, resource, payload, api_key=None):
     if api_key is None:
@@ -47,10 +55,11 @@ def api_call(method, resource, payload, api_key=None):
     response = request_fns[method](api_url, auth=auth, json=payload)
     return response
 
+
 def subscribe_email(list_id, email, subscribed=False):
     resource_data = {
         'list_id' : list_id,
-        'subscriber_hash' : hashlib.md5(email.lower()).hexdigest(),
+        'subscriber_hash' : hashlib.md5(email.lower().encode()).hexdigest(),
     }
     resource = '/lists/%(list_id)s/members/%(subscriber_hash)s' % resource_data
     status = 'subscribed' if subscribed else 'pending'

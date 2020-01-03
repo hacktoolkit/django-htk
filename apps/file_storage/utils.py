@@ -1,9 +1,15 @@
+# Python Standard Library Imports
 import hashlib
 import os
 
+# Third Party / PIP Imports
+
+# Django Imports
 from django.conf import settings
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def get_filesystem_path(file_name, file_type, file_id):
     # MEDIA_ROOT = os.path.join(BASEDIR, 'uploads')
@@ -15,15 +21,18 @@ def get_filesystem_path(file_name, file_type, file_id):
     )
     return filesystem_path
 
+
 def get_web_path(file_name, file_type, file_id):
     web_root = settings.MEDIA_URL
     relative_path = _get_file_path_relative(file_name, file_type, file_id)
     web_path = os.path.join(web_root, relative_path)
     return web_path
 
+
 def _get_file_extension(file_name):
     file_extension = os.path.splitext(file_name)[1]
     return file_extension
+
 
 def _get_file_path_relative(file_name, file_type, file_id):
     """
@@ -37,12 +46,13 @@ def _get_file_path_relative(file_name, file_type, file_id):
     file_storage_secret = htk_setting('HTK_FILE_STORAGE_SECRET')
     prehash = '%s_%s' % (FILE_STORAGE_SECRET, filename,)
     #path = '%02x' % (file_id % 255)
-    path = hashlib.md5(prehash).hexdigest()[:2]
+    path = hashlib.md5(prehash.encode()).hexdigest()[:2]
     file_path = '%s/%s' % (
         path,
         filename,
     )
     return file_path
+
 
 def store_uploaded_file(f, file_type, file_id):
     """Store the uploaded file
@@ -54,6 +64,7 @@ def store_uploaded_file(f, file_type, file_id):
         for chunk in f.chunks():
             destination.write(chunk)
     return True
+
 
 def create_directories():
     for x in range(256):

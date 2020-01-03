@@ -73,7 +73,7 @@ def get_user_token_auth_hash(user, expires_timestamp):
         key,
     )
 
-    hashed = hashlib.sha256(prehash).hexdigest()
+    hashed = hashlib.sha256(prehash.encode()).hexdigest()
 
     return hashed
 
