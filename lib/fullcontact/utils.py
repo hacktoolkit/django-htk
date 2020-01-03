@@ -56,7 +56,7 @@ def find_valid_emails(emails):
     all_valid_emails = []
     for chunk in chunks(emails, 20):
         persons = api.get_persons(chunk)
-        valid_emails = persons.keys()
+        valid_emails = list(persons.keys())
         all_valid_emails += valid_emails
         time.sleep(1)
     return all_valid_emails

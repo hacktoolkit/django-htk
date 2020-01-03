@@ -18,7 +18,7 @@ def extract_credit_card_params(post_data):
     """Extract credit card form params from `post_data`
     """
     blank_credit_card_form = CreditCardForm()
-    expected_params = blank_credit_card_form.fields.keys()
+    expected_params = list(blank_credit_card_form.fields.keys())
     try:
         credit_card_params = extract_post_params(post_data, expected_params)
     except:

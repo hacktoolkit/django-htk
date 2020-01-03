@@ -63,7 +63,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
             else:
                 pass
 
-        self._save_fields = self._save_fields_lookup.keys()
+        self._save_fields = list(self._save_fields_lookup.keys())
 
     def get_errors(self):
         errors = get_form_errors(self)
