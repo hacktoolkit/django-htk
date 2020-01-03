@@ -262,7 +262,7 @@ def _update_meta_content(meta_type, value, update_type='set', data=None):
         data = {}
     meta = data.get('meta', {}).get(meta_type)
     if meta:
-        if hasattr(value, '__iter__'):
+        if type(value) in (list, tuple,):
             values_list = value
         else:
             values_list = [value,]

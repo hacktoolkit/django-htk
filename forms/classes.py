@@ -51,7 +51,7 @@ class AbstractModelInstanceUpdateForm(forms.ModelForm):
         Called by self.__init__()
         """
         for arg in args:
-            if hasattr(arg, '__iter__'):
+            if type(arg) != str and hasattr(arg, '__iter__'):
                 # arg is an iterable
                 # e.g. QueryDict from request.POST or request.FILES
                 for key, value in arg.items():
