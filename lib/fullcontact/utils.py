@@ -1,7 +1,9 @@
+# Python Standard Library Imports
 import random
 import time
 
-
+# Third Party / PIP Imports
+from htk.constants.emails.bad import ALL_BAD_EMAILS
 from htk.lib.fullcontact.api import FullContactAPIV2
 from htk.lib.fullcontact.api import FullContactAPIV3
 from htk.utils import chunks
@@ -39,8 +41,11 @@ def get_full_contact_api_v2():
 def find_person_by_email(email):
     """Retrieve a person object by `email`
     """
-    api = get_full_contact_api_v3()
-    person = api.get_person(email)
+    if email in ALL_BAD_EMAILS:
+        person = None
+    else:
+        api = get_full_contact_api_v3()
+        person = api.get_person(email)
     return person
 
 

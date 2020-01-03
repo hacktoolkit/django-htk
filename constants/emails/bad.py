@@ -1,0 +1,5 @@
+LOCALHOST_EMAILS = (
+    'root@localhost',
+)
+
+ALL_BAD_EMAILS = LOCALHOST_EMAILS
