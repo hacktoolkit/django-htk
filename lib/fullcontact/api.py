@@ -54,8 +54,7 @@ class FullContactAPIV3(object):
                 FullContactPerson = resolve_method_dynamically(htk_setting('HTK_FULLCONTACT_PERSON_CLASS'))
                 person = FullContactPerson(email, person_data, version='v3')
             else:
-                rollbar.report_message(extra_data={'response' : response.json(),})
-                pass
+                rollbar.report_message('FullContact API error', extra_data={'response' : response.json(),})
         except ValueError:
             rollbar.report_exc_info(extra_data={'response' : response,})
 
