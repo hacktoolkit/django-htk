@@ -72,7 +72,7 @@ class HtkBaseModel(models.Model):
         from htk.utils.luhn import is_luhn_valid
         id_with_luhn = base36_to_int(encoded_id)
         if is_luhn_valid(id_with_luhn):
-            xored = id_with_luhn / 10
+            xored = id_with_luhn // 10
             xor_key = cls._luhn_xor_key()
             obj_id =  xored ^ xor_key
             obj = cls.objects.get(id=obj_id)
