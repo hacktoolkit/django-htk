@@ -29,7 +29,7 @@ class AbstractBibleBook(models.Model):
         )
 
     def __str__(self):
-        value = u'%s' % self.name
+        value = '%s' % self.name
         return value
 
     @classmethod
@@ -62,7 +62,7 @@ class AbstractBibleChapter(models.Model):
         )
 
     def __str__(self):
-        value = u'%s %s' % (self.book.name, self.chapter,)
+        value = '%s %s' % (self.book.name, self.chapter,)
         return value
 
 

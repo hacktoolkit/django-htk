@@ -158,7 +158,7 @@ class GitHubReminderBot(object):
             'message' : random.choice(PR_PRESENT_MESSAGES) if len(attachments) > 0 else random.choice(PR_ABSENT_MESSAGES),
         }
 
-        markdown_content = u'%(here)s%(greeting)s Team!\n\n%(message)s' % context
+        markdown_content = '%(here)s%(greeting)s Team!\n\n%(message)s' % context
 
         return (markdown_content, attachments,)
 

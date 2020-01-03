@@ -22,7 +22,7 @@ def get_gravatar_hash(email):
 
     http://en.gravatar.com/site/implement/hash/
     """
-    gravatar_hash = hashlib.md5(email.strip().lower()).hexdigest()
+    gravatar_hash = hashlib.md5(email.strip().lower().encode()).hexdigest()
     return gravatar_hash
 
 
@@ -39,7 +39,7 @@ def get_gravatar_for_email(email, size=GRAVATAR_DEFAULT_SIZE):
         GRAVATAR_URL_PREFIX,
         get_gravatar_hash(email),
     )
-    url += urllib.urlencode(
+    url += urllib.parse.urlencode(
         {
             's': str(size),
             'default': GRAVATAR_DEFAULT_IMAGE,
