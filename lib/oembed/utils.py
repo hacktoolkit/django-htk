@@ -34,7 +34,7 @@ def get_oembed_html_for_service(url, service):
         try:
             oembed_base_url = OEMBED_BASE_URLS[service]
             oembed_url = oembed_base_url % {
-                'url' : urllib.quote(url),
+                'url' : urllib.parse.quote(url),
             }
             response = requests.get(oembed_url)
             if response.status_code >= 400:

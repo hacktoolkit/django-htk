@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import base64
 import datetime
 import json
 import re
@@ -8,6 +9,7 @@ import urllib
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
+from django.utils.safestring import SafeText
 from django.utils.safestring import mark_safe
 
 
@@ -86,7 +88,6 @@ def atob(value):
     """Base64 decode
     ASCII to Binary
     """
-    import base64
     value = base64.b64decode(value)
     return value
 
@@ -96,7 +97,9 @@ def btoa(value):
     """Base64 encode
     Binary to ASCII
     """
-    import base64
+    if type(value) in (str, SafeText):
+        value = value.encode('utf-8')
+
     value = base64.b64encode(value)
     return value
 
@@ -409,7 +412,7 @@ def qrcode_image_url(qr_data):
         from htk.utils import htk_setting
         url_name = htk_setting('HTK_QR_IMAGE_URL_NAME')
         if url_name:
-            qr_params = urllib.urlencode(
+            qr_params = urllib.parse.urlencode(
                 {
                     'key': generate_qr_key(qr_data),
                     'data': qr_data,
