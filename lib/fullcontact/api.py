@@ -50,7 +50,7 @@ class FullContactAPIV3(object):
         try:
             response_json = response.json()
             if response.status_code == 200:
-                person_data = person_data
+                person_data = response_json
                 FullContactPerson = resolve_method_dynamically(htk_setting('HTK_FULLCONTACT_PERSON_CLASS'))
                 person = FullContactPerson(email, person_data, version='v3')
             else:
