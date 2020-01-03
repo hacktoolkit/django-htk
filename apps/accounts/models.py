@@ -44,7 +44,7 @@ class UserAttribute(AbstractAttribute):
             ('holder', 'key',),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s (%s)' % (self.key, self.holder)
         return value
 
@@ -79,9 +79,9 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         #s = '%d: %s' % (self.user.id, self.user.email,)
-        s = self.user.__unicode__()
+        s = self.user.__str__()
         return s
 
     def json_encode(self):
@@ -662,7 +662,7 @@ class UserEmail(models.Model):
             ('user', 'email',),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         s = '%s, %s' % (self.user, self.email,)
         return s
 

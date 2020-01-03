@@ -24,7 +24,7 @@ class AbstractCPQQuote(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'CPQ #%s' % self.id
         return value
 
@@ -196,7 +196,7 @@ class BaseCPQGroupQuote(AbstractCPQQuote):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'Group Quote #%s - %s' % (self.id, self.organization.name,)
         return value
 
@@ -226,7 +226,7 @@ class BaseCPQInvoice(AbstractCPQQuote):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'Invoice #%s' % self.id
         return value
 
@@ -318,7 +318,7 @@ class BaseCPQGroupQuoteLineItem(BaseCPQLineItem):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'Line Item for %s #%s' % (self.__class__.__name__, self.group_quote.id,)
         return value
 
@@ -328,7 +328,7 @@ class BaseCPQQuoteLineItem(BaseCPQLineItem):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'Line Item for %s #%s' % (self.__class__.__name__, self.quote.id,)
         return value
 
@@ -338,6 +338,6 @@ class BaseCPQInvoiceLineItem(BaseCPQLineItem):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = 'Line Item for %s #%s' % (self.__class__.__name__, self.invoice.id,)
         return value

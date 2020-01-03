@@ -47,7 +47,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         return value
 
     def view_invoice_link(self, obj):
-        value = u'<a href="%s" target="_blank">View Invoice</a>' % obj.get_url()
+        value = '<a href="%s" target="_blank">View Invoice</a>' % obj.get_url()
         return value
 
     view_invoice_link.allow_tags = True
@@ -85,13 +85,13 @@ class GroupQuoteAdmin(admin.ModelAdmin):
         return value
 
     def view_quote_link(self, obj):
-        value = u'<a href="%s" target="_blank">View Quote</a>' % obj.get_url()
+        value = '<a href="%s" target="_blank">View Quote</a>' % obj.get_url()
         return value
     view_quote_link.allow_tags = True
     view_quote_link.short_description = 'View Quote'
 
     def view_all_quotes(self, obj):
-        value = u'<a href="%s" target="_blank">View All Quotes</a>' % obj.get_all_quotes_url()
+        value = '<a href="%s" target="_blank">View All Quotes</a>' % obj.get_all_quotes_url()
         return value
     view_all_quotes.allow_tags = True
     view_all_quotes.short_description = 'View All Quote'
@@ -130,7 +130,7 @@ class QuoteAdmin(admin.ModelAdmin):
         return value
 
     def view_quote_link(self, obj):
-        value = u'<a href="%s" target="_blank">View Quote</a>' % obj.get_url()
+        value = '<a href="%s" target="_blank">View Quote</a>' % obj.get_url()
         return value
 
     view_quote_link.allow_tags = True

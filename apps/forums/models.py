@@ -14,7 +14,7 @@ class Forum(models.Model):
     class Meta:
         app_label = 'htk'
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s' % (
             self.name,
         )
@@ -55,7 +55,7 @@ class ForumThread(models.Model):
         app_label = 'htk'
         verbose_name = 'Forum Thread'
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s - %s' % (
             self.forum,
             self.subject,
@@ -88,7 +88,7 @@ class ForumMessage(models.Model):
         app_label = 'htk'
         verbose_name = 'Forum Message'
 
-    def __unicode__(self):
+    def __str__(self):
         return 'ForumMessage %s' % (self.id,)
 
     def snippet(self):
@@ -110,5 +110,5 @@ class ForumTag(models.Model):
         app_label = 'htk'
         verbose_name = 'Forum Tag'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

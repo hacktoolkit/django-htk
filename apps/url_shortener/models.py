@@ -13,7 +13,7 @@ class HTKShortUrl(models.Model):
     """
     Short URL code is traditionally duosexagesimal (base 62)
     C.f. http://en.wikipedia.org/wiki/List_of_numeral_systems
-    
+
     62 ** 3 = 238,328
     62 ** 4 = 14,776,336
     62 ** 5 = 916,132,832
@@ -32,7 +32,7 @@ class HTKShortUrl(models.Model):
         app_label = 'htk'
         verbose_name = 'Short URL'
 
-    def __unicode__(self):
+    def __str__(self):
         value = self.url
         return value
 
@@ -69,7 +69,7 @@ class HTKShortUrl(models.Model):
             build_dict_from_request(request),
             keys
         )
-        
+
         access = HTKShortUrlAccess.objects.create(
             url=self,
             **metadata

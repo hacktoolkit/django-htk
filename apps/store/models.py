@@ -18,7 +18,7 @@ class AbstractProduct(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = self.name
         return value
 

@@ -29,7 +29,7 @@ class OrganizationAttribute(AbstractAttribute):
             ('holder', 'key',),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s (%s)' % (self.key, self.holder)
         return value
 
@@ -47,7 +47,7 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s' % (self.name,)
         return value
 
@@ -157,7 +157,7 @@ class BaseAbstractOrganizationTeam(HtkBaseModel):
         abstract = True
         verbose_name = 'Organization Team'
 
-    def __unicode__(self):
+    def __str__(self):
         value = '%s (%s)' % (self.name, self.organization.name,)
         return value
 
@@ -185,8 +185,8 @@ class BaseAbstractOrganizationTeamMember(HtkBaseModel):
         unique_together = ('user', 'team',)
         verbose_name = 'Organization Team Member'
 
-    def __unicode__(self):
-        value = '%s - %s' % (self.user, self.team.__unicode__(),)
+    def __str__(self):
+        value = '%s - %s' % (self.user, self.team.__str__(),)
         return value
 
 
@@ -199,8 +199,8 @@ class BaseAbstractOrganizationTeamPosition(HtkBaseModel):
         unique_together = ('name', 'team',)
         verbose_name = 'Organization Team Position'
 
-    def __unicode__(self):
-        value = '%s - %s' % (self.name, self.team.__unicode__(),)
+    def __str__(self):
+        value = '%s - %s' % (self.name, self.team.__str__(),)
         return value
 
 
@@ -212,6 +212,6 @@ class BaseAbstractOrganizationTeamMemberPosition(HtkBaseModel):
         abstract = True
         verbose_name = 'Organization Team Member Position'
 
-    def __unicode__(self):
-        value = '%s - %s' % (self.position.name, self.member.__unicode__(),)
+    def __str__(self):
+        value = '%s - %s' % (self.position.name, self.member.__str__(),)
         return value

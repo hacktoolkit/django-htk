@@ -12,6 +12,6 @@ class PrelaunchSignup(models.Model):
         app_label = 'htk'
         verbose_name = 'Prelaunch Signup'
 
-    def __unicode__(self):
+    def __str__(self):
         s = '%s - %s' % (self.created_on, self.email,)
         return s

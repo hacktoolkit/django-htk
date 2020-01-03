@@ -3,56 +3,56 @@
 
 I18N_GREETINGS = {
     'ar' : [
-        u'مرحبا',
+        'مرحبا',
     ],
     'el' : [
-        u'Χαίρετε',
+        'Χαίρετε',
     ],
     'en' : [
-        u'Greetings',
-        u'Hello',
+        'Greetings',
+        'Hello',
     ],
     'eo' : [
-        u'saluton',
+        'saluton',
     ],
     'es' : [
-        u'Hola',
-        u'Como estas',
+        'Hola',
+        'Como estas',
     ],
     'fr' : [
-        u'Salut',
+        'Salut',
     ],
     'haw' : [
-        u'Aloha',
+        'Aloha',
     ],
     'he' : [
-        u'שלום',
+        'שלום',
     ],
     'hi' : [
-        u'नमस्ते'
+        'नमस्ते'
     ],
     'it' : [
-        u'Ciao',
+        'Ciao',
     ],
     'ja' : [
-        u'こんにちは',
+        'こんにちは',
     ],
     'ko' : [
-        u'안녕하세요',
+        '안녕하세요',
     ],
     'mn' : [
-        u'Сайн уу',
+        'Сайн уу',
     ],
     'nl' : [
-        u'Hallo',
+        'Hallo',
     ],
-    'ru' : [
-        u'Здравствуйте',
+    'r' : [
+        'Здравствуйте',
     ],
     'vi' : [
-        u'chào bạn',
+        'chào bạn',
     ],
     'zh' : [
-        u'你好',
+        '你好',
     ],
 }

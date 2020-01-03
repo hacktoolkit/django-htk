@@ -104,5 +104,10 @@ def solid_color_image(width=1, height=1, r=0, g=0, b=0, a=0):
 
 
 def generate_qr_key(data):
-    key = hashlib.md5('%s|%s' % (htk_setting('HTK_QR_SECRET'), data,)).hexdigest()[:5]
+    key = hashlib.md5(
+        '{secret}|{data}'.format(
+            secret=htk_setting('HTK_QR_SECRET'),
+            data=data
+        ).encode('utf-8')
+    ).hexdigest()[:5]
     return key

@@ -1,11 +1,16 @@
+# Python Standard Library Imports
 import re
-import requests
-import rollbar
 import urllib
 
+# Third Party / PIP Imports
+import requests
+import rollbar
+
+# HTK Imports
 from htk.lib.oembed.cachekeys import OembedResponseCache
 from htk.lib.oembed.constants import *
 from htk.utils.request import get_current_request
+
 
 def get_oembed_html(url, autoplay=False):
     """Gets the oEmbed HTML for a URL, if it is an oEmbed type
@@ -21,6 +26,7 @@ def get_oembed_html(url, autoplay=False):
         html = None
     return html
 
+
 def get_oembed_html_for_service(url, service):
     """Returns the oEmbed HTML for `service` (YouTube, Vimeo, etc)
 
@@ -31,11 +37,13 @@ def get_oembed_html_for_service(url, service):
     if html is None:
         request = None
         success = False
+
         try:
             oembed_base_url = OEMBED_BASE_URLS[service]
             oembed_url = oembed_base_url % {
-                'url' : urllib.quote(url),
+                'url' : urllib.parse.quote(url),
             }
+
             response = requests.get(oembed_url)
             if response.status_code >= 400:
                 pass
@@ -67,6 +75,7 @@ def get_oembed_html_for_service(url, service):
         pass
     return html
 
+
 def get_oembed_type(url):
     """Determines the type of oEmbed this URL is, if it exists
     """
@@ -76,6 +85,7 @@ def get_oembed_type(url):
             oembed_type = service
             break
     return oembed_type
+
 
 def youtube_oembed(url, autoplay=False):
     html = get_oembed_html_for_service(url, 'youtube')
@@ -89,6 +99,7 @@ def youtube_oembed(url, autoplay=False):
         html
     )
     return html
+
 
 def youtube_oembed_autoplay(url):
     html = youtube_oembed(url, autoplay=True)
