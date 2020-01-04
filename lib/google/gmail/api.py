@@ -455,7 +455,7 @@ class GmailMessage(object):
 
         if text_part:
             message_body_data = text_part['body']['data']
-            message_text = base64.b64decode(message_body_data.replace('-', '+').replace('_', '/'))
+            message_text = base64.b64decode(message_body_data.replace('-', '+').replace('_', '/')).decode('utf-8')
         else:
             # fallback to HTML
             message_text = self.get_html()
