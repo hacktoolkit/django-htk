@@ -55,7 +55,7 @@ def get_user_token_auth_token(user, expires_minutes=None):
         'hash' : hashed,
     }
 
-    token = base64.b64encode(json.dumps(data))
+    token = base64.b64encode(json.dumps(data).encode('utf-8')).decode('utf-8')
     return token
 
 
