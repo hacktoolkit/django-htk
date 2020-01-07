@@ -61,7 +61,7 @@ class FullContactAPIV3(object):
                     'response' : response_json,
                     'redacted_api_key' : '{}...{}'.format(self.api_key[:5], self.api_key[-5:])
                 }
-                rollbar.report_message('FullContact API key usage limit error', extra_data=
+                rollbar.report_message('FullContact API key usage limit error', extra_data=extra_data)
             else:
                 # other FullContact API error
                 rollbar.report_message('FullContact API error', extra_data={'response' : response_json,})
