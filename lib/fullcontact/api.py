@@ -53,10 +53,10 @@ class FullContactAPIV3(object):
                 person_data = response_json
                 FullContactPerson = resolve_method_dynamically(htk_setting('HTK_FULLCONTACT_PERSON_CLASS'))
                 person = FullContactPerson(email, person_data, version='v3')
-            else if response.status_code == 404:
+            elif response.status_code == 404:
                 # profile not found, do nothing
                 pass
-            else if response.status_code == 403 and response.message == 'Usage limits for the provided API Key have been exceeded. Please try again later or contact support to increase your limits.':
+            elif response.status_code == 403 and response.message == 'Usage limits for the provided API Key have been exceeded. Please try again later or contact support to increase your limits.':
                 extra_data = {
                     'response' : response_json,
                     'redacted_api_key' : '{}...{}'.format(self.api_key[:5], self.api_key[-5:])
