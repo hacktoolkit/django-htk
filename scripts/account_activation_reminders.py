@@ -1,3 +1,6 @@
+# Special Prerequisite Imports
+import script_config
+
 # Python Standard Library Imports
 import time
 
@@ -9,8 +12,6 @@ from htk.apps.accounts.emails import AccountActivationReminderEmails
 from htk.constants.time import *
 from htk.scripts.utils import job_runner
 from htk.scripts.utils import slog
-
-import script_config
 
 
 DAEMON_MODE = True

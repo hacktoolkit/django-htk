@@ -3,13 +3,14 @@ Update the StaticAssetVersionCache value
 
 This script is invoked after a deploy, to ensure that visitors to the website won't have stale versions of CSS and JavaScript files in their browser cache
 """
+# Special Prerequisite Imports
+import script_config
+
 # HTK Imports
 from htk.cachekeys import StaticAssetVersionCache
 from htk.scripts.utils import job_runner
 from htk.scripts.utils import slog
 from htk.utils import utcnow
-
-import script_config
 
 
 def main():
