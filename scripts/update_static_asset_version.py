@@ -3,7 +3,7 @@ Update the StaticAssetVersionCache value
 
 This script is invoked after a deploy, to ensure that visitors to the website won't have stale versions of CSS and JavaScript files in their browser cache
 """
-# Special Prerequisite Imports
+# Standalone Script Prerequisite Imports
 import script_config
 
 # HTK Imports

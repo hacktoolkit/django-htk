@@ -1,4 +1,4 @@
-# Special Prerequisite Imports
+# Standalone Script Prerequisite Imports
 import script_config
 
 # Python Standard Library Imports
