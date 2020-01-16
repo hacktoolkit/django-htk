@@ -67,7 +67,7 @@ def email_to_username_hash(email):
     email = email.lower()
     # Deal with internationalized email addresses
     converted = email.encode('utf8', 'ignore')
-    hashed = base64.urlsafe_b64encode(hashlib.sha256(converted.encode()).hexdigest())[:EMAIL_TO_USERNAME_HASH_LENGTH]
+    hashed = base64.urlsafe_b64encode(hashlib.sha256(converted).hexdigest())[:EMAIL_TO_USERNAME_HASH_LENGTH]
     return hashed
 
 
