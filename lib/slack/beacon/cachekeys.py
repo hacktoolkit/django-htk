@@ -1,5 +1,7 @@
+# HTK Imports
 from htk.cache import CustomCacheScheme
 from htk.constants.time import *
+
 
 class SlackBeaconCache(CustomCacheScheme):
     """Cache management object for Slack beacon

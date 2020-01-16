@@ -1,11 +1,7 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.conf import settings
-
-# HTK Imports
 
 
 def run_task_async_or_immediately_per_env(task_fn):

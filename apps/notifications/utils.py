@@ -1,6 +1,8 @@
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import memoized
 from htk.utils.general import resolve_method_dynamically
+
 
 @memoized
 def get_alert_key(alert_name):

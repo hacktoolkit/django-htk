@@ -1,7 +1,5 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.db import models
 from django.utils.safestring import mark_safe

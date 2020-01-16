@@ -1,10 +1,15 @@
+# Python Standard Library Imports
 import json
-import rollbar
 import time
 from decimal import Decimal
 
+# Third Party / PIP Imports
+import rollbar
+
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
+
 
 class HtkShopifyArchiver(object):
     def __init__(self, api=None):

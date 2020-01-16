@@ -1,8 +1,11 @@
+# Third Party / PIP Imports
 import pytz
 
+# Django Imports
 from django import forms
 from django.conf import settings
 
+# HTK Imports
 from htk.apps.accounts.utils import associate_user_email
 from htk.apps.accounts.utils import get_user_by_email
 from htk.exceptions import AbstractMethodNotImplemented
@@ -11,6 +14,7 @@ from htk.forms.utils import set_input_placeholder_labels
 from htk.session_keys import *
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
+
 
 class AddEmailForm(forms.Form):
     email = forms.EmailField(label='Email')

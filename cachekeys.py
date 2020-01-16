@@ -1,5 +1,7 @@
+# HTK Imports
 from htk.cache import CustomCacheScheme
 from htk.constants import *
+
 
 class StaticAssetVersionCache(CustomCacheScheme):
     """Cache management object for static asset version for CSS and JavaScript

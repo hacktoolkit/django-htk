@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 import requests
 
+# Django Imports
 from django import template
+
 
 register = template.Library()
 

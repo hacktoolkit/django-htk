@@ -1,8 +1,13 @@
+# Python Standard Library Imports
 import json
+
+# Third Party / PIP Imports
 import requests
 import rollbar
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def get_weather(lat, lng):
     base_url = 'https://api.darksky.net/forecast/%(api_key)s/%(lat)s,%(lng)s'

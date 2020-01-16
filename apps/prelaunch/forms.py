@@ -1,7 +1,10 @@
+# Django Imports
 from django import forms
 
+# HTK Imports
 from htk.apps.prelaunch.emails import prelaunch_email
 from htk.apps.prelaunch.models import PrelaunchSignup
+
 
 class PrelaunchSignupForm(forms.ModelForm):
     class Meta:

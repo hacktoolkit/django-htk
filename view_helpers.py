@@ -1,16 +1,21 @@
+# Python Standard Library Imports
 import copy
 import re
-import rollbar
 from socket import gethostname
 
+# Third Party / PIP Imports
+import rollbar
+
+# Django Imports
 from django.conf import settings
 from django.shortcuts import render
 from django.shortcuts import render_to_response
-from django.template import loader
 from django.template import TemplateDoesNotExist
+from django.template import loader
 from django.template.context_processors import csrf
 from django.urls import reverse
 
+# HTK Imports
 from htk.cachekeys import StaticAssetVersionCache
 from htk.session_keys import *
 from htk.utils import htk_setting

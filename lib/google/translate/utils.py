@@ -1,8 +1,13 @@
+# Python Standard Library Imports
 import json
-import requests
 import urllib
 
+# Third Party / PIP Imports
+import requests
+
+# HTK Imports
 from htk.lib.google.translate.constants import *
+
 
 def get_language_code(language):
     language_code = None

@@ -1,8 +1,11 @@
+# Django Imports
 from django.conf.urls import include
 from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 
+# HTK Imports
 import htk.apps.forums.views as views
+
 
 urlpatterns = (
     url(r'^$', views.index, name='forum_index'),

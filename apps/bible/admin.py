@@ -1,12 +1,8 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.contrib import admin
 from django.db import models
-
-# HTK Imports
 
 
 class AbstractBibleBookAdmin(admin.ModelAdmin):

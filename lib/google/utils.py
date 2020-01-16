@@ -1,6 +1,9 @@
+# Python Standard Library Imports
 import random
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def get_num_server_api_keys():
     """Returns the number of Google server API keys configured

@@ -1,7 +1,10 @@
+# Django Imports
 from django.conf.urls import include
 from django.conf.urls import url
 
+# HTK Imports
 import htk.apps.accounts.views as views
+
 
 urlpatterns = (
     # account registration and activation

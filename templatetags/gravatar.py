@@ -1,7 +1,5 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django import template
 from django.conf import settings
@@ -10,9 +8,9 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 # HTK Imports
+from htk.lib.gravatar.utils import GRAVATAR_DEFAULT_SIZE
 from htk.lib.gravatar.utils import get_gravatar_for_email
 from htk.lib.gravatar.utils import get_gravatar_hash
-from htk.lib.gravatar.utils import GRAVATAR_DEFAULT_SIZE
 
 
 register = template.Library()

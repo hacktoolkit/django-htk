@@ -1,8 +1,11 @@
+# Django Imports
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 from django.urls import reverse
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def logged_in_redirect_home(view_func):
     def wrapped_view(request, *args, **kwargs):

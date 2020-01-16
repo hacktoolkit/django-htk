@@ -1,5 +1,7 @@
+# HTK Imports
 from htk.cache.classes import LockableObject
 from htk.constants.time import *
+
 
 class UserEmailRegistrationLock(LockableObject):
     """Lock to prevent race condition of simultaneous regsitration attempts

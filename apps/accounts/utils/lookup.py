@@ -3,10 +3,6 @@
 Look up users by various complex logic
 """
 
-# Python Standard Library Imports
-
-# Third Party / PIP Imports
-
 # Django Imports
 from django.contrib.auth import get_user_model
 from django.db import models

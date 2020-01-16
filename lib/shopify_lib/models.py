@@ -1,11 +1,17 @@
-import jsonfield
+# Python Standard Library Imports
 from decimal import Decimal
 
+# Third Party / PIP Imports
+import jsonfield
+
+# Django Imports
 from django.db import models
 
+# HTK Imports
 from htk.apps.geolocations.models import AbstractGeolocation
 from htk.models import HtkBaseModel
 from htk.utils.datetime_utils import parse_datetime
+
 
 class ShopifyResource(HtkBaseModel):
     class Meta:

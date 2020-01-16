@@ -1,13 +1,9 @@
 # Python Standard Library Imports
 from functools import wraps
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-
-# HTK Imports
 
 
 def django_admin_bool_field(func):

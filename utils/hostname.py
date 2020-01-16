@@ -1,6 +1,9 @@
+# Python Standard Library Imports
 import re
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def is_dev_host(host):
     """Determines whether `host` is a dev host

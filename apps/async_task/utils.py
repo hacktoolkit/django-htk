@@ -2,11 +2,6 @@
 import base64
 import json
 
-# Third Party / PIP Imports
-
-# Django Imports
-
-# HTK Imports
 
 def build_async_task_result(content, content_type, filename):
     """Builds an Async Task result from JSON

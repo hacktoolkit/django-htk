@@ -7,14 +7,16 @@ Examples:
     $ python bots.py -t YOURTOKEN -o hacktoolkit
 """
 
+# Python Standard Library Imports
 import getopt
 import json
 import random
 import re
-import requests
 import sys
 import urllib
 
+# Third Party / PIP Imports
+import requests
 from github import Github
 
 

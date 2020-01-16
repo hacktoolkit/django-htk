@@ -3,11 +3,9 @@
 # Third Party / PIP Imports
 import rollbar
 
-# Django Imports
-
 # HTK Imports
-from htk.utils.notifications import slack_notify
 from htk.utils import htk_setting
+from htk.utils.notifications import slack_notify
 
 
 def failed_recaptcha_on_login(user, request=None):

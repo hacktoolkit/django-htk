@@ -1,8 +1,11 @@
+# Django Imports
 from django.apps import AppConfig
 from django.db.models import signals
 
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
+
 
 ################################################################################
 # signals and signal handlers

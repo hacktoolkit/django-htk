@@ -1,9 +1,12 @@
+# Python Standard Library Imports
 import json
 
+# Django Imports
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
+# HTK Imports
 from htk.apps.cpq.constants import *
 from htk.apps.cpq.utils import compute_cpq_code
 from htk.apps.cpq.utils.general import get_invoice_payment_terms_choices
@@ -13,6 +16,7 @@ from htk.utils import resolve_model_dynamically
 from htk.utils import utcnow
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.enums import enum_to_str
+
 
 class AbstractCPQQuote(models.Model):
     """Abstract base class for a Quote, Invoice, or GroupQuote

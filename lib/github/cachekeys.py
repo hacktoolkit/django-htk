@@ -1,5 +1,7 @@
+# HTK Imports
 from htk.cachekeys import TaskCooldown
 from htk.constants.time import *
+
 
 class GitHubReminderCooldown(TaskCooldown):
     """Cache management object for not performing GitHub reminders for the same user too frequently

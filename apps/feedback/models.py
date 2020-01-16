@@ -1,10 +1,13 @@
+# Django Imports
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db import models
 
+# HTK Imports
 from htk.models import HtkBaseModel
 from htk.utils import utcnow
+
 
 class Feedback(HtkBaseModel):
     site = models.ForeignKey(Site)

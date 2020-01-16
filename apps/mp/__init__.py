@@ -1,8 +1,10 @@
-from htk.apps.mp.services import materialized_property
-from htk.apps.mp.services import to_field_name
+# HTK Imports
 from htk.apps.mp.services import invalidate_for_instance
 from htk.apps.mp.services import invalidate_for_instances
+from htk.apps.mp.services import materialized_property
 from htk.apps.mp.services import test_mp
+from htk.apps.mp.services import to_field_name
+
 
 __all__ = [
     materialized_property,

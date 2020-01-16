@@ -1,9 +1,14 @@
-from bs4 import BeautifulSoup
+# Python Standard Library Imports
 import re
-import requests
 
+# Third Party / PIP Imports
+import requests
+from bs4 import BeautifulSoup
+
+# HTK Imports
 from htk.lib.literalword.constants import *
 from htk.utils.text.converters import html2markdown
+
 
 def is_bible_version(version):
     _is_bible_version = version in LITERAL_WORD_URLS

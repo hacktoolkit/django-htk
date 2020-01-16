@@ -1,9 +1,12 @@
+# Django Imports
 from django.contrib import admin
 
+# HTK Imports
 from htk.apps.customers.models import CustomerAttribute
 from htk.apps.customers.models import OrganizationCustomerAttribute
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
+
 
 class CustomerAttributeInline(admin.TabularInline):
     model = CustomerAttribute

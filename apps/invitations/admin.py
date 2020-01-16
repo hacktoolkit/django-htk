@@ -1,11 +1,7 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.contrib import admin
-
-# HTK Imports
 
 
 class HtkInvitationAdmin(admin.ModelAdmin):

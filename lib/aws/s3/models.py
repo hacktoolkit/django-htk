@@ -1,12 +1,16 @@
+# Third Party / PIP Imports
 import rollbar
 
+# Django Imports
 from django.db import models
 
+# HTK Imports
 from htk.constants import *
 from htk.lib.aws.s3 import S3Manager
 from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 from htk.utils.s3 import get_env_s3_key_prefix
+
 
 class S3MediaAsset(models.Model):
     class Meta:

@@ -1,7 +1,5 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.contrib.auth.backends import ModelBackend
 

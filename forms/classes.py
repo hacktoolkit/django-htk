@@ -2,8 +2,8 @@
 from django import forms
 
 # HTK Imports
-from htk.forms.utils import get_form_errors
 from htk.forms.utils import get_combined_form_errors
+from htk.forms.utils import get_form_errors
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
 from htk.utils.cache_descriptors import CachedAttribute

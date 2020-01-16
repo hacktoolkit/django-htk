@@ -1,10 +1,6 @@
 # Python Standard Library Imports
 import math
 
-# Third Party / PIP Imports
-
-# Django Imports
-
 # HTK Imports
 from htk.apps.geolocations.cachekeys import GeocodeCache
 from htk.apps.geolocations.constants import *

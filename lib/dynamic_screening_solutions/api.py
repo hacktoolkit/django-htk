@@ -7,13 +7,12 @@ import urlparse
 import requests
 import rollbar
 
-# Django Imports
-
 # HTK Imports
 from htk.lib.dynamic_screening_solutions.constants import *
 from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.utils.request import get_current_request
+
 
 class Htk321FormsAPI(object):
     """321Forms - Dynamic Screening Solutions

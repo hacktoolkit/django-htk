@@ -1,10 +1,14 @@
+# Python Standard Library Imports
 import base64
 
+# Django Imports
 from django import template
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 register = template.Library()
 

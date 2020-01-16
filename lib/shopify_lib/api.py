@@ -1,6 +1,9 @@
+# Python Standard Library Imports
 import math
-import shopify
 import time
+
+import shopify
+
 
 SHOPIFY_API_RATE_LIMIT_CYCLE = 0.5 # can average 2 calls per second
 

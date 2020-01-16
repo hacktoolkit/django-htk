@@ -1,8 +1,11 @@
+# Django Imports
 from django.views.decorators.http import require_POST
 
-from htk.api.utils import json_response_okay
+# HTK Imports
 from htk.api.utils import json_response_error
+from htk.api.utils import json_response_okay
 from htk.apps.notifications.utils import dismiss_alert_for_user
+
 
 @require_POST
 def dismiss_alert(request):

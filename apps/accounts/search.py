@@ -1,7 +1,10 @@
+# Django Imports
 from django.contrib.auth import get_user_model
 
+# HTK Imports
 from htk.apps.accounts.constants.search import *
 from htk.apps.accounts.models import UserEmail
+
 
 """Various search functions for User objects
 

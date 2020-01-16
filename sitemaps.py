@@ -1,7 +1,10 @@
+# Python Standard Library Imports
+from itertools import chain
+
+# Django Imports
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from itertools import chain
 
 # https://docs.djangoproject.com/en/1.8/ref/contrib/sitemaps/
 

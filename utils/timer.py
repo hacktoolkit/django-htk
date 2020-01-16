@@ -1,5 +1,7 @@
+# Python Standard Library Imports
 import time
 from decimal import Decimal
+
 
 class HtkTimer(object):
     def __init__(self):

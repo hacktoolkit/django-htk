@@ -1,9 +1,10 @@
-import os
-import sys
-import time
-import signal
-import threading
+# Python Standard Library Imports
 import atexit
+import os
+import signal
+import sys
+import threading
+import time
 
 
 is_py2 = sys.version[0] == '2'

@@ -1,18 +1,21 @@
+# Python Standard Library Imports
 import os
+from email.mime.image import MIMEImage
 
+# Django Imports
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
-from email.mime.image import MIMEImage
-
+# HTK Imports
 from htk.constants.defaults import *
 from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
 from htk.utils.request import get_current_request
 from htk.utils.text.converters import html2markdown
+
 
 def simple_email(
     subject='',

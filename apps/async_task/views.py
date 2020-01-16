@@ -2,11 +2,6 @@
 import base64
 import json
 
-# Third Party / PIP Imports
-
-# Django Imports
-
-# HTK Imports
 
 def async_download_result(request, result_id, result_is_json=False, content_type='text/plain', filename=None):
     """View to download the result of an async task as a file

@@ -2,8 +2,6 @@
 import base64
 import re
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.http import Http404
 from django.http import HttpResponse

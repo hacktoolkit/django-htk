@@ -1,4 +1,6 @@
+# Python Standard Library Imports
 from decimal import Decimal
+
 
 def moneyfmt(
     value,

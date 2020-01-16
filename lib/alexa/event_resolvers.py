@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 import rollbar
 
+# HTK Imports
 from htk.lib.alexa.utils import get_event_handlers
+
 
 def default_event_type_resolver(event):
     """The Hacktoolkit-flavored default event type resolver for Alexa webhook events

@@ -1,9 +1,5 @@
  # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
-# Django Imports
-
 # HTK Imports
 from htk.apps.bible.constants import BIBLE_BOOKS
 from htk.apps.bible.constants import BIBLE_BOOKS_DATA

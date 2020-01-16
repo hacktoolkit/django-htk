@@ -1,11 +1,13 @@
+# Django Imports
 from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.http import require_POST
 
+# HTK Imports
 from htk.api.constants import *
 from htk.api.utils import json_response_error
 from htk.api.utils import json_response_okay
-
 from htk.apps.feedback.forms import FeedbackForm
+
 
 @require_POST
 def submit(request):

@@ -1,8 +1,11 @@
+# Django Imports
 from django.conf import settings
 from django.conf.urls import include
 from django.conf.urls import url
 
+# HTK Imports
 import htk.lib.yahoo.sports.fantasy.views as views
+
 
 urlpatterns = (
     url(r'^$', views.index, name='index'),

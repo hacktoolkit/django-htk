@@ -1,11 +1,11 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-from social_django.middleware import SocialAuthExceptionMiddleware
-
 # Django Imports
 from django.contrib.auth import authenticate
 from django.contrib.auth import logout
+
+# Django Extensions Imports
+from social_django.middleware import SocialAuthExceptionMiddleware
 
 # HTK Imports
 from htk.apps.accounts.utils.auth import login_authenticated_user

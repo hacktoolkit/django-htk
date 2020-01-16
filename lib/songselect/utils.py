@@ -1,6 +1,9 @@
+# Python Standard Library Imports
+import re
+
+# Third Party / PIP Imports
 from bs4 import BeautifulSoup
 
-import re
 
 class SongSelectSong(object):
     def __init__(self, content):

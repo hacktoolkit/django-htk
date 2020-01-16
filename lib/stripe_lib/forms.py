@@ -1,7 +1,10 @@
+# Django Imports
 from django import forms
 
+# HTK Imports
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
+
 
 class CreditCardForm(forms.Form):
     """A basic form for entering credit card numbers

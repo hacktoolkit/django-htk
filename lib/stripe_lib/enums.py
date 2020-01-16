@@ -1,4 +1,6 @@
+# Python Standard Library Imports
 from enum import Enum
+
 
 class StripeProductType(Enum):
     good = 1

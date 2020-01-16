@@ -13,6 +13,7 @@ from htk.utils.general import resolve_model_dynamically
 from htk.utils.luhn import calculate_luhn
 from htk.utils.luhn import is_luhn_valid
 
+
 CPQ_XOR_KEY = htk_setting('HTK_CPQ_XOR_KEY')
 CPQ_CHECK_HASH_LENGTH = htk_setting('HTK_CPQ_CHECK_HASH_LENGTH')
 

@@ -1,7 +1,10 @@
+# Django Imports
 from django.contrib.sites.models import Site
 from django.db import models
 
+# HTK Imports
 from htk.utils import utcnow
+
 
 class PrelaunchSignup(models.Model):
     site = models.ForeignKey(Site)

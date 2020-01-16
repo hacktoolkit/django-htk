@@ -1,10 +1,13 @@
+# Third Party / PIP Imports
 import requests
 import rollbar
 
+# HTK Imports
 from htk.lib.iterable.constants import *
 from htk.lib.iterable.exceptions import *
 from htk.utils import htk_setting
 from htk.utils import utcnow
+
 
 class IterableAPIClient(object):
     """

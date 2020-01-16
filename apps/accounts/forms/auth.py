@@ -26,6 +26,7 @@ from htk.forms.utils import set_input_placeholder_labels
 from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 
+
 UserModel = get_user_model()
 
 

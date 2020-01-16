@@ -5,12 +5,11 @@ from functools import wraps
 import rollbar
 from celery import shared_task
 
-# Django Imports
-
 # HTK Imports
 from htk.utils import htk_setting
 from htk.utils.notifications import slack_notify
 from htk.utils.timer import HtkTimer
+
 
 class safe_timed_task(object):
     def __init__(self, task_name, notify=False):

@@ -1,8 +1,10 @@
+# Python Standard Library Imports
 import time
 
 from rauth import OAuth1Service
 from rauth.service import process_token_request
 from rauth.utils import parse_utf8_qsl
+
 
 YAHOO_OAUTH_REQUEST_TOKEN_URL = 'https://api.login.yahoo.com/oauth/v2/get_request_token'
 YAHOO_OAUTH_ACCESS_TOKEN_URL = 'https://api.login.yahoo.com/oauth/v2/get_token'

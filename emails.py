@@ -1,11 +1,17 @@
+# Python Standard Library Imports
 import inspect
+
+# Third Party / PIP Imports
 import rollbar
 
+# Django Imports
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
-from htk.tasks import BaseTask
+# HTK Imports
 from htk.mailers import send_email
+from htk.tasks import BaseTask
+
 
 class BaseBatchRelationshipEmails(BaseTask):
     """

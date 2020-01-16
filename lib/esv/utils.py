@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 import requests
 
+# HTK Imports
 from htk.lib.esv.constants import *
+
 
 def esvapi_get_passage(passage, key='IP', archive=False):
     params = {

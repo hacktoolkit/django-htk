@@ -1,4 +1,6 @@
+# Django Imports
 from django.contrib.auth import get_user_model
+
 
 def get_duplicate_emails():
     """Sanity check to make sure no users in database have the same email address

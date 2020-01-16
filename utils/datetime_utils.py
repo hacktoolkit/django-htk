@@ -7,9 +7,9 @@ import pytz
 
 # Django Imports
 from django.conf import settings
+from django.utils.dateparse import parse_datetime as django_parse_datetime
 from django.utils.timezone import is_aware
 from django.utils.timezone import is_naive
-from django.utils.dateparse import parse_datetime as django_parse_datetime
 
 # HTK Imports
 from htk.constants.time import *

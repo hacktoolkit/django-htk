@@ -1,4 +1,6 @@
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def get_shopify_api_cli(shop_name=None, api_key=None, api_secret=None):
     from htk.lib.shopify_lib.api import HtkShopifyAPIClient

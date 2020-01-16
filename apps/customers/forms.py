@@ -1,11 +1,14 @@
+# Django Imports
 from django import forms
 
+# HTK Imports
 from htk.apps.customers.utils import get_organization_customer_choices
 from htk.forms.classes import AbstractModelInstanceUpdateForm
 from htk.forms.utils import set_input_attrs
 from htk.forms.utils import set_input_placeholder_labels
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
+
 
 class OrganizationCustomersImportForm(forms.Form):
     organization_customer = forms.ChoiceField(choices=get_organization_customer_choices)

@@ -17,11 +17,14 @@
 #   www
 #
 
-import sys
-import re as re_
+# Python Standard Library Imports
 import base64
 import datetime as datetime_
+import re as re_
+import sys
 import warnings as warnings_
+
+# Third Party / PIP Imports
 from lxml import etree as etree_
 
 

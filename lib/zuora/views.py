@@ -1,8 +1,6 @@
 # Python Standard Library Imports
 import json
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.http import Http404
 from django.http import HttpResponse
@@ -11,6 +9,7 @@ from django.views.decorators.http import require_POST
 
 # HTK Imports
 from htk.lib.zuora.utils import get_event_handler
+
 
 @require_POST
 @csrf_exempt

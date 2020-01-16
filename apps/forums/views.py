@@ -1,15 +1,18 @@
+# Django Imports
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template.context_processors import csrf
 from django.urls import reverse
 
-from htk.apps.forums.forms import ThreadCreationForm
+# HTK Imports
 from htk.apps.forums.forms import MessageCreationForm
+from htk.apps.forums.forms import ThreadCreationForm
+from htk.apps.forums.helpers import wrap_data_forum
 from htk.apps.forums.models import Forum
 from htk.apps.forums.models import ForumThread
-from htk.apps.forums.helpers import wrap_data_forum
 from htk.view_helpers import render_to_response_custom as _r
+
 
 @login_required
 def index(request):

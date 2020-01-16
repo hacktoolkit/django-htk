@@ -1,9 +1,12 @@
+# Django Imports
 from django.contrib import admin
 
+# HTK Imports
 from htk.apps.forums.models import Forum
-from htk.apps.forums.models import ForumThread
 from htk.apps.forums.models import ForumMessage
 from htk.apps.forums.models import ForumTag
+from htk.apps.forums.models import ForumThread
+
 
 class ForumThreadInline(admin.TabularInline):
     model = ForumThread

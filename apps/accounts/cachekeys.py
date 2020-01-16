@@ -1,6 +1,8 @@
+# HTK Imports
 from htk.cache import CustomCacheScheme
 from htk.cachekeys import BatchRelationshipEmailCooldown
 from htk.constants.time import *
+
 
 class UserFollowingCache(CustomCacheScheme):
     """Cache management object for user following,

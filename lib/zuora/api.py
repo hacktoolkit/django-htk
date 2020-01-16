@@ -6,11 +6,10 @@ import time
 import requests
 import rollbar
 
-# Django Imports
-
 # HTK Imports
 from htk.lib.zuora.constants import *
 from htk.utils import htk_setting
+
 
 class HtkZuoraAPI(object):
     def __init__(self, client_id=None, client_secret=None):

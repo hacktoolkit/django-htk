@@ -2,7 +2,7 @@
 import random
 import time
 
-# Third Party / PIP Imports
+# HTK Imports
 from htk.constants.emails.bad import ALL_BAD_EMAILS
 from htk.lib.fullcontact.api import FullContactAPIV2
 from htk.lib.fullcontact.api import FullContactAPIV3

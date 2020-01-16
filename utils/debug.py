@@ -1,6 +1,9 @@
+# Django Imports
 from django.conf import settings
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def slack_debug(message):
     from htk.lib.slack.utils import webhook_call

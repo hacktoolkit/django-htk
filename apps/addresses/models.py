@@ -1,8 +1,11 @@
+# Django Imports
 from django.db import models
 
+# HTK Imports
 from htk.apps.addresses.enums import AddressUnitType
 from htk.apps.addresses.utils import get_unit_type_choices
 from htk.apps.geolocations.models import AbstractGeolocation
+
 
 class BasePostalAddress(AbstractGeolocation):
     """Class for storing Postal Address

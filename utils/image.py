@@ -1,5 +1,7 @@
+# Third Party / PIP Imports
 import requests
 from PIL import Image
+
 
 def get_image_from_url(image_url):
     if image_url:

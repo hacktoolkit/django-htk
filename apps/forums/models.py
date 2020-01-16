@@ -1,7 +1,10 @@
+# Django Imports
 from django.conf import settings
 from django.db import models
 
+# HTK Imports
 from htk.apps.forums.constants import *
+
 
 class Forum(models.Model):
     """Forum represents a message forum

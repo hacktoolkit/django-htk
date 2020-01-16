@@ -1,9 +1,12 @@
+# Django Imports
 from django.conf.urls import include
 from django.conf.urls import url
 
+# HTK Imports
 import htk.apps.url_shortener.views as views
 from htk.apps.url_shortener.constants import *
 from htk.utils import htk_setting
+
 
 URL_SHORTENER_PREFIX = htk_setting('HTK_URL_SHORTENER_PREFIX', '')
 

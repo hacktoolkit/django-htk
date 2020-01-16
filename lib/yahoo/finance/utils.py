@@ -1,5 +1,6 @@
 import yahoo_finance
 
+
 def get_stock_info_and_historical_data(symbol):
     """Retrieve stock info and historical data for `symbol`
 

@@ -1,6 +1,9 @@
+# Django Imports
 from django.contrib.auth import get_user_model
 
+# HTK Imports
 from htk.apps.accounts.utils.general import get_user_profile_model
+
 
 def create_missing_user_profiles():
     """Create missing user profiles

@@ -2,8 +2,6 @@
 import datetime
 import random
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.urls import reverse
 from django.utils.http import int_to_base36

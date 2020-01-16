@@ -1,8 +1,11 @@
+# Django Imports
 from django.conf.urls import include
 from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 
+# HTK Imports
 import htk.apps.cpq.views as views
+
 
 urlpatterns = (
     # public views

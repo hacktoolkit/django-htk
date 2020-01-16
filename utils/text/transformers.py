@@ -1,5 +1,7 @@
+# Python Standard Library Imports
 import re
 
+# HTK Imports
 from htk.utils.text.constants import *
 from htk.utils.text.general import is_ascii
 from htk.utils.text.general import is_ascii_extended

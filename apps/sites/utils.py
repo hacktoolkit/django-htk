@@ -1,9 +1,6 @@
 # Python Standard Library Importsp
+# Python Standard Library Imports
 import re
-
-# Third Party / PIP Imports
-
-# Django Imports
 
 # HTK Imports
 from htk.utils import htk_setting

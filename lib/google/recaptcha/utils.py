@@ -3,8 +3,6 @@
 # Third Party / PIP Imports
 import requests
 
-# Django Imports
-
 # HTK Imports
 from htk.lib.google.recaptcha.constants import GOOGLE_RECAPTCHA_API_SITE_VERIFY_URL
 from htk.utils import htk_setting

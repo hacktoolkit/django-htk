@@ -1,11 +1,15 @@
+# Python Standard Library Imports
 import datetime
 
+# Django Imports
 from django.contrib.auth import get_user_model
 
+# HTK Imports
 import htk.apps.accounts.filters
 from htk.admintools.constants import *
 from htk.constants.time import *
 from htk.utils import utcnow
+
 
 def get_pulse_data_users():
     UserModel = get_user_model()

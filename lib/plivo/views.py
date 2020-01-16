@@ -1,12 +1,15 @@
+# Django Imports
 from django.http import Http404
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+# HTK Imports
 from htk.api.utils import extract_post_params
 from htk.api.utils import json_response
 from htk.lib.plivo.constants import *
 from htk.lib.plivo.utils import handle_message_event
+
 
 @require_POST
 @csrf_exempt

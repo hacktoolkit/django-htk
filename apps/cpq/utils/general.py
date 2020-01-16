@@ -1,8 +1,11 @@
+# Django Imports
 from django.urls import reverse
 
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
 from htk.utils.enums import get_enum_symbolic_name
+
 
 def get_admin_urls():
     from htk.apps.cpq.constants.general import CPQ_APP_MODEL_NAMES

@@ -9,11 +9,11 @@ from django.conf import settings
 from django.db import models
 
 # HTK Imports
+from htk.lib.stripe_lib.constants.general import *
 from htk.lib.stripe_lib.enums import StripePlanInterval
 from htk.lib.stripe_lib.enums import StripeProductType
 from htk.lib.stripe_lib.utils import _initialize_stripe
 from htk.lib.stripe_lib.utils import safe_stripe_call
-from htk.lib.stripe_lib.constants.general import *
 from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 

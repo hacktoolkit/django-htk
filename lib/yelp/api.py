@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 import requests
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 class YelpAPI(object):
     def __init__(self, api_key=None):

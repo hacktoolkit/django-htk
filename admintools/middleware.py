@@ -7,8 +7,8 @@ import rollbar
 from django.contrib import messages
 
 # HTK Imports
-from htk.admintools.utils import is_allowed_to_emulate_users
 from htk.admintools.utils import is_allowed_to_emulate
+from htk.admintools.utils import is_allowed_to_emulate_users
 
 
 class HtkEmulateUserMiddleware(object):

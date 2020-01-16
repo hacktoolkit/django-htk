@@ -1,6 +1,9 @@
+# Python Standard Library Imports
 import datetime
 
+# HTK Imports
 from htk.utils import utcnow
+
 
 def active_users(users, active=True):
     filtered = users.filter(is_active=active)

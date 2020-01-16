@@ -1,9 +1,6 @@
 # Python Standard Library Imports
 import sys
-
 from importlib import import_module
-
-# Third Party / PIP Imports
 
 # Django Imports
 from django.contrib import messages

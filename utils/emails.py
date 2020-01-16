@@ -1,6 +1,8 @@
+# Python Standard Library Imports
 import copy
 import re
 import time
+
 
 def normalize_email(email):
     normalized = email.strip().lower()

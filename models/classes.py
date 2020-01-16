@@ -1,5 +1,7 @@
+# Python Standard Library Imports
 import json
 
+# Django Imports
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import Http404
@@ -7,9 +9,11 @@ from django.urls import reverse
 from django.utils.http import base36_to_int
 from django.utils.http import int_to_base36
 
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.utils.cache_descriptors import CachedAttribute
+
 
 """
 While we *could* import models here for convenience,

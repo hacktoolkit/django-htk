@@ -1,21 +1,20 @@
 # Python Standard Library Imports
 import datetime
 import re
-import _thread
-
-# Third Party / PIP Imports
 
 # Django Imports
 from django.conf import settings
-from django.utils.deprecation import MiddlewareMixin
 from django.shortcuts import redirect
 from django.utils import timezone
+from django.utils.deprecation import MiddlewareMixin
 
 # HTK Imports
 from htk.middleware.session_keys import *
 from htk.session_keys import *
 from htk.utils import htk_setting
 from htk.utils.request import is_allowed_host
+
+import _thread
 
 
 class GlobalRequestMiddleware(MiddlewareMixin):

@@ -1,13 +1,17 @@
+# Python Standard Library Imports
 import time
 
-import script_config
-
+# Django Imports
 from django.conf import settings
 
+# HTK Imports
 from htk.apps.accounts.emails import AccountActivationReminderEmails
 from htk.constants.time import *
 from htk.scripts.utils import job_runner
 from htk.scripts.utils import slog
+
+import script_config
+
 
 DAEMON_MODE = True
 #DAEMON_MODE = False

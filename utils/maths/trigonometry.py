@@ -1,6 +1,8 @@
 # https://en.wikipedia.org/wiki/Trigonometry
 
+# Python Standard Library Imports
 import math
+
 
 def deg2rad(degrees):
     """Degrees to radians
@@ -13,4 +15,3 @@ def rad2deg(radians):
     """
     degrees = 180.0 * radians / math.pi
     return degrees
-

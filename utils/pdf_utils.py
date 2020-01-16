@@ -1,9 +1,12 @@
+# Django Imports
 from django.http import HttpResponse
 from django.http import HttpResponseServerError
 
-from htk.view_helpers import render_to_response_custom
+# HTK Imports
 from htk.utils.templates import generate_html_from_template
 from htk.utils.templates import rewrite_relative_urls_as_absolute
+from htk.view_helpers import render_to_response_custom
+
 
 WKHTMLTOPDF_OPTIONS = {
     'page-size' : 'Letter',

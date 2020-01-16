@@ -5,4 +5,3 @@ def filter_dict(d, keys):
     for key in keys:
         filtered[key] = d.get(key)
     return filtered
-

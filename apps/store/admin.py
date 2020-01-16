@@ -1,4 +1,6 @@
+# Django Imports
 from django.contrib import admin
+
 
 class HtkStoreProductAdmin(admin.ModelAdmin):
     list_display = (

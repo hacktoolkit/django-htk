@@ -4,10 +4,13 @@ Helper functions and classes for Fabric (http://fabric.readthedocs.org/en/latest
 Used by fabfile.py
 """
 
+# Python Standard Library Imports
 import datetime
-import requests
 
+# Third Party / PIP Imports
+import requests
 from fabric.api import *
+
 
 def tag_deploy():
     """Automatically create a tag whenever we deploy, so that we can roll-back to it at a future date

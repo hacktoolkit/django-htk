@@ -11,6 +11,7 @@ from django.conf import settings
 from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 
+
 ##
 # general helpers
 

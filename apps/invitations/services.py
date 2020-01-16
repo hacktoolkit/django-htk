@@ -1,9 +1,5 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
-# Django Imports
-
 # HTK Imports
 from htk.apps.sites.utils import get_site_name
 from htk.services import HtkBaseService

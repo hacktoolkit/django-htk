@@ -1,8 +1,11 @@
+# Django Imports
 from django.contrib import admin
 
+# HTK Imports
 from htk.apps.url_shortener.models import HTKShortUrl
 from htk.apps.url_shortener.models import HTKShortUrlAccess
 from htk.utils import htk_setting
+
 
 class HTKShortUrlAdmin(admin.ModelAdmin):
     list_display = (

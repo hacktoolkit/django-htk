@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 import requests
 
+# Django Imports
 from django.urls import reverse
+
 
 def reverse_with_query_params(viewname, query_params, urlconf=None, args=None, kwargs=None, current_app=None):
     """Wrapper for `reverse()` that appends GET query parameters `query_params`

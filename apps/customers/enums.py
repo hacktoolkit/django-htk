@@ -1,4 +1,6 @@
+# Python Standard Library Imports
 from enum import Enum
+
 
 class OrganizationType(Enum):
     UNKNOWN = 0

@@ -1,6 +1,8 @@
-from htk.utils.enums import get_enum_symbolic_name
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
+from htk.utils.enums import get_enum_symbolic_name
+
 
 def get_organization_type_choices():
     from htk.apps.customers.enums import OrganizationType

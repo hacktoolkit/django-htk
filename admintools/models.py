@@ -1,5 +1,7 @@
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
+
 
 class HtkCompanyUserMixin(object):
     """Mixin for htk.apps.accounts.BaseAbstractUserProfile

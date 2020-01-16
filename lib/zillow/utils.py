@@ -1,11 +1,14 @@
 # Zillow API
 # http://www.zillow.com/howto/api/APIOverview.htm
 
-from bs4 import BeautifulSoup
+# Third Party / PIP Imports
 import requests
 import rollbar
+from bs4 import BeautifulSoup
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def parse_zestimate_response(response):
     soup = BeautifulSoup(response.content, 'xml')

@@ -1,8 +1,11 @@
+# Django Imports
 from django import forms
 
+# HTK Imports
 from htk.apps.forums.models import Forum
 from htk.apps.forums.models import ForumMessage
 from htk.apps.forums.models import ForumThread
+
 
 class ThreadCreationForm(forms.Form):
     subject = forms.CharField()

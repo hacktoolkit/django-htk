@@ -1,6 +1,8 @@
-import cStringIO
+# Python Standard Library Imports
 import codecs
+import cStringIO
 import csv
+
 
 class UTF8Recoder(object):
     """

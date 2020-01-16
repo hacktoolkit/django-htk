@@ -1,9 +1,12 @@
+# Python Standard Library Imports
 import re
 
+# HTK Imports
 from htk.lib.slack.utils import get_event_handler_usages
 from htk.lib.slack.utils import is_available_command
 from htk.lib.slack.utils import parse_event_text
 from htk.lib.slack.utils import webhook_call
+
 
 def preprocess_event(event_handler):
     def wrapped_event_handler(event):

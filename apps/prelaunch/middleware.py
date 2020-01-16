@@ -1,6 +1,9 @@
+# Django Imports
 from django.shortcuts import redirect
 
+# HTK Imports
 from htk.apps.prelaunch.utils import *
+
 
 class PrelaunchModeMiddleware(object):
     def process_request(self, request):

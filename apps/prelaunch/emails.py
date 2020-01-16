@@ -1,6 +1,8 @@
+# HTK Imports
 from htk.apps.prelaunch.constants import *
 from htk.mailers import send_email
 from htk.utils import htk_setting
+
 
 def prelaunch_email(prelaunch_signup):
     template = htk_setting('HTK_PRELAUNCH_EMAIL_TEMPLATE', HTK_PRELAUNCH_EMAIL_TEMPLATE)

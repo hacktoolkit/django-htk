@@ -1,8 +1,13 @@
-import rollbar
+# Python Standard Library Imports
 import time
+
+# Third Party / PIP Imports
+import rollbar
 import tweepy
 
+# HTK Imports
 from htk.utils import chunks
+
 
 def _get_auth_keys():
     from django.conf import settings

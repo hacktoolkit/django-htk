@@ -1,12 +1,9 @@
 # Python Standard Library Imports
 import json
 
-# Third Party / PIP Imports
-
-# Django Imports
-
 # HTK Imports
 from htk.lib.zuora.utils import get_event_name
+
 
 def default(event_type, payload):
     from htk.utils.debug import slack_debug

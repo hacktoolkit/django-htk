@@ -1,9 +1,12 @@
+# Django Imports
 from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
 
+# HTK Imports
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.session_keys import *
 from htk.utils.urls import reverse_with_query_params
+
 
 def get_social_auths_status(user):
     user_social_auths = user.profile.get_social_auths()

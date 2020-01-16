@@ -1,3 +1,4 @@
+# Django Imports
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import redirect
@@ -5,11 +6,13 @@ from django.template import Context
 from django.template import loader
 from django.urls import reverse
 
+# HTK Imports
 from htk.api.utils import json_response
 from htk.lib.yahoo.sports.fantasy.constants import *
 from htk.lib.yahoo.sports.fantasy.utils import get_yahoo_fantasy_sports_client_for_user
 from htk.view_helpers import render_to_response_custom as _r
 from htk.view_helpers import wrap_data
+
 
 @login_required
 def index(request):

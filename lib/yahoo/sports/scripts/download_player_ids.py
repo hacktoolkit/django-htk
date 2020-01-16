@@ -1,7 +1,11 @@
-from bs4 import BeautifulSoup
+# Python Standard Library Imports
 import re
-import requests
 import time
+
+# Third Party / PIP Imports
+import requests
+from bs4 import BeautifulSoup
+
 
 SPORTS = ['nfl', 'mlb', 'nba', 'nhl',]
 LETTERS = [chr(x) for x in range(ord('A'), ord('Z') + 1)]

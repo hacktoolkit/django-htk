@@ -1,10 +1,13 @@
+# Django Imports
 from django.http import Http404
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 
+# HTK Imports
 from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
+
 
 class require_organization_permission(object):
     """Decorator for requiring current logged-in user to have required level of permission in Organization

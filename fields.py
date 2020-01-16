@@ -1,6 +1,9 @@
+# Python Standard Library Imports
 from decimal import Decimal
 
+# Django Imports
 from django.db import models
+
 
 try:
     from south.modelsinspector import add_introspection_rules

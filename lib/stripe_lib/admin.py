@@ -1,4 +1,6 @@
+# Django Imports
 from django.contrib import admin
+
 
 class StripeCustomerAdmin(admin.ModelAdmin):
     list_display = (

@@ -1,4 +1,6 @@
+# Django Imports
 from django.conf import settings
+
 
 class HtkTwitterAPI(object):
     def __init__(

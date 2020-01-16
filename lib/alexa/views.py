@@ -1,14 +1,18 @@
+# Python Standard Library Imports
 import json
 
+# Django Imports
 from django.http import Http404
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+# HTK Imports
 from htk.api.utils import extract_post_params
 from htk.api.utils import json_response
 from htk.lib.alexa.constants import *
 from htk.lib.alexa.utils import is_valid_alexa_skill_webhook_event
+
 
 @require_POST
 @csrf_exempt

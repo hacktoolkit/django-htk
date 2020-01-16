@@ -1,9 +1,14 @@
+# Python Standard Library Imports
 import copy
+
+# Third Party / PIP Imports
 #import json
 #import requests
 import rollbar
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def is_valid_alexa_skill_webhook_event(event, request):
     """Determines whether the Alexa skill webhook event is valid

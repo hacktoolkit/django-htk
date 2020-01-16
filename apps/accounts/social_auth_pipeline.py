@@ -1,7 +1,11 @@
+# Third Party / PIP Imports
+# Django Imports
 from django.shortcuts import redirect
 
+# Django Extensions Imports
 from social_core.pipeline.partial import partial
 
+# HTK Imports
 from htk.apps.accounts.emails import welcome_email
 from htk.apps.accounts.session_keys import *
 from htk.apps.accounts.utils import associate_user_email
@@ -9,6 +13,7 @@ from htk.apps.accounts.utils import get_incomplete_signup_user_by_email
 from htk.apps.accounts.utils import get_user_by_email
 from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
 from htk.utils import htk_setting
+
 
 # Custom Pipeline Functions
 # https://django-social-auth.readthedocs.org/en/v0.7.22/pipeline.html

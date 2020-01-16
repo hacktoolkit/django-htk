@@ -1,13 +1,17 @@
+# Python Standard Library Imports
 import re
 import time
 
+# Third Party / PIP Imports
 from boto.exception import S3ResponseError
-from boto.s3.connection import S3Connection
 from boto.s3.bucket import Bucket
+from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
-from htk.lib.aws.s3.cachekeys import S3UrlCache
+# HTK Imports
 from htk.constants.time import *
+from htk.lib.aws.s3.cachekeys import S3UrlCache
+
 
 class S3Manager(object):
     """S3Manager is an interface/wrapper for boto to Amazon S3

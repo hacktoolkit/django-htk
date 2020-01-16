@@ -1,8 +1,11 @@
+# Third Party / PIP Imports
 import requests
 from bs4 import BeautifulSoup
 
+# HTK Imports
 from htk.lib.sfbart.constants import *
 from htk.lib.sfbart.exceptions import *
+
 
 class BartAPI(object):
     def __init__(self, api_key):

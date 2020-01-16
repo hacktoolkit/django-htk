@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 import pygeoip
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def get_geoip_country():
     geoip_country_db = htk_setting('HTK_LIB_GEOIP_COUNTRY_DB')

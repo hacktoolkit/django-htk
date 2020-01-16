@@ -1,7 +1,5 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.shortcuts import redirect
 from django.urls import reverse_lazy

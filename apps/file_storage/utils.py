@@ -2,8 +2,6 @@
 import hashlib
 import os
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.conf import settings
 

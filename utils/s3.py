@@ -1,4 +1,6 @@
+# Django Imports
 from django.conf import settings
+
 
 def get_env_s3_key_prefix():
     """Gets the common Amazon S3 key prefix for current environment

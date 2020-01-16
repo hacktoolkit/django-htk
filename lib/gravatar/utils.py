@@ -2,12 +2,8 @@
 import hashlib
 import urllib
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.conf import settings
-
-# HTK Imports
 
 
 # http://en.gravatar.com/site/implement/images/

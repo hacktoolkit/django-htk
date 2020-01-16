@@ -1,6 +1,9 @@
+# Django Imports
 from django import forms
 
+# HTK Imports
 from htk.forms.widgets import StarRatingRadioSelect
+
 
 BOOL_CHOICES_TRUE_FALSE = ((False, 'False',), (True, 'True',),)
 BOOL_CHOICES_ON_OFF = ((False, 'Off',), (True, 'On',),)

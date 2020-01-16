@@ -1,4 +1,6 @@
+# Django Imports
 from django.http import Http404
+
 
 class AbstractMethodNotImplemented(Exception):
     pass

@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 from gcm.gcm import GCM
 
+# HTK Imports
 from htk.utils import htk_setting
+
 
 def get_gcm_client():
     gcm_api_key = htk_setting('HTK_GCM_API_KEY', None)

@@ -1,13 +1,17 @@
+# Third Party / PIP Imports
 import jsonfield
 
+# Django Imports
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
+# HTK Imports
 from htk.utils import utcnow
 from htk.utils.data_structures import *
 from htk.utils.request import build_dict_from_request
 from htk.utils.request import get_current_request
+
 
 class HTKShortUrl(models.Model):
     """

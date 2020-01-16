@@ -1,7 +1,6 @@
  # Python Standard Library Imports
+# Python Standard Library Imports
 import re
-
-# Third Party / PIP Imports
 
 # Django Imports
 from django.db import models

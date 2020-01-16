@@ -69,6 +69,7 @@ HTK_LUHN_XOR_KEYS = {}
 # Enums
 HTK_ENUM_SYMBOLIC_NAME_OVERRIDES = {}
 
+# HTK Imports
 from htk.admintools.constants.defaults import *
 from htk.apps.accounts.constants.defaults import *
 from htk.apps.cpq.constants.defaults import *
@@ -85,8 +86,8 @@ from htk.lib.fullcontact.constants.defaults import *
 from htk.lib.iterable.constants.defaults import *
 from htk.lib.mongodb.constants.defaults import *
 from htk.lib.qrcode.constants.defaults import *
-from htk.lib.slack.constants.defaults import *
 from htk.lib.shopify_lib.constants.defaults import *
+from htk.lib.slack.constants.defaults import *
 from htk.lib.stripe_lib.constants.defaults import *
 from htk.lib.yelp.constants.defaults import *
 from htk.lib.zuora.constants.defaults import *

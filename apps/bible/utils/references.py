@@ -1,10 +1,5 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
-# Django Imports
-
-# HTK Imports
 
 
 def get_scripture_references_list(bible_passages):

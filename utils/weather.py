@@ -1,5 +1,7 @@
+# HTK Imports
 from htk.lib.forecastio.utils import get_weather as get_weather_forecastio
 from htk.lib.google.geocode.geocode import get_latlng
+
 
 def get_weather(location):
     """Gets weather for a `location`

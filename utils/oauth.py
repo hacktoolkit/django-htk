@@ -1,5 +1,7 @@
+# Third Party / PIP Imports
 from requests_oauthlib import OAuth1
 from requests_oauthlib import OAuth2Session
+
 
 def get_twitter_oauth():
 #    oauth = OAuth1(settings.TWITTER_CONSUMER_KEY,

@@ -2,12 +2,6 @@
 import time
 from functools import wraps
 
-# Third Party / PIP Imports
-
-# Django Imports
-
-# HTK Imports
-
 
 class rate_limit_instance_method(object):
     """Instance Method rate-limiter using token bucket algorithm

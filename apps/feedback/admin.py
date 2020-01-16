@@ -1,6 +1,9 @@
+# Django Imports
 from django.contrib import admin
 
+# HTK Imports
 from htk.apps.feedback.models import Feedback
+
 
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = (

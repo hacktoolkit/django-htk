@@ -1,9 +1,13 @@
+# Python Standard Library Imports
 import random
 from uuid import uuid4
 
+# Django Imports
 from django.contrib.auth import get_user_model
 
+# HTK Imports
 from htk.test_scaffold.test_data import *
+
 
 def create_test_user():
     """Creates a new user with random username for testing

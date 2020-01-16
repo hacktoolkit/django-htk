@@ -1,11 +1,16 @@
+# Third Party / PIP Imports
+# Django Imports
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
+# Django Extensions Imports
 from social_django.models import UserSocialAuth
 
+# HTK Imports
 from htk.apps.accounts.models import UserAttribute
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.utils.general import get_user_profile_model
+
 
 class UserProfileInline(admin.StackedInline):
     model = get_user_profile_model()

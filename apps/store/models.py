@@ -1,9 +1,12 @@
+# Django Imports
 from django.db import models
 from django.urls import reverse
 
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.text.transformers import seo_tokenize
+
 
 class AbstractProduct(models.Model):
     name = models.CharField(max_length=128)

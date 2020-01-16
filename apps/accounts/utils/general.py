@@ -15,10 +15,10 @@ from django.utils.http import int_to_base36
 # HTK Imports
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
-from htk.validators import is_valid_email
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
 from htk.utils.request import get_current_request
+from htk.validators import is_valid_email
 
 
 ##

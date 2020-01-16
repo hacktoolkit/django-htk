@@ -1,8 +1,11 @@
+# Django Imports
 from django.conf import settings
 
+# HTK Imports
 from htk.apps.cpq.enums import CPQType
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
+
 
 def get_invoice_years():
     InvoiceModel = resolve_model_dynamically(settings.HTK_CPQ_INVOICE_MODEL)

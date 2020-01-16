@@ -1,13 +1,16 @@
+# Django Imports
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect
 from django.template.context_processors import csrf
 
+# HTK Imports
 from htk.apps.prelaunch.constants import *
 from htk.apps.prelaunch.forms import PrelaunchSignupForm
 from htk.apps.prelaunch.utils import is_prelaunch_mode
 from htk.apps.prelaunch.view_helpers import get_view_context
 from htk.utils import htk_setting
 from htk.view_helpers import render_to_response_custom as _r
+
 
 def prelaunch(request):
     if is_prelaunch_mode():

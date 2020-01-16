@@ -1,8 +1,11 @@
+# Django Imports
 from django.views.decorators.http import require_GET
 
+# HTK Imports
 from htk.api.utils import json_response_error
 from htk.api.utils import json_response_okay
 from htk.utils.request import extract_request_ip
+
 
 @require_GET
 def slack_beacon_view(request):

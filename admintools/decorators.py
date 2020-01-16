@@ -1,5 +1,7 @@
+# Django Imports
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+
 
 def company_officer_required(view_func):
     """Decorator for views that require access by company officer or staff user

@@ -1,4 +1,6 @@
+# Django Imports
 from django.core.validators import validate_email
+
 
 def is_valid_email(email):
     try:

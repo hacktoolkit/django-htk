@@ -1,14 +1,17 @@
+# Django Imports
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 
+# HTK Imports
 from htk.apps.customers.constants import *
 from htk.apps.customers.utils import get_organization_type_choices
 from htk.lib.stripe_lib.models import AbstractStripeCustomerHolder
-from htk.utils.cache_descriptors import CachedAttribute
 from htk.models import AbstractAttribute
 from htk.models import AbstractAttributeHolderClassFactory
 from htk.utils import htk_setting
+from htk.utils.cache_descriptors import CachedAttribute
+
 
 class CustomerAttribute(AbstractAttribute):
     holder = models.ForeignKey(htk_setting('HTK_CPQ_CUSTOMER_MODEL'), related_name='attributes')

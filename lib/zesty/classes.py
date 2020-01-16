@@ -1,8 +1,12 @@
+# Python Standard Library Imports
 import copy
 import datetime
+
+# Third Party / PIP Imports
 import requests
 import rollbar
 
+# HTK Imports
 from htk.lib.zesty.constants import *
 from htk.utils.text.ssml import ssml_sanitized
 

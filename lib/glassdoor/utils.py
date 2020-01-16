@@ -1,7 +1,11 @@
-from bs4 import BeautifulSoup
+# Python Standard Library Imports
 import json
-import requests
 import time
+
+# Third Party / PIP Imports
+import requests
+from bs4 import BeautifulSoup
+
 
 GLASSDOOR_API_URL = 'http://api.glassdoor.com/api/api.htm'
 

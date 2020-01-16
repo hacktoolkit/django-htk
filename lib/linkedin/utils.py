@@ -1,11 +1,16 @@
+# Python Standard Library Imports
 import json
-import requests
 
+# Third Party / PIP Imports
+import requests
 from requests_oauthlib import OAuth1
 
+# Django Imports
 from django.conf import settings
 
+# HTK Imports
 from htk.lib.linkedin.constants import *
+
 
 def get_profile_data(resource_owner_key, resource_owner_secret):
     oauth = OAuth1(

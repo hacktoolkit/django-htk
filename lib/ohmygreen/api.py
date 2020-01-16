@@ -4,10 +4,9 @@
 import requests
 import rollbar
 
-# Django Imports
-
 # HTK Imports
 from htk.lib.ohmygreen.constants import *
+
 
 class OhMyGreenAPI(object):
     def __init__(self, company_id, company):

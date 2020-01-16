@@ -1,6 +1,8 @@
+# Django Imports
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
+
 
 class StarRatingField(models.PositiveIntegerField):
     def __init__(self, min_value=1, max_value=5, *args, **kwargs):

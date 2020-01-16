@@ -1,6 +1,9 @@
+# Third Party / PIP Imports
 import jsonfield
 
+# Django Imports
 from django.db import models
+
 
 class AbstractKVStorage(models.Model):
     """AbstractKVStorage is a simple key-value storage on top of your Django app's default data storage (i.e. most likely MySQL)

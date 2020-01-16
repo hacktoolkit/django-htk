@@ -1,7 +1,5 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.conf import settings
 from django.db import models
@@ -10,10 +8,10 @@ from django.db import models
 from htk.apps.invitations.enums import InvitationStatus
 from htk.apps.invitations.utils import get_invitation_status_choices
 from htk.models.classes import HtkBaseModel
+from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.datetime_utils import relative_time
 from htk.utils.enums import get_enum_symbolic_name
-from htk.utils import htk_setting
 
 
 class HtkInvitation(HtkBaseModel):

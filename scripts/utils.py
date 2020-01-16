@@ -1,14 +1,19 @@
-import MySQLdb
+# Python Standard Library Imports
 import datetime
 import inspect
 import logging
-import rollbar
 import time
 
+# Third Party / PIP Imports
+import MySQLdb
+import rollbar
+
+# HTK Imports
 from htk.constants.time import *
 from htk.utils.db import attempt_mysql_reconnect
 from htk.utils.db import close_connection
 from htk.utils.db import ensure_mysql_connection_usable
+
 
 def job_runner(f):
     """Accepts any callable function and runs it

@@ -1,4 +1,6 @@
+# Python Standard Library Imports
 import random
+
 
 def preprocess_event(event_handler):
     def wrapped_event_handler(event):

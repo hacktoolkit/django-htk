@@ -1,5 +1,9 @@
-import pypandoc
+# Python Standard Library Imports
 import re
+
+# Third Party / PIP Imports
+import pypandoc
+
 
 def html2markdown(html):
     """Converts `html` to Markdown-formatted text

@@ -1,12 +1,8 @@
 # Python Standard Library Imports
 import datetime
 
-# Third Party / PIP Imports
-
 # Django Imports
 from django.db import models
-
-# HTK Imports
 
 
 class TestScaffoldModel(models.Model):

@@ -1,7 +1,10 @@
+# Django Imports
 from django.contrib import admin
 
+# HTK Imports
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
+
 
 GroupQuoteModel = resolve_model_dynamically(htk_setting('HTK_CPQ_GROUP_QUOTE_MODEL'))
 GroupQuoteLineItemModel = resolve_model_dynamically(htk_setting('HTK_CPQ_GROUP_QUOTE_LINE_ITEM_MODEL'))

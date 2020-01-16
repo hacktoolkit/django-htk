@@ -1,9 +1,12 @@
+# Django Imports
 from django.db.models import Q
 
+# HTK Imports
 from htk.apps.url_shortener.constants import *
 from htk.apps.url_shortener.models import HTKShortUrl
-from htk.utils.base_converters import base62_encode
 from htk.utils.base_converters import base62_decode
+from htk.utils.base_converters import base62_encode
+
 
 def pre_encode(raw_id):
     """Compute the pre-encoded value

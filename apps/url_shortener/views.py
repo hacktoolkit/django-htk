@@ -1,9 +1,13 @@
+# Third Party / PIP Imports
 import rollbar
 
+# Django Imports
 from django.shortcuts import redirect
 
+# HTK Imports
 from htk.apps.url_shortener.utils import resolve_short_url_code
 from htk.utils import htk_setting
+
 
 def short_url(request, code):
     host = request.get_host()

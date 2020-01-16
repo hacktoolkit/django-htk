@@ -1,6 +1,10 @@
+# Python Standard Library Imports
 import json
 
+# HTK Imports
 from htk.lib.yahoo.oauth import YahooOAuthClient
+from htk.lib.yahoo.oauth import refresh_token_if_needed
+
 
 class YahooFantasySportsAPIResponse(object):
     def __init__(self, json_data, *args, **kwargs):
@@ -85,7 +89,6 @@ class YahooFantasySportsAPIResponse(object):
         return value
 
 
-from htk.lib.yahoo.oauth import refresh_token_if_needed
 
 
 class YahooFantasySportsAPIClient(YahooOAuthClient):
