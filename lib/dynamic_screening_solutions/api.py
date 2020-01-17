@@ -3,7 +3,7 @@ import hashlib
 import hmac
 import urlparse
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 import rollbar
 

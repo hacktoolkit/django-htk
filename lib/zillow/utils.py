@@ -1,7 +1,7 @@
 # Zillow API
 # http://www.zillow.com/howto/api/APIOverview.htm
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 import rollbar
 from bs4 import BeautifulSoup

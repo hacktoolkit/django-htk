@@ -1,4 +1,4 @@
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 from requests_oauthlib import OAuth1
 from requests_oauthlib import OAuth2Session
 

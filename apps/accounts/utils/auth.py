@@ -4,7 +4,7 @@ import datetime
 import hashlib
 import json
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 
 # Django Imports

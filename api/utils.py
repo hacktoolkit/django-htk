@@ -3,7 +3,7 @@ import datetime
 import json
 from time import mktime
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 
 # Django Imports

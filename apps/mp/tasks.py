@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import logging
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 
 # Django Imports

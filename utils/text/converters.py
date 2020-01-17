@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import re
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import pypandoc
 
 

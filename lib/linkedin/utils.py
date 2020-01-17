@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import json
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 from requests_oauthlib import OAuth1
 

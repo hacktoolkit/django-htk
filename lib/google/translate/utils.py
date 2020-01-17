@@ -2,7 +2,7 @@
 import json
 import urllib
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 
 # HTK Imports

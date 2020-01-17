@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import time
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 import tweepy
 

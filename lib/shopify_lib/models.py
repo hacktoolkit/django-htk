@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 from decimal import Decimal
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import jsonfield
 
 # Django Imports

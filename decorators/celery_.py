@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 from functools import wraps
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 from celery import shared_task
 

@@ -4,7 +4,7 @@ import inspect
 import logging
 import time
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import MySQLdb
 import rollbar
 

@@ -11,7 +11,7 @@ import weakref
 from collections import defaultdict
 from functools import partial
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 
 # Django Imports

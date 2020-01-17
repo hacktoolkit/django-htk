@@ -1,6 +1,6 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 import stripe
 

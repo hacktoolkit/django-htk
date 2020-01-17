@@ -15,7 +15,7 @@ import re
 import sys
 import urllib
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 from github import Github
 

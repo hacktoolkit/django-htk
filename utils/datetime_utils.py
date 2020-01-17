@@ -2,7 +2,7 @@
 import datetime
 import time
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import pytz
 
 # Django Imports

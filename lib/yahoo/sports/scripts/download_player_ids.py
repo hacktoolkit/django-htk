@@ -2,7 +2,7 @@
 import re
 import time
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 from bs4 import BeautifulSoup
 

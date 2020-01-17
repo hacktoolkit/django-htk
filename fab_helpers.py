@@ -7,7 +7,7 @@ Used by fabfile.py
 # Python Standard Library Imports
 import datetime
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 from fabric.api import *
 

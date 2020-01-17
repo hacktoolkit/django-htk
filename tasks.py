@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import inspect
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 
 

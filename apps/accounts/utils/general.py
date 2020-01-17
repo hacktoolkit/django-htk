@@ -3,7 +3,7 @@ import base64
 import hashlib
 import time
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 
 # Django Imports

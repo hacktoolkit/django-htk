@@ -2,7 +2,7 @@
 import base64
 import time
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 
 # HTK Imports

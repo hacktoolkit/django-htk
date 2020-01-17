@@ -1,6 +1,6 @@
 # Python Standard Library Imports
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 from bs4 import BeautifulSoup
 
 # HTK Imports

@@ -24,7 +24,7 @@ import re as re_
 import sys
 import warnings as warnings_
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 from lxml import etree as etree_
 
 

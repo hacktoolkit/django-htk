@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import datetime
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import pytz
 
 # HTK Imports

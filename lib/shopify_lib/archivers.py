@@ -3,7 +3,7 @@ import json
 import time
 from decimal import Decimal
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import rollbar
 
 # HTK Imports

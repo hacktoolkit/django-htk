@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import base64
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 import rollbar
 

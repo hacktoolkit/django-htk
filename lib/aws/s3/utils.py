@@ -2,7 +2,7 @@
 import re
 import time
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 from boto.exception import S3ResponseError
 from boto.s3.bucket import Bucket
 from boto.s3.connection import S3Connection

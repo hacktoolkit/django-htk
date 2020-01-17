@@ -2,7 +2,7 @@
 import re
 import urllib
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import requests
 import rollbar
 

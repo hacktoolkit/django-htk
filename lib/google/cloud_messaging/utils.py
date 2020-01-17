@@ -1,4 +1,4 @@
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 from gcm.gcm import GCM
 
 # HTK Imports

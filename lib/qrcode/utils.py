@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import hashlib
 
-# Third Party / PIP Imports
+# Third Party (PyPI) Imports
 import qrcode
 from PIL import Image
 
