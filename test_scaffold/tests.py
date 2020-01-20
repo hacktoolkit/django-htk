@@ -1,18 +1,22 @@
+# Python Standard Library Imports
 import re
 
-from django.test.client import Client
+# Django Imports
 # https://docs.djangoproject.com/en/1.11/topics/testing/overview/#provided-test-case-classes
 from django.test import TestCase
+from django.test.client import Client
 from django.urls import NoReverseMatch
 from django.urls import reverse
 #from django.utils import unittest
 from django.utils.http import urlencode
 
+# HTK Imports
 from htk.test_scaffold.constants import *
 from htk.test_scaffold.models import TestScaffold
 from htk.test_scaffold.utils import create_test_email
 from htk.test_scaffold.utils import create_test_password
 from htk.test_scaffold.utils import create_test_user
+
 
 class BaseTestCase(TestCase):
     """Base class for all test cases
@@ -176,7 +180,7 @@ class BaseWebTestCase(BaseTestCase):
         view_args=None,
         view_kwargs=None,
         method='get',
-        secure=False,
+        secure=True,
         **kwargs
     ):
         """Perform an HTTP request and check that the redirect_chain behaves correctly for a page that is expected to redirect
@@ -195,8 +199,19 @@ class BaseWebTestCase(BaseTestCase):
             **kwargs
         )
 
-    def _check_view_redirects_to_login(self, view_name, client=None, login_url_name='account_login', secure=False):
-        self._check_view_redirects_to_another(view_name, login_url_name, client=client, secure=secure)
+    def _check_view_redirects_to_login(
+        self,
+        view_name,
+        client=None,
+        login_url_name='account_login',
+        secure=True
+    ):
+        self._check_view_redirects_to_another(
+            view_name,
+            login_url_name,
+            client=client,
+            secure=secure
+        )
 
     def _check_prelaunch_mode(self, view_name):
         from htk.apps.prelaunch.utils import get_prelaunch_url_name
