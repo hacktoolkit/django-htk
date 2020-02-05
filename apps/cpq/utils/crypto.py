@@ -54,7 +54,7 @@ def resolve_cpq_code(cpq_code, cpq_type=CPQType.INVOICE):
         try:
             padded = base36_to_int(cpq_code)
             if is_luhn_valid(padded):
-                xored = padded / 10
+                xored = padded // 10
                 cpq_id = xored ^ CPQ_XOR_KEY
                 cpq = CPQModel.objects.get(id=cpq_id)
             else:
