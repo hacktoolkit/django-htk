@@ -324,7 +324,7 @@ class UsernameEmailAuthenticationForm(forms.Form):
             password = self.cleaned_data.get('password')
 
         if username_email and password:
-            self.user_cache = authenticate_user_by_username_email(username_email, password)
+            self.user_cache = authenticate_user_by_username_email(self.request, username_email, password)
         else:
             self.user_cache = None
 

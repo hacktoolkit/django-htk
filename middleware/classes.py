@@ -80,7 +80,9 @@ class RequestTimerMiddleware(MiddlewareMixin):
         timer = cls._threadmap.get(_thread.get_ident())
         return timer
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(RequestTimerMiddleware, self).__init__(*args, **kwargs)
+
         from htk.utils.timer import HtkTimer
         timer = HtkTimer()
         timer.start()
@@ -112,8 +114,8 @@ class RewriteJsonResponseContentTypeMiddleware(MiddlewareMixin):
 class TimezoneMiddleware(MiddlewareMixin):
     def process_request(self, request):
         #django_timezone = request.session.get(DJANGO_TIMEZONE, None)
-        #if not django_timezone and request.user.is_authenticated():
-        if request.user.is_authenticated():
+        #if not django_timezone and request.user.is_authenticated:
+        if request.user.is_authenticated:
             user = request.user
             django_timezone = user.profile.get_django_timezone()
             # <DstTzInfo 'America/Los_Angeles' PST-1 day, 16:00:00 STD> is not JSON serializable

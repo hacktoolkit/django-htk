@@ -24,7 +24,7 @@ class require_organization_permission(object):
 
             has_permission = False
             user = request.user
-            if user.is_authenticated():
+            if user.is_authenticated:
                 if self.role == OrganizationMemberRoles.OWNER:
                     has_permission = organization.has_owner(user)
                 elif self.role == OrganizationMemberRoles.ADMIN:

@@ -9,7 +9,6 @@ import rollbar
 # Django Imports
 from django.conf import settings
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.template import TemplateDoesNotExist
 from django.template import loader
 from django.template.context_processors import csrf
@@ -37,6 +36,9 @@ def render_to_response_custom(template_name, data=None, template_prefix=''):
 
     Puts additional information needed onto the context dictionary
     """
+    # DEPRECATED in Django 3.0
+    from django.shortcuts import render_to_response
+
     data = _data_processor(data, template_name, template_prefix=template_prefix)
     response = render_to_response(template_name, data)
     return response
@@ -172,7 +174,7 @@ def wrap_data(request, data=None):
 
     ##
     # user
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user = request.user
     else:
         user = None

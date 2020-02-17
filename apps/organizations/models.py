@@ -18,7 +18,7 @@ from htk.utils import htk_setting
 
 
 class OrganizationAttribute(AbstractAttribute):
-    holder = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='attributes')
+    holder = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), on_delete=models.CASCADE, related_name='attributes')
 
     class Meta:
         app_label = 'organizations'
@@ -124,8 +124,8 @@ class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
 
 
 class BaseAbstractOrganizationMember(HtkBaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organizations')
-    organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='members')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organizations')
+    organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), on_delete=models.CASCADE, related_name='members')
     role = models.PositiveIntegerField(default=OrganizationMemberRoles.MEMBER.value, choices=get_organization_member_role_choices())
     active = models.BooleanField(default=True)
 
@@ -135,9 +135,9 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
 
 
 class BaseAbstractOrganizationInvitation(HtkBaseModel):
-    organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='invitations')
-    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organization_invitations_sent')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organization_invitations', blank=True, null=True, default=None)
+    organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), on_delete=models.CASCADE, related_name='invitations')
+    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations_sent')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations', blank=True, null=True, default=None)
     email = models.EmailField(blank=True, null=True, default=None) # email where invitation was originally sent
     accepted = models.NullBooleanField(default=None) # True: accepted, False: declined, None: not responded yet
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -149,7 +149,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
 
 class BaseAbstractOrganizationTeam(HtkBaseModel):
     name = models.CharField(max_length=128)
-    organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), related_name='teams')
+    organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), on_delete=models.CASCADE, related_name='teams')
 
     class Meta:
         abstract = True
@@ -174,8 +174,8 @@ class BaseAbstractOrganizationTeam(HtkBaseModel):
 
 
 class BaseAbstractOrganizationTeamMember(HtkBaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='organization_teams')
-    team = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MODEL'), related_name='members')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_teams')
+    team = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MODEL'), on_delete=models.CASCADE, related_name='members')
     role = models.PositiveIntegerField(default=OrganizationTeamMemberRoles.MEMBER.value, choices=get_organization_team_member_role_choices())
 
     class Meta:
@@ -190,7 +190,7 @@ class BaseAbstractOrganizationTeamMember(HtkBaseModel):
 
 class BaseAbstractOrganizationTeamPosition(HtkBaseModel):
     name = models.CharField(max_length=128)
-    team = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MODEL'), related_name='positions')
+    team = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MODEL'), on_delete=models.CASCADE, related_name='positions')
 
     class Meta:
         abstract = True
@@ -203,8 +203,8 @@ class BaseAbstractOrganizationTeamPosition(HtkBaseModel):
 
 
 class BaseAbstractOrganizationTeamMemberPosition(HtkBaseModel):
-    member = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_MODEL'), related_name='positions')
-    position = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_POSITION_MODEL'), related_name='team_members')
+    member = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_MODEL'), on_delete=models.CASCADE, related_name='positions')
+    position = models.ForeignKey(htk_setting('HTK_ORGANIZATION_TEAM_POSITION_MODEL'), on_delete=models.CASCADE, related_name='team_members')
 
     class Meta:
         abstract = True

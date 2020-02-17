@@ -46,7 +46,7 @@ class AbstractBibleBook(models.Model):
 class AbstractBibleChapter(models.Model):
     """AbstractBibleChapter model
     """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), related_name='chapters')
+    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), on_delete=models.CASCADE, related_name='chapters')
     chapter = models.PositiveIntegerField()
 
     class Meta:
@@ -68,8 +68,8 @@ class AbstractBibleChapter(models.Model):
 class AbstractBibleVerse(models.Model):
     """AbstractBibleVerse model
     """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), related_name='%(class)ss')
-    chapter = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), related_name='%(class)ss')
+    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), on_delete=models.CASCADE, related_name='%(class)ss')
+    chapter = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), on_delete=models.CASCADE, related_name='%(class)ss')
     verse = models.PositiveIntegerField()
 
     class Meta:
@@ -94,10 +94,10 @@ class AbstractBiblePassage(models.Model):
 
     For Bible passage citations
     """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), related_name='passages')
-    chapter_start = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), related_name='passages_start')
+    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), on_delete=models.CASCADE, related_name='passages')
+    chapter_start = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), on_delete=models.CASCADE, related_name='passages_start')
     verse_start = models.PositiveIntegerField(null=True, blank=True)
-    chapter_end = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), null=True, blank=True, related_name='passages_end')
+    chapter_end = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), on_delete=models.CASCADE, null=True, blank=True, related_name='passages_end')
     verse_end = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:

@@ -7,8 +7,8 @@ import time
 import rollbar
 
 # Django Imports
+from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm
 from django.utils.http import base36_to_int
 from django.utils.http import int_to_base36
 
@@ -188,35 +188,28 @@ def get_incomplete_signup_user_by_email(email):
 ##
 # authentication
 
-def authenticate_user(username, password):
-    # reuse form-model logic in AuthenticationForm
-    auth_dict = {
-        'username' : username,
-        'password' : password,
-    }
-    auth_form = AuthenticationForm(None, auth_dict)
-    is_valid = auth_form.is_valid() # just run the validation
-    auth_user = auth_form.get_user()
+def authenticate_user(request, username, password):
+    auth_user = authenticate(request=request, username=username, password=password)
     return auth_user
 
 
-def authenticate_user_by_email(email, password):
+def authenticate_user_by_email(request, email, password):
     existing_user = get_user_by_email(email)
     if existing_user is not None:
         username = existing_user.username
-        auth_user = authenticate_user(username, password)
+        auth_user = authenticate_user(request, username, password)
     else:
         auth_user = None
     return auth_user
 
 
-def authenticate_user_by_username_email(username_email, password):
+def authenticate_user_by_username_email(request, username_email, password):
     if is_valid_email(username_email):
         email = username_email
-        auth_user = authenticate_user_by_email(email, password)
+        auth_user = authenticate_user_by_email(request, email, password)
     else:
         username = username_email
-        auth_user = authenticate_user(username, password)
+        auth_user = authenticate_user(request, username, password)
     return auth_user
 
 

@@ -4,6 +4,7 @@ import random
 import uuid
 from hashlib import sha1
 
+# Third Party (PyPI) Imports
 # Third Party / PIP Imports
 import pytz
 import rollbar
@@ -35,7 +36,7 @@ from htk.utils.request import get_current_request
 
 
 class UserAttribute(AbstractAttribute):
-    holder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='attributes')
+    holder = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='attributes')
 
     class Meta:
         app_label = 'accounts'
@@ -61,7 +62,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     django.contrib.auth.models.User does not have a unique email
     """
     # TODO: related_name="%(app_label)s_%(class)s_related"
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     salt = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     has_username_set = models.BooleanField(default=False)
 
@@ -647,7 +648,7 @@ class UserEmail(models.Model):
     """A User can have multiple email addresses using this table
 
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='emails')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='emails')
     email = models.EmailField(_('email address'))
     # set in self._reset_activation_key()
     activation_key = models.CharField(max_length=40, blank=True)
@@ -835,4 +836,4 @@ class UserEmail(models.Model):
 
 ####################
 # Import these last to prevent circular import
-from htk.apps.accounts.utils import get_user_email
+from htk.apps.accounts.utils import get_user_email  # isort:skip

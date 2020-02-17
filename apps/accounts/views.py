@@ -6,7 +6,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.contrib.auth import logout
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.views import password_reset
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.template.context_processors import csrf

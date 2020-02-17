@@ -5,13 +5,14 @@ import rollbar
 
 # Django Imports
 from django.contrib import messages
+from django.utils.deprecation import MiddlewareMixin
 
 # HTK Imports
 from htk.admintools.utils import is_allowed_to_emulate
 from htk.admintools.utils import is_allowed_to_emulate_users
 
 
-class HtkEmulateUserMiddleware(object):
+class HtkEmulateUserMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """Replace the authenticated `request.user` if properly emulating
         """

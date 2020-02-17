@@ -262,7 +262,11 @@ def htk_setting(key):
 def get_request_duration():
     from htk.middleware.classes import RequestTimerMiddleware
     timer = RequestTimerMiddleware.get_current_timer()
-    duration = timer.duration()
+    if timer:
+        duration = timer.duration()
+    else:
+        # TODO: fix get_current_timer()
+        duration = 0
     return duration
 
 
@@ -315,7 +319,7 @@ def loadjsx(context, js_file_path):
 # ACL Tags
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def is_editable_by_context_user(context, obj):
     user = context.get('user', None)
     if user:
@@ -329,7 +333,7 @@ def is_editable_by_context_user(context, obj):
 def has_permission(context, permission_key):
     request = context.get('request', {}).get('request', None)
     user = request.user
-    if request and user.is_authenticated():
+    if request and user.is_authenticated:
         has_permission = user.has_perm(permission_key)
     else:
         has_permission = False

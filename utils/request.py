@@ -59,7 +59,7 @@ def get_custom_http_headers(request):
 def build_dict_from_request(request):
     """Build a dictionary from `request` that can be serialized to JSON
     """
-    user = request.user if request.user.is_authenticated() else None
+    user = request.user if request.user.is_authenticated else None
     obj = {
         'request' : {
             'GET' : request.GET,

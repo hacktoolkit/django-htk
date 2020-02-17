@@ -11,7 +11,7 @@ from htk.apps.notifications.utils import dismiss_alert_for_user
 def dismiss_alert(request):
     user = request.user
     success = False
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         alert_name = request.POST.get('alert_name')
         success = dismiss_alert_for_user(user, alert_name)
 

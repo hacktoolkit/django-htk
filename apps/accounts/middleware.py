@@ -20,7 +20,7 @@ class HtkUserTokenAuthMiddleware(object):
     - htk.apps.accounts.utils.validate_user_token_auth_token
     """
     def process_request(self, request):
-        already_logged_in_user = request.user if hasattr(request, 'user') and request.user.is_authenticated() else None
+        already_logged_in_user = request.user if hasattr(request, 'user') and request.user.is_authenticated else None
 
         token = request.GET.get('token', None)
         token_user = authenticate(request=request, token=token) if token else None
@@ -45,7 +45,7 @@ class HtkSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
         Therefore, always go to account settings page or equivalent
         """
         default_url = super(HtkSocialAuthExceptionMiddleware, self).get_redirect_uri(request, exception)
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             url = htk_setting('HTK_SOCIAL_AUTH_CONNECT_ERROR_URL', default_url)
         else:
             url = default_url

@@ -21,5 +21,5 @@ def show_debug_toolbar(request):
         cookie_value = False
 
     user = request.user
-    show = cookie_value and (bool(settings.DEBUG) or (user.is_authenticated() and user.profile and user.profile.is_company_employee))
+    show = cookie_value and (bool(settings.DEBUG) or (user.is_authenticated and user.profile and user.profile.is_company_employee))
     return show

@@ -49,7 +49,7 @@ def is_allowed_to_emulate_users(user):
     """Determines whether `user` is allowed to emulate other users
     """
     allowed = False
-    if user is not None and user.is_authenticated():
+    if user is not None and user.is_authenticated:
         try:
             user_profile = user.profile
             if user_profile.is_company_officer:
