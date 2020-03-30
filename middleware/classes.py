@@ -1,6 +1,7 @@
 # Python Standard Library Imports
 import datetime
 import re
+import sys
 
 # Django Imports
 from django.conf import settings
@@ -14,7 +15,12 @@ from htk.session_keys import *
 from htk.utils import htk_setting
 from htk.utils.request import is_allowed_host
 
-import _thread
+
+is_py2 = sys.version[0] == '2'
+if is_py2:
+    import thread as _thread
+else:
+    import _thread
 
 
 class GlobalRequestMiddleware(MiddlewareMixin):

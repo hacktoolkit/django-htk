@@ -1,3 +1,6 @@
+# Future Imports
+from __future__ import print_function
+
 # Python Standard Library Imports
 import atexit
 import os
