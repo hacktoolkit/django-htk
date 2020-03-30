@@ -22,7 +22,6 @@ from __future__ import print_function
 import getopt
 import json
 import sys
-import urllib
 
 # Third Party (PyPI) Imports
 import requests

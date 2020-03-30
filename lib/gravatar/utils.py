@@ -1,6 +1,8 @@
 # Python Standard Library Imports
 import hashlib
-import urllib
+
+# Third Party (PyPI) Imports
+import six.moves.urllib as urllib
 
 # Django Imports
 from django.conf import settings

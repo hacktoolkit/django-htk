@@ -1,10 +1,10 @@
 # Python Standard Library Imports
 import re
-import urllib
 
 # Third Party (PyPI) Imports
 import requests
 import rollbar
+import six.moves.urllib as urllib
 
 # HTK Imports
 from htk.lib.oembed.cachekeys import OembedResponseCache

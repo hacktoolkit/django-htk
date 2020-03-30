@@ -3,7 +3,9 @@ import base64
 import datetime
 import json
 import re
-import urllib
+
+# Third Party (PyPI) Imports
+import six.moves.urllib as urllib
 
 # Django Imports
 from django import template

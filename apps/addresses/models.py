@@ -1,3 +1,6 @@
+# Third Party (PyPI) Imports
+import six.moves.urllib as urllib
+
 # Django Imports
 from django.db import models
 

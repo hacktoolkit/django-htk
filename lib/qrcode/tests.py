@@ -1,8 +1,10 @@
+# Django Imports
 from django.test import TestCase
+
 
 class QrcodeLibTestCase(TestCase):
     def test_image_crop(self):
-        import urllib
+        import six.moves.urllib as urllib
         from PIL import Image
         import StringIO
         file = StringIO.StringIO(urllib.urlopen('https://avatars2.githubusercontent.com/u/5404851?s=600&v=4').read())

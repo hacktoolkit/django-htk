@@ -13,10 +13,10 @@ import json
 import random
 import re
 import sys
-import urllib
 
 # Third Party (PyPI) Imports
 import requests
+
 from github import Github
 
 

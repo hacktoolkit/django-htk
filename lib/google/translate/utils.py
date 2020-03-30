@@ -1,9 +1,9 @@
 # Python Standard Library Imports
 import json
-import urllib
 
 # Third Party (PyPI) Imports
 import requests
+import six.moves.urllib as urllib
 
 # HTK Imports
 from htk.lib.google.translate.constants import *
