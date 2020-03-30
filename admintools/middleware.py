@@ -10,13 +10,20 @@ from django.utils.deprecation import MiddlewareMixin
 # HTK Imports
 from htk.admintools.utils import is_allowed_to_emulate
 from htk.admintools.utils import is_allowed_to_emulate_users
+from htk.utils import htk_setting
 
 
 class HtkEmulateUserMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """Replace the authenticated `request.user` if properly emulating
         """
-        if is_allowed_to_emulate_users(request.user):
+        if (
+            request.path.startswith(htk_setting('HTK_PATH_ADMIN'))
+            or request.path.startswith(htk_setting('HTK_PATH_ADMINTOOLS'))
+        ):
+            # disallow emulation for /admin and /admintools
+            pass
+        elif is_allowed_to_emulate_users(request.user):
             from htk.apps.accounts.utils import get_user_by_id
             from htk.apps.accounts.utils import get_user_by_username
 
