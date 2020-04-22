@@ -69,20 +69,20 @@ class Htk321FormsAPI(object):
         headers['Authorization'] = authorization_key
         return headers
 
-    def request_get(self, request_url=None):
+    def request_get(self, request_url=None, params=None, **kwargs):
         if request_url is None:
             request_url = self.get_request_url()
 
         headers = self.make_request_headers(action='GET')
-        response = requests.get(request_url, headers=headers)
+        response = requests.get(request_url, headers=headers, params=params, **kwargs)
         return response
 
-    def request_post(self, request_url=None, data=None):
+    def request_post(self, request_url=None, data=None, **kwargs):
         if request_url is None:
             request_url = self.get_request_url()
 
         headers = self.make_request_headers(action='POST')
-        response = requests.post(request_url, headers=headers, json=data)
+        response = requests.post(request_url, headers=headers, json=data, **kwargs)
         return response
 
     ##
@@ -216,17 +216,39 @@ class Htk321FormsAPI(object):
         forms = response.json()
         return forms
 
-    def get_form_by_company(self, company_id, form_id):
+    def get_form_by_company(self, company_id, form_id, form_type='questions'):
         """Returns an array of form questions and an object with the basic details of the form itself
+
+        `form_type` can be one of:
+        - 'questions' : The list of questions that will be asked of the employee
+        - 'pdf' : The blank version of the PDF
+        - 'resolution' : The list of questions asked of the HR manager when resolving the form
         """
         resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_FORM % {
             'company_id' : company_id,
             'form_id' : form_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
+
+        params = {
+            'type': form_type,
+        }
+
+        response = self.request_get(request_url, params=params)
         form = response.json()
         return form
+
+    def get_combined_form_by_company(self, company_id, form_id):
+        questions_form = self.get_form_by_company(company_id, form_id, form_type='questions')
+        resolution_form = self.get_form_by_company(company_id, form_id, form_type='resolution')
+
+        combined_form = {}
+        combined_form.update(questions_form)
+        combined_questions = questions_form['form_questions'] + resolution_form['form_questions']
+
+        combined_form['form_questions'] = combined_questions
+
+        return combined_form
 
     def get_forms_by_division(self, division_id):
         resource_path = DSS_321FORMS_API_RESOURCE_DIVISION_FORMS % {
