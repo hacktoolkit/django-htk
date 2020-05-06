@@ -26,7 +26,7 @@ class Htk321FormsAPI(object):
 
     def _get_rollbar_extra_data(self):
         extra_data = {
-            'username' : self.username,
+            'username': self.username,
         }
         return extra_data
 
@@ -60,9 +60,9 @@ class Htk321FormsAPI(object):
 
         sent_date = utcnow().strftime('%Y-%m-%d %H:%M:%S')
         headers = {
-            'Username' : username,
-            'SentDate' : "{ts \'%s\'}" % sent_date,
-            'Action' : action,
+            'Username': username,
+            'SentDate': "{ts \'%s\'}" % sent_date,
+            'Action': action,
         }
 
         authorization_key = self._make_authorization_key(headers, secret_key)
@@ -90,7 +90,7 @@ class Htk321FormsAPI(object):
 
     def get_user(self, user_id):
         resource_path = DSS_321FORMS_API_RESOURCE_USER % {
-            'user_id' : user_id,
+            'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
@@ -99,7 +99,7 @@ class Htk321FormsAPI(object):
 
     def get_user_everify(self, user_id):
         resource_path = DSS_321FORMS_API_RESOURCE_USER_EVERIFY % {
-            'user_id' : user_id,
+            'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
@@ -112,8 +112,8 @@ class Htk321FormsAPI(object):
         Only shows users that the requesting account is allowed to manage
         """
         resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_USERS % {
-            'company_id' : company_id,
-            'user_type' : user_type,
+            'company_id': company_id,
+            'user_type': user_type,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
@@ -128,16 +128,16 @@ class Htk321FormsAPI(object):
                 message = 'Error retrieving users by company'
 
             extra_data = {
-                'username' : self.username,
-                'company_id' : company_id,
-                'user_type' : user_type,
+                'username': self.username,
+                'company_id': company_id,
+                'user_type': user_type,
             }
             rollbar.report_message(message, extra_data=extra_data)
         return users
 
     def create_employee(self, user_id, employee_data):
         resource_path = DSS_321FORMS_API_RESOURCE_USER % {
-            'user_id' : user_id,
+            'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_post(request_url, employee_data)
@@ -190,7 +190,7 @@ class Htk321FormsAPI(object):
         """Returns a JSON response with two elements. The companyID provided and an array of divisions
         """
         resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_DIVISIONS % {
-            'company_id' : company_id,
+            'company_id': company_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
@@ -209,7 +209,7 @@ class Htk321FormsAPI(object):
         This will be used when selecting the forms to provide for a new hire
         """
         resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_FORMS % {
-            'company_id' : company_id,
+            'company_id': company_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
@@ -220,13 +220,13 @@ class Htk321FormsAPI(object):
         """Returns an array of form questions and an object with the basic details of the form itself
 
         `form_type` can be one of:
-        - 'questions' : The list of questions that will be asked of the employee
-        - 'pdf' : The blank version of the PDF
-        - 'resolution' : The list of questions asked of the HR manager when resolving the form
+        - 'questions': The list of questions that will be asked of the employee
+        - 'pdf': The blank version of the PDF
+        - 'resolution': The list of questions asked of the HR manager when resolving the form
         """
         resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_FORM % {
-            'company_id' : company_id,
-            'form_id' : form_id,
+            'company_id': company_id,
+            'form_id': form_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
 
@@ -252,7 +252,7 @@ class Htk321FormsAPI(object):
 
     def get_forms_by_division(self, division_id):
         resource_path = DSS_321FORMS_API_RESOURCE_DIVISION_FORMS % {
-            'division_id' : division_id,
+            'division_id': division_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
@@ -261,24 +261,65 @@ class Htk321FormsAPI(object):
 
     def get_forms_by_user(self, user_id):
         resource_path = DSS_321FORMS_API_RESOURCE_USER_FORMS % {
-            'user_id' : user_id,
+            'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
         forms = response.json()
         return forms
 
-    def get_form_by_user(self, user_id, form_id, form_type=None):
+    def get_form_by_user(self, user_id, form_id, form_type='questions', status='approved'):
+        """Receives response information of a user's latest form of a particular status
+
+        `form_type` can be one of:
+        - 'questions': list of question_number/response
+        - 'fields': list of field name/value
+        - 'pdf': base64encoded filled version of PDF
+        - 'url': Temporary URL to download PDF
+
+        `status` can be one of:
+        - 'approved': Latest approved form
+        - 'submitted': Latest submitted form
+        """
         resource_path = DSS_321FORMS_API_RESOURCE_USER_FORM % {
-            'user_id' : user_id,
-            'form_id' : form_id,
+            'user_id': user_id,
+            'form_id': form_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        if form_type:
-            request_url += '?type=%s' % (form_type,)
-        response = self.request_get(request_url)
+
+        params = {
+            'type': form_type,
+            'status': status,
+        }
+
+        response = self.request_get(request_url, params=params)
         forms = response.json()
         return forms
+
+    ##
+    # Responses
+
+    def get_responses_by_user(self, user_id, questions=None, offset=0, limit=100):
+        """Receives response information to questions asked of a user
+
+        `questions` a list of question ids  for which to return responses
+        """
+        resource_path = DSS_321FORMS_API_RESOURCE_USER_RESPONSES % {
+            'user_id': user_id,
+        }
+
+        request_url = self.get_request_url(resource_path=resource_path)
+
+        params = {
+            'offset': offset,
+            'limit': limit,
+        }
+        if questions:
+            params['questions'] = questions
+
+        response = self.request_get(request_url, params=params)
+        user_responses = response.json()
+        return user_responses
 
     ##
     # SSO - Single Sign-On
@@ -295,7 +336,7 @@ class Htk321FormsAPI(object):
             sso_key = None
             extra_data = self._get_rollbar_extra_data()
             extra_data.update({
-                'response_text' : response.text,
+                'response_text': response.text,
             })
             rollbar.report_exc_info(extra_data=extra_data)
             exception_reported = True
@@ -304,14 +345,14 @@ class Htk321FormsAPI(object):
             request = get_current_request()
             extra_data = self._get_rollbar_extra_data()
             extra_data.update({
-                'response_text' : response.text,
+                'response_text': response.text,
             })
             rollbar.report_message('Error generating 321Forms SSO key', request=request, extra_data=extra_data)
         return sso_key
 
     def create_sso_endpoint(self, sso_key):
         resource_path = DSS_321FORMS_API_RESOURCE_SSO_ENDPOINT % {
-            'sso_key' : sso_key,
+            'sso_key': sso_key,
         }
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_post(request_url)
@@ -325,7 +366,7 @@ class Htk321FormsAPI(object):
             request = get_current_request()
             extra_data = self._get_rollbar_extra_data()
             extra_data.update({
-                'response_text' : response.text,
+                'response_text': response.text,
             })
             rollbar.report_exc_info(extra_data=extra_data)
             exception_reported = True
@@ -334,7 +375,7 @@ class Htk321FormsAPI(object):
             request = get_current_request()
             extra_data = self._get_rollbar_extra_data()
             extra_data.update({
-                'response_text' : response.text,
+                'response_text': response.text,
             })
             rollbar.report_message('Error retrieving SSO endpoint', request=request, extra_data=extra_data)
         return endpoint
