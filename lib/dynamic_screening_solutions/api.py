@@ -115,24 +115,42 @@ class Htk321FormsAPI(object):
             'company_id': company_id,
             'user_type': user_type,
         }
-        request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
-        result = response.json()
-        if type(result) == list:
-            users = result
-        else:
-            users = []
-            if type(result) == dict and 'message' in result:
-                message = result['message']
-            else:
-                message = 'Error retrieving users by company'
 
-            extra_data = {
-                'username': self.username,
-                'company_id': company_id,
-                'user_type': user_type,
+        offset = 0
+        limit = 50
+
+        users = []
+
+        while offset is not None:
+            params = {
+                'offset': offset,
+                'limit': limit,
             }
-            rollbar.report_message(message, extra_data=extra_data)
+
+            request_url = self.get_request_url(resource_path=resource_path)
+            response = self.request_get(request_url, params=params)
+            response_json = response.json()
+            if type(response_json) == list:
+                if len(response_json) == limit:
+                    offset += limit
+                else:
+                    offset = None
+                users.extend(response_json)
+            else:
+                offset = None
+
+                if type(response_json) == dict and 'message' in response_json:
+                    message = response_json['message']
+                else:
+                    message = 'Error retrieving users by company'
+
+                    extra_data = {
+                        'username': self.username,
+                        'company_id': company_id,
+                        'user_type': user_type,
+                    }
+                    rollbar.report_message(message, extra_data=extra_data)
+
         return users
 
     def create_employee(self, user_id, employee_data):
