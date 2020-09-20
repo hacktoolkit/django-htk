@@ -64,6 +64,7 @@ def webhook_call(
             rollbar.report_message('Slack webhook call error: [%s] %s' % (response.status_code, response.content,), extra_data=extra_data)
     return response
 
+
 def handle_webhook_error_response(response, error_response_handlers=None):
     """Handles a Slack webhook call error response
 
@@ -86,6 +87,7 @@ def handle_webhook_error_response(response, error_response_handlers=None):
             handler = error_response_handlers[response.status_code][error_message]
             handler()
 
+
 def is_valid_webhook_event(event, request):
     """Determines whether the Slack webhook event has a valid token
 
@@ -107,6 +109,7 @@ def is_valid_webhook_event(event, request):
         event['webhook_request'] = get_request_metadata(request)
     return is_valid
 
+
 def get_webhook_settings(token):
     """Retrieves the webhook settings from KV storage
     """
@@ -114,6 +117,7 @@ def get_webhook_settings(token):
     key = 'slack_webhook_%s' % token
     webhook_settings = kv_get(key, namespace='slack')
     return webhook_settings
+
 
 def get_event_type(event):
     """Get event type from Slack webhook `event`
@@ -123,6 +127,7 @@ def get_event_type(event):
     event_type_resolver = resolve_method_dynamically(event_type_resolver_module_str)
     event_type = event_type_resolver(event)
     return event_type
+
 
 def get_event_handlers(event):
     """Gets all the event handlers available for `event`
@@ -145,6 +150,7 @@ def get_event_handlers(event):
         del event_handlers[command]
     return event_handlers
 
+
 def get_event_handler_usages(event):
     event_handler_usages = copy.copy(htk_setting('HTK_SLACK_EVENT_HANDLER_USAGES'))
     webhook_settings = event.get('webhook_settings', {})
@@ -155,6 +161,7 @@ def get_event_handler_usages(event):
         if webhook_settings.get(event_group, False) is True:
             event_handler_usages.update(usages)
     return event_handler_usages
+
 
 def is_available_command(event, command):
     """Determines whether `command` is available for the `event`

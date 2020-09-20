@@ -35,6 +35,7 @@ def preprocess_event(event_handler):
         return payload
     return wrapped_event_handler
 
+
 def get_usage(event, command):
     event_handler_usages = get_event_handler_usages(event)
     from htk.utils.general import resolve_method_dynamically
@@ -63,6 +64,7 @@ def get_usage(event, command):
 %(formatted_examples)s""" % usage_dict
     return usage
 
+
 @preprocess_event
 def help(event, **kwargs):
     text = kwargs.get('text')
@@ -87,6 +89,7 @@ def help(event, **kwargs):
     }
     return payload
 
+
 @preprocess_event
 def default(event, **kwargs):
     """A Hacktoolkit-flavored default event handler for Slack webhook events
@@ -107,6 +110,7 @@ def default(event, **kwargs):
         'text' : slack_text,
     }
     return payload
+
 
 @preprocess_event
 def bart(event, **kwargs):
@@ -150,6 +154,7 @@ def bart(event, **kwargs):
     }
     return payload
 
+
 @preprocess_event
 def beacon(event, **kwargs):
     """Beacon geo-ip location handler for Slack webhook events
@@ -186,6 +191,7 @@ def beacon(event, **kwargs):
     }
     return payload
 
+
 @preprocess_event
 def bible(event, **kwargs):
     """Bible event handler for Slack webhook events
@@ -193,6 +199,7 @@ def bible(event, **kwargs):
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
+    attachments = []
 
     if command == 'bible':
         if args:
@@ -207,21 +214,30 @@ def bible(event, **kwargs):
             else:
                 webhook_settings = event.get('webhook_settings', {})
                 bible_version = webhook_settings.get('bible_version', None)
+
             passage = get_bible_passage(args, version=bible_version)
+
             passage['query'] = args
+
             slack_text = """Bible passage: *%(query)s*
 Read on Literal Word: %(url)s
->>> %(text)s
 """ % passage
+
+            attachments.append({
+                'pretext': '*{}*'.format(passage['query']),
+                'text': passage['text'],
+            })
         else:
             slack_text = 'Please specify a Bible passage to look up.\n%s' % get_usage(event, command)
     else:
         slack_text = 'Illegal command.'
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
+        'attachments': attachments,
     }
     return payload
+
 
 @preprocess_event
 def emaildig(event, **kwargs):
@@ -257,6 +273,7 @@ def emaildig(event, **kwargs):
         'text' : slack_text,
     }
     return payload
+
 
 @preprocess_event
 def findemail(event, **kwargs):
@@ -294,6 +311,7 @@ def findemail(event, **kwargs):
     }
     return payload
 
+
 @preprocess_event
 def geoip(event, **kwargs):
     """GeoIP event handler for Slack webhook events
@@ -320,6 +338,7 @@ def geoip(event, **kwargs):
         'unfurl_media' : True,
     }
     return payload
+
 
 @preprocess_event
 def ohmygreen(event, **kwargs):
@@ -359,6 +378,7 @@ def ohmygreen(event, **kwargs):
     }
     return payload
 
+
 @preprocess_event
 def stock(event, **kwargs):
     """Stock event handler for Slack webhook events
@@ -392,6 +412,7 @@ def stock(event, **kwargs):
     }
     return payload
 
+
 @preprocess_event
 def utcnow_slack(event, **kwargs):
     """utcnow event handler for Slack webhook events
@@ -421,6 +442,7 @@ def utcnow_slack(event, **kwargs):
         'text' : slack_text,
     }
     return payload
+
 
 @preprocess_event
 def weather(event, **kwargs):
@@ -456,6 +478,7 @@ def weather(event, **kwargs):
         'icon_emoji' : icon_emoji,
     }
     return payload
+
 
 @preprocess_event
 def zesty(event, **kwargs):
