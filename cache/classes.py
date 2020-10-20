@@ -11,7 +11,7 @@ from htk.constants.time import *
 
 class CacheableObject(object):
     """Abstract base class for cacheable objects
-    
+
     Meant to be a secondary base class via multiple inheritance
     http://docs.python.org/tutorial/classes.html#multiple-inheritance
 
@@ -82,12 +82,13 @@ class CacheableObject(object):
             cache.set(cache_key, cache_payload, cache_duration)
         else:
             # use cache.add() instead of cache.set() by default,
-            # cache.add() fails if there's already something store for the key
+            # cache.add() fails if there's already something stored for the key
             cache.add(cache_key, cache_payload, cache_duration)
+
 
 class LockableObject(object):
     """Abstract base class for lockable objects
-    
+
     Meant to be a secondary base class via multiple inheritance
     http://docs.python.org/tutorial/classes.html#multiple-inheritance
 
@@ -159,6 +160,7 @@ class LockableObject(object):
         """
         lock_key = self.get_lock_key()
         cache.delete(lock_key)
+
 
 class CustomCacheScheme(object):
     """Abstract base class for custom cache schemes

@@ -319,6 +319,17 @@ def loadjsx(context, js_file_path):
 
 
 ##
+# Feature Flags
+
+
+@register.simple_tag()
+def is_feature_enabled(feature_name):
+    from htk.apps.features.utils import is_feature_enabled as _is_feature_enabled
+    is_enabled = _is_feature_enabled(feature_name)
+    return is_enabled
+
+
+##
 # ACL Tags
 
 

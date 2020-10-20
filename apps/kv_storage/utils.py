@@ -15,6 +15,7 @@ def get_kv_storage_model(namespace=None):
         KVStorageModel = None
     return KVStorageModel
 
+
 def _get_kv_cache(key, namespace=None):
     from htk.apps.kv_storage.cachekeys import KVStorageCache
     if namespace is None:
@@ -23,6 +24,7 @@ def _get_kv_cache(key, namespace=None):
         prekey = (namespace, key,)
     c = KVStorageCache(prekey=prekey)
     return c
+
 
 def _get_kv_obj(key, namespace=None):
     """Retrieve the key-value storage model instance for `key`
@@ -36,6 +38,7 @@ def _get_kv_obj(key, namespace=None):
             pass
     return kv_obj
 
+
 def kv_list_keys(namespace=None, prefix=None):
     KV = get_kv_storage_model(namespace=namespace)
     if KV:
@@ -47,6 +50,7 @@ def kv_list_keys(namespace=None, prefix=None):
     else:
         keys = []
     return keys
+
 
 def kv_put(key, value, namespace=None, overwrite=False):
     """PUTs a key-value pair for `key` and `value`
@@ -78,6 +82,7 @@ def kv_put(key, value, namespace=None, overwrite=False):
             c.cache_store(value)
     return kv_obj
 
+
 def kv_get(key, namespace=None, cache_only=False, force_refetch=False):
     """GETs the value of `key` from key-value storage
 
@@ -94,12 +99,14 @@ def kv_get(key, namespace=None, cache_only=False, force_refetch=False):
             c.cache_store(value)
     return value
 
+
 def kv_get_cached(key, namespace=None):
     """GETs the cached value of `key`
     Returns None if not cached
     """
     value = kv_get(key, namespace=namespace, cache_only=True)
     return value
+
 
 def kv_delete(key, namespace=None):
     """DELETEs `key` from key-value storage
