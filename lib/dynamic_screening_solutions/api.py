@@ -85,6 +85,22 @@ class Htk321FormsAPI(object):
         response = requests.post(request_url, headers=headers, json=data, **kwargs)
         return response
 
+    def request_put(self, request_url=None, data=None, **kwargs):
+        if request_url is None:
+            request_url = self.get_request_url()
+
+        headers = self.make_request_headers(action='PUT')
+        response = requests.put(request_url, headers=headers, json=data, **kwargs)
+        return response
+
+    def request_delete(self, request_url=None, **kwargs):
+        if request_url is None:
+            request_url = self.get_request_url()
+
+        headers = self.make_request_headers(action='DELETE')
+        response = requests.delete(request_url, headers=headers, **kwargs)
+        return response
+
     ##
     # Users
 
@@ -214,7 +230,7 @@ class Htk321FormsAPI(object):
         response = self.request_get(request_url)
         try:
             divisions = response.json().get('divisions', [])
-        except:
+        except Exception:
             divisions = []
         return divisions
 
@@ -340,6 +356,92 @@ class Htk321FormsAPI(object):
         return user_responses
 
     ##
+    # Hooks / Webhooks
+
+    def get_webhooks_by_company(self, company_id):
+        resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_WEBHOOKS % {
+            'company_id': company_id,
+        }
+
+        request_url = self.get_request_url(resource_path=resource_path)
+
+        response = self.request_get(request_url)
+        response_json = response.json()
+        return response_json
+
+    def get_webhook(self, company_id, webhook_id):
+        resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_WEBHOOK % {
+            'company_id': company_id,
+            'webhook_id': webhook_id,
+        }
+
+        request_url = self.get_request_url(resource_path=resource_path)
+
+        response = self.request_get(request_url)
+        response_json = response.json()
+        return response_json
+
+    def get_webhook_topics(self, company_id):
+        resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_WEBHOOK_TOPICS % {
+            'company_id': company_id,
+        }
+
+        request_url = self.get_request_url(resource_path=resource_path)
+
+        response = self.request_get(request_url)
+        try:
+            webhook_topics = response.json()
+        except Exception:
+            webhook_topics = []
+
+        return webhook_topics
+
+    def create_webhook(self, company_id, url, topic_ids):
+        resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_WEBHOOKS % {
+            'company_id': company_id,
+        }
+
+        request_url = self.get_request_url(resource_path=resource_path)
+
+        data = {
+            'url': url,
+            'topics': topic_ids,
+        }
+
+        response = self.request_post(request_url, data=data)
+        response_json = response.json()
+        return response_json
+
+    def update_webhook(self, company_id, webhook_id, url, topic_ids):
+        resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_WEBHOOK % {
+            'company_id': company_id,
+            'webhook_id': webhook_id,
+        }
+
+        request_url = self.get_request_url(resource_path=resource_path)
+
+        data = {
+            'url': url,
+            'topics': topic_ids,
+        }
+
+        response = self.request_put(request_url, data=data)
+        response_json = response.json()
+        return response_json
+
+    def delete_webhook(self, company_id, webhook_id):
+        resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_WEBHOOK % {
+            'company_id': company_id,
+            'webhook_id': webhook_id,
+        }
+
+        request_url = self.get_request_url(resource_path=resource_path)
+
+        response = self.request_delete(request_url)
+        response_json = response.json()
+        return response_json
+
+    ##
     # SSO - Single Sign-On
 
     def generate_sso_key(self):
@@ -350,7 +452,7 @@ class Htk321FormsAPI(object):
         try:
             data = response.json()
             sso_key = data.get('SSOKey')
-        except:
+        except Exception:
             sso_key = None
             extra_data = self._get_rollbar_extra_data()
             extra_data.update({
@@ -379,7 +481,7 @@ class Htk321FormsAPI(object):
         try:
             data = response.json()
             endpoint = data.get('endpoint')
-        except:
+        except Exception:
             endpoint = None
             request = get_current_request()
             extra_data = self._get_rollbar_extra_data()
