@@ -11,7 +11,7 @@ from htk.utils import utcnow
 
 class Feedback(HtkBaseModel):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedback', null=True, blank=True, on_delete=models.SET_DEFAULT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='feedback', null=True, blank=True, default=None, on_delete=models.SET_DEFAULT)
     name = models.CharField(max_length=100, null=True, blank=True)
     comment = models.CharField(max_length=2000, null=True, blank=True)
     email = models.EmailField(max_length=100, null=True, blank=True)
