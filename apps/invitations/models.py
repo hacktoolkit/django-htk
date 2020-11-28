@@ -18,11 +18,11 @@ class HtkInvitation(HtkBaseModel):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations_sent')
+    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations_sent', on_delete=models.CASCADE)
     campaign = models.CharField(max_length=127, blank=True)
     notes = models.CharField(max_length=127, blank=True)
     status = models.PositiveIntegerField(default=InvitationStatus.INITIAL.value, choices=get_invitation_status_choices())
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations_accepted', blank=True, null=True, default=None)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations_accepted', blank=True, null=True, default=None, on_delete=models.CASCADE)
     # meta
     created_at = models.DateTimeField(auto_now_add=True)
     timestamp = models.DateTimeField(auto_now=True)
