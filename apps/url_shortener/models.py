@@ -41,11 +41,13 @@ class HTKShortUrl(models.Model):
         return value
 
     def get_code(self):
+        # HTK Imports
         from htk.apps.url_shortener.utils import generate_short_url_code
         code = generate_short_url_code(self.id)
         return code
 
     def get_prepared_id(self):
+        # HTK Imports
         from htk.apps.url_shortener.utils import pre_encode
         prepared_id = pre_encode(self.id)
         return prepared_id
@@ -84,7 +86,7 @@ class HTKShortUrl(models.Model):
         return count
 
 class HTKShortUrlAccess(models.Model):
-    url = models.ForeignKey('htk.HTKShortUrl', related_name='accesses')
+    url = models.ForeignKey('htk.HTKShortUrl', related_name='accesses', on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, default=None, on_delete=models.SET_DEFAULT)
     user_agent = models.CharField(max_length=256, blank=True)

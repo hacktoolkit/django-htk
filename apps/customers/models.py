@@ -14,7 +14,7 @@ from htk.utils.cache_descriptors import CachedAttribute
 
 
 class CustomerAttribute(AbstractAttribute):
-    holder = models.ForeignKey(htk_setting('HTK_CPQ_CUSTOMER_MODEL'), related_name='attributes')
+    holder = models.ForeignKey(htk_setting('HTK_CPQ_CUSTOMER_MODEL'), related_name='attributes', on_delete=models.CASCADE)
 
     class Meta:
         app_label = htk_setting('HTK_DEFAULT_APP_LABEL')
@@ -32,7 +32,7 @@ CustomerAttributeHolder = AbstractAttributeHolderClassFactory(
 ).get_class()
 
 class OrganizationCustomerAttribute(AbstractAttribute):
-    holder = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), related_name='attributes')
+    holder = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), related_name='attributes', on_delete=models.CASCADE)
 
     class Meta:
         app_label = htk_setting('HTK_DEFAULT_APP_LABEL')
@@ -52,13 +52,13 @@ OrganizationCustomerAttributeHolder = AbstractAttributeHolderClassFactory(
 class BaseCustomer(models.Model, CustomerAttributeHolder):
     """Base model for a Customer in the `htk.apps.cpq` app
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='customers', null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='customers', null=True, blank=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=64, default='Customer Name')
     attention = models.CharField(max_length=64, blank=True)
     email = models.EmailField(blank=True)
-    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='customers')
-    mailing_address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='mailing_address_customers', null=True, blank=True)
-    organization = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), related_name='members', null=True, blank=True)
+    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='customers', on_delete=models.CASCADE)
+    mailing_address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='mailing_address_customers', null=True, blank=True, on_delete=models.CASCADE)
+    organization = models.ForeignKey(htk_setting('HTK_CPQ_ORGANIZATION_CUSTOMER_MODEL'), related_name='members', null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -82,8 +82,8 @@ class BaseOrganizationCustomer(models.Model):
     name = models.CharField(max_length=64, default='Organization Customer Name')
     attention = models.CharField(max_length=64, blank=True)
     email = models.EmailField(blank=True)
-    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='organization_customers', editable=True)
-    mailing_address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='mailing_address_organization_customers', null=True, blank=True)
+    address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='organization_customers', editable=True, on_delete=models.CASCADE)
+    mailing_address = models.ForeignKey(settings.HTK_POSTAL_ADDRESS_MODEL, related_name='mailing_address_organization_customers', null=True, blank=True, on_delete=models.CASCADE)
     organization_type = models.PositiveIntegerField(default=DEFAULT_ORGANIZATION_TYPE.value, choices=get_organization_type_choices())
 
     class Meta:
