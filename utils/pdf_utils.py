@@ -5,7 +5,10 @@ from django.http import HttpResponseServerError
 # HTK Imports
 from htk.utils.templates import generate_html_from_template
 from htk.utils.templates import rewrite_relative_urls_as_absolute
-from htk.view_helpers import render_to_response_custom
+from htk.view_helpers import render_custom
+
+
+# isort: off
 
 
 WKHTMLTOPDF_OPTIONS = {
@@ -18,6 +21,7 @@ WKHTMLTOPDF_OPTIONS = {
     'encoding' : 'UTF-8',
     #'print_media_type' : False,
 }
+
 
 def render_to_pdf_response(template_name, context_dict, show_content_in_browser=False, css_files=None):
     """Renders a Django `template_name` with context `context_dict` to a PDF file
@@ -44,6 +48,7 @@ def render_url_to_pdf_response(url):
     else:
         response = HttpResponseServerError('Error generating PDF file')
     return response
+
 
 def render_to_pdf_response_wkhtmltopdf(template_name, context_dict, show_content_in_browser=False):
     """Wrapper for generating PDF files from `template_name` using  wkhtmltopdf
@@ -82,7 +87,7 @@ def render_to_pdf_response_pdfkit(template_name, context_dict, css_files=None):
     Installation: https://github.com/JazzCore/python-pdfkit/wiki/Using-wkhtmltopdf-without-X-server
 
     Outstanding Issues:
-    - 
+    -
     """
     import pdfkit
     html = generate_html_from_template(template_name, context_dict)
@@ -105,6 +110,7 @@ def render_to_pdf_response_pdfkit(template_name, context_dict, css_files=None):
     else:
         response = HttpResponseServerError('Error generating PDF file')
     return response
+
 
 def render_to_pdf_response_pisa(template_name, context_dict):
     """Render to a PDF response using Pisa

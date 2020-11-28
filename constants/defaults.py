@@ -24,7 +24,7 @@ HTK_REDIRECT_URL_NAME = 'redir'
 HTK_STATIC_META_TITLE_VALUES = {}
 HTK_STATIC_META_DESCRIPTION_VALUES = {}
 
-HTK_TEMPLATE_RENDERER = 'htk.view_helpers.render_to_response_custom'
+HTK_TEMPLATE_RENDERER = 'htk.view_helpers.render_custom'
 HTK_TEMPLATE_CONTEXT_GENERATOR = 'htk.view_helpers.wrap_data'
 HTK_CSS_EXTENSION = 'css'
 

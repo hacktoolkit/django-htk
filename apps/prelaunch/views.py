@@ -9,7 +9,7 @@ from htk.apps.prelaunch.forms import PrelaunchSignupForm
 from htk.apps.prelaunch.utils import is_prelaunch_mode
 from htk.apps.prelaunch.view_helpers import get_view_context
 from htk.utils import htk_setting
-from htk.view_helpers import render_to_response_custom as _r
+from htk.view_helpers import render_custom as _r
 
 
 def prelaunch(request):
@@ -32,7 +32,7 @@ def prelaunch(request):
         data['prelaunch_signup_form'] = prelaunch_signup_form
         data['success'] = success
         prelaunch_template = htk_setting('HTK_PRELAUNCH_TEMPLATE', HTK_PRELAUNCH_TEMPLATE)
-        response = _r(prelaunch_template, data)
+        response = _r(request, prelaunch_template, data)
     else:
         response = redirect(htk_setting('HTK_INDEX_URL_NAME'))
     return response

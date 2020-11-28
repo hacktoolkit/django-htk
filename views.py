@@ -15,6 +15,9 @@ from django.urls import reverse
 from htk.utils import htk_setting
 
 
+# isort: off
+
+
 def health_check(request):
     response = HttpResponse('200 OK', status=200)
     return response
@@ -27,8 +30,8 @@ def browser_info(request, data=None, template_name=None, renderer=None):
     if template_name is None:
         template_name = 'htk/fragments/browser_info.html'
     if renderer is None:
-        from htk.view_helpers import render_to_response_custom
-        renderer = render_to_response_custom
+        from htk.view_helpers import render_custom
+        renderer = render_custom
 
     from htk.utils.constants import REQUEST_HTTP_HEADERS_STANDARD
     from htk.utils.request import get_custom_http_headers
