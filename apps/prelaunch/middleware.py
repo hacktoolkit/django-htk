@@ -1,11 +1,15 @@
 # Django Imports
 from django.shortcuts import redirect
+from django.utils.deprecation import MiddlewareMixin
 
 # HTK Imports
-from htk.apps.prelaunch.utils import *
+from htk.apps.prelaunch.utils import get_prelaunch_uri
+from htk.apps.prelaunch.utils import is_prelaunch_exception
+from htk.apps.prelaunch.utils import is_prelaunch_host
+from htk.apps.prelaunch.utils import is_prelaunch_mode
 
 
-class PrelaunchModeMiddleware(object):
+class PrelaunchModeMiddleware(MiddlewareMixin):
     def process_request(self, request):
         host = request.get_host()
         path = request.path
