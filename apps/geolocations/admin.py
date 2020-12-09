@@ -1,5 +1,6 @@
 # Django Imports
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 
 class BaseUSZipCodeAdmin(admin.ModelAdmin):
@@ -39,6 +40,7 @@ class BaseUSZipCodeAdmin(admin.ModelAdmin):
         ),
     )
 
+    @mark_safe
     def view_on_map(self, obj):
         value = '<a href="%s" target=_blank">View on Map</a>' % obj.map_url()
         return value

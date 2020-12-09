@@ -1,11 +1,16 @@
 # Django Imports
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 # HTK Imports
-from htk.apps.customers.models import CustomerAttribute
-from htk.apps.customers.models import OrganizationCustomerAttribute
-from htk.utils import htk_setting
-from htk.utils import resolve_model_dynamically
+from htk.apps.customers.models import (
+    CustomerAttribute,
+    OrganizationCustomerAttribute,
+)
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 
 
 class CustomerAttributeInline(admin.TabularInline):
@@ -53,6 +58,7 @@ class BaseOrganizationCustomerAdmin(admin.ModelAdmin):
         OrganizationCustomerAttributeInline,
     )
 
+    @mark_safe
     def num_members(self, obj):
         value = '<a href="%s">%s Members</a>' % (
             obj.members_changelist_url,

@@ -1,9 +1,12 @@
 # Django Imports
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 # HTK Imports
-from htk.apps.url_shortener.models import HTKShortUrl
-from htk.apps.url_shortener.models import HTKShortUrlAccess
+from htk.apps.url_shortener.models import (
+    HTKShortUrl,
+    HTKShortUrlAccess,
+)
 from htk.utils import htk_setting
 
 
@@ -25,6 +28,7 @@ class HTKShortUrlAdmin(admin.ModelAdmin):
     def prepared_id(self, obj):
         return obj.get_prepared_id()
 
+    @mark_safe
     def link(self, obj):
         uri = obj.get_short_uri()
         shortened_link = '<a href="%(uri)s" target="_blank">%(uri)s</a>' % {

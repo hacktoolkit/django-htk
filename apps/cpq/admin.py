@@ -1,5 +1,6 @@
 # Django Imports
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 # HTK Imports
 from htk.utils import htk_setting
@@ -13,10 +14,12 @@ InvoiceLineItemModel = resolve_model_dynamically(htk_setting('HTK_CPQ_INVOICE_LI
 QuoteModel = resolve_model_dynamically(htk_setting('HTK_CPQ_QUOTE_MODEL'))
 QuoteLineItemModel = resolve_model_dynamically(htk_setting('HTK_CPQ_QUOTE_LINE_ITEM_MODEL'))
 
+
 class InvoiceLineItemInline(admin.TabularInline):
     model = InvoiceLineItemModel
     extra = 0
     can_delete = True
+
 
 class InvoiceAdmin(admin.ModelAdmin):
     model = InvoiceModel
@@ -49,17 +52,19 @@ class InvoiceAdmin(admin.ModelAdmin):
         value = '$%s' % obj.get_total()
         return value
 
+    @mark_safe
     def view_invoice_link(self, obj):
         value = '<a href="%s" target="_blank">View Invoice</a>' % obj.get_url()
         return value
-
     view_invoice_link.allow_tags = True
     view_invoice_link.short_description = 'View Invoice'
+
 
 class GroupQuoteLineItemInline(admin.TabularInline):
     model = GroupQuoteLineItemModel
     extra = 0
     can_delete = True
+
 
 class GroupQuoteAdmin(admin.ModelAdmin):
     model = GroupQuoteModel
@@ -87,22 +92,26 @@ class GroupQuoteAdmin(admin.ModelAdmin):
         value = '$%s' % obj.get_total()
         return value
 
+    @mark_safe
     def view_quote_link(self, obj):
         value = '<a href="%s" target="_blank">View Quote</a>' % obj.get_url()
         return value
     view_quote_link.allow_tags = True
     view_quote_link.short_description = 'View Quote'
 
+    @mark_safe
     def view_all_quotes(self, obj):
         value = '<a href="%s" target="_blank">View All Quotes</a>' % obj.get_all_quotes_url()
         return value
     view_all_quotes.allow_tags = True
     view_all_quotes.short_description = 'View All Quote'
 
+
 class QuoteLineItemInline(admin.TabularInline):
     model = QuoteLineItemModel
     extra = 0
     can_delete = True
+
 
 class QuoteAdmin(admin.ModelAdmin):
     model = QuoteModel
@@ -132,12 +141,13 @@ class QuoteAdmin(admin.ModelAdmin):
         value = '$%s' % obj.get_total()
         return value
 
+    @mark_safe
     def view_quote_link(self, obj):
         value = '<a href="%s" target="_blank">View Quote</a>' % obj.get_url()
         return value
-
     view_quote_link.allow_tags = True
     view_quote_link.short_description = 'View Quote'
+
 
 #admin.site.register(InvoiceModel, InvoiceAdmin)
 #admin.site.register(QuoteModel, QuoteAdmin)

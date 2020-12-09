@@ -1,5 +1,6 @@
 # Django Imports
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 
 class HtkStoreProductAdmin(admin.ModelAdmin):
@@ -18,6 +19,7 @@ class HtkStoreProductAdmin(admin.ModelAdmin):
         value = ', '.join([collection.name for collection in _collections])
         return value
 
+    @mark_safe
     def amazon_link(self, obj):
         url = obj.get_amazon_url()
         link = '<a href="%s" target="_blank">Amazon Product URL</a>' % url
