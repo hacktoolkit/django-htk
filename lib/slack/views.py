@@ -1,14 +1,21 @@
 # Django Imports
-from django.http import Http404
-from django.http import HttpResponse
+from django.http import (
+    Http404,
+    HttpResponse,
+)
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 # HTK Imports
-from htk.api.utils import extract_post_params
-from htk.api.utils import json_response
-from htk.lib.slack.constants import *
+from htk.api.utils import (
+    extract_post_params,
+    json_response,
+)
+from htk.lib.slack.constants import SLACK_WEBHOOK_PARAMS
 from htk.lib.slack.utils import is_valid_webhook_event
+
+
+# isort: off
 
 
 @require_POST
