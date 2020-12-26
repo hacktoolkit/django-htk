@@ -43,6 +43,7 @@ class Forum(models.Model):
             num += thread.num_messages()
         return num
 
+
 class ForumThread(models.Model):
     forum = models.ForeignKey(Forum, related_name='threads')
     subject = models.CharField(max_length=128)
@@ -80,6 +81,7 @@ class ForumThread(models.Model):
             message = None
         return message
 
+
 class ForumMessage(models.Model):
     thread = models.ForeignKey(ForumThread, related_name='messages')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='messages')
@@ -103,6 +105,7 @@ class ForumMessage(models.Model):
         """
         super(ForumMessage, self).save(**kwargs)
         self.thread.save() # update ForumThread.updated timestamp
+
 
 class ForumTag(models.Model):
     """ForumTag can either apply to ForumThread or ForumMessage
