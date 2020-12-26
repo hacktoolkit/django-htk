@@ -1,19 +1,23 @@
-# Python Standard Library Imports
-
 # Django Imports
 from django.conf import settings
 from django.db import models
 
 # HTK Imports
-from htk.apps.organizations.enums import OrganizationMemberRoles
-from htk.apps.organizations.enums import OrganizationTeamMemberRoles
-from htk.apps.organizations.utils import get_model_organization_member
-from htk.apps.organizations.utils import get_organization_member_role_choices
-from htk.apps.organizations.utils import get_organization_team_member_role_choices
+from htk.apps.organizations.enums import (
+    OrganizationMemberRoles,
+    OrganizationTeamMemberRoles,
+)
+from htk.apps.organizations.utils import (
+    get_model_organization_member,
+    get_organization_member_role_choices,
+    get_organization_team_member_role_choices,
+)
 from htk.extensions.data_structures import OrderedSet
-from htk.models import AbstractAttribute
-from htk.models import AbstractAttributeHolderClassFactory
-from htk.models import HtkBaseModel
+from htk.models import (
+    AbstractAttribute,
+    AbstractAttributeHolderClassFactory,
+    HtkBaseModel,
+)
 from htk.utils import htk_setting
 
 
