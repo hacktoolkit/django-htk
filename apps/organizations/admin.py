@@ -10,7 +10,7 @@ from htk.utils.general import resolve_model_dynamically
 
 
 class HtkOrganizationAttributeInline(admin.TabularInline):
-    model = OrganizationAttribute
+    model = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_ATTRIBUTE_MODEL'))
     extra = 0
     can_delete = True
 

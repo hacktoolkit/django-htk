@@ -6,13 +6,21 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import Http404
 from django.urls import reverse
-from django.utils.http import base36_to_int
-from django.utils.http import int_to_base36
+from django.utils.http import (
+    base36_to_int,
+    int_to_base36,
+)
 
 # HTK Imports
-from htk.utils import htk_setting
-from htk.utils import utcnow
+from htk.utils import (
+    htk_setting,
+    utcnow,
+)
 from htk.utils.cache_descriptors import CachedAttribute
+from htk.utils.general import resolve_model_dynamically
+
+
+# isort: off
 
 
 """
@@ -24,6 +32,7 @@ For example, the following module requires AWS Credentials.
 
 Others, like imaging libraries, require PIL, etc
 """
+
 
 class HtkBaseModel(models.Model):
     """An abstract class extending Django models.Model for performing common operations
@@ -106,6 +115,7 @@ class HtkBaseModel(models.Model):
     def get_absolute_url(self):
         raise Exception('Not implemented')
 
+
 class AbstractAttribute(models.Model):
     """An abstract class for storing an arbitrary attribute on a Django model
 
@@ -135,6 +145,7 @@ class AbstractAttribute(models.Model):
         except ValueError:
             value = None
         return value
+
 
 class AbstractAttributeHolderClassFactory(object):
     """Creates an attribute holder class for multi-inheritance

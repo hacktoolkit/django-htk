@@ -25,11 +25,12 @@ class OrganizationAttribute(AbstractAttribute):
     holder = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), on_delete=models.CASCADE, related_name='attributes')
 
     class Meta:
-        app_label = 'organizations'
-        verbose_name = 'Organization Attribute'
-        unique_together = (
-            ('holder', 'key',),
-        )
+        abstract = True
+        # app_label = 'organizations'
+        # verbose_name = 'Organization Attribute'
+        # unique_together = (
+        #     ('holder', 'key',),
+        # )
 
     def __str__(self):
         value = '%s (%s)' % (self.key, self.holder)
@@ -42,7 +43,7 @@ OrganizationAttributeHolder = AbstractAttributeHolderClassFactory(
 ).get_class()
 
 
-class BaseAbstractOrganization(HtkBaseModel, OrganizationAttributeHolder):
+class BaseAbstractOrganization(HtkBaseModel):
     name = models.CharField(max_length=128)
     handle = models.CharField(max_length=64, unique=True)
 
