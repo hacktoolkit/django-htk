@@ -1,5 +1,5 @@
 HTK_ORGANIZATION_MODEL = 'organizations.Organization'
-HTK_ORAGNIZATION_ATTRIBUTE_MODEL = 'organizations.OrganizationAttribute'
+HTK_ORGANIZATION_ATTRIBUTE_MODEL = 'organizations.OrganizationAttribute'
 HTK_ORGANIZATION_MEMBER_MODEL = 'organizations.OrganizationMember'
 HTK_ORGANIZATION_INVITATION_MODEL = 'organizations.OrganizationInvitation'
 HTK_ORGANIZATION_TEAM_MODEL = 'organizations.OrganizationTeam'
