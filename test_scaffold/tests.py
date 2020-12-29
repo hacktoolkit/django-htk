@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils.http import urlencode
 
 # HTK Imports
-from htk.test_scaffold.constants import *
+from htk.test_scaffold.constants import TESTSERVER
 from htk.test_scaffold.models import TestScaffold
 from htk.test_scaffold.utils import create_test_email
 from htk.test_scaffold.utils import create_test_password
@@ -151,23 +151,34 @@ class BaseWebTestCase(BaseTestCase):
         )
         self.assertEqual(302, redirect_chain[0][1])
 
+        actual = redirect_chain[redirect_chain_offset][0]
+
         protocol_pattern = r'^https://' if secure else r'^http://'
         if re.match(protocol_pattern, another):
             # `another` is a full uri
             pattern = another
+            match = re.match(pattern, actual)
         else:
             # `another` is a view name
-            protocol_pattern = protocol_pattern + '%s%s'
-            pattern = protocol_pattern % (TESTSERVER, reverse(another),)
 
-        actual = redirect_chain[redirect_chain_offset][0]
-        match = re.match(pattern, actual)
+            reversed_url = reverse(another)
+            protocol_pattern = protocol_pattern + '%s%s'
+            pattern = protocol_pattern % (TESTSERVER, reversed_url,)
+
+            match = re.match(pattern, actual)
+
+            if match is None:
+                # https://docs.djangoproject.com/en/3.1/releases/1.9/#http-redirects-no-longer-forced-to-absolute-uris
+                # make another attempt to check against the partial URI
+                match = re.match(reversed_url, actual)
+
         self.assertIsNotNone(
             match,
-            '[%s] redirected to [%s] instead of [%s]' % (
+            '[%s] redirected to [%s] instead of [%s][%s]' % (
                 view_name,
                 actual,
                 another,
+                pattern
             )
         )
 
