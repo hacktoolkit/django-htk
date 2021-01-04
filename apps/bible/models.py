@@ -6,9 +6,11 @@ import re
 from django.db import models
 
 # HTK Imports
-from htk.apps.bible.utils import get_bible_book_choices
-from htk.apps.bible.utils import get_bible_book_model
-from htk.apps.bible.utils import get_bible_chapter_model
+from htk.apps.bible.utils import (
+    get_bible_book_choices,
+    get_bible_book_model,
+    get_bible_chapter_model,
+)
 from htk.utils import htk_setting
 
 
@@ -33,6 +35,7 @@ class AbstractBibleBook(models.Model):
 
     @classmethod
     def from_reference(cls, reference):
+        # HTK Imports
         from htk.apps.bible.constants.aliases import BIBLE_BOOKS_ALIAS_MAPPINGS
 
         book_name = BIBLE_BOOKS_ALIAS_MAPPINGS.get(reference, reference)
@@ -132,7 +135,7 @@ class AbstractBiblePassage(models.Model):
 
     @classmethod
     def from_reference(cls, reference):
-        pattern = r'^(?P<book_name>.+) (?P<chapter_start>\d+)(?P<verse_start_separator>:?)(?P<verse_start>\d+)(?P<separator>-?)(?P<chapter_end>\d*)(?P<verse_end_separator>:?)(?P<verse_end>\d*)$'
+        pattern = r'^(?P<book_name>.+) (?P<chapter_start>\d+)(?P<verse_start_separator>:?)(?P<verse_start>\d*)(?P<separator>-?)(?P<chapter_end>\d*)(?P<verse_end_separator>:?)(?P<verse_end>\d*)$'
 
         match = re.match(pattern, reference)
         if match:
