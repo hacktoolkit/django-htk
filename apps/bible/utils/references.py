@@ -1,7 +1,3 @@
-# Python Standard Library Imports
-
-
-
 def get_scripture_references_list(bible_passages):
     scripture_references = ['%s' % bible_passage for bible_passage in bible_passages]
     return scripture_references

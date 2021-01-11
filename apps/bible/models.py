@@ -9,8 +9,12 @@ from htk.apps.bible.utils import (
     get_bible_book_choices,
     get_bible_book_model,
     get_bible_chapter_model,
+    get_translation_model,
 )
 from htk.utils import htk_setting
+
+
+# isort: off
 
 
 class AbstractBibleBook(models.Model):
@@ -34,7 +38,6 @@ class AbstractBibleBook(models.Model):
 
     @classmethod
     def from_reference(cls, reference):
-        # HTK Imports
         from htk.apps.bible.constants.aliases import BIBLE_BOOKS_ALIAS_MAPPINGS
 
         book_name = BIBLE_BOOKS_ALIAS_MAPPINGS.get(reference, reference)
@@ -90,6 +93,27 @@ class AbstractBibleVerse(models.Model):
         value = '%s %s:%s' % (self.book.name, self.chapter.chapter, self.verse,)
         return value
 
+    def as_dict(self):
+        value = {
+            'ref': str(self),
+            'book': self.book.name,
+            'chapter': self.chapter.chapter,
+            'verse': self.verse,
+        }
+        return value
+
+    def get_translation(self, translation):
+        translation_model = get_translation_model(translation)
+        if translation_model:
+            verse = translation_model.objects.get(
+                book=self.book,
+                chapter=self.chapter,
+                verse=self.verse
+            )
+        else:
+            verse = None
+        return verse
+
 
 class AbstractBiblePassage(models.Model):
     """AbstractBiblePassage model
@@ -120,20 +144,27 @@ class AbstractBiblePassage(models.Model):
         ends_in_different_chapter = self.chapter_end is not None and self.chapter_end != self.chapter_start
 
         value = '%(book)s %(chapter_start)s%(verse_start_separator)s%(verse_start)s%(separator)s%(chapter_end)s%(verse_end_separator)s%(verse_end)s' % {
-            'book' : self.book.name,
-            'chapter_start' : self.chapter_start.chapter,
-            'verse_start_separator' : ':' if self.verse_start else '',
-            'verse_start' : self.verse_start if self.verse_start else '',
-            'separator' : '-' if self.chapter_end else '',
-            'chapter_end' : self.chapter_end.chapter if ends_in_different_chapter else '',
-            'verse_end_separator' : ':' if ends_in_different_chapter and self.verse_end else '',
-            'verse_end' : self.verse_end if self.verse_end else '',
+            'book': self.book.name,
+            'chapter_start': self.chapter_start.chapter,
+            'verse_start_separator': ':' if self.verse_start else '',
+            'verse_start': self.verse_start if self.verse_start else '',
+            'separator': '-' if self.chapter_end else '',
+            'chapter_end': self.chapter_end.chapter if ends_in_different_chapter else '',
+            'verse_end_separator': ':' if ends_in_different_chapter and self.verse_end else '',
+            'verse_end': self.verse_end if self.verse_end else '',
         }
 
         return value
 
+    def as_dict(self, translation=None):
+        value = {
+            'ref': str(self),
+            'verses': [verse.as_dict() for verse in self.verses(translation=translation)],
+        }
+        return value
+
     @classmethod
-    def from_reference(cls, reference):
+    def from_reference(cls, reference, persist=False):
         pattern = r'^(?P<book_name>.+) (?P<chapter_start>\d+)(?P<verse_start_separator>:?)(?P<verse_start>\d*)(?P<separator>-?)(?P<chapter_end>\d*)(?P<verse_end_separator>:?)(?P<verse_end>\d*)$'
 
         match = re.match(pattern, reference)
@@ -187,15 +218,65 @@ class AbstractBiblePassage(models.Model):
             else:
                 chapter_end_obj = None
 
-            bible_passage, was_created = cls.objects.get_or_create(
-                book=book,
-                chapter_start=chapter_start_obj,
-                verse_start=verse_start,
-                chapter_end=chapter_end_obj,
-                verse_end=verse_end
-            )
-
+            if persist:
+                bible_passage, was_created = cls.objects.get_or_create(
+                    book=book,
+                    chapter_start=chapter_start_obj,
+                    verse_start=verse_start,
+                    chapter_end=chapter_end_obj,
+                    verse_end=verse_end
+                )
+            else:
+                bible_passage = cls(
+                    book=book,
+                    chapter_start=chapter_start_obj,
+                    verse_start=verse_start,
+                    chapter_end=chapter_end_obj,
+                    verse_end=verse_end
+                )
         else:
             bible_passage = None
 
         return bible_passage
+
+    def verses(self, translation=None):
+        if self.chapter_end is None:
+            verses = self.chapter_start.bibleverses.filter(
+                verse=self.verse_start
+            )
+        elif self.chapter_end == self.chapter_start:
+            verses = self.chapter_start.bibleverses.filter(
+                verse__gte=self.verse_start,
+                verse__lte=self.verse_end
+            )
+        elif self.chapter_end != self.chapter_start:
+            if self.chapter_end.chapter < self.chapter_start.chapter:
+                raise Except('Bad passage reference')
+
+            verses = []
+            verses__chapter_start = self.chapter_start.bibleverses.filter(
+                verse__gte=self.verse_start
+            )
+            verses__chapter_between = [
+                verse
+                for chapter in self.book.chapters.filter(
+                    chapter__gt=self.chapter_start.chapter,
+                    chapter__lt=self.chapter_end.chapter
+                )
+                for verse in chapter.bibleverses.all()
+            ]
+            verses__chapter_end = self.chapter_end.bibleverses.filter(
+                verse__lte=self.verse_end
+            )
+
+            verses.extend(list(verses__chapter_start))
+            verses.extend(verses__chapter_between)
+            verses.extend(list(verses__chapter_end))
+        else:
+            # impossible case
+            verses = []
+
+        if translation:
+            verses = [verse.get_translation(translation) for verse in verses]
+
+        return verses

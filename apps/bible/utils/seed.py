@@ -1,12 +1,14 @@
- # Python Standard Library Imports
-
 # HTK Imports
-from htk.apps.bible.constants import BIBLE_BOOKS
-from htk.apps.bible.constants import BIBLE_BOOKS_DATA
+from htk.apps.bible.constants import (
+    BIBLE_BOOKS,
+    BIBLE_BOOKS_DATA,
+)
 from htk.apps.bible.enums import BibleTestament
-from htk.apps.bible.utils import get_all_chapters
-from htk.apps.bible.utils import get_bible_book_model
-from htk.apps.bible.utils import get_bible_chapter_model
+from htk.apps.bible.utils import (
+    get_all_chapters,
+    get_bible_book_model,
+    get_bible_chapter_model,
+)
 
 
 def seed_bible():

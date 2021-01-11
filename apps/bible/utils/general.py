@@ -2,8 +2,13 @@
 import re
 
 # HTK Imports
-from htk.utils import htk_setting
-from htk.utils import resolve_model_dynamically
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
+
+
+# isort: off
 
 
 def get_bible_book_model():
@@ -34,8 +39,8 @@ def lookup_bible_verse(book, chapter, verse):
     BibleVerse = get_bible_verse_model()
     try:
         verse = BibleVerse.objects.get(
-            book=book,
-            chapter=chapter,
+            book__name=book,
+            chapter__chapter=chapter,
             verse=verse,
         )
     except BibleVerse.DoesNotExist:
@@ -43,15 +48,24 @@ def lookup_bible_verse(book, chapter, verse):
     return verse
 
 
+def resolve_bible_passage_reference(reference):
+    BiblePassage = get_bible_passage_model()
+    passage = BiblePassage.from_reference(reference)
+    return passage
+
+
 def resolve_bible_verse_reference(reference):
-    pattern = r'^(?P<book>.*) (?P<chapter>\d+):(?P<verse>\d+)$'
+    pattern = r'^(?P<book>.+) (?P<chapter>\d+):(?P<verse>\d+)$'
     m = re.match(pattern, reference.strip())
-    (book, chapter, verse,) = (
-        m.group('book'),
-        m.group('chapter'),
-        m.group('verse'),
-    )
-    v = lookup_bible_verse(book, chapter, verse)
+    if m:
+        (book, chapter, verse,) = (
+            m.group('book'),
+            m.group('chapter'),
+            m.group('verse'),
+        )
+        v = lookup_bible_verse(book, chapter, verse)
+    else:
+        v = None
     return v
 
 
