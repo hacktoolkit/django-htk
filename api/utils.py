@@ -9,12 +9,17 @@ import rollbar
 # Django Imports
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse
-from django.http import QueryDict
+from django.http import (
+    HttpResponse,
+    QueryDict,
+)
 
 # HTK Imports
 from htk.api.constants import *
 from htk.models import HtkBaseModel
+
+
+# isort: off
 
 
 class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
@@ -50,11 +55,13 @@ def to_json(obj, encoder=HtkJSONEncoder):
         return json.dumps(obj, cls=encoder)
 
 
-def json_okay():
-    data = {
+def json_okay(data=None):
+    if data is None:
+        data = {}
+    data.update({
         HTK_API_JSON_KEY_SUCCESS : True,
         HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_OKAY,
-    }
+    })
     return data
 
 
@@ -83,8 +90,9 @@ def json_response(obj, encoder=HtkJSONEncoder, status=200):
     return response
 
 
-def json_response_okay():
-    response = json_response(json_okay())
+def json_response_okay(data=None):
+    data = json_okay(data=data)
+    response = json_response(data)
     return response
 
 
