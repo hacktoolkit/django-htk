@@ -257,9 +257,13 @@ class AbstractBiblePassage(models.Model):
                 raise Except('Bad passage reference')
 
             verses = []
-            verses__chapter_start = self.chapter_start.bibleverses.filter(
-                verse__gte=self.verse_start
-            )
+
+            verses__chapter_start = self.chapter_start.bibleverses.all()
+            if self.verse_start is not None:
+                verses__chapter_start = verses__chapter_start.filter(
+                    verse__gte=self.verse_start
+                )
+
             verses__chapter_between = [
                 verse
                 for chapter in self.book.chapters.filter(
@@ -268,9 +272,12 @@ class AbstractBiblePassage(models.Model):
                 )
                 for verse in chapter.bibleverses.all()
             ]
-            verses__chapter_end = self.chapter_end.bibleverses.filter(
-                verse__lte=self.verse_end
-            )
+
+            verses__chapter_end = self.chapter_end.bibleverses.all()
+            if self.verse_end is not None:
+                verses__chapter_end = verses__chapter_end.filter(
+                    verse__lte=self.verse_end
+                )
 
             verses.extend(list(verses__chapter_start))
             verses.extend(verses__chapter_between)
