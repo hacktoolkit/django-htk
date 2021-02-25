@@ -241,9 +241,12 @@ class AbstractBiblePassage(models.Model):
 
     def verses(self, translation=None):
         if self.chapter_end is None:
-            verses = self.chapter_start.bibleverses.filter(
-                verse=self.verse_start
-            )
+            verses = self.chapter_start.bibleverses.all()
+
+            if self.verse_start is not None:
+                verses = verses.filter(
+                    verse=self.verse_start
+                )
         elif self.chapter_end == self.chapter_start:
             verses = self.chapter_start.bibleverses.filter(
                 verse__gte=self.verse_start,
