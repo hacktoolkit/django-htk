@@ -1,6 +1,7 @@
 # Python Standard Library Imports
 import hashlib
 import hmac
+import time
 import urlparse
 
 # Third Party (PyPI) Imports
@@ -9,9 +10,14 @@ import rollbar
 
 # HTK Imports
 from htk.lib.dynamic_screening_solutions.constants import *
-from htk.utils import htk_setting
-from htk.utils import utcnow
+from htk.utils import (
+    htk_setting,
+    utcnow,
+)
 from htk.utils.request import get_current_request
+
+
+MAX_RETRY_ATTEMPTS = 5
 
 
 class Htk321FormsAPI(object):
@@ -69,12 +75,37 @@ class Htk321FormsAPI(object):
         headers['Authorization'] = authorization_key
         return headers
 
-    def request_get(self, request_url=None, params=None, **kwargs):
+    def request_get(self, request_url=None, params=None, should_retry=True, **kwargs):
         if request_url is None:
             request_url = self.get_request_url()
 
         headers = self.make_request_headers(action='GET')
-        response = requests.get(request_url, headers=headers, params=params, **kwargs)
+
+        bad_response = False
+
+        attempts = 0
+        while should_retry:
+            attempts += 1
+            response = requests.get(request_url, headers=headers, params=params, allow_redirects=True, **kwargs)
+            if response.status_code < 400:
+                should_retry = False
+            elif 400 <= response.status_code < 500:
+                if response.status_code == 429 and attmempts < MAX_RETRY_ATTEMPTS:
+                    should_retry = True
+                    time.sleep(2 ** (attempts - 1))
+                else:
+                    bad_response = True
+                    should_retry = False
+            elif 500 >= response.status_code:
+                bad_response = True
+                should_retry = False
+
+        if bad_response:
+            request = get_current_request()
+            extra_data = self._get_rollbar_extra_data()
+            extra_data.update({'response_json': response.json()})
+            rollbar.report_message('321Forms API Bad Response', request=request, extra=extra_data)
+
         return response
 
     def request_post(self, request_url=None, data=None, **kwargs):
@@ -354,6 +385,26 @@ class Htk321FormsAPI(object):
         response = self.request_get(request_url, params=params)
         user_responses = response.json()
         return user_responses
+
+    def get_all_responses_by_user(self, user_id, questions=None):
+        all_responses = []
+
+        offset = 0
+        limit = 500
+        should_fetch = True
+
+        while should_fetch:
+            user_responses = self.get_responses_by_user(self.username, offset=offset, limit=limit)
+            all_responses.extend(user_responses)
+            if len(user_responses) == 500:
+                # get next page of responses
+                should_fetch = True
+                offset = offset + limit
+            else:
+                # stop fetching
+                should_fetch = False
+
+        return all_responses
 
     ##
     # Hooks / Webhooks
