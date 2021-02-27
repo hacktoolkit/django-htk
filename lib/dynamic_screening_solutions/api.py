@@ -104,7 +104,7 @@ class Htk321FormsAPI(object):
             request = get_current_request()
             extra_data = self._get_rollbar_extra_data()
             extra_data.update({'response_json': response.json()})
-            rollbar.report_message('321Forms API Bad Response', request=request, extra=extra_data)
+            rollbar.report_message('321Forms API Bad Response', request=request, extra_data=extra_data)
 
         return response
 
