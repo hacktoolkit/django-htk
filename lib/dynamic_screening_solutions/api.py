@@ -90,7 +90,7 @@ class Htk321FormsAPI(object):
             if response.status_code < 400:
                 should_retry = False
             elif 400 <= response.status_code < 500:
-                if response.status_code == 429 and attmempts < MAX_RETRY_ATTEMPTS:
+                if response.status_code == 429 and attempts < MAX_RETRY_ATTEMPTS:
                     should_retry = True
                     time.sleep(2 ** (attempts - 1))
                 else:
