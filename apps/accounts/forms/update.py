@@ -13,10 +13,14 @@ from django.contrib.auth.forms import SetPasswordForm
 # HTK Imports
 from htk.apps.accounts.emails import password_changed_email
 from htk.forms import AbstractModelInstanceUpdateForm
-from htk.forms.utils import set_input_attrs
-from htk.forms.utils import set_input_placeholder_labels
-from htk.utils import htk_setting
-from htk.utils import resolve_model_dynamically
+from htk.forms.utils import (
+    set_input_attrs,
+    set_input_placeholder_labels,
+)
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 from htk.utils.geo import get_us_state_abbreviation_choices
 
 
@@ -128,4 +132,30 @@ class ChangePasswordForm(SetPasswordForm):
                 'email' : user.profile.confirmed_email or email,
             }
             rollbar.report_exc_info(request=request, extra_data=extra_data)
+        return user
+
+
+class TimeZoneForm(AbstractModelInstanceUpdateForm):
+    class Meta:
+        model = UserProfile
+        fields = (
+            'timezone',
+        )
+
+    def __init__(self, instance, *args, **kwargs):
+        """Initialization for TimeZoneForm.
+        """
+        user = instance
+        user_profile = user.profile
+        super(TimeZoneForm, self).__init__(user, *args, **kwargs)
+
+        self.fields['timezone'].initial = user_profile.timezone
+        self.fields['timezone'].label = ''
+
+    def save(self, request, *args, **kwargs):
+        user = super(TimeZoneForm, self).save(request, *args, **kwargs)
+        user_profile = user.profile
+        timezone = request.POST.get('timezone', '')
+        user_profile.timezone = timezone if timezone else 'America/Los_Angeles'
+        user_profile.save()
         return user
