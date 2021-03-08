@@ -410,6 +410,8 @@ class Htk321FormsAPI(object):
             if len(user_responses) == 500:
                 # get next page of responses
                 should_fetch = True
+                # 321Forms has a rate limit of 1 req/second per API account
+                time.sleep(1)
                 offset = offset + limit
             else:
                 # stop fetching
