@@ -29,6 +29,12 @@ HTK_TEMPLATE_CONTEXT_GENERATOR = 'htk.view_helpers.wrap_data'
 HTK_CSS_EXTENSION = 'css'
 
 ##
+# JSON Serialization Settings
+HTK_JSON_DECIMAL_SHOULD_QUANTIZE = True
+HTK_JSON_DECIMAL_QUANTIZE = '0.01'
+
+
+##
 # Email settings
 HTK_EMAIL_BASE_TEMPLATE_HTML = 'emails/base.html'
 HTK_EMAIL_BASE_TEMPLATE_TEXT = 'emails/base.txt'

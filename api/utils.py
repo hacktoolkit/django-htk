@@ -1,6 +1,7 @@
 # Python Standard Library Imports
 import datetime
 import json
+from decimal import Decimal
 from time import mktime
 
 # Third Party (PyPI) Imports
@@ -29,6 +30,12 @@ class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
 
         if isinstance(obj, datetime.datetime):
             value = int(mktime(obj.timetuple()))
+        elif isinstance(obj, Decimal):
+            # fallback to string if `should_quantize` is False
+            from htk.utils import htk_setting
+            should_quantize = htk_setting('HTK_JSON_DECIMAL_SHOULD_QUANTIZE')
+            quantize = Decimal(htk_setting('HTK_JSON_DECIMAL_QUANTIZE'))
+            value = float(obj.quantize(quantize)) if should_quantize else str(obj)
         elif isinstance(obj, HtkBaseModel):
             value = obj.json_encode()
         elif isinstance(obj, UserModel):
