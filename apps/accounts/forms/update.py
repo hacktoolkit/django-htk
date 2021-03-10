@@ -156,7 +156,7 @@ class TimeZoneForm(AbstractModelInstanceUpdateForm):
         user = super(TimeZoneForm, self).save(request, *args, **kwargs)
         user_profile = user.profile
         timezone = request.POST.get('timezone', '')
-        default_timezone = htk_setting('HTK_DEFAULT_TIMEZONE')
+        default_timezone = htk_setting('HTK_DEFAULT_TIMEZONE', 'UTC')
         user_profile.timezone = timezone or default_timezone
         user_profile.save()
         return user
