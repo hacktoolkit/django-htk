@@ -145,18 +145,13 @@ class TimeZoneForm(AbstractModelInstanceUpdateForm):
     def __init__(self, instance, *args, **kwargs):
         """Initialization for TimeZoneForm.
         """
-        user = instance
-        user_profile = user.profile
-        super(TimeZoneForm, self).__init__(user, *args, **kwargs)
-
-        self.fields['timezone'].initial = user_profile.timezone
-        self.fields['timezone'].label = ''
+        user_profile = instance
+        super(TimeZoneForm, self).__init__(user_profile, *args, **kwargs)
 
     def save(self, request, *args, **kwargs):
-        user = super(TimeZoneForm, self).save(request, *args, **kwargs)
-        user_profile = user.profile
+        user_profile = super(TimeZoneForm, self).save(request, *args, **kwargs)
         timezone = request.POST.get('timezone', '')
         default_timezone = htk_setting('HTK_DEFAULT_TIMEZONE', 'UTC')
         user_profile.timezone = timezone or default_timezone
         user_profile.save()
-        return user
+        return user_profile
