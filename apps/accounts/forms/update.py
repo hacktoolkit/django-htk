@@ -13,10 +13,14 @@ from django.contrib.auth.forms import SetPasswordForm
 # HTK Imports
 from htk.apps.accounts.emails import password_changed_email
 from htk.forms import AbstractModelInstanceUpdateForm
-from htk.forms.utils import set_input_attrs
-from htk.forms.utils import set_input_placeholder_labels
-from htk.utils import htk_setting
-from htk.utils import resolve_model_dynamically
+from htk.forms.utils import (
+    set_input_attrs,
+    set_input_placeholder_labels,
+)
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 from htk.utils.geo import get_us_state_abbreviation_choices
 
 
@@ -129,3 +133,25 @@ class ChangePasswordForm(SetPasswordForm):
             }
             rollbar.report_exc_info(request=request, extra_data=extra_data)
         return user
+
+
+class TimeZoneForm(AbstractModelInstanceUpdateForm):
+    class Meta:
+        model = UserProfile
+        fields = (
+            'timezone',
+        )
+
+    def __init__(self, instance, *args, **kwargs):
+        """Initialization for TimeZoneForm.
+        """
+        user_profile = instance
+        super(TimeZoneForm, self).__init__(user_profile, *args, **kwargs)
+
+    def save(self, request, *args, **kwargs):
+        user_profile = super(TimeZoneForm, self).save(request, *args, **kwargs)
+        timezone = request.POST.get('timezone', '')
+        default_timezone = htk_setting('HTK_DEFAULT_TIMEZONE', 'UTC')
+        user_profile.timezone = timezone or default_timezone
+        user_profile.save()
+        return user_profile
