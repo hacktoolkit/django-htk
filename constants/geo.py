@@ -32,6 +32,10 @@ US_STATES = [
         'abbrev': 'DE',
     },
     {
+        'state': 'District of Columbia',
+        'abbrev': 'DC',
+    },
+    {
         'state': 'Florida',
         'abbrev': 'FL',
     },
