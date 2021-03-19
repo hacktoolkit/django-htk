@@ -200,3 +200,56 @@ US_STATES = [
         'abbrev': 'WY',
     },
 ]
+
+
+US_FEDERAL_DISTRICTS = [
+    # https://en.wikipedia.org/wiki/Washington,_D.C.
+    {
+        'state': 'District of Columbia',
+        'abbrev': 'DC',
+    },
+]
+
+
+# https://en.wikipedia.org/wiki/Territories_of_the_United_States
+US_TERRITORIES = [
+    {
+        'state': 'American Samoa',
+        'abbrev': 'AS',
+    },
+    {
+        'state': 'Guam',
+        'abbrev': 'GU',
+    },
+    {
+        'state': 'Northern Mariana Islands',
+        'abbrev': 'MP',
+    },
+    {
+        'state': 'Puerto Rico',
+        'abbrev': 'PR',
+    },
+    {
+        'state': 'United Stated Virgin Islands',
+        'abbrev': 'VI',
+    },
+]
+
+
+ALL_US_STATES_AND_TERRITORIES = (
+    US_STATES
+    + US_FEDERAL_DISTRICTS
+    + US_TERRITORIES
+)
+
+
+ALL_US_STATES_AND_TERRITORIES_ORDERED_BY_NAME = sorted(
+    ALL_US_STATES_AND_TERRITORIES,
+    key=lambda state: state['state']
+)
+
+
+ALL_US_STATES_AND_TERRITORIES_ORDERED_BY_STATE_CODE = sorted(
+    ALL_US_STATES_AND_TERRITORIES,
+    key=lambda state: state['abbrev']
+)
