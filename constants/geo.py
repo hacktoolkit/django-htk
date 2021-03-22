@@ -243,6 +243,13 @@ ALL_US_STATES_AND_TERRITORIES = (
 )
 
 
+US_STATE_CODES_LOOKUP = {
+    state['state']: state['abbrev']
+    for state
+    in ALL_US_STATES_AND_TERRITORIES
+}
+
+
 ALL_US_STATES_AND_TERRITORIES_ORDERED_BY_NAME = sorted(
     ALL_US_STATES_AND_TERRITORIES,
     key=lambda state: state['state']
