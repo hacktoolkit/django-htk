@@ -158,6 +158,7 @@ class AbstractBiblePassage(models.Model):
 
     def as_dict(self, translation=None):
         value = {
+            'version': translation,
             'ref': str(self),
             'verses': [verse.as_dict() for verse in self.verses(translation=translation)],
         }
