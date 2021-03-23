@@ -250,6 +250,13 @@ US_STATE_CODES_LOOKUP = {
 }
 
 
+US_STATES_LOOKUP = {
+    state_code: state_name
+    for state_name, state_code
+    in US_STATE_CODES_LOOKUP.items()
+}
+
+
 ALL_US_STATES_AND_TERRITORIES_ORDERED_BY_NAME = sorted(
     ALL_US_STATES_AND_TERRITORIES,
     key=lambda state: state['state']
