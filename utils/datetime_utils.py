@@ -8,8 +8,10 @@ import pytz
 # Django Imports
 from django.conf import settings
 from django.utils.dateparse import parse_datetime as django_parse_datetime
-from django.utils.timezone import is_aware
-from django.utils.timezone import is_naive
+from django.utils.timezone import (
+    is_aware,
+    is_naive,
+)
 
 # HTK Imports
 from htk.constants.time import *
@@ -29,6 +31,14 @@ def tznow(timezone_name='America/Los_Angeles'):
     tz = pytz.timezone(timezone_name)
     local_datetime = utcnow().astimezone(tz)
     return local_datetime
+
+
+def localized_datetime(naive_dt, timezone_name='America/Los_Angeles'):
+    """Attaches a timezone to a `naive_dt`
+    """
+    tz = pytz.timezone(timezone_name)
+    dt = tz.localize(naive_dt)
+    return dt
 
 
 def parse_datetime(dt_str):

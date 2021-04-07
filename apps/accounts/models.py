@@ -465,6 +465,9 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         django_timezone = pytz.timezone(tz)
         return django_timezone
 
+    def get_pytz(self):
+        return self.get_django_timezone()
+
     def get_detected_country(self):
         country = self.detected_country or htk_setting('HTK_DEFAULT_COUNTRY')
         return country
