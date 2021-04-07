@@ -5,7 +5,6 @@ import uuid
 from hashlib import sha1
 
 # Third Party (PyPI) Imports
-# Third Party / PIP Imports
 import pytz
 import rollbar
 
@@ -18,19 +17,27 @@ from django.utils.translation import ugettext_lazy as _
 
 # HTK Imports
 from htk.admintools.models import HtkCompanyUserMixin
-from htk.apps.accounts.cachekeys import UserFollowersCache
-from htk.apps.accounts.cachekeys import UserFollowingCache
+from htk.apps.accounts.cachekeys import (
+    UserFollowersCache,
+    UserFollowingCache,
+)
 from htk.apps.accounts.constants import *
-from htk.apps.accounts.emails import activation_email
-from htk.apps.accounts.emails import welcome_email
+from htk.apps.accounts.emails import (
+    activation_email,
+    welcome_email,
+)
 from htk.apps.accounts.enums import ProfileAvatarType
 from htk.apps.accounts.utils import encrypt_uid
-from htk.models import AbstractAttribute
-from htk.models import AbstractAttributeHolderClassFactory
-from htk.models import HtkBaseModel
-from htk.utils import extract_request_ip
-from htk.utils import htk_setting
-from htk.utils import utcnow
+from htk.models import (
+    AbstractAttribute,
+    AbstractAttributeHolderClassFactory,
+    HtkBaseModel,
+)
+from htk.utils import (
+    extract_request_ip,
+    htk_setting,
+    utcnow,
+)
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.request import get_current_request
 
