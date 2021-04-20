@@ -12,6 +12,7 @@ from django.contrib.auth.forms import SetPasswordForm
 
 # HTK Imports
 from htk.apps.accounts.emails import password_changed_email
+from htk.constants.i18n.timezones import US_TIMEZONE_CHOICES
 from htk.forms import AbstractModelInstanceUpdateForm
 from htk.forms.utils import (
     set_input_attrs,
@@ -146,7 +147,10 @@ class TimeZoneForm(AbstractModelInstanceUpdateForm):
         """Initialization for TimeZoneForm.
         """
         user_profile = instance
+        timezone = [user_profile.timezone for tz in US_TIMEZONE_CHOICES if user_profile.timezone in tz]
+        user_profile.timezone = timezone[0] if timezone else htk_setting('HTK_DEFAULT_TIMEZONE', 'UTC')
         super(TimeZoneForm, self).__init__(user_profile, *args, **kwargs)
+        self.fields['timezone'].choices = [(x, y,) for x, y in US_TIMEZONE_CHOICES]
 
     def save(self, request, *args, **kwargs):
         user_profile = super(TimeZoneForm, self).save(request, *args, **kwargs)
