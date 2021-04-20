@@ -2,36 +2,38 @@
 import numpy
 
 
-def getLevenshteinDistance(job_title, title_from_json):
-    """The Levenshtein distance algorithm that compares two words.
+def levenshtein(w1, w2):
+    """The Levenshtein distance algorithm that compares two words
 
-    Returns a numeric value representing the distance between two words.
+    https://en.wikipedia.org/wiki/Levenshtein_distance
+
+    Returns an `int` representing the edit distance between two words
     """
     a = 0
     b = 0
     c = 0
-    title_distance = numpy.zeros((len(job_title) + 1, len(title_from_json) + 1))
+    edit_distance = numpy.zeros((len(w1) + 1, len(w2) + 1))
 
-    for x in range(len(job_title) + 1):
-        title_distance[x][0] = x
+    for x in range(len(w1) + 1):
+        edit_distance[x][0] = x
 
-    for y in range(len(title_from_json) + 1):
-        title_distance[0][y] = y
+    for y in range(len(w2) + 1):
+        edit_distance[0][y] = y
 
-    for x in range(1, len(job_title) + 1):
-        for y in range(1, len(title_from_json) + 1):
-            if (job_title[x-1] == title_from_json[y-1]):
-                title_distance[x][y] = title_distance[x - 1][y - 1]
+    for x in range(1, len(w1) + 1):
+        for y in range(1, len(w2) + 1):
+            if (w1[x-1] == w2[y-1]):
+                edit_distance[x][y] = edit_distance[x - 1][y - 1]
             else:
-                a = title_distance[x][y - 1]
-                b = title_distance[x - 1][y]
-                c = title_distance[x - 1][y - 1]
+                a = edit_distance[x][y - 1]
+                b = edit_distance[x - 1][y]
+                c = edit_distance[x - 1][y - 1]
 
                 if (a <= b and a <= c):
-                    title_distance[x][y] = a + 1
+                    edit_distance[x][y] = a + 1
                 elif (b <= a and b <= c):
-                    title_distance[x][y] = b + 1
+                    edit_distance[x][y] = b + 1
                 else:
-                    title_distance[x][y] = c + 1
+                    edit_distance[x][y] = c + 1
 
-    return title_distance[len(job_title)][len(title_from_json)]
+    return edit_distance[len(w1)][len(w2)]
