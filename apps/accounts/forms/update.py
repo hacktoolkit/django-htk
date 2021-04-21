@@ -146,7 +146,11 @@ class TimeZoneForm(AbstractModelInstanceUpdateForm):
         """Initialization for TimeZoneForm.
         """
         user_profile = instance
+        timezone_choices = kwargs.pop('timezone_choices', None)
         super(TimeZoneForm, self).__init__(user_profile, *args, **kwargs)
+        if timezone_choices:
+            self.fields['timezone'].choices = [('', '', ), ] + list(timezone_choices)
+            self.fields['timezone'].required = True
 
     def save(self, request, *args, **kwargs):
         user_profile = super(TimeZoneForm, self).save(request, *args, **kwargs)
