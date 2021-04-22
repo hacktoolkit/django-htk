@@ -1,0 +1,2 @@
+class AirtableNoBaseConfigured(Exception):
+    pass

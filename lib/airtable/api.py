@@ -1,5 +1,9 @@
 # Third Party (PyPI) Imports
 import requests
+import rollbar
+
+# HTK Imports
+from htk.lib.airtable.exceptions import AirtableNoBaseConfigured
 
 
 class AirtableAPI:
@@ -8,6 +12,9 @@ class AirtableAPI:
     API Docs: https://airtable.com/{baseId}/api/docs
     """
     def __init__(self, base_id, api_key_ro=None, api_key_rw=None):
+        if base_id is None:
+            raise AirtableNoBaseConfigured
+
         self.base_id = base_id
         self.api_key_ro = api_key_ro
         self.api_key_rw = api_key_rw
@@ -31,5 +38,20 @@ class AirtableAPI:
         # TODO: handle pagination, 429
         response = requests.get(url, headers=headers, params=params)
 
-        records = response.json()['records']
+        response_json = response.json()
+        if 'records' in response_json:
+            records = response_json['records']
+        else:
+            records = []
+
+            extra_data = {
+                'base_id': self.base_id,
+                'table': table,
+                'view_name': view_name,
+                'url': url,
+                'params': params,
+                'response': response_json,
+            }
+            rollbar.report_message('Airtable API error: No records matching query', extra_data=extra_data)
+
         return records
