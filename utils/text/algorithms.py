@@ -68,9 +68,9 @@ def get_closest_dict_words(word, dict_words, num_results=20):
     dict_word_distances.sort(key=lambda x: x[0])
 
     closest_words = [
-        dict_word_distances[i][1]
-        for i in range(num_results)
-        if greatest_distance_allowed is None or dict_word_distances[i][0] <= greatest_distance_allowed
+        dict_word
+        for distance, dict_word
+        in dict_word_distances[:num_results]
     ]
 
     return closest_words
