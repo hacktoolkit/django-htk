@@ -39,3 +39,38 @@ def levenshtein_distance(w1, w2):
 
     result = edit_distance[len(w1)][len(w2)]
     return result
+
+
+def get_closest_dict_words(word, dict_words, num_results=20):
+    """Uses the Levenshtein distance for Word Autocompletion and Autocorrection
+
+    https://blog.paperspace.com/implementing-levenshtein-distance-word-autocomplete-autocorrect/
+    """
+    dict_word_distances = []
+    distances = []
+    greatest_distance_allowed = None
+
+    for dict_word in dict_words:
+        word_distance = levenshtein_distance(word, dict_word)
+
+        if greatest_distance_allowed is not None and word_distance > greatest_distance_allowed:
+            # skip this word, because it cannot be among the closest words
+            pass
+        else:
+            dict_word_distances.append((word_distance, dict_word, ))
+
+            distances.append(word_distance)
+            distances.sort()
+            if len(distances) >= num_results:
+                distances = distances[:num_results]
+                greatest_distance_allowed = distances[-1]
+
+    dict_word_distances.sort(key=lambda x: x[0])
+
+    closest_words = [
+        dict_word
+        for distance, dict_word
+        in dict_word_distances[:num_results]
+    ]
+
+    return closest_words
