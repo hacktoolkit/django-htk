@@ -7,7 +7,8 @@ from htk.utils import utcnow
 
 
 class PrelaunchSignup(models.Model):
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True)
+    full_name = models.CharField(max_length=128, blank=True)
     email = models.EmailField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 

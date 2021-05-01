@@ -21,7 +21,10 @@ def prelaunch(request):
         if request.method == 'POST':
             prelaunch_signup_form = PrelaunchSignupForm(request.POST)
             if prelaunch_signup_form.is_valid():
-                site = get_current_site(request)
+                try:
+                    site = get_current_site(request)
+                except Exception:
+                    site = None
                 prelaunch_signup = prelaunch_signup_form.save(site)
                 success = True
             else:

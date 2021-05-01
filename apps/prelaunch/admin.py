@@ -9,12 +9,14 @@ class PrelaunchSignupAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'site',
-        'created_on',
+        'full_name',
         'email',
+        'created_on',
     )
 
     list_filter = (
         'site',
     )
+
 
 admin.site.register(PrelaunchSignup, PrelaunchSignupAdmin)
