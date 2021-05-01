@@ -1,3 +1,6 @@
+# Third Party (PyPI) Imports
+import rollbar
+
 # Django Imports
 from django import forms
 
@@ -44,13 +47,13 @@ class PrelaunchSignupForm(forms.ModelForm):
                 )
                 slack_notify(message)
             except:
-                pass
+                rollbar.report_exc_info()
         else:
             pass
 
         try:
             prelaunch_email(prelaunch_signup)
         except Exception:
-            pass
+            rollbar.report_exc_info()
 
         return prelaunch_signup

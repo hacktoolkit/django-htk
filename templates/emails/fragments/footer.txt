@@ -1,8 +1,8 @@
 =====
 Follow Hacktoolkit: [1]@hacktoolkit, [2]facebook.com/hacktoolkit, [3]blog.hacktoolkit.com
   Links:
-    1. http://twitter.com/hacktoolkit
-    2. http://www.facebook.com/hacktoolkit
-    3. http://blog.hacktoolkit.com
+    1. https://twitter.com/hacktoolkit
+    2. https://www.facebook.com/hacktoolkit
+    3. https://blog.hacktoolkit.com
 
 Sent with gratitude from Hacktoolkit Headquarters in San Francisco Bay Area, CA, USA

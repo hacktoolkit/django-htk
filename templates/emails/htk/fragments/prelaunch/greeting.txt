@@ -1,0 +1,1 @@
+Dear {{ prelaunch_signup.full_name }}{% if prelaunch_signup.full_name %} ({% endif %}{{ prelaunch_signup.email }}{% if prelaunch_signup.full_name %}){% endif %},

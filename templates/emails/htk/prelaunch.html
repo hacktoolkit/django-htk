@@ -1,7 +1,11 @@
 {% extends 'emails/base.html' %}
 {% block content %}
-Dear {{ prelaunch_signup.email }},<br/>
+{% include 'emails/htk/fragments/prelaunch/greeting.txt' %}
 <br/>
-Thanks for signing up at {{ site_name|default:'Hacktoolkit Site' }}! We look forward to sending you an
+<br/>
+Thanks for signing up at {{ site_name|default:'Hacktoolkit Site' }}!
+<br/>
+<br/>
+We look forward to sending you an
 update soon!
 {% endblock %}
