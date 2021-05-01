@@ -5,13 +5,11 @@ import rollbar
 from django import forms
 
 # HTK Imports
-from htk.apps.prelaunch.emails import prelaunch_email
 from htk.apps.prelaunch.models import PrelaunchSignup
 from htk.forms.utils import (
     set_input_attrs,
     set_input_placeholder_labels,
 )
-from htk.utils import htk_setting
 
 
 # isort: off
@@ -38,22 +36,6 @@ class PrelaunchSignupForm(forms.ModelForm):
         prelaunch_signup.site = site
         prelaunch_signup.save()
 
-        if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            from htk.utils.notifications import slack_notify
-            try:
-                message = '{} <{}> just signed up for the pre-launch waiting list.'.format(
-                    prelaunch_signup.full_name,
-                    prelaunch_signup.email
-                )
-                slack_notify(message)
-            except:
-                rollbar.report_exc_info()
-        else:
-            pass
-
-        try:
-            prelaunch_email(prelaunch_signup)
-        except Exception:
-            rollbar.report_exc_info()
+        prelaunch_signup.send_notifications()
 
         return prelaunch_signup
