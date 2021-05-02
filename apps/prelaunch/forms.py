@@ -18,12 +18,15 @@ class PrelaunchSignupForm(forms.ModelForm):
     class Meta:
         model = PrelaunchSignup
         fields = (
-            'full_name',
+            'first_name',
+            'last_name',
             'email',
         )
 
         labels = {
             'full_name': 'Full Name',
+            'first_name': 'First Name',
+            'last_name': 'Last Name',
         }
 
     def __init__(self, *args, **kwargs):

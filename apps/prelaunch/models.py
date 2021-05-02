@@ -18,7 +18,8 @@ from htk.utils.request import get_current_request
 
 class PrelaunchSignup(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, blank=True)
-    full_name = models.CharField(max_length=128, blank=True)
+    first_name = models.CharField(max_length=64, blank=True)
+    last_name = models.CharField(max_length=64, blank=True)
     email = models.EmailField(null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
@@ -29,6 +30,16 @@ class PrelaunchSignup(models.Model):
     def __str__(self):
         s = '%s - %s' % (self.created_on, self.email,)
         return s
+
+    @property
+    def full_name(self):
+        separator = ' ' if self.first_name.strip() and self.last_name.strip() else ''
+        full_name = '{}{}{}'.format(
+            self.first_name.strip(),
+            separator,
+            self.last_name.strip()
+        )
+        return full_name
 
     def send_notifications(self):
         if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
