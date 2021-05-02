@@ -7,10 +7,14 @@ import time
 import rollbar
 
 # Django Imports
-from django.contrib.auth import authenticate
-from django.contrib.auth import get_user_model
-from django.utils.http import base36_to_int
-from django.utils.http import int_to_base36
+from django.contrib.auth import (
+    authenticate,
+    get_user_model,
+)
+from django.utils.http import (
+    base36_to_int,
+    int_to_base36,
+)
 
 # HTK Imports
 from htk.apps.accounts.constants import *
@@ -19,6 +23,9 @@ from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
 from htk.utils.request import get_current_request
 from htk.validators import is_valid_email
+
+
+# isort: off
 
 
 ##
@@ -67,7 +74,9 @@ def email_to_username_hash(email):
     email = email.lower()
     # Deal with internationalized email addresses
     converted = email.encode('utf8', 'ignore')
-    hashed = base64.urlsafe_b64encode(hashlib.sha256(converted).hexdigest())[:EMAIL_TO_USERNAME_HASH_LENGTH]
+    hashed = base64.urlsafe_b64encode(
+        hashlib.sha256(converted).hexdigest().encode()
+    ).decode()[:EMAIL_TO_USERNAME_HASH_LENGTH]
     return hashed
 
 
