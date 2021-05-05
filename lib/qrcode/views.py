@@ -1,3 +1,10 @@
+# Django Imports
+from django.http import Http404
+
+
+# isort: off
+
+
 def qrcode_image(request):
     qr_key = request.GET.get('key', None)
     qr_data = request.GET.get('data', None)
