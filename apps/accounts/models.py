@@ -272,7 +272,14 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
 
     def send_activation_reminder_email(self, template=None, subject=None, sender=None):
         user_email = get_user_email(self.user, self.user.email)
-        user_email.send_activation_reminder_email(template=template, subject=subject, sender=sender)
+        if user_email:
+            user_email.send_activation_reminder_email(template=template, subject=subject, sender=sender)
+        else:
+            extra_data = {
+                'user_id': self.user.id,
+                'user_email': self.user.email,
+            }
+            rollbar.report_exc_info(extra_data=extra_data)
 
     def send_welcome_email(self, template=None, subject=None, sender=None):
         """Sends a welcome email to the user
