@@ -3,12 +3,18 @@ import base64
 import re
 
 # Django Imports
-from django.http import Http404
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
-from django.template import TemplateDoesNotExist
-from django.template import loader
+from django.http import (
+    Http404,
+    HttpResponse,
+)
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
+from django.template import (
+    TemplateDoesNotExist,
+    loader,
+)
 from django.urls import reverse
 
 # HTK Imports
@@ -101,6 +107,18 @@ def bing_site_auth(request):
         template_name,
         content_type='text/xml',
         missing_template_exception=MissingBingSiteVerificationFile
+    )
+    return response
+
+
+def brave_rewards_verification(request):
+    from htk.exceptions import MissingBraveRewardsVerificationFile
+    template_name = '.well-known/brave-rewards-verification.txt'
+    response = generic_template_view(
+        request,
+        template_name,
+        content_type='text/plain',
+        missing_template_exception=MissingBraveRewardsVerificationFile
     )
     return response
 
