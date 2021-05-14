@@ -3,7 +3,7 @@ Fabric==1.6.1
 South==0.8.4
 django-grappelli==2.5.3
 numpy==1.16.6
-pydantic==1.7.3
+pydantic==1.7.4
 pygeoip==0.2.6
 redis==2.7.5
 reportlab==3.1.8
