@@ -458,6 +458,9 @@ class Htk321FormsAPI(object):
         except Exception:
             webhook_topics = []
 
+        if 'error' in webhook_topics and webhook_topics['error'] is True:
+            webhook_topics = []
+
         return webhook_topics
 
     def create_webhook(self, company_id, url, topic_ids):
