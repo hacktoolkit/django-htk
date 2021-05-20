@@ -333,6 +333,8 @@ class Htk321FormsAPI(object):
         request_url = self.get_request_url(resource_path=resource_path)
         response = self.request_get(request_url)
         forms = response.json()
+        if 'error' in forms and forms['error'] is True:
+            forms = []
         return forms
 
     def get_forms_by_user(self, user_id):
