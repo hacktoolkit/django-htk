@@ -4,6 +4,7 @@ import re
 # HTK Imports
 from htk.utils import htk_setting
 from htk.utils.constants import *
+from htk.utils.general import strtobool_safe
 
 
 def get_current_request():
@@ -24,6 +25,38 @@ def extract_request_ip(request):
     if real_ip:
         return real_ip
     return request.environ['REMOTE_ADDR']
+
+
+def extract_request_param(request, param, as_type=str, allow_none=True):
+    """Extracts a URL parameter from the request (i.e. request.GET.get)
+
+    - Performs basic input validation and allows typed retrieval via `as_type`
+    - Can designate whether `None` is allowed via `allow_none`
+    """
+    default_value_map = {
+        str: '',
+        bool: False,
+        int: 0,
+        float: 0,
+    }
+    default_value = None if allow_none else default_value_map.get(as_type, '')
+
+    raw_value = request.GET.get(param, default_value)
+
+    if as_type == str:
+        value = raw_value
+    elif as_type == bool:
+        value = strtobool_safe(raw_value)
+    elif as_type == int:
+        m = re.match(r'^(?:\+|\-)?(?P<value>\d+)\.?$', raw_value) if raw_value else None
+        value = int(m.group('value')) if m else default_value
+    elif as_type == float:
+        m = re.match(r'^(?:\+|\-)?(?P<value>\d*\.?\d*)$', raw_value) if raw_value else None
+        value = float(m.group('value')) if m else default_value
+    else:
+        value = raw_value
+
+    return value
 
 
 def get_request_metadata(request):
