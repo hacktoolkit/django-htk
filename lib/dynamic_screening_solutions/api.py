@@ -455,10 +455,9 @@ class Htk321FormsAPI(object):
         response = self.request_get(request_url)
         try:
             webhook_topics = response.json()
+            if type(webhook_topics) == dict and webhook_topics.get('error'):
+                webhook_topics = []
         except Exception:
-            webhook_topics = []
-
-        if 'error' in webhook_topics and webhook_topics['error'] is True:
             webhook_topics = []
 
         return webhook_topics
