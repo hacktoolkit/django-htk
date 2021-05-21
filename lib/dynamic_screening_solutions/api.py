@@ -87,8 +87,21 @@ class Htk321FormsAPI(object):
         while should_retry:
             attempts += 1
             response = requests.get(request_url, headers=headers, params=params, allow_redirects=True, **kwargs)
+
+            try:
+                response_json = response.json()
+            except ValueError:
+                response_json = None
+
             if response.status_code < 400:
                 should_retry = False
+                bad_response = (
+                    response_json is None
+                    or (
+                        type(response_json) == dict
+                        and response_json.get('error')
+                    )
+                )
             elif 400 <= response.status_code < 500:
                 if response.status_code == 429 and attempts < MAX_RETRY_ATTEMPTS:
                     should_retry = True
@@ -112,12 +125,12 @@ class Htk321FormsAPI(object):
                 },
                 'response': {
                     'status_code': response.status_code,
-                    'json': response.json(),
+                    'json': response_json,
                 },
             })
             rollbar.report_message('321Forms API Bad Response', request=request, extra_data=extra_data)
 
-        return response
+        return response_json
 
     def request_post(self, request_url=None, data=None, **kwargs):
         if request_url is None:
@@ -151,8 +164,8 @@ class Htk321FormsAPI(object):
             'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
-        user = response.json()
+        response_json = self.request_get(request_url)
+        user = response_json
         return user
 
     def get_user_everify(self, user_id):
@@ -160,8 +173,8 @@ class Htk321FormsAPI(object):
             'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
-        everify_status = response.json()
+        response_json = self.request_get(request_url)
+        everify_status = response_json
         return everify_status
 
     def get_users_by_company(self, company_id, user_type):
@@ -186,8 +199,7 @@ class Htk321FormsAPI(object):
             }
 
             request_url = self.get_request_url(resource_path=resource_path)
-            response = self.request_get(request_url, params=params)
-            response_json = response.json()
+            response_json = self.request_get(request_url, params=params)
             if type(response_json) == list:
                 if len(response_json) == limit:
                     offset += limit
@@ -202,12 +214,12 @@ class Htk321FormsAPI(object):
                 else:
                     message = 'Error retrieving users by company'
 
-                    extra_data = {
-                        'username': self.username,
-                        'company_id': company_id,
-                        'user_type': user_type,
-                    }
-                    rollbar.report_message(message, extra_data=extra_data)
+                extra_data = {
+                    'username': self.username,
+                    'company_id': company_id,
+                    'user_type': user_type,
+                }
+                rollbar.report_message(message, extra_data=extra_data)
 
         return users
 
@@ -250,13 +262,15 @@ class Htk321FormsAPI(object):
         done = False
         while not done:
             request_url = self.get_request_url(resource_path=DSS_321FORMS_API_RESOURCE_COMPANY) + ("?limit=%s&offset=%s" % (limit, offset,))
-            response = self.request_get(request_url)
-            companies = response.json()
-            all_companies += companies
+            response_json = self.request_get(request_url)
+            companies = response_json or []
+            all_companies.extend(companies)
+
             if len(companies) < limit:
                 done = True
             else:
                 offset += limit
+
         return all_companies
 
     ##
@@ -269,11 +283,9 @@ class Htk321FormsAPI(object):
             'company_id': company_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
-        try:
-            divisions = response.json().get('divisions', [])
-        except Exception:
-            divisions = []
+        response_json = self.request_get(request_url) or {}
+
+        divisions = response_json.get('divisions', [])
         return divisions
 
     ##
@@ -288,8 +300,8 @@ class Htk321FormsAPI(object):
             'company_id': company_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
-        forms = response.json()
+        response_json = self.request_get(request_url)
+        forms = response_json or []
         return forms
 
     def get_form_by_company(self, company_id, form_id, form_type='questions'):
@@ -331,8 +343,8 @@ class Htk321FormsAPI(object):
             'division_id': division_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
-        forms = response.json()
+        response_json = self.request_get(request_url)
+        forms = response_json or []
         return forms
 
     def get_forms_by_user(self, user_id):
@@ -340,8 +352,8 @@ class Htk321FormsAPI(object):
             'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_get(request_url)
-        forms = response.json()
+        response_json = self.request_get(request_url)
+        forms = response_json or []
         return forms
 
     def get_form_by_user(self, user_id, form_id, form_type='questions', status='approved'):
@@ -368,8 +380,8 @@ class Htk321FormsAPI(object):
             'status': status,
         }
 
-        response = self.request_get(request_url, params=params)
-        forms = response.json()
+        response_json = self.request_get(request_url, params=params)
+        forms = response_json or []
         return forms
 
     ##
@@ -393,8 +405,8 @@ class Htk321FormsAPI(object):
         if questions:
             params['questions'] = questions
 
-        response = self.request_get(request_url, params=params)
-        user_responses = response.json()
+        response_json = self.request_get(request_url, params=params)
+        user_responses = response.json or []
         return user_responses
 
     def get_all_responses_by_user(self, user_id, questions=None):
@@ -407,7 +419,7 @@ class Htk321FormsAPI(object):
         while should_fetch:
             user_responses = self.get_responses_by_user(self.username, offset=offset, limit=limit)
             all_responses.extend(user_responses)
-            if len(user_responses) == 500:
+            if len(user_responses) == limit:
                 # get next page of responses
                 should_fetch = True
                 # 321Forms has a rate limit of 1 req/second per API account
@@ -429,8 +441,7 @@ class Htk321FormsAPI(object):
 
         request_url = self.get_request_url(resource_path=resource_path)
 
-        response = self.request_get(request_url)
-        response_json = response.json()
+        response_json = self.request_get(request_url)
         return response_json
 
     def get_webhook(self, company_id, webhook_id):
@@ -441,8 +452,7 @@ class Htk321FormsAPI(object):
 
         request_url = self.get_request_url(resource_path=resource_path)
 
-        response = self.request_get(request_url)
-        response_json = response.json()
+        response_json = self.request_get(request_url)
         return response_json
 
     def get_webhook_topics(self, company_id):
@@ -452,13 +462,8 @@ class Htk321FormsAPI(object):
 
         request_url = self.get_request_url(resource_path=resource_path)
 
-        response = self.request_get(request_url)
-        try:
-            webhook_topics = response.json()
-            if type(webhook_topics) == dict and webhook_topics.get('error'):
-                webhook_topics = []
-        except Exception:
-            webhook_topics = []
+        response_json = self.request_get(request_url)
+        webhook_topics = response_json or []
 
         return webhook_topics
 
@@ -512,28 +517,9 @@ class Htk321FormsAPI(object):
 
     def generate_sso_key(self):
         request_url = self.get_request_url(resource_path=DSS_321FORMS_API_RESOURCE_SSO_GENERATE)
-        response = self.request_get(request_url)
-        exception_reported = False
+        response_json = self.request_get(request_url) or {}
 
-        try:
-            data = response.json()
-            sso_key = data.get('SSOKey')
-        except Exception:
-            sso_key = None
-            extra_data = self._get_rollbar_extra_data()
-            extra_data.update({
-                'response_text': response.text,
-            })
-            rollbar.report_exc_info(extra_data=extra_data)
-            exception_reported = True
-
-        if sso_key is None and not exception_reported:
-            request = get_current_request()
-            extra_data = self._get_rollbar_extra_data()
-            extra_data.update({
-                'response_text': response.text,
-            })
-            rollbar.report_message('Error generating 321Forms SSO key', request=request, extra_data=extra_data)
+        sso_key = response_json.get('SSOKey')
         return sso_key
 
     def create_sso_endpoint(self, sso_key):
