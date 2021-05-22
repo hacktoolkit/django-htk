@@ -28,12 +28,19 @@ class GitHubReminderBot(object):
     Uses PyGithub as a base API client - http://pygithub.readthedocs.io/en/latest/index.html
     """
 
-    def __init__(self, github_access_token, organizations=None, repositories=None):
+    def __init__(
+        self,
+        github_access_token,
+        organizations=None,
+        repositories=None,
+        mention_here=False
+    ):
         """Initializes the GitHub API client and prefetches the `organization` and repositories
         """
         self.github_access_token = github_access_token
         self.organizations = organizations
         self.repositories = repositories
+        self.mention_here = mention_here
 
         self.cli = Github(self.github_access_token)
 
@@ -162,7 +169,7 @@ class GitHubReminderBot(object):
         ]
 
         context = {
-            'here' : '<!here> ' if len(attachments) > 0 else '',
+            'here' : '<!here> ' if self.mention_here and len(attachments) > 0 else '',
             'greeting' : greeting,
             'message' : random.choice(PR_PRESENT_MESSAGES) if len(attachments) > 0 else random.choice(PR_ABSENT_MESSAGES),
         }
@@ -179,7 +186,8 @@ class GitHubReminderSlackBot(GitHubReminderBot):
         slack_channel,
         github_access_token,
         organizations=None,
-        repositories=None
+        repositories=None,
+        mention_here=False
     ):
         super(GitHubReminderSlackBot, self).__init__(
             github_access_token,

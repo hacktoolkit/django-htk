@@ -52,6 +52,7 @@ class GitHubReminderTask(BaseTask):
         github_access_token = user.profile.get_attribute('github_access_token')
         slack_webhook_url = user.profile.get_attribute('slack_webhook_url')
         slack_channel = user.profile.get_attribute('github_reminders_slack_channel')
+        mention_here = user.profile.get_attribute('github_reminders_slack_mention_here')
 
         from htk.lib.github.bots import GitHubReminderSlackBot
         bot = GitHubReminderSlackBot(
@@ -59,6 +60,7 @@ class GitHubReminderTask(BaseTask):
             slack_channel,
             github_access_token,
             organizations=organizations,
-            repositories=repositories
+            repositories=repositories,
+            mention_here=mention_here
         )
         bot.remind_pull_requests()
