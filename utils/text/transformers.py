@@ -3,9 +3,25 @@ import re
 
 # HTK Imports
 from htk.utils.text.constants import *
-from htk.utils.text.general import is_ascii
-from htk.utils.text.general import is_ascii_extended
+from htk.utils.text.general import (
+    is_ascii,
+    is_ascii_extended,
+)
 from htk.utils.text.unicode import unicode_to_ascii
+
+
+def get_symbols(sentence, valid_chars='A-Za-z0-9_-'):
+    """Returns a list of symbols from a sentence
+
+    By default, these are considered valid characters for a symbol:
+    - letters (A-Z, a-z)
+    - numbers (0-9)
+    - underscore (_)
+    - hyphen (-)
+    """
+    invalid_chars = re.compile(r'[^%s]' % valid_chars)
+    symbols = [symbol for symbol in invalid_chars.split(sentence) if symbol]
+    return symbols
 
 
 def get_sentences(paragraph):
@@ -16,7 +32,7 @@ def get_sentences(paragraph):
     """
     punctuation = re.compile(r'[\.!?]')
     sentences = [sentence.strip() for sentence in punctuation.split(paragraph)]
-    sentences = filter(lambda x: x, sentences)
+    sentences = list(filter(lambda x: x, sentences))
     return sentences
 
 

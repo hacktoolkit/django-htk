@@ -1,6 +1,14 @@
 # HTK Imports
-from htk.constants.time import *
+from htk.constants.time import (
+    BUSINESS_HOURS_START,
+    ISOWEEKDAY_WEEKDAYS,
+    MORNING_HOURS_END,
+)
 from htk.tasks import BaseTask
+from htk.utils.text.transformers import get_symbols
+
+
+# isort: off
 
 
 class GitHubReminderTask(BaseTask):
@@ -24,11 +32,15 @@ class GitHubReminderTask(BaseTask):
     def execute(self, user):
         now = user.profile.get_local_time()
 
-        github_organizations = (user.profile.get_attribute('github_organizations') or '').split('\n')
-        github_organizations = filter(None, [organization.strip() for organization in github_organizations])
-
-        github_repositories = (user.profile.get_attribute('github_repositories') or '').split('\n')
-        github_repositories = filter(None, [repo.strip() for repo in github_repositories])
+        valid_chars = 'A-Za-z0-9_\-/'
+        github_organizations = get_symbols(
+            user.profile.get_attribute('github_organizations') or '',
+            valid_chars=valid_chars
+        )
+        github_repositories = get_symbols(
+            user.profile.get_attribute('github_repositories') or '',
+            valid_chars=valid_chars
+        )
 
         self.send_github_reminders(
             user,

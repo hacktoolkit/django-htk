@@ -16,8 +16,10 @@ import sys
 
 # Third Party (PyPI) Imports
 import requests
-
 from github import Github
+
+
+# isort: off
 
 
 class GitHubReminderBot(object):
@@ -45,7 +47,12 @@ class GitHubReminderBot(object):
 
         if repositories:
             # https://pygithub.readthedocs.io/en/latest/github.html#github.MainClass.Github.get_repo
-            self.repos.extend([self.cli.get_repo(repository) for repository in repositories])
+            for repository in repositories:
+                try:
+                    repo = self.cli.get_repo(repository)
+                    self.repos.append(repo)
+                except Exception as e:
+                    print(e)
 
     def pull_request_reminder(self):
         """Returns a Markdown-formatted message for this organization's pull requests
