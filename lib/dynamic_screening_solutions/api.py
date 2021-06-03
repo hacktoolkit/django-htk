@@ -75,6 +75,29 @@ class Htk321FormsAPI(object):
         headers['Authorization'] = authorization_key
         return headers
 
+    def handle_bad_response(self, response):
+        request = get_current_request()
+        api_request = response.request
+
+        extra_data = self._get_rollbar_extra_data()
+        extra_data.update({
+            'api_request': {
+                'url': api_request.url,
+                'method': api_request.method,
+                'body': api_request.body,
+            },
+            'response': {
+                'status_code': response.status_code,
+                'text': response.text,
+            },
+        })
+
+        rollbar.report_message(
+            '321Forms API Bad Response',
+            request=request,
+            extra_data=extra_data
+        )
+
     def request_get(self, request_url=None, params=None, should_retry=True, **kwargs):
         if request_url is None:
             request_url = self.get_request_url()
@@ -114,21 +137,9 @@ class Htk321FormsAPI(object):
                 should_retry = False
 
         if bad_response:
-            request = get_current_request()
-            api_request = response.request
-            extra_data = self._get_rollbar_extra_data()
-            extra_data.update({
-                'api_request': {
-                    'url': api_request.url,
-                    'method': api_request.method,
-                    'body': api_request.body,
-                },
-                'response': {
-                    'status_code': response.status_code,
-                    'json': response_json,
-                },
-            })
-            rollbar.report_message('321Forms API Bad Response', request=request, extra_data=extra_data)
+            self.handle_bad_response(response)
+        else:
+            pass
 
         return response_json
 
@@ -138,7 +149,14 @@ class Htk321FormsAPI(object):
 
         headers = self.make_request_headers(action='POST')
         response = requests.post(request_url, headers=headers, json=data, **kwargs)
-        return response
+
+        try:
+            response_json = response.json()
+        except ValueError:
+            response_json = None
+            self.handle_bad_response(response)
+
+        return response_json
 
     def request_put(self, request_url=None, data=None, **kwargs):
         if request_url is None:
@@ -146,7 +164,14 @@ class Htk321FormsAPI(object):
 
         headers = self.make_request_headers(action='PUT')
         response = requests.put(request_url, headers=headers, json=data, **kwargs)
-        return response
+
+        try:
+            response_json = response.json()
+        except ValueError:
+            response_json = None
+            self.handle_bad_response(response)
+
+        return response_json
 
     def request_delete(self, request_url=None, **kwargs):
         if request_url is None:
@@ -154,7 +179,14 @@ class Htk321FormsAPI(object):
 
         headers = self.make_request_headers(action='DELETE')
         response = requests.delete(request_url, headers=headers, **kwargs)
-        return response
+
+        try:
+            response_json = response.json()
+        except ValueError:
+            response_json = None
+            self.handle_bad_response(response)
+
+        return response_json
 
     ##
     # Users
@@ -228,8 +260,8 @@ class Htk321FormsAPI(object):
             'user_id': user_id,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_post(request_url, employee_data)
-        employee = response.json()
+        response_json = self.request_post(request_url, employee_data)
+        employee = response_json
         return employee
 
     def get_hr_staff_users_by_company(self, company_id):
@@ -322,8 +354,8 @@ class Htk321FormsAPI(object):
             'type': form_type,
         }
 
-        response = self.request_get(request_url, params=params)
-        form = response.json()
+        response_json = self.request_get(request_url, params=params)
+        form = response_json
         return form
 
     def get_combined_form_by_company(self, company_id, form_id):
@@ -406,7 +438,7 @@ class Htk321FormsAPI(object):
             params['questions'] = questions
 
         response_json = self.request_get(request_url, params=params)
-        user_responses = response.json or []
+        user_responses = response_json or []
         return user_responses
 
     def get_all_responses_by_user(self, user_id, questions=None):
@@ -479,8 +511,7 @@ class Htk321FormsAPI(object):
             'topics': topic_ids,
         }
 
-        response = self.request_post(request_url, data=data)
-        response_json = response.json()
+        response_json = self.request_post(request_url, data=data)
         return response_json
 
     def update_webhook(self, company_id, webhook_id, url, topic_ids):
@@ -496,8 +527,8 @@ class Htk321FormsAPI(object):
             'topics': topic_ids,
         }
 
-        response = self.request_put(request_url, data=data)
-        response_json = response.json()
+        response_json = self.request_put(request_url, data=data)
+
         return response_json
 
     def delete_webhook(self, company_id, webhook_id):
@@ -508,8 +539,7 @@ class Htk321FormsAPI(object):
 
         request_url = self.get_request_url(resource_path=resource_path)
 
-        response = self.request_delete(request_url)
-        response_json = response.json()
+        response_json = self.request_delete(request_url)
         return response_json
 
     ##
@@ -527,27 +557,7 @@ class Htk321FormsAPI(object):
             'sso_key': sso_key,
         }
         request_url = self.get_request_url(resource_path=resource_path)
-        response = self.request_post(request_url)
-        exception_reported = False
+        response_json = self.request_post(request_url) or {}
+        endpoint = response_json.get('endpoint')
 
-        try:
-            data = response.json()
-            endpoint = data.get('endpoint')
-        except Exception:
-            endpoint = None
-            request = get_current_request()
-            extra_data = self._get_rollbar_extra_data()
-            extra_data.update({
-                'response_text': response.text,
-            })
-            rollbar.report_exc_info(extra_data=extra_data)
-            exception_reported = True
-
-        if endpoint is None and not exception_reported:
-            request = get_current_request()
-            extra_data = self._get_rollbar_extra_data()
-            extra_data.update({
-                'response_text': response.text,
-            })
-            rollbar.report_message('Error retrieving SSO endpoint', request=request, extra_data=extra_data)
         return endpoint
