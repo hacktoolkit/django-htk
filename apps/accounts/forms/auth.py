@@ -69,8 +69,7 @@ class UserRegistrationForm(UserCreationForm):
         'duplicate_username': _('A user with that username already exists.'),
         'password_mismatch': _("The two password fields didn't match."),
         'email_already_associated': _(
-            'That email is already associated with a %s account. If you are trying to login to an existing account, '
-            'click the "Login" button.' % htk_setting('HTK_SITE_NAME')
+            'That email is already associated with a %s account. If you are trying to login to an existing account, click the "Login" button.' % htk_setting('HTK_SITE_NAME')  # noqa
          ),
         'invalid_email': _('Invalid email. Please enter a valid email.'),
         'empty_password': _("The password can't be empty."),
@@ -276,20 +275,12 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
                     pass
                 else:
                     self.inactive_user = True
-                    raise forms.ValidationError(
-                        "That account is not active yet because you haven't confirmed your email. "
-                        "<a id=\"resend_confirmation\" href=\"%s\">Resend email confirmation &gt;</a>" % (
-                            reverse('account_resend_confirmation'),
-                        )
-                    )
+                    raise forms.ValidationError("That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"{}\">Resend email confirmation &gt;</a>".format(reverse('account_resend_confirmation')))  # noqa
         else:
             user = None
 
         if user is None:
-            raise forms.ValidationError(
-                "That email address doesn't have an associated user account. "
-                "Are you sure you've registered?"
-            )
+            raise forms.ValidationError("That email address doesn't have an associated user account. Are you sure you've registered?")  # noqa
         else:
             self.user_cache = user
         return cleaned_data
