@@ -275,12 +275,18 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
                     pass
                 else:
                     self.inactive_user = True
-                    raise forms.ValidationError("That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"{}\">Resend email confirmation &gt;</a>".format(reverse('account_resend_confirmation')))  # noqa
+                    raise forms.ValidationError(
+                        "That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"{}\">Resend email confirmation &gt;</a>".format(  # noqa
+                            reverse('account_resend_confirmation')
+                        )
+                    )
         else:
             user = None
 
         if user is None:
-            raise forms.ValidationError("That email address doesn't have an associated user account. Are you sure you've registered?")  # noqa
+            raise forms.ValidationError(
+                "That email address doesn't have an associated user account. Are you sure you've registered?"  # noqa
+            )
         else:
             self.user_cache = user
         return cleaned_data
@@ -320,10 +326,7 @@ class UsernameEmailAuthenticationForm(forms.Form):
     recaptcha = forms.CharField(required=False, widget=forms.HiddenInput)
 
     error_messages = {
-        'invalid_login': _(
-            'Please enter a correct %(username_email)s and %(password)s. '
-            'Note that password is case-sensitive.'
-        ),
+        'invalid_login': _('Please enter a correct %(username_email)s and %(password)s. Note that password is case-sensitive.'),  # noqa
         'invalid_password': _('Please enter a correct %(password)s. Note that password is case-sensitive.'),
         'inactive': _('This account is inactive.'),
     }
@@ -463,10 +466,7 @@ class SocialRegistrationTermsAgreementForm(forms.Form):
                 errors = self._errors[field_name]
                 error_msg = errors[0]
                 if error_msg == 'This field is required.':
-                    error_msg = (
-                        "Please check the box indicating that you agree with %s's Privacy Policy "
-                        "and Terms of Service." % htk_setting('HTK_SITE_NAME')
-                    )
+                    error_msg = ("Please check the box indicating that you agree with %s's Privacy Policy and Terms of Service." % htk_setting('HTK_SITE_NAME'))  # noqa
                 self.cascaded_errors.append(error_msg)
         # raise all the cascaded errors now
         if len(self.cascaded_errors) > 0:
