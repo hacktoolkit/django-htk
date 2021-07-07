@@ -466,7 +466,7 @@ class SocialRegistrationTermsAgreementForm(forms.Form):
                 errors = self._errors[field_name]
                 error_msg = errors[0]
                 if error_msg == 'This field is required.':
-                    error_msg = ("Please check the box indicating that you agree with %s's Privacy Policy and Terms of Service." % htk_setting('HTK_SITE_NAME'))  # noqa
+                    error_msg = "Please check the box indicating that you agree with %s's Privacy Policy and Terms of Service." % htk_setting('HTK_SITE_NAME')  # noqa
                 self.cascaded_errors.append(error_msg)
         # raise all the cascaded errors now
         if len(self.cascaded_errors) > 0:
