@@ -14,6 +14,7 @@ HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_URL_NAME = 'account_register_social_email'
 HTK_ACCOUNTS_REGISTER_SOCIAL_ALREADY_LINKED_URL_NAME = 'account_register_social_already_linked'
 HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_AND_TERMS_URL_NAME = 'account_register_social_email_and_terms'
 HTK_ACCOUNTS_RESET_PASSWORD_URL_NAME = 'account_reset_password'
+HTK_ACCOUNTS_RESEND_CONFIRMATION = 'account_resend_confirmation'
 
 HTK_USER_PROFILE_MODEL = None
 

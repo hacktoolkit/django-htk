@@ -277,7 +277,7 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
                     self.inactive_user = True
                     raise forms.ValidationError(
                         "That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"{}\">Resend email confirmation &gt;</a>".format(  # noqa
-                            reverse('account_resend_confirmation')
+                            reverse(htk_setting('HTK_ACCOUNTS_RESEND_CONFIRMATION'))
                         )
                     )
         else:
