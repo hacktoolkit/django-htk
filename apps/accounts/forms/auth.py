@@ -6,23 +6,33 @@ import rollbar
 # Django Imports
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth.forms import SetPasswordForm
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import (
+    PasswordResetForm,
+    SetPasswordForm,
+    UserCreationForm,
+)
 from django.contrib.auth.tokens import default_token_generator
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 # HTK Imports
 from htk.apps.accounts.emails import password_reset_email
 from htk.apps.accounts.models import UserEmail
-from htk.apps.accounts.session_keys import *
-from htk.apps.accounts.utils import authenticate_user_by_username_email
-from htk.apps.accounts.utils import email_to_username_hash
-from htk.apps.accounts.utils import email_to_username_pretty_unique
-from htk.apps.accounts.utils import get_user_by_email
-from htk.apps.accounts.utils import get_user_by_email_with_retries
-from htk.forms.utils import set_input_attrs
-from htk.forms.utils import set_input_placeholder_labels
+from htk.apps.accounts.session_keys import (
+    SOCIAL_REGISTRATION_SETTING_AGREED_TO_TERMS,
+    SOCIAL_REGISTRATION_SETTING_EMAIL,
+)
+from htk.apps.accounts.utils import (
+    authenticate_user_by_username_email,
+    email_to_username_hash,
+    email_to_username_pretty_unique,
+    get_user_by_email,
+    get_user_by_email_with_retries,
+)
+from htk.forms.utils import (
+    set_input_attrs,
+    set_input_placeholder_labels,
+)
 from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 
@@ -45,7 +55,7 @@ class UpdatePasswordForm(SetPasswordForm):
         from htk.apps.accounts.emails import password_changed_email
         try:
             password_changed_email(user)
-        except:
+        except Exception:
             request = get_current_request()
             rollbar.report_exc_info(request=request)
         return user
@@ -59,7 +69,7 @@ class UserRegistrationForm(UserCreationForm):
         'duplicate_username': _('A user with that username already exists.'),
         'password_mismatch': _("The two password fields didn't match."),
         'email_already_associated': _(
-            'That email is already associated with a %s account. If you are trying to login to an existing account, click the "Login" button.' % htk_setting('HTK_SITE_NAME')
+            'That email is already associated with a %s account. If you are trying to login to an existing account, click the "Login" button.' % htk_setting('HTK_SITE_NAME')  # noqa
          ),
         'invalid_email': _('Invalid email. Please enter a valid email.'),
         'empty_password': _("The password can't be empty."),
@@ -87,7 +97,7 @@ class UserRegistrationForm(UserCreationForm):
         cleaned_data = super(UserRegistrationForm, self).clean()
         if 'email' in self._errors:
             # display all the errors at once?
-            #raise forms.ValidationError()
+            # raise forms.ValidationError()
             email_error = self._errors['email']
             if email_error[0] == self.error_messages['email_already_associated']:
                 # email already associated
@@ -147,7 +157,14 @@ class UserRegistrationForm(UserCreationForm):
             if commit:
                 user.save()
                 from htk.apps.accounts.utils import associate_user_email
-                user_email = associate_user_email(user, email, domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
+                associate_user_email(
+                    user,
+                    email,
+                    domain=domain,
+                    email_template=email_template,
+                    email_subject=email_subject,
+                    email_sender=email_sender
+                )
             return user
 
         from htk.apps.accounts.locks import UserEmailRegistrationLock
@@ -160,7 +177,7 @@ class UserRegistrationForm(UserCreationForm):
             try:
                 lock.acquire()
                 user = _process_registration(self, domain, email_template, email_subject, email_sender, commit)
-            except:
+            except Exception:
                 rollbar.report_exc_info()
                 # another user registration is in progress
                 user = get_user_by_email_with_retries(email)
@@ -197,13 +214,20 @@ class NameEmailUserRegistrationForm(UserRegistrationForm):
             user.username = email_to_username_pretty_unique(email)
         else:
             user.username = email_to_username_hash(email)
-        #password1 = self.cleaned_data.get('password1')
-        #user.set_password(password1)
+        # password1 = self.cleaned_data.get('password1')
+        # user.set_password(password1)
         if commit:
             user.save()
             # associate user and email
             from htk.apps.accounts.utils import associate_user_email
-            user_email = associate_user_email(user, email, domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
+            associate_user_email(
+                user,
+                email,
+                domain=domain,
+                email_template=email_template,
+                email_subject=email_subject,
+                email_sender=email_sender
+            )
             # mark has_username_set
             user_profile = user.profile
             user_profile.has_username_set = True
@@ -251,12 +275,18 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
                     pass
                 else:
                     self.inactive_user = True
-                    raise forms.ValidationError("That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"javascript:void(0);\">Resend email confirmation &gt;</a>")
+                    raise forms.ValidationError(
+                        "That account is not active yet because you haven't confirmed your email. <a id=\"resend_confirmation\" href=\"{}\">Resend email confirmation &gt;</a>".format(  # noqa
+                            reverse(htk_setting('HTK_ACCOUNTS_RESEND_CONFIRMATION'))
+                        )
+                    )
         else:
             user = None
 
         if user is None:
-            raise forms.ValidationError("That email address doesn't have an associated user account. Are you sure you've registered?")
+            raise forms.ValidationError(
+                "That email address doesn't have an associated user account. Are you sure you've registered?"  # noqa
+            )
         else:
             self.user_cache = user
         return cleaned_data
@@ -267,8 +297,8 @@ class PasswordResetFormHtmlEmail(PasswordResetForm):
         email_template=None,
         email_subject=None,
         email_sender=None,
-        subject_template_name='', # not used
-        email_template_name='', # not used
+        subject_template_name='',  # not used
+        email_template_name='',  # not used
         use_https=False,
         token_generator=default_token_generator,
         from_email=None,
@@ -296,7 +326,7 @@ class UsernameEmailAuthenticationForm(forms.Form):
     recaptcha = forms.CharField(required=False, widget=forms.HiddenInput)
 
     error_messages = {
-        'invalid_login': _('Please enter a correct %(username_email)s and %(password)s. Note that password is case-sensitive.'),
+        'invalid_login': _('Please enter a correct %(username_email)s and %(password)s. Note that password is case-sensitive.'),  # noqa
         'invalid_password': _('Please enter a correct %(password)s. Note that password is case-sensitive.'),
         'inactive': _('This account is inactive.'),
     }
@@ -408,7 +438,7 @@ class SocialRegistrationEmailForm(forms.Form):
 
 
 class SocialRegistrationAuthenticationForm(UsernameEmailAuthenticationForm):
-    password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder': 'Password',}))
+    password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder': 'Password', }))
 
     def __init__(self, email, *args, **kwargs):
         super(SocialRegistrationAuthenticationForm, self).__init__(None, *args, **kwargs)
@@ -436,7 +466,7 @@ class SocialRegistrationTermsAgreementForm(forms.Form):
                 errors = self._errors[field_name]
                 error_msg = errors[0]
                 if error_msg == 'This field is required.':
-                    error_msg = "Please check the box indicating that you agree with %s's Privacy Policy and Terms of Service." % htk_setting('HTK_SITE_NAME')
+                    error_msg = "Please check the box indicating that you agree with %s's Privacy Policy and Terms of Service." % htk_setting('HTK_SITE_NAME')  # noqa
                 self.cascaded_errors.append(error_msg)
         # raise all the cascaded errors now
         if len(self.cascaded_errors) > 0:
