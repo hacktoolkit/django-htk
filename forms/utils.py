@@ -2,17 +2,8 @@
 from django import forms
 
 # HTK Imports
+from htk.forms.constants import TEXT_STYLE_INPUTS
 from htk.utils import htk_setting
-
-
-TEXT_STYLE_INPUTS = (
-    forms.TextInput,
-    forms.NumberInput,
-    forms.EmailInput,
-    forms.PasswordInput,
-    forms.Textarea,
-    forms.URLInput,
-)
 
 
 def clean_model_instance_field(form_obj, field_name, cls):
@@ -34,24 +25,29 @@ def clean_model_instance_field(form_obj, field_name, cls):
 def set_input_attrs(form, attrs=None):
     """Set various attributes on form input fields
     """
+    form_style = htk_setting('HTK_FORM_STYLE')
+
     if attrs is None:
         if hasattr(form, 'attrs'):
             attrs = form.attrs
         else:
             attrs = {}
+
     use_react = hasattr(form, 'use_react') and form.use_react
-    default_input_class = htk_setting('HTK_DEFAULT_FORM_INPUT_CLASS')
-    if 'class' not in attrs:
-        attrs['class'] = attrs.get('class', default_input_class)
+
     for name, field in form.fields.items():
-        if field.widget.__class__ in TEXT_STYLE_INPUTS:
-            input_classes = attrs.get('class', '')
+        form_widget_classes = htk_setting('HTK_FORM_WIDGET_CLASSES')[form_style]
+        default_classes = attrs.get('class', '')
+        input_classes = form_widget_classes.get(field.widget.__class__.__name__, default_classes)
+
+        if input_classes:
             if use_react:
                 # React forms
                 field.widget.attrs['className'] = input_classes
             else:
                 # regular HTML forms
                 field.widget.attrs['class'] = input_classes
+
         if field.required:
             field.widget.attrs['required'] = 'required'
         for key, value in attrs.items():
@@ -73,7 +69,7 @@ def set_input_placeholder_labels(form):
         custom_labels = {}
 
     for name, field in form.fields.items():
-        if field.widget.__class__ in TEXT_STYLE_INPUTS:
+        if field.widget.__class__.__name__ in TEXT_STYLE_INPUTS:
             if not field.widget.attrs.get('placeholder'):
                 placeholder_value = custom_labels.get(name, field.label)
                 field.widget.attrs['placeholder'] = placeholder_value

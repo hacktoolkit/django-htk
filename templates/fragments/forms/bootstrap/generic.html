@@ -1,14 +1,23 @@
+{% load htk_tags %}
 <form method="POST"{% if action_view %} action="{% url action_view %}"{% endif %}>
   {% csrf_token %}
   {% for hidden in form.hidden_fields %}
   {{ hidden }}
   {% endfor %}
   {% for field in form.visible_fields %}
+  {% if field|field_clsname == 'CheckboxInput' %}
+  <div class="form-check">
+    {{ field }}
+    <label for="{{ field.id_for_label }}" class="form-check-label">{{ field.label }}</label>
+    <div class="form-error">{{ field.errors }}</div>
+  </div>
+  {% else %}
   <div class="form-group">
     {{ field.label_tag}}
     {{ field }}
     <div class="form-error">{{ field.errors }}</div>
   </div>
+  {% endif %}
   {% endfor %}
   <button type="submit" class="btn btn-primary">{{ submit_label|default:'Submit' }}</button>
 </form>
