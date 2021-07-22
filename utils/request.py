@@ -7,6 +7,9 @@ from htk.utils.constants import *
 from htk.utils.general import strtobool_safe
 
 
+# isort: off
+
+
 def get_current_request():
     from htk.middleware.classes import GlobalRequestMiddleware
     request = GlobalRequestMiddleware.get_current_request()
@@ -46,7 +49,7 @@ def extract_request_param(request, param, as_type=str, allow_none=True):
     if as_type == str:
         value = raw_value
     elif as_type == bool:
-        value = strtobool_safe(raw_value)
+        value = None if (raw_value is None and allow_none) else strtobool_safe(raw_value)
     elif as_type == int:
         m = re.match(r'^(?:\+|\-)?(?P<value>\d+)\.?$', raw_value) if raw_value else None
         value = int(m.group('value')) if m else default_value
