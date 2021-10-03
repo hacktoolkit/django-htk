@@ -12,7 +12,7 @@ from django.contrib.auth.forms import (
     UserCreationForm,
 )
 from django.contrib.auth.tokens import default_token_generator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 # HTK Imports
@@ -38,6 +38,9 @@ from htk.utils.request import get_current_request
 
 
 UserModel = get_user_model()
+
+
+# isort: off
 
 
 class UpdatePasswordForm(SetPasswordForm):
