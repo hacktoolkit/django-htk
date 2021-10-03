@@ -26,6 +26,7 @@ class HtkStoreProductAdmin(admin.ModelAdmin):
         return link
     amazon_link.allow_tags = True
 
+
 class HtkStoreProductCollectionAdmin(admin.ModelAdmin):
     list_display = (
         'id',

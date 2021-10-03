@@ -54,6 +54,7 @@ class AbstractProduct(models.Model):
         }
         return url
 
+
 class AbstractProductCollection(models.Model):
     name = models.CharField(max_length=128)
     subtitle = models.CharField(max_length=256)
