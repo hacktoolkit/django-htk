@@ -75,7 +75,7 @@ class GitHubReminderBot(object):
         def should_exclude_pull_request(pull_request):
             title = pull_request.title.strip()
             m = re.match(r'^\[WIP\].*', title)
-            should_exclude = m is not None
+            should_exclude = pull_request.draft or m is not None
             return should_exclude
 
         def add_pull_request(repo, pull_request, reviews, has_approval, has_change, pr_list):
