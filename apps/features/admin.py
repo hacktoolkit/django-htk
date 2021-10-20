@@ -2,11 +2,10 @@
 from django.contrib import admin
 
 # HTK Imports
-from htk.utils import htk_setting
-from htk.utils.general import resolve_model_dynamically
+from htk.apps.features.utils import get_feature_flag_model
 
 
-FeatureFlagModel = resolve_model_dynamically(htk_setting('HTK_FEATURE_FLAG_MODEL'))
+FeatureFlagModel = get_feature_flag_model()
 
 
 class BaseFeatureFlagAdmin(admin.ModelAdmin):
