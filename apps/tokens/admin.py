@@ -23,6 +23,15 @@ class BaseTokenAdmin(admin.ModelAdmin):
         'updated_at',
     )
 
+    list_filter = (
+        'key',
+    )
+
+    search_fields = (
+        'key',
+        'value',
+    )
+
     def is_valid(self, obj):
         return obj.is_valid
 
