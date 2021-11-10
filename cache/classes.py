@@ -186,7 +186,7 @@ class CustomCacheScheme(object):
 
         Can be overridden by the subclass
         """
-        key = '-'.join([x.encode("hex") for x in self.prekey])
+        key = '-'.join([str(x) if type(x) != 'unicode' else x.encode("hex") for x in self.prekey])
         return key
 
     def get_cache_key(self):
