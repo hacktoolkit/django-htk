@@ -180,9 +180,9 @@ class CustomCacheScheme(object):
         self._cache_key = None
 
     def get_unicode_characters_hex(self, x):
-        for value in x:
-            if(type(x) == 'unicode'):
-                value = ord(value)
+        for index,value in enumerate(x):
+            if type(x) == 'unicode':
+                x[index] = ord(value)
         return x
     
     def get_cache_key_suffix(self):
