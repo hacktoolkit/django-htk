@@ -179,6 +179,12 @@ class CustomCacheScheme(object):
             self.prekey = ['default',]
         self._cache_key = None
 
+    def get_unicode_characters_hex(self, x):
+        for value in x:
+            if(type(x) == 'unicode'):
+                value = ord(value)
+        return x
+    
     def get_cache_key_suffix(self):
         """Cache key suffix based on the prekey
 
@@ -186,7 +192,7 @@ class CustomCacheScheme(object):
 
         Can be overridden by the subclass
         """
-        key = '-'.join([str(x) if type(x) != 'unicode' else x.encode("hex") for x in self.prekey])
+        key = '-'.join([str(x) if type(x) != 'unicode' else self.get_unicode_characters_hex(x) for x in self.prekey])
         return key
 
     def get_cache_key(self):
