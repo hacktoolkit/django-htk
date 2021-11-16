@@ -47,6 +47,10 @@ def set_token(key, value, description=None, valid_after=None, valid_until=None):
 
 def get_valid_token_value(key):
     token = get_token(key)
-    value = token.value if token.is_valid else None
+    value = (
+        token.value
+        if token and token.is_valid
+        else None
+    )
 
     return value
