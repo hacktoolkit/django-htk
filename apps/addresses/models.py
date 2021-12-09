@@ -31,7 +31,7 @@ class BasePostalAddress(AbstractGeolocation):
     neighborhood = models.CharField(max_length=64, blank=True)
     city = models.CharField(max_length=64, blank=True)
     state = models.CharField(max_length=2, blank=True)
-    zipcode = models.CharField(max_length=16, blank=True)
+    zipcode = models.CharField(max_length=5, blank=True)
     country = models.CharField(max_length=64, blank=True)
     # parts
     street_number = models.CharField(max_length=16, blank=True)
@@ -49,8 +49,9 @@ class BasePostalAddress(AbstractGeolocation):
         return value
 
     def clone(self):
-        address_clone = BasePostalAddress.objects.create(
+        address_clone = self.__class__.objects.create(
             street=self.street,
+            neighborhood=self.neighborhood,
             city=self.city,
             state=self.state,
             zipcode=self.zipcode,
