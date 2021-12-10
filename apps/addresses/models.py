@@ -16,16 +16,19 @@ class BasePostalAddress(AbstractGeolocation):
     This object is always referenced by a foreign key from another object
 
     Storing address as a separate model is a best practice
-    Other than that, there are none. Parsing postal addresses and (even human names, for that matter) are notoriously difficult (not even taking international addresses into consideration)
+    Other than that, there are none. Parsing postal addresses and (even human names, for that matter) are
+    notoriously difficult (not even taking international addresses into consideration)
 
     http://stackoverflow.com/questions/310540/best-practices-for-storing-postal-addresses-in-a-database-rdbms
 
-    The safest way would be to have a free-form field to enter whatever address, and then an algorithm that can be maintained over time that parses the address into structured fields.
+    The safest way would be to have a free-form field to enter whatever address, and then an algorithm that can
+    be maintained over time that parses the address into structured fields.
 
     Right now, go with the "good enough" approach
     """
     name = models.CharField(max_length=64, blank=True)
     street = models.CharField(max_length=128, blank=True)
+    neighborhood = models.CharField(max_length=64, blank=True)
     city = models.CharField(max_length=64, blank=True)
     state = models.CharField(max_length=2, blank=True)
     zipcode = models.CharField(max_length=5, blank=True)
@@ -46,8 +49,9 @@ class BasePostalAddress(AbstractGeolocation):
         return value
 
     def clone(self):
-        address_clone = PostalAddress.objects.create(
+        address_clone = self.__class__.objects.create(
             street=self.street,
+            neighborhood=self.neighborhood,
             city=self.city,
             state=self.state,
             zipcode=self.zipcode,
@@ -120,7 +124,7 @@ class BasePostalAddress(AbstractGeolocation):
         height = 234
         str_value = self.__str__()
         base_url = 'http://maps.googleapis.com/maps/api/staticmap?'
-        query = urllib.urlencode(
+        query = urllib.parse.urlencode(
             {
                 'center': str_value,
                 'markers': 'color:green|%s' % str_value,
