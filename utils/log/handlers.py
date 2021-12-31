@@ -1,5 +1,6 @@
 # Python Standard Library Imports
 import logging
+import traceback
 
 # Third Party (PyPI) Imports
 import rollbar
@@ -32,11 +33,19 @@ class SlackDebugHandler(logging.Handler):
         logging.Handler.__init__(self)
 
     def emit(self, record):
-        exc_type, exc_value, traceback = record.exc_info
+        exc_type, exc_value, exc_traceback = record.exc_info
         request = record.request
-        reporter = ExceptionReporter(request, exc_type, exc_value, traceback, is_email=True)
+        reporter = ExceptionReporter(request, exc_type, exc_value, exc_traceback, is_email=True)
 
-        exc = reporter.format_exception()
+        try:
+            exc = reporter.format_exception()
+        except AttributeError:
+            frames = reporter.get_traceback_frames()
+            tb = [(f['filename'], f['lineno'], f['function'], f['context_line']) for f in frames]
+
+            exc = ['Traceback (most recent call last):\n']
+            exc += traceback.format_list(tb)
+            exc += traceback.format_exception_only(exc_type, exc_value)
 
         message = '*%s* at `%s`\n\n```%s```' % (
             exc[-1].strip(),
