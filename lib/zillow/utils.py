@@ -10,37 +10,9 @@ from bs4 import BeautifulSoup
 from htk.utils import htk_setting
 
 
-def parse_zestimate_response(response):
-    soup = BeautifulSoup(response.content, 'xml')
-
-    zresponse = soup.response
-    if zresponse:
-        zestimate = {
-            'zpid' : zresponse.zpid.string,
-            'url' : zresponse.links.homedetails.string,
-            'address' : {
-                'street' : zresponse.address.street.string,
-                'zipcode' : zresponse.address.zipcode.string,
-                'city' : zresponse.address.city.string,
-                'state' : zresponse.address.state.string,
-                'latitude' : zresponse.address.latitude.string,
-                'longitude' : zresponse.address.longitude.string,
-            },
-            'zestimate' : {
-                'amount' : zresponse.zestimate.amount.string,
-                'last_updated' : zresponse.zestimate.find('last-updated').string,
-                'value_change' : zresponse.zestimate.valueChange.string or 0,
-                'low' : zresponse.zestimate.valuationRange.low.string or 0,
-                'high' : zresponse.zestimate.valuationRange.high.string or 0,
-            },
-        }
-    else:
-        zestimate = None
-    return zestimate
-
 class Zestimate(object):
     HOME_DETAILS_BASE_URL = 'https://www.zillow.com/homedetails/%s_zpid'
-    ZESTIMATE_URL = 'http://www.zillow.com/webservice/GetZestimate.htm'
+    ZESTIMATE_URL = 'https://www.zillow.com/webservice/GetZestimate.htm'
 
     def __init__(self, zpid, zwsid):
         self.zpid = zpid
@@ -48,7 +20,10 @@ class Zestimate(object):
         self.home_details_url = Zestimate.HOME_DETAILS_BASE_URL % self.zpid
 
         self._fetch()
-        self._safe_parse()
+        if self.xml:
+            self._safe_parse()
+        else:
+            self.response = None
 
     def _fetch(self):
         url = Zestimate.ZESTIMATE_URL
@@ -79,9 +54,10 @@ class Zestimate(object):
             rollbar.report_exc_info(extra_data=extra_data)
 
     def _parse(self):
-        if self.xml is None:
-            return
+        """Parse the XML response in `self.xml`
 
+        Invariant: `self.xml` must be already set.
+        """
         soup = BeautifulSoup(self.xml, 'xml')
 
         zrequest = soup.request
@@ -97,6 +73,7 @@ class Zestimate(object):
 
         # the main data we want, to extract the actual Zestimate
         zresponse = soup.response
+
         if zresponse:
             self.response = {
                 'zpid' : zresponse.zpid.string,
@@ -139,6 +116,7 @@ class Zestimate(object):
         """Returns a JSON-encodable dictionary representation of the Zestimate for `self.zpid`
         """
         return self.response
+
 
 def get_zestimate(zpid, zwsid=None):
     """Get the Zestimate for `zpid`
