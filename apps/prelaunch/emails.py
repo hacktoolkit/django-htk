@@ -13,10 +13,10 @@ def prelaunch_email(prelaunch_signup):
         'prelaunch_signup': prelaunch_signup,
         'site_name': htk_setting('HTK_SITE_NAME')
     }
-    send_email(
-        template=template,
-        subject=subject,
-        to=[prelaunch_signup.email,],
-        bcc=bcc,
-        context=context
-    )
+    # send_email(
+    #     template=template,
+    #     subject=subject,
+    #     to=[prelaunch_signup.email,],
+    #     bcc=bcc,
+    #     context=context
+    # )
