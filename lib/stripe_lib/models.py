@@ -480,3 +480,15 @@ class AbstractStripeCustomerHolder(models.Model):
             customer = self.create_stripe_customer(card=card)
             was_added_or_replaced = customer is not None
         return was_added_or_replaced
+
+
+class BaseStripeCharge(models.Model):
+    stripe_id = models.CharField(max_length=255)
+    amount = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
+        return value
