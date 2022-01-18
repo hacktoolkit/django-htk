@@ -484,7 +484,7 @@ class AbstractStripeCustomerHolder(models.Model):
 
 class BaseStripeCharge(models.Model):
     stripe_id = models.CharField(max_length=255)
-    amount = models.DecimalField(max_digits=9, decimal_places=2, default=0.0)
+    amount = models.PositiveIntegerField(default=0)
 
     class Meta:
         abstract = True
