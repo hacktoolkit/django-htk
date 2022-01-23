@@ -4,8 +4,10 @@ from email.mime.image import MIMEImage
 
 # Django Imports
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from django.core.mail import send_mail
+from django.core.mail import (
+    EmailMultiAlternatives,
+    send_mail,
+)
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
@@ -15,6 +17,9 @@ from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
 from htk.utils.request import get_current_request
 from htk.utils.text.converters import html2markdown
+
+
+# isort: off
 
 
 def simple_email(
@@ -32,6 +37,7 @@ def simple_email(
         fail_silently = True
         subject = '[%s-dev] %s' % (htk_setting('HTK_SYMBOLIC_SITE_NAME'), subject,)
     send_mail(subject, message, sender, to, fail_silently=fail_silently)
+
 
 def email_context_generator():
     """Default HTK email context generator
@@ -60,6 +66,7 @@ def email_context_generator():
     }
     return context
 
+
 def get_email_context():
     """Get the email context dictionary for templated emails
     """
@@ -75,6 +82,7 @@ def get_email_context():
         pass
     return context
 
+
 def attach_images_to_message(message, images):
     for image in images:
       fp = open(image, 'rb')
@@ -83,6 +91,7 @@ def attach_images_to_message(message, images):
       fp.close()
       msg_image.add_header('Content-ID', '<%s>' % filename)
       message.attach(msg_image)
+
 
 def send_email(
     template=None,
@@ -165,6 +174,7 @@ def send_email(
         #    msg.attach_file(attachment)
 
     msg.send()
+
 
 def send_markdown_email(
     subject='',

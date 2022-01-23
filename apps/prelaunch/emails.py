@@ -1,7 +1,14 @@
 # HTK Imports
-from htk.apps.prelaunch.constants import *
+from htk.apps.prelaunch.constants import (
+    HTK_PRELAUNCH_EMAIL_BCC,
+    HTK_PRELAUNCH_EMAIL_SUBJECT,
+    HTK_PRELAUNCH_EMAIL_TEMPLATE,
+)
 from htk.mailers import send_email
 from htk.utils import htk_setting
+
+
+# isort: off
 
 
 def prelaunch_email(prelaunch_signup):
@@ -13,6 +20,7 @@ def prelaunch_email(prelaunch_signup):
         'prelaunch_signup': prelaunch_signup,
         'site_name': htk_setting('HTK_SITE_NAME')
     }
+
     send_email(
         template=template,
         subject=subject,
