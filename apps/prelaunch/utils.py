@@ -16,6 +16,7 @@ from htk.apps.prelaunch.constants import (
     HTK_PRELAUNCH_MODE,
     HTK_PRELAUNCH_URL_NAME,
 )
+from htk.apps.prelaunch.models import PrelaunchSignup
 from htk.utils import htk_setting
 
 
@@ -86,3 +87,25 @@ def is_prelaunch_exception_view(path):
         except NoReverseMatch:
             pass
     return is_excepted
+
+
+def get_early_access_code(request):
+    key = 'early_access_code'
+    early_access_code = request.GET.get(key) or request.COOKIES.get(key) or request.session.get(key)
+    return early_access_code
+
+
+def has_early_access(request, early_access_code=None):
+    has_access = False
+
+    if early_access_code is None:
+        early_access_code = get_early_access_code(request)
+
+    if early_access_code:
+        try:
+            prelaunch_signup = PrelaunchSignup.objects.get(early_access_code=early_access_code)
+            has_access = prelaunch_signup.early_access
+        except PrelaunchSignup.DoesNotExist:
+            prelaunch_signup = None
+
+    return has_access

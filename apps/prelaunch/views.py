@@ -6,14 +6,18 @@ from django.template.context_processors import csrf
 # HTK Imports
 from htk.apps.prelaunch.constants import *
 from htk.apps.prelaunch.forms import PrelaunchSignupForm
-from htk.apps.prelaunch.utils import is_prelaunch_mode
+from htk.apps.prelaunch.models import PrelaunchSignup
+from htk.apps.prelaunch.utils import (
+    has_early_access,
+    is_prelaunch_mode,
+)
 from htk.apps.prelaunch.view_helpers import get_view_context
 from htk.utils import htk_setting
 from htk.view_helpers import render_custom as _r
 
 
 def prelaunch(request):
-    if is_prelaunch_mode():
+    if is_prelaunch_mode() and not has_early_access(request):
         data = get_view_context(request)
         data.update(csrf(request))
 
@@ -38,4 +42,5 @@ def prelaunch(request):
         response = _r(request, prelaunch_template, data)
     else:
         response = redirect(htk_setting('HTK_INDEX_URL_NAME'))
+
     return response

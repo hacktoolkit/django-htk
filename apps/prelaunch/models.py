@@ -1,3 +1,6 @@
+# Python Standard Library Imports
+import uuid
+
 # Third Party (PyPI) Imports
 import rollbar
 
@@ -21,7 +24,10 @@ class PrelaunchSignup(models.Model):
     first_name = models.CharField(max_length=64, blank=True)
     last_name = models.CharField(max_length=64, blank=True)
     email = models.EmailField(null=True, blank=True)
+    early_access = models.BooleanField(default=False)
+    early_access_code = models.CharField(max_length=64, unique=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         app_label = 'htk'
@@ -61,3 +67,19 @@ class PrelaunchSignup(models.Model):
         except Exception:
             request = get_current_request()
             rollbar.report_exc_info(request=request)
+
+    def toggle_early_access(self):
+        if self.early_access:
+            self.revoke_early_access()
+        else:
+            self.grant_early_access()
+
+    def grant_early_access(self):
+        self.early_access = True
+        self.early_access_code = uuid.uuid4().hex
+        self.save()
+
+    def revoke_early_access(self):
+        self.early_access = False
+        self.early_access_code = None
+        self.save()
