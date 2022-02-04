@@ -1,3 +1,6 @@
+# Python Standard Library Imports
+from typing import Any, Dict
+
 # Django Imports
 from django.conf import settings
 from django.db import models
@@ -138,6 +141,17 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
         abstract = True
         verbose_name = 'Organization Member'
 
+    def json_encode(self) -> Dict[str, Any]:
+        """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+        """
+        value = {
+            'user': self.user.profile.get_full_name(),
+            'organization': self.organization.name,
+            'role': self.role,
+            'active': self.active,
+        }
+        return value
+
 
 class BaseAbstractOrganizationInvitation(HtkBaseModel):
     organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), on_delete=models.CASCADE, related_name='invitations')
@@ -150,6 +164,19 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     class Meta:
         abstract = True
         verbose_name = 'Organization Invitation'
+
+    def json_encode(self) -> Dict[str, Any]:
+        """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+        """
+        value = {
+            'organization': self.organization.name,
+            'invited_by': self.invited_by.profile.get_full_name(),
+            'user': self.user.profile.get_full_name() if self.user else None,
+            'email': self.email,
+            'accepted': self.accepted,
+            'invited_at': self.timestamp
+        }
+        return value
 
 
 class BaseAbstractOrganizationTeam(HtkBaseModel):
