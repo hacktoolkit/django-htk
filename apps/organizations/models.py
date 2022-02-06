@@ -145,6 +145,7 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
         """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
         """
         value = {
+            'id': self.id,
             'user': self.user.profile.get_full_name(),
             'organization': self.organization.name,
             'role': self.role,
@@ -169,6 +170,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
         """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
         """
         value = {
+            'id': self.id,
             'organization': self.organization.name,
             'invited_by': self.invited_by.profile.get_full_name(),
             'user': self.user.profile.get_full_name() if self.user else None,
