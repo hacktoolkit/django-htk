@@ -89,7 +89,6 @@ class BasePostalAddress(AbstractGeolocation):
 
     def get_address_street_component(self):
         if self.street_number and self.street_name:
-            # HTK Imports
             from htk.utils.enums import enum_to_str
             unit_base = '%s %s'
             if self.unit_type == AddressUnitType.HASH.value:
