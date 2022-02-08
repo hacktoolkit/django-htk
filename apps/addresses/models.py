@@ -65,11 +65,31 @@ class BasePostalAddress(AbstractGeolocation):
         )
         return address_clone
 
+    def json_encode(self):
+        json_encode = {
+            'id': self.id,
+            'name': self.name,
+            'street': self.street,
+            'neighborhood': self.neighborhood,
+            'city': self.city,
+            'state': self.state,
+            'zipcode': self.zipcode,
+            'country': self.country,
+            'street_number': self.street_number,
+            'street_name': self.street_name,
+            'unit_type': self.unit_type,
+            'unit': self.unit,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+        }
+        return json_encode
+
     ##
     # address formats
 
     def get_address_street_component(self):
         if self.street_number and self.street_name:
+            # HTK Imports
             from htk.utils.enums import enum_to_str
             unit_base = '%s %s'
             if self.unit_type == AddressUnitType.HASH.value:
