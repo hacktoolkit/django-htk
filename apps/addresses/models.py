@@ -66,7 +66,7 @@ class BasePostalAddress(AbstractGeolocation):
         return address_clone
 
     def json_encode(self):
-        json_encode = {
+        payload = {
             'id': self.id,
             'name': self.name,
             'street': self.street,
@@ -82,7 +82,7 @@ class BasePostalAddress(AbstractGeolocation):
             'latitude': self.latitude,
             'longitude': self.longitude,
         }
-        return json_encode
+        return payload
 
     ##
     # address formats
