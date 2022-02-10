@@ -65,6 +65,25 @@ class BasePostalAddress(AbstractGeolocation):
         )
         return address_clone
 
+    def json_encode(self):
+        payload = {
+            'id': self.id,
+            'name': self.name,
+            'street': self.street,
+            'neighborhood': self.neighborhood,
+            'city': self.city,
+            'state': self.state,
+            'zipcode': self.zipcode,
+            'country': self.country,
+            'street_number': self.street_number,
+            'street_name': self.street_name,
+            'unit_type': self.unit_type,
+            'unit': self.unit,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+        }
+        return payload
+
     ##
     # address formats
 
