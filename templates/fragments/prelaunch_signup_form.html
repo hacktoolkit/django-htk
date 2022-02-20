@@ -1,20 +1,16 @@
 <form id="prelaunch_signup_form" method="POST" autocomplete="off">
   {% csrf_token %}
   {% for field in prelaunch_signup_form %}
-  <p>
-  {% if show_labels %}
+  <div class="form-group">
   <label for={{ field.name }}>
     {{ field.label }}
   </label>
-  {% endif %}
   <input
-    class="form-control"
+    class="form-control py-4"
     id="id_{{ field.name }}"
     name="{{ field.name }}"
-    placeholder="{{ field.label }}"
-    data-lpignore="true"
     />
-</p>
+</div>
   {% endfor %}
-  <button type="submit" class="{{ submit_button_class|default:'btn btn-dark' }}">Sign Up</button>
+  <button type="submit" class="btn btn-block btn-lg btn-primary">Subscribe</button>
 </form>
