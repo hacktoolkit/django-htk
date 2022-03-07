@@ -5,6 +5,7 @@ from htk.constants.time import (
     MORNING_HOURS_END,
 )
 from htk.tasks import BaseTask
+from htk.utils.notifications import slack_notify
 from htk.utils.text.transformers import get_symbols
 
 
@@ -30,6 +31,8 @@ class GitHubReminderTask(BaseTask):
         return users
 
     def execute(self, user):
+        slack_notify('Processing GitHub Reminders for {}'.format(user.username))
+
         now = user.profile.get_local_time()
 
         valid_chars = 'A-Za-z0-9_\-/'
