@@ -3,6 +3,7 @@
 
 # Django Imports
 from django.core.cache import cache
+from django.utils.http import urlquote
 
 # HTK Imports
 from htk.cache.utils import get_cache_key_prefix
@@ -181,12 +182,15 @@ class CustomCacheScheme(object):
 
     def get_cache_key_suffix(self):
         """Cache key suffix based on the prekey
+        Non-ASCII characters converted to Punycode
 
         `prekey` is a list of values
 
         Can be overridden by the subclass
+        See: https://en.wikipedia.org/wiki/Punycode
+        See: https://docs.djangoproject.com/en/1.11/ref/utils/#django.utils.http.urlquote
         """
-        key = '-'.join([str(x) for x in self.prekey])
+        key = '-'.join([urlquote(x) for x in self.prekey])
         return key
 
     def get_cache_key(self):
