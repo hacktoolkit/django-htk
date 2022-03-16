@@ -1,6 +1,6 @@
 """fab_helpers.py
 
-Helper functions and classes for Fabric (http://fabric.readthedocs.org/en/latest/)
+Helper functions and classes for Fabric (https://docs.fabfile.org/en/latest/)
 Used by fabfile.py
 """
 
@@ -9,27 +9,41 @@ import datetime
 
 # Third Party (PyPI) Imports
 import requests
-from fabric.api import *
+from fabric.util import get_local_user
 
 
-def tag_deploy():
+def tag_deploy(conn):
     """Automatically create a tag whenever we deploy, so that we can roll-back to it at a future date
     """
-    commit_timestamp = local('git log -n 1 --pretty=format:"%ct" master', capture=True)
+    result = conn.local('git log -n 1 --pretty=format:"%ct" master', hide=True)
+    commit_timestamp = result.stdout.splitlines()[-1]
     commit_datetimestr = datetime.datetime.utcfromtimestamp(float(commit_timestamp)).strftime('%Y%m%d.%H%M%S')
-    revision = local('git log -n 1 --pretty=format:"%H" master', capture=True)
-    local('git tag -a deploy-%s master -m "Auto-tagged deploy %s %s"' % (commit_datetimestr, commit_datetimestr, revision,))
-    local('git push --tags')
+
+    result = conn.local('git log -n 1 --pretty=format:"%H" master', hide=True)
+    revision = result.stdout.splitlines()[-1]
+
+    conn.local(
+        f'git tag -a deploy-{commit_datetimestr} master -m "Auto-tagged deploy {commit_datetimestr} {revision}"',
+        hide=True,
+        warn=True
+    )
+
+    conn.local('echo $SSH_AUTH_SOCK')  # TODO: temporary debugging
+    conn.local('git push --tags', hide=True, warn=True)
+    # TODO: manually run for now
+    conn.local('echo Run locally: git push --tags')
 
 
-def rollbar_record_deploy(access_token, env='other'):
+def rollbar_record_deploy(conn, access_token, env='other'):
     """Tracking deploys
     http://rollbar.com/docs/deploys_fabric/
     """
     environment = env
-    local_username = local('whoami', capture=True)
+    local_username = get_local_user()
+
     # fetch last committed revision in the locally-checked out branch
-    revision = local('git log -n 1 --pretty=format:"%H"', capture=True)
+    result = conn.local('git log -n 1 --pretty=format:"%H"')
+    revision = result.stdout.splitlines()[-1]
 
     resp = requests.post(
         'https://api.rollbar.com/api/1/deploy/',
