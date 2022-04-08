@@ -32,9 +32,20 @@ def discord_webhook_relay_view(request):
             webhook_token=relay.webhook_token
         )
 
-        payload = {
-            'content': relay.content,
-        }
+        payload = {}
+
+        if relay.username:
+            payload['username'] = relay.username
+
+        if relay.embedded:
+            # https://discord.com/developers/docs/resources/channel#embed-object
+            payload['embeds'] = [
+                {
+                    'description': relay.content,
+                },
+            ]
+        else:
+            payload['content'] = relay.content
 
         try:
             webhook_response = requests.post(url, json=payload)

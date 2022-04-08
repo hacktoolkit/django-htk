@@ -16,6 +16,8 @@ class Relay(BaseModel):
     webhook_id: str
     webhook_token: str
     content: str
+    username: str = None
+    embedded: bool = False
 
 
 def validate_relay_request(request):
