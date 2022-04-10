@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import itertools
 import re
 
 # Django Imports
@@ -109,3 +110,16 @@ def has_early_access(request, early_access_code=None):
             prelaunch_signup = None
 
     return has_access
+
+
+def get_unique_signups():
+    """Returns a list of PrelaunchSignup objects with unique emails,
+    as some users may sign up multiple times.
+    """
+    q = PrelaunchSignup.objects.order_by('email', 'id')
+    prelaunch_signups = [
+        list(g)[0]
+        for (email, g, )
+        in itertools.groupby(q, lambda _: _.email)
+    ]
+    return prelaunch_signups
