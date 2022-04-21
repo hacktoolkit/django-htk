@@ -33,7 +33,7 @@ class PrelaunchSignupAdmin(admin.ModelAdmin):
     @mark_safe
     def toggle_early_access(self, obj):
         url = reverse('admintools_api_prelaunch_toggle', args=(obj.id,))
-        value = f'<a href="{url}" target="_blank">Toggle Early Access</a>'
+        value = '<a href="{}" target="_blank">Toggle Early Access</a>'.format(url)
         return value
     toggle_early_access.allow_tags = True
     toggle_early_access.short_description = 'Toggle Early Access'
