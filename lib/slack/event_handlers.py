@@ -262,7 +262,7 @@ def emaildig(event, **kwargs):
                 slack_text= 'Too many arguments. See usage. `%s`' % args
             else:
                 email = parts[0]
-                 from htk.utils import (
+                from htk.utils import (
                     htk_setting,
                     resolve_method_dynamically,
                 )
