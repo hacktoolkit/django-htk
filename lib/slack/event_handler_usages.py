@@ -15,6 +15,7 @@ def help(**kwargs):
     }
     return usage_dict
 
+
 def default(**kwargs):
     usage_dict = {
         'description' : 'This is not a very useful command; it simply parrots back what you said (to test whether the Slack bot is functioning)',
@@ -22,6 +23,7 @@ def default(**kwargs):
         'examples' : [],
     }
     return usage_dict
+
 
 def bart(**kwargs):
     usage_dict = {
@@ -34,6 +36,7 @@ def bart(**kwargs):
     }
     return usage_dict
 
+
 def beacon(**kwargs):
     usage_dict = {
         'description' : 'Creates a homing beacon URL for the user good for 5 minutes. When the beacon URL is clicked, the IP address will be geo-located and shared to Slack.',
@@ -42,6 +45,7 @@ def beacon(**kwargs):
         ],
     }
     return usage_dict
+
 
 def bible(**kwargs):
     usage_dict = {
@@ -56,6 +60,7 @@ def bible(**kwargs):
     }
     return usage_dict
 
+
 def emaildig(**kwargs):
     usage_dict = {
         'description' : 'Find information about a person by email address',
@@ -65,6 +70,7 @@ def emaildig(**kwargs):
         ],
     }
     return usage_dict
+
 
 def findemail(**kwargs):
     usage_dict = {
@@ -76,6 +82,7 @@ def findemail(**kwargs):
     }
     return usage_dict
 
+
 def geoip(**kwargs):
     usage_dict = {
         'description' : 'Look up geo information for an IP address. Uses GeoIP database',
@@ -85,6 +92,18 @@ def geoip(**kwargs):
         ],
     }
     return usage_dict
+
+
+def github_prs(**kwargs):
+    usage_dict = {
+        'description' : 'Request a report on GitHub PR statuses',
+        'basic' : 'htk: githubprs',
+        'examples' : [
+            'htk: githubprs',
+        ],
+    }
+    return usage_dict
+
 
 def ohmygreen(**kwargs):
     usage_dict = {
@@ -96,6 +115,7 @@ def ohmygreen(**kwargs):
     }
     return usage_dict
 
+
 def stock(**kwargs):
     usage_dict = {
         'description' : 'Look up most recent stock quotes',
@@ -106,6 +126,7 @@ def stock(**kwargs):
     }
     return usage_dict
 
+
 def utcnow_slack(**kwargs):
     usage_dict = {
         'description' : 'Get the current UTC time and some more.',
@@ -114,6 +135,7 @@ def utcnow_slack(**kwargs):
         ],
     }
     return usage_dict
+
 
 def weather(**kwargs):
     usage_dict = {
@@ -126,6 +148,7 @@ def weather(**kwargs):
         ],
     }
     return usage_dict
+
 
 def zesty(**kwargs):
     usage_dict = {

@@ -2,10 +2,15 @@
 import re
 
 # HTK Imports
-from htk.lib.slack.utils import get_event_handler_usages
-from htk.lib.slack.utils import is_available_command
-from htk.lib.slack.utils import parse_event_text
-from htk.lib.slack.utils import webhook_call
+from htk.lib.slack.utils import (
+    get_event_handler_usages,
+    is_available_command,
+    parse_event_text,
+    webhook_call,
+)
+
+
+# isort: off
 
 
 def preprocess_event(event_handler):
@@ -203,8 +208,11 @@ def bible(event, **kwargs):
 
     if command == 'bible':
         if args:
-            from htk.lib.literalword.utils import get_bible_passage
-            from htk.lib.literalword.utils import is_bible_version
+            from htk.lib.literalword.utils import (
+                get_bible_passage,
+                is_bible_version,
+            )
+
             #from htk.utils.text.converters import markdown2slack
             arg_parts = args.split()
             arg1 = arg_parts[0].lower()
@@ -254,8 +262,10 @@ def emaildig(event, **kwargs):
                 slack_text= 'Too many arguments. See usage. `%s`' % args
             else:
                 email = parts[0]
-                from htk.utils import htk_setting
-                from htk.utils import resolve_method_dynamically
+                 from htk.utils import (
+                    htk_setting,
+                    resolve_method_dynamically,
+                )
                 find_person_by_email = resolve_method_dynamically(htk_setting('HTK_EMAIL_PERSON_RESOLVER'))
                 person = find_person_by_email(email)
                 if person:
@@ -336,6 +346,37 @@ def geoip(event, **kwargs):
         'text' : slack_text,
         'unfurl_links' : True,
         'unfurl_media' : True,
+    }
+    return payload
+
+
+@preprocess_event
+def github_prs(event, **kwargs):
+    """Github PR status event handler for Slack webhook events
+    """
+    text = kwargs.get('text')
+    command = kwargs.get('command')
+    args = kwargs.get('args')
+
+    if command == 'githubprs':
+        webhook_settings = event['webhook_settings']
+        user_id = webhook_settings['user']
+
+        from htk.apps.accounts.utils import get_user_by_id
+        user = get_user_by_id(user_id)
+
+        from htk.lib.github.tasks import GitHubReminderTask
+        gh = GitHubReminderTask()
+        gh.execute(user)
+
+        slack_text = 'Preparing GitHub PR report'
+    else:
+        slack_text = 'Illegal command.'
+
+    channel = event['channel_id']
+
+    payload = {
+        'text': slack_text,
     }
     return payload
 
