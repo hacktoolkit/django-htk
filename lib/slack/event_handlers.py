@@ -366,7 +366,7 @@ def github_prs(event, **kwargs):
 
         github_pr_task = resolve_method_dynamically(htk_setting('HTK_SLACK_CELERY_TASK_GITHUB_PRS'))
         if github_pr_task:
-            github_pr_task.delay(user)
+            github_pr_task.delay(user.id)
             slack_text = 'Preparing GitHub PR report'
         else:
             slack_text = 'Please contact your system administrator to set up GitHub PR Reports via Slack.'
