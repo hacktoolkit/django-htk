@@ -8,6 +8,10 @@ from htk.lib.slack.utils import (
     parse_event_text,
     webhook_call,
 )
+from htk.utils import (
+    htk_setting,
+    resolve_method_dynamically,
+)
 
 
 # isort: off
@@ -43,7 +47,6 @@ def preprocess_event(event_handler):
 
 def get_usage(event, command):
     event_handler_usages = get_event_handler_usages(event)
-    from htk.utils.general import resolve_method_dynamically
     usage_fn_module_str = event_handler_usages.get(command)
     usage_fn = resolve_method_dynamically(usage_fn_module_str)
     if type(usage_fn) == type(lambda x: True):
@@ -262,10 +265,6 @@ def emaildig(event, **kwargs):
                 slack_text= 'Too many arguments. See usage. `%s`' % args
             else:
                 email = parts[0]
-                from htk.utils import (
-                    htk_setting,
-                    resolve_method_dynamically,
-                )
                 find_person_by_email = resolve_method_dynamically(htk_setting('HTK_EMAIL_PERSON_RESOLVER'))
                 person = find_person_by_email(email)
                 if person:
@@ -365,11 +364,12 @@ def github_prs(event, **kwargs):
         from htk.apps.accounts.utils import get_user_by_id
         user = get_user_by_id(user_id)
 
-        from htk.lib.github.tasks import GitHubReminderTask
-        gh = GitHubReminderTask()
-        gh.execute(user)
-
-        slack_text = 'Preparing GitHub PR report'
+        github_pr_task = resolve_method_dynamically(htk_setting('HTK_SLACK_CELERY_TASK_GITHUB_PRS'))
+        if github_pr_task:
+            github_pr_task.delay(user)
+            slack_text = 'Preparing GitHub PR report'
+        else:
+            slack_text = 'Please contact your system administrator to set up GitHub PR Reports via Slack.'
     else:
         slack_text = 'Illegal command.'
 

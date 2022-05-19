@@ -38,6 +38,7 @@ HTK_SLACK_EVENT_HANDLER_USAGES = {
 
 HTK_SLACK_EVENT_HANDLER_USAGES_EXTRA = {}
 
+
 # trigger words that are also commands
 HTK_SLACK_TRIGGER_COMMAND_WORDS = (
     'bart',
@@ -47,11 +48,15 @@ HTK_SLACK_TRIGGER_COMMAND_WORDS = (
     'weather',
 )
 
-# notifications
+
+##
+# Notifications
 HTK_SLACK_NOTIFICATIONS_ENABLED = False
 HTK_SLACK_BOT_ENABLED = False
 
-# channels
+
+##
+# Channels
 HTK_SLACK_NOTIFICATION_CHANNELS = {
     'critical' : '#alerts-p0-critical',
     'severe'   : '#alerts-p1-severe',
@@ -62,5 +67,13 @@ HTK_SLACK_NOTIFICATION_CHANNELS = {
 }
 HTK_SLACK_DEBUG_CHANNEL = '#test'
 
+
+##
 # url names (routes)
 HTK_SLACK_BEACON_URL_NAME = None
+
+
+##
+# Celery Tasks
+
+HTK_SLACK_CELERY_TASK_GITHUB_PRS = None
