@@ -159,7 +159,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations_sent')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations', blank=True, null=True, default=None)
     email = models.EmailField(blank=True, null=True, default=None) # email where invitation was originally sent
-    accepted = models.NullBooleanField(default=None) # True: accepted, False: declined, None: not responded yet
+    accepted = models.BooleanField(default=None, null=True) # True: accepted, False: declined, None: not responded yet
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
