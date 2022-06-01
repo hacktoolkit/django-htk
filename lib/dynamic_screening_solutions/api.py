@@ -15,7 +15,7 @@ from htk.utils import (
 )
 from htk.utils.request import get_current_request
 
-# Python 2 to 3 compitable import
+# Python 2 to 3 compatable import
 # SEE: https://python-future.org/compatible_idioms.html#urllib-module
 try:
     # Python Standard Library Imports
