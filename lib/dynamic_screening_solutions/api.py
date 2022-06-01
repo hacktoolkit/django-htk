@@ -2,7 +2,6 @@
 import hashlib
 import hmac
 import time
-import urlparse
 
 # Third Party (PyPI) Imports
 import requests
@@ -15,6 +14,19 @@ from htk.utils import (
     utcnow,
 )
 from htk.utils.request import get_current_request
+
+# Python 2 to 3 compitable import
+# SEE: https://python-future.org/compatible_idioms.html#urllib-module
+try:
+    # Python Standard Library Imports
+    from urllib.parse import urlparse
+except ImportError:
+    # Third Party (PyPI) Imports
+    import urlparse
+
+
+# isort: off
+
 
 
 MAX_RETRY_ATTEMPTS = 5
