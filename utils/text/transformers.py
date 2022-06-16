@@ -2,11 +2,12 @@
 import re
 
 # HTK Imports
-from htk.utils.text.constants import *
+from htk.utils.text.constants import SUMMARY_NUM_SENTENCES
 from htk.utils.text.general import (
     is_ascii,
     is_ascii_extended,
 )
+from htk.utils.text.regexes import SEO_TOKEN_INVALID_CHARS_REGEX
 from htk.utils.text.unicode import unicode_to_ascii
 
 
@@ -131,7 +132,9 @@ def seo_tokenize(title, lower=True, preserve_ascii_extended=False, preserve_unic
     <- 'Recreational Sports Facility, Berkeley, CA', lower=False
     -> 'Recreational-Sports-Facility-Berkeley-CA'
     """
-    cleaned_title = title.strip()
+    tokens = SEO_TOKEN_INVALID_CHARS_REGEX.split(title.strip())
+    cleaned_title = ' '.join(tokens)
+
     try:
         if preserve_ascii_extended or preserve_unicode:
             # do nothing, keep extended ASCII and Unicode in title
