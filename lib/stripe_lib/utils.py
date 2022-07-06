@@ -47,6 +47,33 @@ def get_stripe_customer_model():
     return StripeCustomerModel
 
 
+def get_stripe_product_model():
+    if hasattr(settings, 'HTK_STRIPE_PRODUCT_MODEL'):
+        from htk.utils.general import resolve_model_dynamically
+        StripeProductModel = resolve_model_dynamically(settings.HTK_STRIPE_PRODUCT_MODEL)
+    else:
+        StripeProductModel = None
+    return StripeProductModel
+
+
+def get_stripe_price_model():
+    if hasattr(settings, 'HTK_STRIPE_PRICE_MODEL'):
+        from htk.utils.general import resolve_model_dynamically
+        StripePriceModel = resolve_model_dynamically(settings.HTK_STRIPE_PRICE_MODEL)
+    else:
+        StripePriceModel = None
+    return StripePriceModel
+
+
+def get_stripe_plan_model():
+    if hasattr(settings, 'HTK_STRIPE_PLAN_MODEL'):
+        from htk.utils.general import resolve_model_dynamically
+        StripePlanModel = resolve_model_dynamically(settings.HTK_STRIPE_PLAN_MODEL)
+    else:
+        StripePlanModel = None
+    return StripePlanModel
+
+
 def get_stripe_customer_model_instance(customer_id, live_mode=False):
     """Gets the StripeCustomerModel object for `customer_id` if available
     """

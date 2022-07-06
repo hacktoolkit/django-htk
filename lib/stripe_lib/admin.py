@@ -34,6 +34,7 @@ class StripeCustomerAdmin(admin.ModelAdmin):
         value = '%s' % charges
         return value
 
+
 class StripeProductAdmin(admin.ModelAdmin):
     list_display = (
         'id',
@@ -49,6 +50,24 @@ class StripeProductAdmin(admin.ModelAdmin):
         'active',
         'product_type',
     )
+
+
+class StripePriceAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'stripe_id',
+        'live_mode',
+        'product_id',
+        'unit_amount',
+        'currency',
+        'active',
+        'nickname',
+    )
+    list_filter = (
+        'live_mode',
+        'product_id',
+    )
+
 
 class StripePlanAdmin(admin.ModelAdmin):
     list_display = (

@@ -22,7 +22,11 @@ from htk.utils import htk_setting
 from htk.utils.request import get_current_request
 
 
-class BaseStripeCustomer(models.Model):
+class BaseStripeModel(models.Model):
+    # class attributes
+    STRIPE_API_CLASS = None
+
+    # fields
     stripe_id = models.CharField(max_length=255)
     live_mode = models.BooleanField(default=False)
 
@@ -30,22 +34,46 @@ class BaseStripeCustomer(models.Model):
         abstract = True
 
     def __str__(self):
-        value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
+        value = '%s - %s (%s)' % (
+            self.__class__.__name__,
+            self.stripe_id,
+            self.mode_str,
+        )
         return value
 
-    def retrieve(self):
-        """Retrieves an existing customer
+    @property
+    def mode_str(self):
+        mode_str = 'Live' if self.live_mode else 'Test'
+        return mode_str
 
-        https://stripe.com/docs/api/python#retrieve_customer
+    def retrieve(self):
+        """Retrieves a Stripe object via API
+
+        - https://stripe.com/docs/api/customers/retrieve
+        - https://stripe.com/docs/api/products/retrieve
+        - https://stripe.com/docs/api/prices/retrieve
+        - https://stripe.com/docs/api/plans/retrieve
         """
         _initialize_stripe(live_mode=self.live_mode)
-        stripe_customer = safe_stripe_call(
-            stripe.Customer.retrieve,
+        stripe_obj = safe_stripe_call(
+            self.STRIPE_API_CLASS.retrieve,
             *(
                 self.stripe_id,
             )
         )
-        return stripe_customer
+        return stripe_obj
+
+
+class BaseStripeCustomer(BaseStripeModel):
+    """Django model for Stripe Customer
+
+    See: https://stripe.com/docs/api/customers
+    """
+    # class attributes
+    STRIPE_API_CLASS = stripe.Customer
+
+    class Meta:
+        abstract = True
 
     ##
     # customer details
@@ -81,10 +109,10 @@ class BaseStripeCustomer(models.Model):
         ch = safe_stripe_call(
             stripe.Charge.create,
             **{
-                'amount' : amount,
-                'currency' : currency,
-                'customer' : self.stripe_id,
-                'metadata' : metadata
+                'amount': amount,
+                'currency': currency,
+                'customer': self.stripe_id,
+                'metadata': metadata
             }
         )
         return ch
@@ -94,7 +122,7 @@ class BaseStripeCustomer(models.Model):
         charges = safe_stripe_call(
             stripe.Charge.all,
             **{
-                'customer' : self.stripe_id,
+                'customer': self.stripe_id,
             }
         )
         charges = charges.get('data')
@@ -109,7 +137,7 @@ class BaseStripeCustomer(models.Model):
         invoice = safe_stripe_call(
             stripe.Invoice.create,
             **{
-                'customer' : self.stripe_id,
+                'customer': self.stripe_id,
             }
         )
         return invoice
@@ -139,7 +167,7 @@ class BaseStripeCustomer(models.Model):
             stripe_card = safe_stripe_call(
                 stripe_customer.sources.create,
                 **{
-                    'source' : card,
+                    'source': card,
                 }
             )
         else:
@@ -175,8 +203,8 @@ class BaseStripeCustomer(models.Model):
             cards = safe_stripe_call(
                 stripe_customer.sources.all,
                 **{
-                    'limit' : 1,
-                    'object' : 'card',
+                    'limit': 1,
+                    'object': 'card',
                 }
             )
             cards = cards.get('data')
@@ -194,7 +222,7 @@ class BaseStripeCustomer(models.Model):
             cards = safe_stripe_call(
                 stripe_customer.sources.all,
                 **{
-                    'object' : 'card',
+                    'object': 'card',
                 }
             )
             cards = cards.get('data')
@@ -210,8 +238,8 @@ class BaseStripeCustomer(models.Model):
             cards = safe_stripe_call(
                 stripe_customer.sources.all,
                 **{
-                    'limit' : 1,
-                    'object' : 'card',
+                    'limit': 1,
+                    'object': 'card',
                 }
             )
             value = len(cards) > 0
@@ -231,7 +259,7 @@ class BaseStripeCustomer(models.Model):
         subscription = safe_stripe_call(
             stripe_customer.subscriptions.create,
             **{
-                'plan' : plan,
+                'plan': plan,
             }
         )
         return subscription
@@ -249,7 +277,7 @@ class BaseStripeCustomer(models.Model):
                 subscription = safe_stripe_call(
                     stripe_customer.subscriptions.retrieve,
                     **{
-                        'id' : subscription_id,
+                        'id': subscription_id,
                     }
                 )
             else:
@@ -342,9 +370,15 @@ class BaseStripeCustomer(models.Model):
             pass
 
 
-class BaseStripeProduct(models.Model):
-    stripe_id = models.CharField(max_length=255)
-    live_mode = models.BooleanField(default=False)
+class BaseStripeProduct(BaseStripeModel):
+    """Django model for Stripe Product
+
+    See: https://stripe.com/docs/api/products
+    """
+    # class attributes
+    STRIPE_API_CLASS = stripe.Product
+
+    # fields
     name = models.CharField(max_length=64)
     product_type = models.PositiveIntegerField()
     active = models.BooleanField(default=True)
@@ -353,10 +387,6 @@ class BaseStripeProduct(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
-        value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
-        return value
-
     def create(self):
         """Tries to create a product
 
@@ -364,22 +394,92 @@ class BaseStripeProduct(models.Model):
         """
         _initialize_stripe(live_mode=self.live_mode)
         stripe_product = safe_stripe_call(
-            stripe.Product.create,
+            self.STRIPE_API_CLASS.create,
             **{
-                'id' : self.stripe_id,
-                'name' : self.name,
-                'type' : StripeProductType(self.product_type).name,
-                'active' : self.active,
-                'statement_descriptor' : self.statement_descriptor,
+                'id': self.stripe_id,
+                'name': self.name,
+                'type': StripeProductType(self.product_type).name,
+                'active': self.active,
+                'statement_descriptor': self.statement_descriptor,
             }
         )
         return stripe_product
 
 
-class BaseStripePlan(models.Model):
-    stripe_id = models.CharField(max_length=255)
-    live_mode = models.BooleanField(default=False)
+class BaseStripePrice(BaseStripeModel):
+    """Django model for Stripe Price
+
+    See: https://stripe.com/docs/api/prices
+    """
+    # class attributes
+    STRIPE_API_CLASS = stripe.Price
+
+    # fields
+    # overrides `stripe_id`: unlike others, this will get set after creating
+    stripe_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    product = models.ForeignKey(htk_setting('HTK_STRIPE_PRODUCT_MODEL'), related_name='prices')
+    unit_amount = models.PositiveIntegerField(default=0)
+    currency = models.CharField(max_length=3, default=DEFAULT_STRIPE_CURRENCY)
+    active = models.BooleanField(default=True)
+    nickname = models.CharField(max_length=64, blank=True)
+
+    class Meta:
+        abstract = True
+
+        unique_together = (
+            ('live_mode', 'product_id', 'unit_amount', 'currency'),
+        )
+
+    def create(self):
+        """Tries to create a price
+
+        Will fail if price with the same Stripe id already exists
+
+        https://stripe.com/docs/api/prices/create
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+
+        if self.stripe_id is not None:
+            stripe_price = self.retrieve()
+        else:
+            stripe_product = self.product.retrieve()
+            if stripe_product is None:
+                # create the Product if it hasn't been created yet
+                self.product.create()
+            else:
+                # do nothing
+                pass
+
+            stripe_price = safe_stripe_call(
+                self.STRIPE_API_CLASS.create,
+                **{
+                    'currency': self.currency,
+                    'product': self.product.stripe_id,
+                    'unit_amount': self.unit_amount,
+                    'active': self.active,
+                    'nickname': self.nickname,
+                }
+            )
+
+            self.stripe_id = stripe_price['id']
+            self.save()
+
+        return stripe_price
+
+
+class BaseStripePlan(BaseStripeModel):
+    """Django model for Stripe Plan
+
+    See: https://stripe.com/docs/api/plans
+
+    New integrations should use `BaseStripePrice`
+    """
+    STRIPE_API_CLASS = stripe.Plan
+
+    # fields
     product_id = models.CharField(max_length=255)
+    # TODO
+    # product = models.ForeignKey(htk_setting('HTK_STRIPE_PRODUCT_MODEL'), related_name='plans')
     amount = models.PositiveIntegerField(default=0)
     currency = models.CharField(max_length=3, default=DEFAULT_STRIPE_CURRENCY)
     interval = models.PositiveIntegerField()
@@ -394,22 +494,6 @@ class BaseStripePlan(models.Model):
             ('stripe_id', 'live_mode',),
         )
 
-    def __str__(self):
-        value = '%s - %s' % (self.__class__.__name__, self.stripe_id,)
-        return value
-
-    def retrieve(self):
-        """Retrieves an existing Plan
-        """
-        _initialize_stripe(live_mode=self.live_mode)
-        stripe_plan = safe_stripe_call(
-            stripe.Plan.retrieve,
-            *(
-                self.stripe_id,
-            )
-        )
-        return stripe_plan
-
     def create(self):
         """Tries to create a plan
 
@@ -417,16 +501,16 @@ class BaseStripePlan(models.Model):
         """
         _initialize_stripe(live_mode=self.live_mode)
         stripe_plan = safe_stripe_call(
-            stripe.Plan.create,
+            self.STRIPE_API_CLASS.create,
             **{
-                'id' : self.stripe_id,
-                'product' : self.product_id,
-                'amount' : self.amount,
-                'currency' : self.currency,
-                'interval' : StripePlanInterval(self.interval).name,
-                'interval_count' : self.interval_count,
-                'nickname' : self.nickname,
-                'trial_period_days' : self.trial_period_days,
+                'id': self.stripe_id,
+                'product': self.product_id,
+                'amount': self.amount,
+                'currency': self.currency,
+                'interval': StripePlanInterval(self.interval).name,
+                'interval_count': self.interval_count,
+                'nickname': self.nickname,
+                'trial_period_days': self.trial_period_days,
             }
         )
         return stripe_plan
