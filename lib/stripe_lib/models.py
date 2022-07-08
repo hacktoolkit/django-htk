@@ -55,12 +55,10 @@ class BaseStripeModel(models.Model):
         - https://stripe.com/docs/api/plans/retrieve
         """
         _initialize_stripe(live_mode=self.live_mode)
-        stripe_obj = safe_stripe_call(
-            self.STRIPE_API_CLASS.retrieve,
-            *(
-                self.stripe_id,
-            )
+        args = (
+            self.stripe_id,
         )
+        stripe_obj = safe_stripe_call(self.STRIPE_API_CLASS.retrieve, *args)
         return stripe_obj
 
 
@@ -78,19 +76,33 @@ class BaseStripeCustomer(BaseStripeModel):
     ##
     # customer details
 
+    def modify(self, **kwargs):
+        """Updates the customer
+
+        https://stripe.com/docs/api/customers/update
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+        args = (
+            self.stripe_id,
+        )
+        cu = safe_stripe_call(
+            self.STRIPE_API_CLASS.modify,
+            *args,
+            **kwargs
+        )
+        return cu
+
     def update_email(self, email=None):
         """Updates the email for this Customer
         """
         stripe_customer = None
         if email is not None:
             stripe_customer = self.retrieve()
-            if stripe_customer.email != email:
-                # TODO: it might make sense to implement some kind of update-if-changed, or perhaps the Stripe library is already smart about it?
-                stripe_customer.email = email
-                stripe_customer = safe_stripe_call(
-                    stripe_customer.save,
-                    **{}
-                )
+            if stripe_customer['email'] != email:
+                kwargs = {
+                    'email': email,
+                }
+                self.modify(**kwargs)
             else:
                 pass
         else:
@@ -102,25 +114,32 @@ class BaseStripeCustomer(BaseStripeModel):
 
     def charge(self, amount=0, currency=DEFAULT_STRIPE_CURRENCY, metadata=None):
         """Charges a Customer
+
+        https://stripe.com/docs/api/charges/create
         """
         if metadata is None:
             metadata = {}
+
         _initialize_stripe(live_mode=self.live_mode)
-        ch = safe_stripe_call(
+        stripe_charge = safe_stripe_call(
             stripe.Charge.create,
             **{
                 'amount': amount,
                 'currency': currency,
                 'customer': self.stripe_id,
-                'metadata': metadata
+                'metadata': metadata,
             }
         )
-        return ch
+        return stripe_charge
 
     def get_charges(self):
+        """List charges for a customer
+
+        https://stripe.com/docs/api/charges/list
+        """
         _initialize_stripe(live_mode=self.live_mode)
-        charges = safe_stripe_call(
-            stripe.Charge.all,
+        stripe_charges = safe_stripe_call(
+            stripe.Charge.list,
             **{
                 'customer': self.stripe_id,
             }
@@ -128,31 +147,64 @@ class BaseStripeCustomer(BaseStripeModel):
         charges = charges.get('data')
         return charges
 
+    def add_invoice_item(self, stripe_price_id, quantity=None):
+        """Create an `InvoiceItem` for the `Customer`
+
+        https://stripe.com/docs/api/invoiceitems/create?lang=python
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+
+        kwargs = {
+            'customer': self.stripe_id,
+            'price': stripe_price_id,
+        }
+
+        if quantity is not None:
+            kwargs['quantity'] = quantity
+
+        stripe_invoice_item = safe_stripe_call(
+            stripe.InvoiceItem.create,
+            **kwargs
+        )
+        return stripe_invoice_item
+
     def create_invoice(self):
         """Create an Invoice for this Customer to pay any outstanding invoice items such as when upgrading plans
 
-        https://stripe.com/docs/api#create_invoice
+        https://stripe.com/docs/api/invoices/create
         """
         _initialize_stripe(live_mode=self.live_mode)
-        invoice = safe_stripe_call(
+        stripe_invoice = safe_stripe_call(
             stripe.Invoice.create,
             **{
                 'customer': self.stripe_id,
             }
         )
-        return invoice
+
+        if stripe_invoice is None:
+            rollbar.report_message('Could not create invoice for Customer %s' % self.stripe_id, 'error')
+        else:
+            pass
+
+        return stripe_invoice
 
     def create_invoice_and_pay(self):
         """
         After creating the Invoice, have the Customer immediately pay it
 
-        https://stripe.com/docs/api#pay_invoice
+        https://stripe.com/docs/api/invoices/pay
         """
-        invoice = self.create_invoice()
-        if invoice:
-            invoice.pay()
+        stripe_invoice = self.create_invoice()
+        if stripe_invoice:
+            args = (
+                stripe_invoice['id'],
+            )
+            result = safe_stripe_call(stripe.Invoice.pay, *args)
         else:
-            rollbar.report_message('Could not create invoice for Customer %s' % self.stripe_id, 'error')
+            # invoice not created, do nothing
+            result = stripe_invoice
+
+        return result
 
     ##
     # cards
@@ -160,155 +212,189 @@ class BaseStripeCustomer(BaseStripeModel):
     def add_card(self, card):
         """Add an additional credit card to the customer
 
-        https://stripe.com/docs/api/python#create_card
+        https://stripe.com/docs/api/cards/create
         """
-        stripe_customer = self.retrieve()
-        if stripe_customer:
-            stripe_card = safe_stripe_call(
-                stripe_customer.sources.create,
-                **{
-                    'source': card,
-                }
-            )
-        else:
-            stripe_card = None
-        was_added = stripe_card is not None
-        return was_added
+        args = (
+            self.stripe_id,
+        )
+        kwargs = {
+            'source': card,
+        }
+        stripe_card = safe_stripe_call(
+            self.STRIPE_API_CLASS.create_source,
+            *args,
+            **kwargs
+        )
+
+        return stripe_card
+
+    def retrieve_card(self, card_id):
+        """Retrieves a card
+
+        https://stripe.com/docs/api/cards/retrieve
+        """
+        args = (
+            self.stripe_id,
+            card_id,
+        )
+        stripe_card = safe_stripe_call(
+            self.STRIPE_API_CLASS.retrieve_source,
+            *args
+        )
+        return stripe_card
 
     def replace_card(self, card):
-        """Adds a new credit card and delete this Customer's old one
+        """Adds a new credit card and sets it as this Customer's default source
 
-        WARNING: This deletes the old card. Use `add_card` instead to just add a card without deleting
-
-        https://stripe.com/docs/api/python#update_customer
+        See:
+        - https://stripe.com/docs/api/cards/create
+        - https://stripe.com/docs/api/cards/update
+        - https://stripe.com/docs/api/customers/update
         """
-        stripe_customer = self.retrieve()
-        if stripe_customer:
-            stripe_customer.source = card
-            cu = safe_stripe_call(
-                stripe_customer.save,
-                **{}
-            )
+        # first, add the card
+        stripe_card = self.add_card(card)
+
+        if stripe_card:
+            kwargs = {
+                'default_source': stripe_card['id'],
+            }
+            cu = self.modify(**kwargs)
         else:
             cu = None
+
         was_replaced = cu is not None
         return was_replaced
 
     def get_card(self):
-        """
-        https://stripe.com/docs/api/python#list_cards
+        """Gets the customer's default card
+
+        See:
+        - https://stripe.com/docs/api/cards/list
+        - https://stripe.com/docs/api/customers/object
         """
         stripe_customer = self.retrieve()
-        if stripe_customer:
-            cards = safe_stripe_call(
-                stripe_customer.sources.all,
-                **{
-                    'limit': 1,
-                    'object': 'card',
-                }
-            )
-            cards = cards.get('data')
-            if len(cards) > 0:
-                card = cards[0]
-            else:
-                card = None
+        card_id = stripe_customer['default_source']
+        if card_id:
+            card = self.retrieve_card(card_id)
         else:
             card = None
+
         return card
 
     def get_cards(self):
-        stripe_customer = self.retrieve()
-        if stripe_customer:
-            cards = safe_stripe_call(
-                stripe_customer.sources.all,
-                **{
-                    'object': 'card',
-                }
-            )
-            cards = cards.get('data')
-        else:
-            cards = []
+        args = (
+            self.stripe_id,
+        )
+        kwargs = {
+            'object': 'card',
+        }
+
+        response = safe_stripe_call(
+            self.STRIPE_API_CLASS.list_sources,
+            *args,
+            **kwargs
+        )
+        cards = response['data'] if response else []
+
         return cards
 
     def has_card(self):
         """Determines whether this StripeCustomer has a card
         """
-        stripe_customer = self.retrieve()
-        if stripe_customer:
-            cards = safe_stripe_call(
-                stripe_customer.sources.all,
-                **{
-                    'limit': 1,
-                    'object': 'card',
-                }
-            )
-            value = len(cards) > 0
-        else:
-            value = False
-        return value
+        cards = self.get_cards()
+        has_card = len(cards) > 0
+        return has_card
 
     ##
     # subscriptions
 
-    def create_subscription(self, plan):
+    @property
+    def subscription_obj(self):
+        return self.make_subscription_obj()
+
+    def make_subscription_obj(self, subscription_id=None):
+        """Creates a subscription object to make it easier to handle this
+        """
+        return BaseStripeSubscription(
+            stripe_id=subscription_id,
+            live_mode=self.live_mode,
+            customer=self
+        )
+
+    def create_subscription(self, price_or_plan, invoice=True):
         """Creates a new Subscription for this Customer
 
-        https://stripe.com/docs/api#create_subscription
+        https://stripe.com/docs/api/subscriptions/create
         """
-        stripe_customer = self.retrieve()
-        subscription = safe_stripe_call(
-            stripe_customer.subscriptions.create,
-            **{
-                'plan': plan,
-            }
-        )
-        return subscription
+        stripe_subscription = self.subscription_obj.create(price_or_plan, invoice=invoice)
+        return stripe_subscription
 
     def retrieve_subscription(self, subscription_id):
         """Retrieves a Subscription for this Customer
 
-        https://stripe.com/docs/api#retrieve_subscription
+        https://stripe.com/docs/api/subscriptions/retrieve
         """
-        subscription = None
-
         if subscription_id:
-            stripe_customer = self.retrieve()
-            if stripe_customer:
-                subscription = safe_stripe_call(
-                    stripe_customer.subscriptions.retrieve,
-                    **{
-                        'id': subscription_id,
-                    }
-                )
-            else:
-                # missing Stripe customer
-                pass
+            subscription = self.make_subscription_obj(
+                subscription_id
+            ).retrieve()
         else:
             # missing subscription id
-            pass
+            subscription = None
 
         return subscription
 
-    def change_subscription_plan(self, subscription_id, new_plan):
+    def change_subscription_plan(self, subscription_id, new_price_or_plan, prorate=True, invoice=True):
         """Changes the plan on a Subscription for this Customer
 
-        https://stripe.com/docs/api#update_subscription
+        NOTE: This function/model only assumes one current active price per subscription
+
+        https://stripe.com/docs/api/subscriptions/retrieve
+        https://stripe.com/docs/api/subscriptions/update
+        https://stripe.com/docs/billing/migration/migrating-prices#subscriptions
         """
-        subscription = self.retrieve_subscription(subscription_id)
-        if subscription:
-            subscription.plan = new_plan
-            #subscription.prorate = True
-            subscription.save()
+        stripe_subscription = self.retrieve_subscription(subscription_id)
+        if stripe_subscription:
+            item = {
+                'id': stripe_subscription['items']['data'][0]['id'],
+            }
+            if type(new_price_or_plan) == str:
+                item['price'] = new_price_or_plan
+            elif type(new_price_or_plan) == dict:
+                item['price_data'] = new_price_or_plan
+            else:
+                raise Exception('Unsupported price_or_plan type: %s' % type(new_price_or_plan))
 
-            # if the new plan is more expensive, pay right away
-            # pro-ration is the default behavior
-            # or, just naively create the invoice every time and trust that Stripe handles it correctly
-            self.create_invoice_and_pay()
+            kwargs = {
+                'items': [
+                    # NOTE: currently only 1 subscription item is handled
+                    item,
+                ],
+                # https://stripe.com/docs/billing/subscriptions/billing-cycle#prorations
+                'proration_behavior': 'create_prorations' if prorate else 'none',
+            }
+            updated_subscription = self.make_subscription_obj(
+                subscription_id
+            ).modify(
+                **kwargs
+            )
+
+            if updated_subscription and invoice:
+                # Note on Prorations:
+                # If the new plan is more expensive, a payment will happen right away
+                # Create the invoice and trust that Stripe handles it correctly :)
+                #
+                # See: https://stripe.com/docs/billing/subscriptions/billing-cycle#prorations
+                self.create_invoice_and_pay()
+            else:
+                # do nothing, not invoicing :)
+                pass
         else:
-            pass
-        return subscription
+            updated_subscription = None
 
-    def free_upgrade_or_downgrade(self, subscription_id, new_plan):
+        return updated_subscription
+
+    def free_upgrade_or_downgrade(self, subscription_id, new_price_or_plan):
         """Updates the plan on a Subscription for this Customer
 
         Does an immediate upgrade or downgrade to the new plan, but does
@@ -317,36 +403,31 @@ class BaseStripeCustomer(BaseStripeModel):
         a courtesy, or for admin-initiated subscription plan changes.
 
         If intending to charge the customer immediately at time of change
-        or with proration, use `change_subscription_plan()` instead.
+        or with proration, use `change_subscription_plan(prorate=True, invoice=True)` instead.
 
         https://stripe.com/docs/billing/subscriptions/prorations#disable-prorations
         https://stripe.com/docs/api#update_subscription
         """
-        subscription = self.retrieve_subscription(subscription_id)
-        if subscription:
-            subscription.plan = new_plan
-            subscription.prorate = False
-            subscription.save()
-            # DO NOT CREATE AN INVOICE
-        else:
-            pass
-        return subscription
+        updated_subscription = self.change_subscription_plan(
+            subscription_id,
+            new_price_or_plan,
+            prorate=False,
+            invoice=False
+        )
+        return updated_subscription
 
     def cancel_subscription(self, subscription_id):
         """Cancels a Subscription for this Customer
 
-        https://stripe.com/docs/api#cancel_subscription
+        https://stripe.com/docs/api/subscriptions/cancel
 
         Returns:
         - True if `subscription_id` was canceled
         - False if `subscription_id` was not found
         """
-        subscription = self.retrieve_subscription(subscription_id)
-        if subscription:
-            _  = safe_stripe_call(subscription.delete)
-            was_deleted = True
-        else:
-            was_deleted = False
+        was_deleted = self.make_subscription_obj(
+            subscription_id
+        ).cancel()
         return was_deleted
 
     ##
@@ -370,10 +451,101 @@ class BaseStripeCustomer(BaseStripeModel):
             pass
 
 
+class BaseStripeSubscription(BaseStripeModel):
+    """Django model for Stripe Subscription
+
+    NOTE: This class is just used for structural purposes for now, and not intended to be persisted
+
+    https://stripe.com/docs/api/subscriptions
+    """
+    # class attributes
+    STRIPE_API_CLASS = stripe.Subscription
+
+    # fields
+    # overrides `stripe_id`: unlike others, this will get set after creating
+    stripe_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    customer = models.ForeignKey(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'), related_name='subscriptions')
+
+    def create(self, price_or_plan, invoice=True):
+        """Creates a new Subscription
+
+        https://stripe.com/docs/api/subscriptions/create
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+
+        item = {}
+        if type(price_or_plan) == str:
+            item['price'] = price_or_plan
+        elif type(price_or_plan) == dict:
+            item['price_data'] = price_or_plan
+        else:
+            raise Exception('Unsupported price_or_plan type: %s' % type(price_or_plan))
+
+        kwargs = {
+            'customer': self.customer.stripe_id,
+            'items': [
+                item,
+            ],
+        }
+        stripe_subscription = safe_stripe_call(
+            self.STRIPE_API_CLASS.create,
+            **kwargs
+        )
+
+        if stripe_subscription:
+            self.stripe_id = stripe_subscription['id']
+            if invoice:
+                self.customer.create_invoice_and_pay()
+            else:
+                pass
+        else:
+            pass
+
+        return stripe_subscription
+
+    def modify(self, **kwargs):
+        """Modifies a Subscription plan
+
+        https://stripe.com/docs/api/subscriptions/update
+        """
+        args = (
+            self.stripe_id,
+        )
+        subscription = safe_stripe_call(
+            self.STRIPE_API_CLASS.modify,
+            *args,
+            **kwargs
+        )
+        return subscription
+
+    def cancel(self):
+        """Cancels a Subscription for this Customer
+
+        https://stripe.com/docs/api/subscriptions/cancel
+
+        Returns:
+        - True if subscription was canceled
+        - False if subscription was not found
+        """
+        subscription = self.retrieve()
+
+        if subscription:
+            _ = safe_stripe_call(
+                self.STRIPE_API_CLASS.delete,
+                *args
+            )
+            was_deleted = True
+        else:
+            was_deleted = False
+
+        return was_deleted
+
+
+
 class BaseStripeProduct(BaseStripeModel):
     """Django model for Stripe Product
 
-    See: https://stripe.com/docs/api/products
+    https://stripe.com/docs/api/products
     """
     # class attributes
     STRIPE_API_CLASS = stripe.Product
