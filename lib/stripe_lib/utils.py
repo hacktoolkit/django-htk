@@ -1,5 +1,3 @@
-# Python Standard Library Imports
-
 # Third Party (PyPI) Imports
 import rollbar
 import stripe
@@ -220,7 +218,7 @@ def retrieve_event(event_id, live_mode=False):
     Succeeds when `live_mode==True` and there a corresponding `event_id`
     Fails when event was generated from the Stripe dashboard webhook test
 
-    https://stripe.com/docs/api#retrieve_event
+    https://stripe.com/docs/api/events/retrieve
     """
     _initialize_stripe(live_mode=live_mode)
     event = safe_stripe_call(
