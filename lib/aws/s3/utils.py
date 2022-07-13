@@ -23,7 +23,7 @@ class S3Manager(object):
             self.access_key = AWSCredentials.HEADLESS_S3_ACCESS_KEY
             self.secret_key = AWSCredentials.HEADLESS_S3_SECRET_KEY
             self._connect()
-        except:
+        except Exception:
             print('Unable to connect to AWS or missing AWSCredentials')
 
     def _connect(self):
@@ -70,7 +70,13 @@ class S3Manager(object):
         """Copies a file
         """
         src_key = self._get_key(src_bucket_id, src_key_id)
-        new_key = src_key.copy(dest_bucket_id, dest_key_id)
+        try:
+            new_key = src_key.copy(dest_bucket_id, dest_key_id)
+            was_copied = True
+        except S3ResponseError:
+            was_copied = False
+
+        return was_copied
 
     def delete_file(self, bucket_id, key_id):
         """Deletes a file
