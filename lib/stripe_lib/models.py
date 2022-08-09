@@ -532,7 +532,6 @@ class BaseStripeSubscription(BaseStripeModel):
         if subscription:
             _ = safe_stripe_call(
                 self.STRIPE_API_CLASS.delete,
-                *args
             )
             was_deleted = True
         else:
