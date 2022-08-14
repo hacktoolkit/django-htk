@@ -16,6 +16,21 @@ def get_current_request():
     return request
 
 
+def is_ajax_request(request):
+    # content_type = request.META.get('CONTENT_TYPE') or request.content_type
+    requested_with = request.META.get('HTTP_X_REQUESTED_WITH')
+    accepts_json = hasattr(request, 'accepts') and request.accepts('application/json')
+    accept_mimetypes = request.META.get('HTTP_ACCEPT').split(',')
+
+    is_ajax = (
+        requested_with == 'XMLHttpRequest'
+        or accepts_json
+        or 'application/json' in accept_mimetypes
+    )
+
+    return is_ajax
+
+
 def extract_request_ip(request):
     # copied from django_ratchet.middleware.py
     # some common things passed by load balancers... will need more of these.
