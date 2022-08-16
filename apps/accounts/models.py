@@ -13,7 +13,15 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+
+
+try:
+    # Django 3.x
+    # Django Imports
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    # Django 4.x
+    from django.utils.translation import gettext_lazy as _
 
 # HTK Imports
 from htk.admintools.models import HtkCompanyUserMixin
@@ -40,6 +48,9 @@ from htk.utils import (
 )
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.request import get_current_request
+
+
+# isort: off
 
 
 class UserAttribute(AbstractAttribute):
@@ -542,8 +553,10 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
             if ip and self.last_login_ip != ip:
                 self.last_login_ip = ip
                 try:
-                    from htk.lib.geoip.utils import get_country_code_by_ip
-                    from htk.lib.geoip.utils import get_timezone_by_ip
+                    from htk.lib.geoip.utils import (
+                        get_country_code_by_ip,
+                        get_timezone_by_ip,
+                    )
                     detected_country = get_country_code_by_ip(ip) or ''
                     detected_timezone = get_timezone_by_ip(ip) or ''
                     self.detected_country = detected_country
@@ -770,8 +783,10 @@ class UserEmail(models.Model):
             should_send_activation_email = True
 
             if htk_setting('HTK_ITERABLE_ENABLED'):
-                from htk.lib.iterable.utils import get_iterable_api_client
-                from htk.lib.iterable.utils import get_campaign_id
+                from htk.lib.iterable.utils import (
+                    get_campaign_id,
+                    get_iterable_api_client,
+                )
 
                 if resend:
                     campaign_key = 'triggered.transactional.account.confirm_email_resend'
