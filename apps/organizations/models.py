@@ -1,5 +1,9 @@
 # Python Standard Library Imports
-from typing import Any, Dict
+import collections
+from typing import (
+    Any,
+    Dict,
+)
 
 # Django Imports
 from django.conf import settings
@@ -15,13 +19,15 @@ from htk.apps.organizations.utils import (
     get_organization_member_role_choices,
     get_organization_team_member_role_choices,
 )
-from htk.extensions.data_structures import OrderedSet
 from htk.models import (
     AbstractAttribute,
     AbstractAttributeHolderClassFactory,
     HtkBaseModel,
 )
 from htk.utils import htk_setting
+
+
+# isort: off
 
 
 class OrganizationAttribute(AbstractAttribute):
@@ -82,8 +88,18 @@ class BaseAbstractOrganization(HtkBaseModel):
 
     def get_distinct_members(self):
         members = self.get_members()
-        users_set = OrderedSet([member.user for member in members])
-        users = list(users_set)
+
+        if not hasattr(collections, 'MutableSet'):
+            # Python >= 3.6
+            # See:
+            # - https://stackoverflow.com/a/53657523/865091
+            # - https://stackoverflow.com/a/39980744/865091
+            users = list(dict.fromkeys([member.user for member in members]))
+        else:
+            from htk.extensions.data_structures import OrderedSet
+            users_set = OrderedSet([member.user for member in members])
+            users = list(users_set)
+
         return users
 
     ##
