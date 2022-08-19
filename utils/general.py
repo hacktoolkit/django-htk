@@ -5,8 +5,15 @@ from importlib import import_module
 # Django Imports
 from django.contrib import messages
 
-# HTK Imports
-from htk.utils.cache_descriptors import memoized
+
+if hasattr(functools, 'lru_cache'):
+    memoized = lru_cache
+else:
+    # HTK Imports
+    from htk.utils.cache_descriptors import memoized
+
+
+# isort: off
 
 
 def htk_setting(key, default=None):

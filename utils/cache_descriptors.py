@@ -35,6 +35,7 @@ class memoized(object):
         """Support instance methods."""
         return functools.partial(self.__call__, obj)
 
+
 class CachedAttribute(object):
     """Computes attribute value and caches it in instance.
 
