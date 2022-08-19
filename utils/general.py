@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import functools
 import sys
 from importlib import import_module
 
@@ -7,7 +8,7 @@ from django.contrib import messages
 
 
 if hasattr(functools, 'lru_cache'):
-    memoized = lru_cache
+    memoized = functools.lru_cache
 else:
     # HTK Imports
     from htk.utils.cache_descriptors import memoized
