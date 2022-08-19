@@ -144,7 +144,7 @@ class BaseStripeCustomer(BaseStripeModel):
                 'customer': self.stripe_id,
             }
         )
-        charges = charges.get('data')
+        charges = stripe_charges.get('data')
         return charges
 
     def add_invoice_item(self, stripe_price_id, quantity=None):
@@ -530,8 +530,12 @@ class BaseStripeSubscription(BaseStripeModel):
         subscription = self.retrieve()
 
         if subscription:
+            args = (
+                subscription.get('id'),
+            )
             _ = safe_stripe_call(
                 self.STRIPE_API_CLASS.delete,
+                *args
             )
             was_deleted = True
         else:
