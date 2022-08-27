@@ -464,10 +464,11 @@ class BaseStripeSubscription(BaseStripeModel):
     # fields
     # overrides `stripe_id`: unlike others, this will get set after creating
     stripe_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    customer = models.ForeignKey(htk_setting('HTK_STRIPE_CUSTOMER_MODEL'), related_name='subscriptions')
-
-    class Meta:
-        abstract = True
+    customer = models.ForeignKey(
+        htk_setting('HTK_STRIPE_CUSTOMER_MODEL'),
+        related_name='subscriptions',
+        on_delete=models.DO_NOTHING
+    )
 
     def create(self, price_or_plan, invoice=True):
         """Creates a new Subscription
