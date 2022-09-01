@@ -358,9 +358,11 @@ class BaseStripeCustomer(BaseStripeModel):
             item = {
                 'id': stripe_subscription['items']['data'][0]['id'],
             }
-            if type(new_price_or_plan) == str:
+            if isinstance(new_price_or_plan, str):
                 item['price'] = new_price_or_plan
-            elif type(new_price_or_plan) == dict:
+            elif isinstance(new_price_or_plan, type(u'')):
+                item['price'] = new_price_or_plan
+            elif isinstance(new_price_or_plan, dict):
                 item['price_data'] = new_price_or_plan
             else:
                 raise Exception('Unsupported price_or_plan type: %s' % type(new_price_or_plan))
@@ -478,9 +480,11 @@ class BaseStripeSubscription(BaseStripeModel):
         _initialize_stripe(live_mode=self.live_mode)
 
         item = {}
-        if type(price_or_plan) == str:
+        if isinstance(price_or_plan, str):
             item['price'] = price_or_plan
-        elif type(price_or_plan) == dict:
+        elif isinstance(price_or_plan, type(u'')):
+            item['price'] = price_or_plan
+        elif isinstance(price_or_plan, dict):
             item['price_data'] = price_or_plan
         else:
             raise Exception('Unsupported price_or_plan type: %s' % type(price_or_plan))
