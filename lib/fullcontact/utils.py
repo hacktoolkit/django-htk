@@ -3,11 +3,15 @@ import random
 import time
 
 # HTK Imports
-from htk.constants.emails.bad import ALL_BAD_EMAILS
-from htk.lib.fullcontact.api import FullContactAPIV2
-from htk.lib.fullcontact.api import FullContactAPIV3
-from htk.utils import chunks
-from htk.utils import htk_setting
+from htk.lib.fullcontact.api import (
+    FullContactAPIV2,
+    FullContactAPIV3,
+)
+from htk.utils import (
+    chunks,
+    htk_setting,
+)
+from htk.utils.emails import is_bad_email
 
 
 def get_full_contact_api_v3_key():
@@ -41,7 +45,7 @@ def get_full_contact_api_v2():
 def find_person_by_email(email):
     """Retrieve a person object by `email`
     """
-    if email in ALL_BAD_EMAILS:
+    if is_bad_email(email):
         person = None
     else:
         api = get_full_contact_api_v3()

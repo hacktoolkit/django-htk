@@ -4,9 +4,26 @@ import re
 import time
 
 
+# isort: off
+
+
+def is_bad_email(email):
+    from htk.constants.emails.bad import ALL_BAD_EMAILS
+    is_bad = email in ALL_BAD_EMAILS
+
+    if not is_bad:
+        for pattern in BAD_EMAIL_REGEXPS:
+            if pattern.match(email) is not None:
+                is_bad = True
+                break
+
+    return is_bad
+
+
 def normalize_email(email):
     normalized = email.strip().lower()
     return normalized
+
 
 def email_permutator(domain, first_name='', middle_name='', last_name=''):
     """Generate common possible permutations of emails given company `domain` and `*_name`
@@ -38,6 +55,7 @@ def email_permutator(domain, first_name='', middle_name='', last_name=''):
     email_permutations = filter(lambda x: bad_email_re.match(x) is None, list(set(email_possibilities)))
     return email_permutations
 
+
 def find_company_emails_for_name(domain, first_name='', middle_name='', last_name=''):
     """Find a list of emails for a `domain` and `*_name` combination
     """
@@ -52,6 +70,7 @@ def find_company_emails_for_name(domain, first_name='', middle_name='', last_nam
     find_valid_emails = resolve_method_dynamically(htk_setting('HTK_FIND_EMAILS_VALIDATOR'))
     emails = find_valid_emails(email_permutations)
     return emails
+
 
 def extract_snowflake_handle_from_email(email):
     """Extracts a handle from an email address that will likely be unique
