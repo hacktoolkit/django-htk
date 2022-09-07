@@ -6,9 +6,10 @@ from django.urls import reverse
 # HTK Imports
 from htk.apps.customers.constants import *
 from htk.apps.customers.utils import get_organization_type_choices
-from htk.lib.stripe_lib.models import AbstractStripeCustomerHolder
-from htk.models import AbstractAttribute
-from htk.models import AbstractAttributeHolderClassFactory
+from htk.models import (
+    AbstractAttribute,
+    AbstractAttributeHolderClassFactory,
+)
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
 
