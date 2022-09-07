@@ -596,7 +596,7 @@ class BaseStripePrice(BaseStripeModel):
     # fields
     # overrides `stripe_id`: unlike others, this will get set after creating
     stripe_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    product = models.ForeignKey(htk_setting('HTK_STRIPE_PRODUCT_MODEL'), related_name='prices')
+    product = models.ForeignKey(htk_setting('HTK_STRIPE_PRODUCT_MODEL'), related_name='prices', on_delete=models.CASCADE)
     unit_amount = models.PositiveIntegerField(default=0)
     currency = models.CharField(max_length=3, default=DEFAULT_STRIPE_CURRENCY)
     active = models.BooleanField(default=True)
@@ -722,6 +722,7 @@ class AbstractStripeCustomerHolder(models.Model):
         if self.stripe_customer:
             pass
         else:
+            # HTK Imports
             from htk.lib.stripe_lib.utils import create_customer
             email = self.get_stripe_customer_email()
             description = self.get_stripe_customer_description()
