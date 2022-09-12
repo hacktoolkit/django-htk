@@ -1,6 +1,9 @@
 # Python Standard Library Imports
 import json
 
+# Third Party (PyPI) Imports
+import six.moves.urllib as urllib
+
 # Django Imports
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -114,6 +117,25 @@ class HtkBaseModel(models.Model):
 
     def get_absolute_url(self):
         raise Exception('Not implemented')
+
+    ##
+    # SEO and Unicode
+
+    @CachedAttribute
+    def seo_title(self):
+        raise Exception('Not implemented')
+
+    def has_seo_title_match(self, seo_title):
+        has_match = (
+            seo_title is not None
+            and (
+                self.seo_title == seo_title
+                or self.seo_title == urllib.parse.unquote(seo_title)
+                or urllib.parse.quote(seo_title) == seo_title
+            )
+        )
+
+        return has_match
 
 
 class AbstractAttribute(models.Model):

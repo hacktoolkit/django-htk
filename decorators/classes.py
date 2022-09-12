@@ -5,8 +5,10 @@ from functools import wraps
 import rollbar
 
 # Django Imports
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
 
 # HTK Imports
 from htk.decorators.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
@@ -56,7 +58,8 @@ class restful_obj_seo_redirect(object):
             obj_id = kwargs.get(self.obj_id_key)
             obj = get_object_or_404(self.cls, id=obj_id)
             seo_title = kwargs.get('seo_title')
-            if obj.seo_title != seo_title:
+
+            if not obj.has_seo_title_match(seo_title):
                 # prevent tampering of URLs
                 # redirect to the canonical URL for this object
                 response = redirect(obj.get_absolute_url(), permanent=True)
