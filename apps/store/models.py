@@ -3,12 +3,13 @@ from django.db import models
 from django.urls import reverse
 
 # HTK Imports
+from htk.models import HtkBaseModel
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.text.transformers import seo_tokenize
 
 
-class AbstractProduct(models.Model):
+class AbstractProduct(HtkBaseModel):
     name = models.CharField(max_length=128)
     description = models.TextField(max_length=1000, blank=True)
     editor_notes = models.TextField(max_length=1000, blank=True)
@@ -55,7 +56,7 @@ class AbstractProduct(models.Model):
         return url
 
 
-class AbstractProductCollection(models.Model):
+class AbstractProductCollection(HtkBaseModel):
     name = models.CharField(max_length=128)
     subtitle = models.CharField(max_length=256)
     description = models.TextField(max_length=2000, blank=True)
