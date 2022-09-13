@@ -12,8 +12,12 @@ from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.regex import Re
 
 
+# isort: off
+
+
 class GmailAuthenticationException(Exception):
     pass
+
 
 class GmailAPI(object):
     """Interface to Gmail API
@@ -606,6 +610,14 @@ class GmailMessage(object):
 
     def mark_unread(self):
         return self.add_labels(['UNREAD',])
+
+    def trash(self):
+        result = self.api.message_trash(self.message_id)
+        return result
+
+    def untrash(self):
+        result = self.api.message_untrash(self.message_id)
+        return result
 
 
 class GmailThread(object):
