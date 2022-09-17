@@ -11,11 +11,16 @@ import six.moves.urllib as urllib
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
-from django.utils.safestring import SafeText
-from django.utils.safestring import mark_safe
+from django.utils.safestring import (
+    SafeText,
+    mark_safe,
+)
 
 
 register = template.Library()
+
+
+# isort: off
 
 
 ##################################################

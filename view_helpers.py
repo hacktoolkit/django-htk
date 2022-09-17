@@ -9,16 +9,21 @@ import rollbar
 # Django Imports
 from django.conf import settings
 from django.shortcuts import render
-from django.template import TemplateDoesNotExist
-from django.template import loader
+from django.template import (
+    TemplateDoesNotExist,
+    loader,
+)
 from django.template.context_processors import csrf
 from django.urls import reverse
 
 # HTK Imports
+from htk.apps.prelaunch.utils import is_prelaunch_mode
 from htk.cachekeys import StaticAssetVersionCache
 from htk.session_keys import *
-from htk.utils import htk_setting
-from htk.utils import utcnow
+from htk.utils import (
+    htk_setting,
+    utcnow,
+)
 
 
 # isort: off
@@ -170,6 +175,7 @@ def wrap_data(request, data=None):
     # Current Environment
     data['ENV_DEV'] = settings.ENV_DEV
     data['ENV_PROD'] = settings.ENV_PROD
+    data['is_prelaunch_mode'] = is_prelaunch_mode()
 
     ##
     # Javascript reloader
