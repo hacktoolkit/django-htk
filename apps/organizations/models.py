@@ -1,5 +1,6 @@
 # Python Standard Library Imports
 import collections
+import hashlib
 from typing import (
     Any,
     Dict,
@@ -175,8 +176,10 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations_sent')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations', blank=True, null=True, default=None)
     email = models.EmailField(blank=True, null=True, default=None) # email where invitation was originally sent
+    token = models.CharField(max_length=40, unique=True)
     accepted = models.BooleanField(default=None, null=True) # True: accepted, False: declined, None: not responded yet
     timestamp = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(blank=True, null=True, default=None)
 
     class Meta:
         abstract = True
@@ -192,9 +195,42 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
             'user': self.user.profile.get_full_name() if self.user else None,
             'email': self.email,
             'accepted': self.accepted,
-            'invited_at': self.timestamp
+            'invited_at': self.timestamp,
+            'responded_at': self.responded_at,
         }
         return value
+
+    ##
+    # properties
+
+    @property
+    def status(self) -> str:
+        status = (
+            'Invited' if self.accepted is None
+            else 'Accepted' if self.accepted
+            else 'Declined'
+        )
+
+        return status
+
+    ##
+    # Methods
+
+    def generate_token(self) -> None:
+        """ Generates invitation token to send to the user.
+        """
+        salt = hashlib.sha1(str(random.random()).encode('utf-8')).hexdigest()[:5]
+        self.token = hashlib.sha1(str(f'{salt}{self.email}').encode('utf-8')).hexdigest()
+
+    def save(self, *args, **kwargs):
+        """Overrides save method to auto-generate token for invitation.
+        """
+        if self.token is None:
+            self.generate_token()
+        else:
+            pass
+
+        super(BaseAbstractOrganizationInvitation, self).save(*args, **kwargs)
 
 
 class BaseAbstractOrganizationTeam(HtkBaseModel):
