@@ -18,7 +18,7 @@ def tag_deploy(conn):
     commit_timestamp = result.stdout.splitlines()[-1]
     commit_datetimestr = datetime.datetime.utcfromtimestamp(
         float(commit_timestamp)
-    ).strftime('%Y%m%d.%H%M%S')
+    ).strftime('%Y%m%d%H%M')
 
     result = conn.local('git log -n 1 --pretty=format:"%H" master', hide=True)
     revision = result.stdout.splitlines()[-1]

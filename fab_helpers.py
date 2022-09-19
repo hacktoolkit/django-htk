@@ -19,7 +19,7 @@ def tag_deploy():
     )
     commit_datetimestr = datetime.datetime.utcfromtimestamp(
         float(commit_timestamp)
-    ).strftime('%Y%m%d.%H%M%S')
+    ).strftime('%Y%m%d%H%M')
     revision = local('git log -n 1 --pretty=format:"%H" master', capture=True)
     local(
         'git tag -a deploy-{commit_datetimestr}-{revision}-master master -m "Auto-tagged deploy {commit_datetimestr} {revision}'.format(
