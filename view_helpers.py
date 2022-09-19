@@ -17,7 +17,10 @@ from django.template.context_processors import csrf
 from django.urls import reverse
 
 # HTK Imports
-from htk.apps.prelaunch.utils import is_prelaunch_mode
+from htk.apps.prelaunch.utils import (
+    is_prelaunch_host,
+    is_prelaunch_mode,
+)
 from htk.cachekeys import StaticAssetVersionCache
 from htk.session_keys import *
 from htk.utils import (
@@ -175,7 +178,7 @@ def wrap_data(request, data=None):
     # Current Environment
     data['ENV_DEV'] = settings.ENV_DEV
     data['ENV_PROD'] = settings.ENV_PROD
-    data['is_prelaunch_mode'] = is_prelaunch_mode()
+    data['is_prelaunch_mode'] = is_prelaunch_mode() and not is_prelaunch_host(request.get_host())
 
     ##
     # Javascript reloader
