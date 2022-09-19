@@ -13,12 +13,19 @@ from fabric.api import *
 
 
 def tag_deploy():
-    """Automatically create a tag whenever we deploy, so that we can roll-back to it at a future date
-    """
-    commit_timestamp = local('git log -n 1 --pretty=format:"%ct" master', capture=True)
-    commit_datetimestr = datetime.datetime.utcfromtimestamp(float(commit_timestamp)).strftime('%Y%m%d.%H%M%S')
+    """Automatically create a tag whenever we deploy, so that we can roll-back to it at a future date"""
+    commit_timestamp = local(
+        'git log -n 1 --pretty=format:"%ct" master', capture=True
+    )
+    commit_datetimestr = datetime.datetime.utcfromtimestamp(
+        float(commit_timestamp)
+    ).strftime('%Y%m%d.%H%M%S')
     revision = local('git log -n 1 --pretty=format:"%H" master', capture=True)
-    local('git tag -a deploy-%s master -m "Auto-tagged deploy %s %s"' % (commit_datetimestr, commit_datetimestr, revision,))
+    local(
+        'git tag -a deploy-{commit_datetimestr}-{revision}-master master -m "Auto-tagged deploy {commit_datetimestr} {revision}'.format(
+            commit_datetimestr=commit_datetimestr, revision=revision
+        )
+    )
     local('git push --tags')
 
 
@@ -37,9 +44,9 @@ def rollbar_record_deploy(access_token, env='other'):
             'access_token': access_token,
             'environment': environment,
             'local_username': local_username,
-            'revision': revision
+            'revision': revision,
         },
-        timeout=3
+        timeout=3,
     )
 
     if resp.status_code == 200:
@@ -50,8 +57,7 @@ def rollbar_record_deploy(access_token, env='other'):
 
 class AbstractFabricTaskManager(object):
     def deploy(self):
-        """Default deploy task
-        """
+        """Default deploy task"""
         print('I am a dummy task')
 
     def _get_hosts(self):
