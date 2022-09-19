@@ -24,7 +24,7 @@ def tag_deploy(conn):
     revision = result.stdout.splitlines()[-1]
 
     conn.local(
-        f'git tag -a deploy-{commit_datetimestr}-{revision}-master master -m "Auto-tagged deploy {commit_datetimestr} {revision}"',
+        f'git tag -a deploy-{commit_datetimestr}-{revision[:10]}-master master -m "Auto-tagged deploy {commit_datetimestr} {revision}"',
         hide=True,
         warn=True,
     )
