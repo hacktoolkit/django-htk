@@ -17,11 +17,14 @@ class Migration(migrations.Migration):
             name='PrelaunchSignup',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('site', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sites.site')),
                 ('first_name', models.CharField(blank=True, max_length=64)),
                 ('last_name', models.CharField(blank=True, max_length=64)),
                 ('email', models.EmailField(blank=True, max_length=254, null=True)),
+                ('early_access', models.BooleanField(default=False)),
+                ('early_access_code', models.CharField(unique=True, null=True, max_length=64)),
                 ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('site', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='sites.site')),
+                ('updated_at', models.DateTimeField(auto_now=True)),
             ],
             options={
                 'verbose_name': 'Prelaunch Signup',
