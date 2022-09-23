@@ -194,7 +194,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     email = models.EmailField(
         blank=True, null=True, default=None
     )  # email where invitation was originally sent
-    token = models.UUIDField(default=uuid.uuid4)
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
     accepted = models.BooleanField(
         default=None, null=True
     )  # True: accepted, False: declined, None: not responded yet
