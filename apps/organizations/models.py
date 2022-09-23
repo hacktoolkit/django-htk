@@ -1,6 +1,7 @@
 # Python Standard Library Imports
 import collections
 import hashlib
+import uuid
 from typing import (
     Any,
     Dict,
@@ -172,12 +173,31 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
 
 
 class BaseAbstractOrganizationInvitation(HtkBaseModel):
-    organization = models.ForeignKey(htk_setting('HTK_ORGANIZATION_MODEL'), on_delete=models.CASCADE, related_name='invitations')
-    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations_sent')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organization_invitations', blank=True, null=True, default=None)
-    email = models.EmailField(blank=True, null=True, default=None) # email where invitation was originally sent
-    token = models.CharField(max_length=40, unique=True)
-    accepted = models.BooleanField(default=None, null=True) # True: accepted, False: declined, None: not responded yet
+    organization = models.ForeignKey(
+        htk_setting('HTK_ORGANIZATION_MODEL'),
+        on_delete=models.CASCADE,
+        related_name='invitations',
+    )
+    invited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='organization_invitations_sent',
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='organization_invitations',
+        blank=True,
+        null=True,
+        default=None,
+    )
+    email = models.EmailField(
+        blank=True, null=True, default=None
+    )  # email where invitation was originally sent
+    token = models.UUIDField(default=uuid.uuid4)
+    accepted = models.BooleanField(
+        default=None, null=True
+    )  # True: accepted, False: declined, None: not responded yet
     timestamp = models.DateTimeField(auto_now_add=True)
     responded_at = models.DateTimeField(blank=True, null=True, default=None)
 
@@ -212,25 +232,6 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
         )
 
         return status
-
-    ##
-    # Methods
-
-    def generate_token(self) -> None:
-        """ Generates invitation token to send to the user.
-        """
-        salt = hashlib.sha1(str(random.random()).encode('utf-8')).hexdigest()[:5]
-        self.token = hashlib.sha1(str(f'{salt}{self.email}').encode('utf-8')).hexdigest()
-
-    def save(self, *args, **kwargs):
-        """Overrides save method to auto-generate token for invitation.
-        """
-        if self.token is None:
-            self.generate_token()
-        else:
-            pass
-
-        super(BaseAbstractOrganizationInvitation, self).save(*args, **kwargs)
 
 
 class BaseAbstractOrganizationTeam(HtkBaseModel):
