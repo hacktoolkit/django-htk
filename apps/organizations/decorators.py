@@ -16,8 +16,8 @@ from htk.utils.general import resolve_model_dynamically
 
 
 class require_organization_permission(object):
-    """Decorator for requiring current logged-in user to have required level of permission in Organization
-    """
+    """Decorator for requiring current logged-in user to have required level of permission in Organization."""
+
     def __init__(self, role, content_type='text/html'):
         self.role = role
         self.content_type = content_type
@@ -32,19 +32,31 @@ class require_organization_permission(object):
             handle = kwargs.get('handle')
 
             if organization_id is None and handle is None:
-                raise Exception('One of {org_url_pk_key} or handle must be specified'.format(org_url_pk_key=org_url_pk_key))
+                raise Exception(
+                    'One of {org_url_pk_key} or handle must be specified'.format(
+                        org_url_pk_key=org_url_pk_key
+                    )
+                )
 
             key = 'id' if organization_id else 'handle'
             pk = organization_id if organization_id else handle
-            Organization = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MODEL'))
+            Organization = resolve_model_dynamically(
+                htk_setting('HTK_ORGANIZATION_MODEL')
+            )
 
             try:
                 organization = Organization.objects.get(**{key: pk})
             except Organization.DoesNotExist:
                 if self.content_type == 'application/json':
                     response = json_response_error(
-                        { 'error': '{readable_name} not found'.format(readable_name=htk_setting('HTK_ORGANIZATION_READABLE_NAME')) },
-                        status=404
+                        {
+                            'error': '{readable_name} not found'.format(
+                                readable_name=htk_setting(
+                                    'HTK_ORGANIZATION_READABLE_NAME'
+                                )
+                            )
+                        },
+                        status=404,
                     )
                 else:
                     raise Http404
@@ -53,21 +65,18 @@ class require_organization_permission(object):
                 kwargs[htk_setting('HTK_ORGANIZATION_SYMBOL')] = organization
 
             user = request.user
-            has_permission = (
-                user.is_authenticated
-                and (
-                    (
-                        self.role == OrganizationMemberRoles.OWNER
-                        and organization.has_owner(user)
-                    )
-                    or (
-                        self.role == OrganizationMemberRoles.ADMIN
-                        and organization.has_admin(user)
-                    )
-                    or (
-                        self.role == OrganizationMemberRoles.MEMBER
-                        and organization.has_member(user)
-                    )
+            has_permission = user.is_authenticated and (
+                (
+                    self.role == OrganizationMemberRoles.OWNER
+                    and organization.has_owner(user)
+                )
+                or (
+                    self.role == OrganizationMemberRoles.ADMIN
+                    and organization.has_admin(user)
+                )
+                or (
+                    self.role == OrganizationMemberRoles.MEMBER
+                    and organization.has_member(user)
                 )
             )
 
@@ -90,7 +99,9 @@ class require_organization_owner(object):
         self.content_type = content_type
 
     def __call__(self, view_func):
-        return require_organization_permission(OrganizationMemberRoles.OWNER, content_type=self.content_type)(view_func)
+        return require_organization_permission(
+            OrganizationMemberRoles.OWNER, content_type=self.content_type
+        )(view_func)
 
 
 class require_organization_admin(object):
@@ -98,7 +109,9 @@ class require_organization_admin(object):
         self.content_type = content_type
 
     def __call__(self, view_func):
-        return require_organization_permission(OrganizationMemberRoles.ADMIN, content_type=self.content_type)(view_func)
+        return require_organization_permission(
+            OrganizationMemberRoles.ADMIN, content_type=self.content_type
+        )(view_func)
 
 
 class require_organization_member(object):
@@ -106,4 +119,6 @@ class require_organization_member(object):
         self.content_type = content_type
 
     def __call__(self, view_func):
-        return require_organization_permission(OrganizationMemberRoles.MEMBER, content_type=self.content_type)(view_func)
+        return require_organization_permission(
+            OrganizationMemberRoles.MEMBER, content_type=self.content_type
+        )(view_func)

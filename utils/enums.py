@@ -5,8 +5,7 @@ from htk.utils import htk_setting
 
 
 def enum_to_str(enum_obj):
-    """Converts an enum.Enum to a string
-    """
+    """Converts an enum.Enum to a string"""
     value = ' '.join([word.capitalize() for word in enum_obj.name.split('_')])
     return value
 
@@ -27,8 +26,23 @@ def get_enum_symbolic_name(enum_obj):
 
 def get_enum_choices(enum_class):
     choices = [
-        (en.value, get_enum_symbolic_name(en),)
-        for en
-        in enum_class
+        (
+            en.value,
+            get_enum_symbolic_name(en),
+        )
+        for en in enum_class
+        if not hasattr(en, 'is_hidden') or not en.is_hidden()
     ]
     return choices
+
+
+def build_enum_data(enum_class):
+    enum_data = [
+        {
+            'name': get_enum_symbolic_name(en),
+            'value': en.value,
+            'is_hidden': hasattr(en, 'is_hidden') and en.is_hidden(),
+        }
+        for en in enum_class
+    ]
+    return enum_data

@@ -8,57 +8,29 @@ from django.contrib import messages
 from django.utils.deprecation import MiddlewareMixin
 
 # HTK Imports
-from htk.admintools.utils import is_allowed_to_emulate
-from htk.admintools.utils import is_allowed_to_emulate_users
+from htk.admintools.utils import (
+    is_allowed_to_emulate,
+    is_allowed_to_emulate_users,
+    request_emulate_user,
+)
 from htk.utils import htk_setting
 
 
 class HtkEmulateUserMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        """Replace the authenticated `request.user` if properly emulating
-        """
-        if (
-            request.path.startswith(htk_setting('HTK_PATH_ADMIN'))
-            or request.path.startswith(htk_setting('HTK_PATH_ADMINTOOLS'))
-        ):
+        """Replace the authenticated `request.user` if properly emulating"""
+        if request.path.startswith(
+            htk_setting('HTK_PATH_ADMIN')
+        ) or request.path.startswith(htk_setting('HTK_PATH_ADMINTOOLS')):
             # disallow emulation for /admin and /admintools
             pass
-        elif is_allowed_to_emulate_users(request.user):
-            from htk.apps.accounts.utils import get_user_by_id
-            from htk.apps.accounts.utils import get_user_by_username
-
+        else:
             user_id = request.COOKIES.get('emulate_user_id')
             username = request.COOKIES.get('emulate_user_username')
-
-            is_attempting_to_emulate = user_id or username
-
-            if is_attempting_to_emulate:
-                if user_id:
-                    targeted_user = get_user_by_id(user_id)
-                elif username:
-                    targeted_user = get_user_by_username(username)
-                else:
-                    rollbar.report_message('Impossible case: attempting to emulate another user but not specified')
-
-                if targeted_user is None:
-                    messages.error(request, 'Cannot Emulate: User does not exist', fail_silently=True)
-                else:
-                    if is_allowed_to_emulate(request.user, targeted_user):
-                        request.original_user = request.user
-                        request.user = targeted_user
-                    else:
-                        messages.error(request, 'Cannot Emulate: Not allowed to emulate that user', fail_silently=True)
-            else:
-                # not attempting to emulate
-                pass
-        else:
-            # is not allowed or is not attempting to emulate users
-            pass
-
+            request_emulate_user(request, user_id=user_id, username=username)
 
     def process_response(self, request, response):
-        """Delete user emulation cookies if they should not be set
-        """
+        """Delete user emulation cookies if they should not be set"""
         original_user = getattr(request, 'original_user', None)
         user = getattr(request, 'user', None)
         is_emulating = original_user is not None and user is not None
