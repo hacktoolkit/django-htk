@@ -6,24 +6,65 @@ from htk.apps.geolocations.cachekeys import GeocodeCache
 from htk.apps.geolocations.constants import *
 from htk.apps.geolocations.enums import DistanceUnit
 from htk.lib.google.geocode.geocode import get_latlng as get_latlng_google
-from htk.utils.maths.trigonometry import deg2rad
-from htk.utils.maths.trigonometry import rad2deg
+from htk.lib.mapbox.geocode import get_latlng as get_latlng_mapbox
+from htk.utils.maths.trigonometry import (
+    deg2rad,
+    rad2deg,
+)
 from htk.utils.text.transformers import seo_tokenize
 
 
-def get_latlng(location_name, refresh=False):
+# isort: off
+
+
+def get_geocode_provider(providers):
+    from htk.lib.google.utils import get_server_api_key as _google_api_key
+    from htk.lib.mapbox.utils import get_access_token as _mapbox_api_key
+
+    provider = None
+
+    PROVIDER_API_KEY_LOOKUP_MAP = {
+        'mapbox': _mapbox_api_key,
+        'google': _google_api_key,
+    }
+
+    for provider_ in providers:
+        api_key = PROVIDER_API_KEY_LOOKUP_MAP[provider_]
+        if api_key is not None:
+            provider = provider_
+            break
+
+    return provider
+
+
+def get_latlng(location_name, refresh=False, providers=None):
     """Geocodes a `location_name` and caches the result
 
-    For now, uses Google maps geocode API
+    Use the first provider available from the list or `providers`
     """
+    if providers is None:
+        providers = [
+            'mapbox',
+            'google',
+        ]
+
+    provider = get_geocode_provider(providers)
+
     prekey = seo_tokenize(location_name)
     c = GeocodeCache(prekey=prekey)
     latlng = c.get()
     if latlng is None or refresh:
-        latlng = get_latlng_google(location_name)
+        if provider == 'mapbox':
+            latlng = get_latlng_mapbox(location_name)
+        elif provider == 'google':
+            latlng = get_latlng_google(location_name)
+        else:
+            # no provider
+            latlng = (None, None)
+
         if latlng is None:
-            # an exception occurred; possibly hit Google API limit
-            latlng = (None, None,)
+            # an exception occurred; possibly hit API limit or other error
+            latlng = (None, None)
         else:
             c.cache_store(latlng)
     return latlng
@@ -39,13 +80,12 @@ def WGS84EarthRadius(lat):
     Bn = WGS84_b * WGS84_b * math.sin(lat)
     Ad = WGS84_a * math.cos(lat)
     Bd = WGS84_b * math.sin(lat)
-    radius = math.sqrt( (An*An + Bn*Bn) / (Ad*Ad + Bd*Bd) )
+    radius = math.sqrt((An * An + Bn * Bn) / (Ad * Ad + Bd * Bd))
     return radius
 
 
 def convert_distance_to_meters(distance, distance_unit):
-    """Converts `distance` in `distance_unit` to meters
-    """
+    """Converts `distance` in `distance_unit` to meters"""
     if distance_unit == DistanceUnit.MILE:
         distance_meters = distance * METERS_PER_MILE
     elif distance_unit == DistanceUnit.KILOMETER:
@@ -61,8 +101,7 @@ def convert_distance_to_meters(distance, distance_unit):
 
 
 def convert_meters(distance_meters, distance_unit):
-    """Converts `distance_meters` in meters to `distance_unit`
-    """
+    """Converts `distance_meters` in meters to `distance_unit`"""
     if distance_unit == DistanceUnit.MILE:
         distance = distance_meters / METERS_PER_MILE
     elif distance_unit == DistanceUnit.KILOMETER:
@@ -77,7 +116,12 @@ def convert_meters(distance_meters, distance_unit):
     return distance
 
 
-def get_bounding_box(latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT):
+def get_bounding_box(
+    latitude,
+    longitude,
+    distance=DEFAULT_SEARCH_RADIUS,
+    distance_unit=DEFAULT_DISTANCE_UNIT,
+):
     """Get the bounding box surrounding the point at given coordinates,
     assuming local approximation of Earth surface as a sphere
     of radius given by WGS84
@@ -130,12 +174,23 @@ def haversine(lat1, lon1, lat2, lon2):
     Returns distance between two geocoordinates in meters
     """
     # convert decimal degrees to radians
-    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2,])
+    lat1, lon1, lat2, lon2 = map(
+        math.radians,
+        [
+            lat1,
+            lon1,
+            lat2,
+            lon2,
+        ],
+    )
 
     # haversine formula
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    a = math.sin(dlat / 2.)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2.)**2
+    a = (
+        math.sin(dlat / 2.0) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2.0) ** 2
+    )
     arclength = 2 * math.asin(math.sqrt(a))
 
     avg_lat = (lat1 + lat2) / 2.0
