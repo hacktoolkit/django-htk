@@ -49,8 +49,11 @@ def lookup_bible_verse(book, chapter, verse):
 
 
 def resolve_bible_passage_reference(reference):
-    BiblePassage = get_bible_passage_model()
-    passage = BiblePassage.from_reference(reference)
+    if isinstance(reference, str):
+        BiblePassage = get_bible_passage_model()
+        passage = BiblePassage.from_reference(reference)
+    else:
+        passage = None
     return passage
 
 
@@ -72,16 +75,22 @@ def resolve_bible_verse_reference(reference):
 def get_bible_chapter_data(book, chapter):
     BibleVerse = get_bible_verse_model()
     data = {
-        'num_verses' : BibleVerse.objects.filter(book__name=book, chapter__chapter=chapter).count(),
+        'num_verses': BibleVerse.objects.filter(
+            book__name=book, chapter__chapter=chapter
+        ).count(),
     }
     return data
 
 
 def get_all_chapters():
     from htk.apps.bible.constants import BIBLE_BOOKS_DATA
+
     chapters = []
     for book_data in BIBLE_BOOKS_DATA:
         for i in range(book_data['chapters']):
-            chapter = '%s %s' % (book_data['name'], i + 1,)
+            chapter = '%s %s' % (
+                book_data['name'],
+                i + 1,
+            )
             chapters.append(chapter)
     return chapters
