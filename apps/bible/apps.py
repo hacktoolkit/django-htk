@@ -6,10 +6,10 @@ from django.db.models import signals
 from htk.app_config import HtkAppConfig
 
 
-class HtkOrganizationAppConfig(HtkAppConfig):
-    name = 'htk.apps.organizations'
-    label = 'organizations'
-    verbose_name = 'Organizations'
+class HtkBibleAppConfig(HtkAppConfig):
+    name = 'htk.apps.bible'
+    label = 'bible'
+    verbose_name = 'Bible'
 
     def ready(self):
         pass
