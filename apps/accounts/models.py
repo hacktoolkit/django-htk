@@ -99,7 +99,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         abstract = True
 
     def __str__(self):
-        #s = '%d: %s' % (self.user.id, self.user.email,)
+        # s = '%d: %s' % (self.user.id, self.user.email,)
         s = self.user.__str__()
         return s
 
@@ -111,6 +111,13 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         })
 
         return value
+
+    ##
+    # URLs
+
+    def get_admin_url(self):
+        url = reverse('admin:auth_user_change', args=(self.user.id,))
+        return url
 
     ##
     # name
