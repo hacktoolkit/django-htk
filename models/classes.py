@@ -126,13 +126,10 @@ class HtkBaseModel(models.Model):
         raise Exception('Not implemented')
 
     def has_seo_title_match(self, seo_title):
-        has_match = (
-            seo_title is not None
-            and (
-                self.seo_title == seo_title
-                or self.seo_title == urllib.parse.unquote(seo_title)
-                or urllib.parse.quote(seo_title) == seo_title
-            )
+        has_match = seo_title is not None and (
+            self.seo_title == seo_title
+            or self.seo_title == urllib.parse.unquote(seo_title)
+            or urllib.parse.quote(self.seo_title) == seo_title
         )
 
         return has_match
