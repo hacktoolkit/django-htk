@@ -114,6 +114,16 @@ class BaseAbstractOrganization(HtkBaseModel):
         member = self.members.filter(user=user, role__in=role_values)
         return member
 
+    def look_up_member(self, user):
+        roles = (
+            OrganizationMemberRoles.SYSADMIN,
+            OrganizationMemberRoles.OWNER,
+            OrganizationMemberRoles.ADMIN,
+            OrganizationMemberRoles.MEMBER,
+        )
+        member = self.look_up_member_with_role(user, roles)
+        return member
+
     def _has_member_with_role(self, user, roles):
         member = self.look_up_member_with_role(user, roles)
         has_member = member.exists()
