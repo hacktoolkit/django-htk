@@ -85,6 +85,10 @@ class CacheableObject(object):
             # cache.add() fails if there's already something stored for the key
             cache.add(cache_key, cache_payload, cache_duration)
 
+    def cache_retrieve(self, default=None):
+        cache_key = self.get_cache_key()
+        return cache.get(cache_key, default=default)
+
 
 class LockableObject(object):
     """Abstract base class for lockable objects
@@ -229,3 +233,7 @@ class CustomCacheScheme(object):
         cache_key = self.get_cache_key()
         duration = self.get_cache_duration() if duration is None else duration
         cache.set(cache_key, payload, duration)
+
+    def cache_retrieve(self, default=None):
+        cache_key = self.get_cache_key()
+        return cache.get(cache_key, default=default)
