@@ -109,9 +109,14 @@ class BaseAbstractOrganization(HtkBaseModel):
     ##
     # ACLs
 
-    def _has_member_with_role(self, user, roles):
+    def look_up_member_with_role(self, user, roles):
         role_values = [role.value for role in roles]
-        has_member = self.members.filter(user=user, role__in=role_values)
+        member = self.members.filter(user=user, role__in=role_values)
+        return member
+
+    def _has_member_with_role(self, user, roles):
+        member = self.look_up_member_with_role(user, roles)
+        has_member = member.exists()
         return has_member
 
     def has_owner(self, user):
@@ -181,6 +186,10 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
     class Meta:
         abstract = True
         verbose_name = 'Organization Member'
+        unique_together = (
+            'user',
+            'organization',
+        )
 
     def __str__(self):
         value = (
