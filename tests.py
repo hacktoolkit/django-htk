@@ -1,8 +1,14 @@
-from htk.test_scaffold.models import TestScaffold
-from htk.test_scaffold.tests import BaseTestCase
-from htk.test_scaffold.tests import BaseWebTestCase
-
+# HTK Imports
 from htk.constants import *
+from htk.lib.tests import *
+from htk.scripts.tests import *
+from htk.test_scaffold.models import TestScaffold
+from htk.test_scaffold.tests import (
+    BaseTestCase,
+    BaseWebTestCase,
+)
+from htk.utils.tests import *
+
 
 class HtkWebViewsTestCase(BaseWebTestCase):
     def test_error_pages(self):
@@ -13,8 +19,3 @@ class HtkWebViewsTestCase(BaseWebTestCase):
         )
         for view_name in view_names:
             self._check_view_is_okay(view_name)
-
-####################
-# Finally, import tests from subdirectories last to prevent circular import
-from htk.lib.tests import *
-from htk.scripts.tests import *
