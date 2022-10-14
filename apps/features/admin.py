@@ -14,6 +14,7 @@ class BaseFeatureFlagAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
+        'description',
         'enabled',
         'enabled_after',
         'disabled_after',

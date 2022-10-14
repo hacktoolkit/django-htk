@@ -17,6 +17,16 @@ class AbstractFeatureFlag(HtkBaseModel):
 
     class Meta:
         abstract = True
+        ordering = (
+            'name',
+        )
+
+    def __str__(self):
+        value = '{} - {}'.format(
+            self.__class__.__name__,
+            self.name
+        )
+        return value
 
     def as_dict(self):
         value = {
