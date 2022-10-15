@@ -26,6 +26,7 @@ from htk.models import HtkBaseModel
 class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
     def default(self, obj):
         from django.contrib.auth import get_user_model
+
         UserModel = get_user_model()
 
         if isinstance(obj, datetime.datetime):
@@ -33,9 +34,12 @@ class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
         elif isinstance(obj, Decimal):
             # fallback to string if `should_quantize` is False
             from htk.utils import htk_setting
+
             should_quantize = htk_setting('HTK_JSON_DECIMAL_SHOULD_QUANTIZE')
             quantize = Decimal(htk_setting('HTK_JSON_DECIMAL_QUANTIZE'))
-            value = float(obj.quantize(quantize)) if should_quantize else str(obj)
+            value = (
+                float(obj.quantize(quantize)) if should_quantize else str(obj)
+            )
         elif isinstance(obj, HtkBaseModel):
             value = obj.json_encode()
         elif isinstance(obj, UserModel):
@@ -47,17 +51,23 @@ class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
             try:
                 value = super(HtkJSONEncoder, self).default(obj)
             except:
-                rollbar.report_exc_info(extra_data={'obj': obj,})
-                value = -3.14159 # return an absurd value so that we know the object wasn't serializable
+                rollbar.report_exc_info(
+                    extra_data={
+                        'obj': obj,
+                    }
+                )
+                value = (
+                    -3.14159
+                )  # return an absurd value so that we know the object wasn't serializable
         return value
 
 
 def to_json(obj, encoder=HtkJSONEncoder):
     if hasattr(obj, '_meta'):
         if hasattr(obj, '__contains__'):
-            return serializers.serialize('json', obj )
+            return serializers.serialize('json', obj)
         else:
-            return serializers.serialize('json', [ obj ])
+            return serializers.serialize('json', [obj])
     else:
         return json.dumps(obj, cls=encoder)
 
@@ -65,20 +75,24 @@ def to_json(obj, encoder=HtkJSONEncoder):
 def json_okay(data=None):
     if data is None:
         data = {}
-    data.update({
-        HTK_API_JSON_KEY_SUCCESS : True,
-        HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_OKAY,
-    })
+    data.update(
+        {
+            HTK_API_JSON_KEY_SUCCESS: True,
+            HTK_API_JSON_KEY_STATUS: HTK_API_JSON_VALUE_OKAY,
+        }
+    )
     return data
 
 
 def json_error(data=None):
     if data is None:
         data = {}
-    data.update({
-        HTK_API_JSON_KEY_SUCCESS : False,
-        HTK_API_JSON_KEY_STATUS : HTK_API_JSON_VALUE_ERROR,
-    })
+    data.update(
+        {
+            HTK_API_JSON_KEY_SUCCESS: False,
+            HTK_API_JSON_KEY_STATUS: HTK_API_JSON_VALUE_ERROR,
+        }
+    )
     return data
 
 
@@ -93,7 +107,11 @@ def json_error_str():
 def json_response(obj, encoder=HtkJSONEncoder, status=200):
     # TODO: consider the new django.http.response.JsonResponse in Django 1.7
     # https://docs.djangoproject.com/en/1.7/ref/request-response/
-    response = HttpResponse(to_json(obj, encoder=encoder), content_type='application/json', status=status)
+    response = HttpResponse(
+        to_json(obj, encoder=encoder),
+        content_type='application/json',
+        status=status,
+    )
     return response
 
 
@@ -109,7 +127,19 @@ def json_response_error(data=None, status=400):
     return response
 
 
-def extract_post_params(post_data, expected_params, list_params=None, strict=True):
+def json_response_not_found():
+    response = json_response_error({'error': 'Not Found'}, status=404)
+    return response
+
+
+def json_response_forbidden():
+    response = json_response_error({'error': 'Forbidden'}, status=403)
+    return response
+
+
+def extract_post_params(
+    post_data, expected_params, list_params=None, strict=True
+):
     """Extract `expected_params` from `post_data`
 
     Raise Exception if `strict` and any `expected_params` are missing
@@ -121,7 +151,9 @@ def extract_post_params(post_data, expected_params, list_params=None, strict=Tru
         if strict and param not in post_data:
             raise Exception('Missing param: %s' % param)
         if param in list_params:
-            value = post_data.getlist('%s[]' % param, post_data.getlist(param, False))
+            value = post_data.getlist(
+                '%s[]' % param, post_data.getlist(param, False)
+            )
             if value is not False:
                 value = json.dumps(value)
                 data[param] = value
