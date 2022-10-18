@@ -16,6 +16,7 @@ from htk.apps.organizations.enums import (
     OrganizationMemberRoles,
     OrganizationTeamMemberRoles,
 )
+from htk.apps.organizations.mixins import GoogleOrganizationMixin
 from htk.apps.organizations.utils import (
     get_model_organization_member,
     get_organization_member_role_choices,
@@ -57,7 +58,7 @@ OrganizationAttributeHolder = AbstractAttributeHolderClassFactory(
 ).get_class()
 
 
-class BaseAbstractOrganization(HtkBaseModel):
+class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
     name = models.CharField(max_length=128)
     handle = models.CharField(max_length=64, unique=True)
 
@@ -78,6 +79,15 @@ class BaseAbstractOrganization(HtkBaseModel):
             }
         )
         return value
+
+    ##
+    # URLs
+
+    def get_full_url(self):
+        return ''
+
+    def get_logo_full_url(self):
+        return ''
 
     ##
     # Accessors
