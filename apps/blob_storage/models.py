@@ -26,27 +26,26 @@ class AbstractBlobStorage(models.Model):
         blob = cls.objects.create(
             content_type=content_type,
             size_bytes=size_bytes,
-            contents=contents
+            contents=contents,
         )
         return blob
 
     def __str__(self):
-        value = '{} - {}'.format(
-            self.__class__.__name__,
-            self.id
-        )
+        value = '{} - {}'.format(self.__class__.__name__, self.id)
         return value
 
-    def update_contents(self, contents=b''):
+    def update_contents(self, contents=b'', content_type=None):
         size_bytes = len(contents)
         self.size_bytes = size_bytes
         self.contents = contents
+        if content_type is not None:
+            self.content_type = content_type
         self.save()
 
     def as_response(self):
         response = HttpResponse(
             self.contents,
-            content_type=self.content_type
+            content_type=self.content_type,
         )
         # response = FileResponse(
         #     self.contents,
