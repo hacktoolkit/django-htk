@@ -29,7 +29,7 @@ def get_geocode_provider(providers):
     }
 
     for provider_ in providers:
-        api_key = PROVIDER_API_KEY_LOOKUP_MAP[provider_]
+        api_key = PROVIDER_API_KEY_LOOKUP_MAP[provider_]()
         if api_key is not None:
             provider = provider_
             break
