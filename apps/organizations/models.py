@@ -187,15 +187,15 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
 
 
 class BaseAbstractOrganizationMember(HtkBaseModel):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='organizations',
-    )
     organization = models.ForeignKey(
         htk_setting('HTK_ORGANIZATION_MODEL'),
         on_delete=models.CASCADE,
         related_name='members',
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='organizations',
     )
     role = models.PositiveIntegerField(
         default=OrganizationMemberRoles.MEMBER.value,

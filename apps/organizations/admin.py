@@ -1,46 +1,57 @@
-# Python Standard Library Imports
-
 # Django Imports
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 # HTK Imports
-from htk.apps.organizations.models import OrganizationAttribute
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
 
 
 class HtkOrganizationAttributeInline(admin.TabularInline):
-    model = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_ATTRIBUTE_MODEL'))
+    model = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_ATTRIBUTE_MODEL')
+    )
     extra = 0
     can_delete = True
 
 
 class HtkOrganizationMemberInline(admin.TabularInline):
-    model = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MEMBER_MODEL'))
+    model = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_MEMBER_MODEL')
+    )
     extra = 0
     can_delete = True
 
 
 class HtkOrganizationInvitationInline(admin.TabularInline):
-    model = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_INVITATION_MODEL'))
+    model = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_INVITATION_MODEL')
+    )
     extra = 0
     can_delete = True
 
 
 class HtkOrganizationTeamMemberInline(admin.TabularInline):
-    model = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_MODEL'))
+    model = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_MODEL')
+    )
     extra = 0
     can_delete = True
 
 
 class HtkOrganizationTeamMemberPositionInline(admin.TabularInline):
-    model = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_POSITION_MODEL'))
+    model = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_POSITION_MODEL')
+    )
     extra = 0
     can_delete = True
 
 
 class HtkOrganizationTeamInline(admin.StackedInline):
-    model = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_TEAM_MODEL'))
+    model = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_TEAM_MODEL')
+    )
     extra = 0
     can_delete = True
 
@@ -62,10 +73,29 @@ class HtkOrganizationAdmin(admin.ModelAdmin):
 class HtkOrganizationMemberAdmin(admin.ModelAdmin):
     list_display = (
         'id',
+        # 'organization',
+        'organization_filter',
         'user',
+        'role',
+    )
+
+    list_filter = (
         'organization',
         'role',
     )
+    search_fields = (
+        'organization',
+        'user',
+    )
+
+    @mark_safe
+    def organization_filter(self, obj):
+        url = '{}?organization__id__exact={}'.format(
+            reverse('admin:organizations_organizationmember_changelist'),
+            obj.organization.id,
+        )
+        value = f'<a href="{url}">{obj.organization.name}</a>'
+        return value
 
 
 class HtkOrganizationTeamAdmin(admin.ModelAdmin):
@@ -74,20 +104,17 @@ class HtkOrganizationTeamAdmin(admin.ModelAdmin):
         'name',
         'organization',
     )
-    inlines = (
-        HtkOrganizationTeamMemberInline,
-    )
+    inlines = (HtkOrganizationTeamMemberInline,)
+
 
 class HtkOrganizationTeamMemberAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'user',
         'team',
+        'user',
         'role',
     )
-    inlines = (
-        HtkOrganizationTeamMemberPositionInline,
-    )
+    inlines = (HtkOrganizationTeamMemberPositionInline,)
 
 
 class HtkOrganizationTeamPositionAdmin(admin.ModelAdmin):
@@ -96,7 +123,3 @@ class HtkOrganizationTeamPositionAdmin(admin.ModelAdmin):
         'team',
         'name',
     )
-
-
-class OrganizationMemberInline(admin.TabularInline):
-    model = 'organizations.OrganizationMember'
