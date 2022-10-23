@@ -116,7 +116,13 @@ def request_emulate_user(request, user_id=None, username=None):
         pass
 
 
-def emulate_user(request, user_id=None, username=None, redirect_url='/'):
+def emulate_user(
+    request,
+    user_id=None,
+    username=None,
+    redirect_url='/',
+    cookie_max_age_seconds=None,
+):
     request_emulate_user(request, user_id=user_id, username=username)
     response = redirect(redirect_url)
 
@@ -129,8 +135,13 @@ def emulate_user(request, user_id=None, username=None, redirect_url='/'):
     )
 
     cookie_value = user_id or username
-    cookie_max_age = 60 * 60  # 1 hour in seconds
+    if cookie_max_age_seconds is None:
+        cookie_max_age_seconds = 60 * 60  # 1 hour in seconds
 
-    response.set_cookie(cookie_name, value=cookie_value, max_age=cookie_max_age)
+    response.set_cookie(
+        cookie_name,
+        value=cookie_value,
+        max_age=cookie_max_age_seconds,
+    )
 
     return response
