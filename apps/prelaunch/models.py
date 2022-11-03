@@ -14,6 +14,7 @@ from htk.utils import (
     htk_setting,
     utcnow,
 )
+from htk.utils.notifications import notify
 from htk.utils.request import get_current_request
 
 
@@ -95,6 +96,12 @@ class PrelaunchSignup(models.Model):
         self.early_access = True
         self.early_access_code = uuid.uuid4().hex
         self.save()
+        notify(
+            'Early access has been enabled for {} <{}>'.format(
+                self.full_name, self.email
+            ),
+            level='info',
+        )
 
     def revoke_early_access(self):
         self.early_access = False

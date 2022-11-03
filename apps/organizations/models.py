@@ -139,6 +139,10 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
         has_member = member.exists()
         return has_member
 
+    def has_sysadmin(self, user):
+        roles = (OrganizationMemberRoles.SYSADMIN,)
+        return self._has_member_with_role(user, roles=roles)
+
     def has_owner(self, user):
         roles = (
             OrganizationMemberRoles.SYSADMIN,
