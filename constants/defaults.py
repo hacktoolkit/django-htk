@@ -4,7 +4,7 @@ HTK_ALLOWED_HOST_REGEXPS = (
     # TODO: remove this rule, it's too permissive
     r'(.*)',
     # e.g.
-    #r'(.*\.)?hacktoolkit\.com(\.)?',
+    # r'(.*\.)?hacktoolkit\.com(\.)?',
 )
 
 ##
@@ -40,7 +40,9 @@ HTK_EMAIL_BASE_TEMPLATE_HTML = 'emails/base.html'
 HTK_EMAIL_BASE_TEMPLATE_TEXT = 'emails/base.txt'
 HTK_DEFAULT_EMAIL_SENDING_DOMAIN = 'hacktoolkit.com'
 HTK_DEFAULT_EMAIL_SENDER = 'Hacktoolkit <no-reply@hacktoolkit.com>'
-HTK_DEFAULT_EMAIL_RECIPIENTS = ['info@hacktoolkit.com',]
+HTK_DEFAULT_EMAIL_RECIPIENTS = [
+    'info@hacktoolkit.com',
+]
 HTK_EMAIL_CONTEXT_GENERATOR = 'htk.mailers.email_context_generator'
 HTK_EMAIL_ATTACHMENTS = ()
 
@@ -84,6 +86,7 @@ from htk.apps.accounts.constants.defaults import *
 from htk.apps.bible.constants.defaults import *
 from htk.apps.cpq.constants.defaults import *
 from htk.apps.file_storage.constants.defaults import *
+from htk.apps.i18n.constants.defaults import *
 from htk.apps.invitations.constants.defaults import *
 from htk.apps.maintenance_mode.constants.defaults import *
 from htk.apps.notifications.constants.defaults import *

@@ -4,8 +4,10 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 # HTK Imports
-from htk.utils import htk_setting
-from htk.utils.general import resolve_model_dynamically
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 
 
 class HtkOrganizationAttributeInline(admin.TabularInline):

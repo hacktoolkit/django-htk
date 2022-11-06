@@ -1,8 +1,5 @@
-# Python Standard Library Imports
-
 # Django Imports
 from django.contrib import admin
-from django.db import models
 
 
 class AbstractBibleBookAdmin(admin.ModelAdmin):
