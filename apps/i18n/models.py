@@ -4,7 +4,10 @@ from django.db import models
 # HTK Imports
 from htk.apps.i18n.utils.choices import get_language_code_choices
 from htk.models import HtkBaseModel
-from htk.utils import htk_setting
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 
 
 class AbstractLocalizableString(HtkBaseModel):
@@ -47,6 +50,27 @@ class AbstractLocalizableString(HtkBaseModel):
         )
         return value
 
+    def add_translation(self, language_code, value, update=False):
+        """Adds a translation for this `LocalizableString`
+
+        - `language_code` is the ISO 639-1 language code combined with the ISO 3166-2 country code.
+        - `value` is the localized translation
+        - `update` when `True` updates an existing translation even if one already exists for the `language_code`;
+           otherwise, only adds a new translation
+        """
+        LocalizedString = resolve_model_dynamically(
+            htk_setting('HTK_LOCALIZED_STRING_MODEL')
+        )
+        localized_string, was_created = LocalizedString.objects.get_or_create(
+            localizable_string=self,
+            language_code=language_code,
+        )
+        if was_created or update:
+            localized_string.value = value
+            localized_string.save()
+
+        return localized_string
+
 
 class AbstractLocalizedString(HtkBaseModel):
     """A localized string is one that is associated with a localizable string, and has already been translated to a local language.
@@ -86,6 +110,12 @@ class AbstractLocalizedString(HtkBaseModel):
         ordering = (
             'localizable_string__key',
             'language_code',
+        )
+        unique_together = (
+            (
+                'localizable_string',
+                'language_code',
+            ),
         )
 
     def __str__(self):

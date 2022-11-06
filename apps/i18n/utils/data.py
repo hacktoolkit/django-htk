@@ -36,3 +36,29 @@ def dump_strings(file_path, indent=4):
 
     num_strings = len(data)
     return num_strings
+
+
+def load_strings(data, overwrite=False):
+    """Load strings from `data` into `LocalizableString` and `LocalizedString`
+
+    When `overwrite` is `True`, existing translations will be overwritten; otherwise only new translations will be added
+    """
+    LocalizableString = resolve_model_dynamically(
+        htk_setting('HTK_LOCALIZABLE_STRING_MODEL')
+    )
+    num_strings = 0
+    num_translations = 0
+
+    for key, translations in data.items():
+        (
+            localizable_string,
+            was_created,
+        ) = LocalizableString.objects.get_or_create(key=key)
+        num_strings += 1
+        for language_code, value in translations.items():
+            localized_string = localizable_string.add_translation(
+                language_code, value, update=overwrite
+            )
+            num_translations += 1
+
+    return num_strings, num_translations
