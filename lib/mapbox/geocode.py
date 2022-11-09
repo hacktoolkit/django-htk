@@ -119,7 +119,7 @@ def get_latlng(address):
         'address': address,
     }
 
-    resource = '{address}.json'.format(address=quote(address))
+    resource = '{address}.json'.format(address=quote(address.encode('utf-8')))
     url = MAPBOX_GEOCODING_API_URL.format(resource=resource)
 
     access_token = get_access_token()
