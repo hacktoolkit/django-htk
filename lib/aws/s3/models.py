@@ -111,7 +111,8 @@ class S3MediaAsset(models.Model):
         dest_bucket_id = dest_obj.get_s3_bucket()
         dest_key_id = dest_obj.get_s3_key(suffix=key_suffix)
 
-        s3.copy_file(src_bucket_id, src_key_id, dest_bucket_id, dest_key_id)
+        was_copied = s3.copy_file(src_bucket_id, src_key_id, dest_bucket_id, dest_key_id)
+        return was_copied
 
     def delete_asset(self, thumbnail_key_suffix=THUMBNAIL_KEY_SUFFIX, force=False):
         was_deleted = self.delete_stored_file()
