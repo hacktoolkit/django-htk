@@ -22,15 +22,14 @@ class AbstractBibleBook(models.Model):
 
     66 Books of the Bible
     """
+
     name = models.CharField(max_length=20, unique=True)
     testament = models.PositiveIntegerField(choices=get_bible_book_choices())
 
     class Meta:
         abstract = True
         verbose_name = 'Bible Book'
-        ordering = (
-            'id',
-        )
+        ordering = ('id',)
 
     def __str__(self):
         value = '%s' % self.name
@@ -49,16 +48,23 @@ class AbstractBibleBook(models.Model):
 
 
 class AbstractBibleChapter(models.Model):
-    """AbstractBibleChapter model
-    """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), on_delete=models.CASCADE, related_name='chapters')
+    """AbstractBibleChapter model"""
+
+    book = models.ForeignKey(
+        htk_setting('HTK_BIBLE_BOOK_MODEL'),
+        on_delete=models.CASCADE,
+        related_name='chapters',
+    )
     chapter = models.PositiveIntegerField()
 
     class Meta:
         abstract = True
         verbose_name = 'Bible Chapter'
         unique_together = (
-            ('book', 'chapter',),
+            (
+                'book',
+                'chapter',
+            ),
         )
         ordering = (
             'book',
@@ -66,22 +72,37 @@ class AbstractBibleChapter(models.Model):
         )
 
     def __str__(self):
-        value = '%s %s' % (self.book.name, self.chapter,)
+        value = '%s %s' % (
+            self.book.name,
+            self.chapter,
+        )
         return value
 
 
 class AbstractBibleVerse(models.Model):
-    """AbstractBibleVerse model
-    """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), on_delete=models.CASCADE, related_name='%(class)ss')
-    chapter = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), on_delete=models.CASCADE, related_name='%(class)ss')
+    """AbstractBibleVerse model"""
+
+    book = models.ForeignKey(
+        htk_setting('HTK_BIBLE_BOOK_MODEL'),
+        on_delete=models.CASCADE,
+        related_name='%(class)ss',
+    )
+    chapter = models.ForeignKey(
+        htk_setting('HTK_BIBLE_CHAPTER_MODEL'),
+        on_delete=models.CASCADE,
+        related_name='%(class)ss',
+    )
     verse = models.PositiveIntegerField()
 
     class Meta:
         abstract = True
         verbose_name = 'Bible Verse'
         unique_together = (
-            ('book', 'chapter', 'verse',),
+            (
+                'book',
+                'chapter',
+                'verse',
+            ),
         )
         ordering = (
             'book',
@@ -90,7 +111,11 @@ class AbstractBibleVerse(models.Model):
         )
 
     def __str__(self):
-        value = '%s %s:%s' % (self.book.name, self.chapter.chapter, self.verse,)
+        value = '%s %s:%s' % (
+            self.book.name,
+            self.chapter.chapter,
+            self.verse,
+        )
         return value
 
     def as_dict(self):
@@ -106,9 +131,7 @@ class AbstractBibleVerse(models.Model):
         translation_model = get_translation_model(translation)
         if translation_model:
             verse = translation_model.objects.get(
-                book=self.book,
-                chapter=self.chapter,
-                verse=self.verse
+                book=self.book, chapter=self.chapter, verse=self.verse
             )
         else:
             verse = None
@@ -120,17 +143,38 @@ class AbstractBiblePassage(models.Model):
 
     For Bible passage citations
     """
-    book = models.ForeignKey(htk_setting('HTK_BIBLE_BOOK_MODEL'), on_delete=models.CASCADE, related_name='passages')
-    chapter_start = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), on_delete=models.CASCADE, related_name='passages_start')
+
+    book = models.ForeignKey(
+        htk_setting('HTK_BIBLE_BOOK_MODEL'),
+        on_delete=models.CASCADE,
+        related_name='passages',
+    )
+    chapter_start = models.ForeignKey(
+        htk_setting('HTK_BIBLE_CHAPTER_MODEL'),
+        on_delete=models.CASCADE,
+        related_name='passages_start',
+    )
     verse_start = models.PositiveIntegerField(null=True, blank=True)
-    chapter_end = models.ForeignKey(htk_setting('HTK_BIBLE_CHAPTER_MODEL'), on_delete=models.CASCADE, null=True, blank=True, related_name='passages_end')
+    chapter_end = models.ForeignKey(
+        htk_setting('HTK_BIBLE_CHAPTER_MODEL'),
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='passages_end',
+    )
     verse_end = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         abstract = True
         verbose_name = 'Bible Verse'
         unique_together = (
-            ('book', 'chapter_start', 'verse_start', 'chapter_end', 'verse_end',),
+            (
+                'book',
+                'chapter_start',
+                'verse_start',
+                'chapter_end',
+                'verse_end',
+            ),
         )
         ordering = (
             'book',
@@ -141,18 +185,28 @@ class AbstractBiblePassage(models.Model):
         )
 
     def __str__(self):
-        ends_in_different_chapter = self.chapter_end is not None and self.chapter_end != self.chapter_start
+        ends_in_different_chapter = (
+            self.chapter_end is not None
+            and self.chapter_end != self.chapter_start
+        )
 
-        value = '%(book)s %(chapter_start)s%(verse_start_separator)s%(verse_start)s%(separator)s%(chapter_end)s%(verse_end_separator)s%(verse_end)s' % {
-            'book': self.book.name,
-            'chapter_start': self.chapter_start.chapter,
-            'verse_start_separator': ':' if self.verse_start else '',
-            'verse_start': self.verse_start if self.verse_start else '',
-            'separator': '-' if self.chapter_end else '',
-            'chapter_end': self.chapter_end.chapter if ends_in_different_chapter else '',
-            'verse_end_separator': ':' if ends_in_different_chapter and self.verse_end else '',
-            'verse_end': self.verse_end if self.verse_end else '',
-        }
+        value = (
+            '%(book)s %(chapter_start)s%(verse_start_separator)s%(verse_start)s%(separator)s%(chapter_end)s%(verse_end_separator)s%(verse_end)s'
+            % {
+                'book': self.book.name,
+                'chapter_start': self.chapter_start.chapter,
+                'verse_start_separator': ':' if self.verse_start else '',
+                'verse_start': self.verse_start if self.verse_start else '',
+                'separator': '-' if self.chapter_end else '',
+                'chapter_end': self.chapter_end.chapter
+                if ends_in_different_chapter
+                else '',
+                'verse_end_separator': ':'
+                if ends_in_different_chapter and self.verse_end
+                else '',
+                'verse_end': self.verse_end if self.verse_end else '',
+            }
+        )
 
         return value
 
@@ -160,7 +214,10 @@ class AbstractBiblePassage(models.Model):
         value = {
             'version': translation,
             'ref': str(self),
-            'verses': [verse.as_dict() for verse in self.verses(translation=translation)],
+            'verses': [
+                verse.as_dict()
+                for verse in self.verses(translation=translation)
+            ],
         }
         return value
 
@@ -204,37 +261,40 @@ class AbstractBiblePassage(models.Model):
             BibleBook = get_bible_book_model()
             BibleChapter = get_bible_chapter_model()
 
-            book = BibleBook.from_reference(book_name)
-            chapter_start_obj = BibleChapter.objects.get(
-                book=book,
-                chapter=chapter_start
-            )
-            if chapter_end:
-                chapter_end_obj = BibleChapter.objects.get(
-                    book=book,
-                    chapter=chapter_end
+            try:
+                book = BibleBook.from_reference(book_name)
+                chapter_start_obj = BibleChapter.objects.get(
+                    book=book, chapter=chapter_start
                 )
-            elif verse_end:
-                chapter_end_obj = chapter_start_obj
-            else:
-                chapter_end_obj = None
+                if chapter_end:
+                    chapter_end_obj = BibleChapter.objects.get(
+                        book=book, chapter=chapter_end
+                    )
+                elif verse_end:
+                    chapter_end_obj = chapter_start_obj
+                else:
+                    chapter_end_obj = None
 
-            if persist:
-                bible_passage, was_created = cls.objects.get_or_create(
-                    book=book,
-                    chapter_start=chapter_start_obj,
-                    verse_start=verse_start,
-                    chapter_end=chapter_end_obj,
-                    verse_end=verse_end
-                )
-            else:
-                bible_passage = cls(
-                    book=book,
-                    chapter_start=chapter_start_obj,
-                    verse_start=verse_start,
-                    chapter_end=chapter_end_obj,
-                    verse_end=verse_end
-                )
+                if persist:
+                    bible_passage, was_created = cls.objects.get_or_create(
+                        book=book,
+                        chapter_start=chapter_start_obj,
+                        verse_start=verse_start,
+                        chapter_end=chapter_end_obj,
+                        verse_end=verse_end,
+                    )
+                else:
+                    bible_passage = cls(
+                        book=book,
+                        chapter_start=chapter_start_obj,
+                        verse_start=verse_start,
+                        chapter_end=chapter_end_obj,
+                        verse_end=verse_end,
+                    )
+            except BibleBook.DoesNotExist:
+                bible_passage = None
+            except BibleChapter.DoesNotExist:
+                bible_passage = None
         else:
             bible_passage = None
 
@@ -245,13 +305,10 @@ class AbstractBiblePassage(models.Model):
             verses = self.chapter_start.bibleverses.all()
 
             if self.verse_start is not None:
-                verses = verses.filter(
-                    verse=self.verse_start
-                )
+                verses = verses.filter(verse=self.verse_start)
         elif self.chapter_end == self.chapter_start:
             verses = self.chapter_start.bibleverses.filter(
-                verse__gte=self.verse_start,
-                verse__lte=self.verse_end
+                verse__gte=self.verse_start, verse__lte=self.verse_end
             )
         elif self.chapter_end != self.chapter_start:
             if self.chapter_end.chapter < self.chapter_start.chapter:
@@ -269,7 +326,7 @@ class AbstractBiblePassage(models.Model):
                 verse
                 for chapter in self.book.chapters.filter(
                     chapter__gt=self.chapter_start.chapter,
-                    chapter__lt=self.chapter_end.chapter
+                    chapter__lt=self.chapter_end.chapter,
                 )
                 for verse in chapter.bibleverses.all()
             ]
