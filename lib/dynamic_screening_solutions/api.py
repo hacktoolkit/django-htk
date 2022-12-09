@@ -108,6 +108,20 @@ class Htk321FormsAPI(object):
             extra_data=extra_data
         )
 
+    def handle_response(self, response):
+        try:
+            response_json = response.json()
+            response_json = None if type(response_json) == dict and response_json.get('error') else response_json
+        except ValueError:
+            response_json = None
+
+        if response_json is None:
+            self.handle_bad_response(response)
+        else:
+            pass
+
+        return response_json
+
     def request_get(self, request_url=None, params=None, should_retry=True, **kwargs):
         if request_url is None:
             request_url = self.get_request_url()
@@ -148,6 +162,7 @@ class Htk321FormsAPI(object):
 
         if bad_response:
             self.handle_bad_response(response)
+            response_json = None
         else:
             pass
 
@@ -159,12 +174,7 @@ class Htk321FormsAPI(object):
 
         headers = self.make_request_headers(action='POST')
         response = requests.post(request_url, headers=headers, json=data, **kwargs)
-
-        try:
-            response_json = response.json()
-        except ValueError:
-            response_json = None
-            self.handle_bad_response(response)
+        response_json = self.handle_response(response)
 
         return response_json
 
@@ -174,12 +184,7 @@ class Htk321FormsAPI(object):
 
         headers = self.make_request_headers(action='PUT')
         response = requests.put(request_url, headers=headers, json=data, **kwargs)
-
-        try:
-            response_json = response.json()
-        except ValueError:
-            response_json = None
-            self.handle_bad_response(response)
+        response_json = self.handle_response(response)
 
         return response_json
 
@@ -189,12 +194,7 @@ class Htk321FormsAPI(object):
 
         headers = self.make_request_headers(action='DELETE')
         response = requests.delete(request_url, headers=headers, **kwargs)
-
-        try:
-            response_json = response.json()
-        except ValueError:
-            response_json = None
-            self.handle_bad_response(response)
+        response_json = self.handle_response(response)
 
         return response_json
 
@@ -484,6 +484,7 @@ class Htk321FormsAPI(object):
         request_url = self.get_request_url(resource_path=resource_path)
 
         response_json = self.request_get(request_url)
+        response_json = response_json or []
         return response_json
 
     def get_webhook(self, company_id, webhook_id):
