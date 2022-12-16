@@ -273,7 +273,7 @@ class BaseStripeCustomer(BaseStripeModel):
         - https://stripe.com/docs/api/customers/object
         """
         stripe_customer = self.retrieve()
-        card_id = stripe_customer.get('default_source')
+        card_id = stripe_customer.get('default_source') if stripe_customer else None
         if card_id:
             card = self.retrieve_card(card_id)
         else:
