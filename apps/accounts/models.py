@@ -254,12 +254,8 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         if primary_email:
             email = primary_email
         else:
-            confirmed_emails = self.get_confirmed_emails()
-            if confirmed_emails.exists():
-
-                email = confirmed_emails.first().email
-            else:
-                email = None
+            confirmed_email = self.get_confirmed_emails().first()
+            email = confirmed_email.email if confirmed_email else None
 
         return email
 
