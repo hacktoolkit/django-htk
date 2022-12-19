@@ -483,8 +483,7 @@ class Htk321FormsAPI(object):
 
         request_url = self.get_request_url(resource_path=resource_path)
 
-        response_json = self.request_get(request_url)
-        response_json = response_json or []
+        response_json = self.request_get(request_url) or []
         return response_json
 
     def get_webhook(self, company_id, webhook_id):
