@@ -7,8 +7,11 @@
   <title>Features</title>
   <style>
     :root {
-      --inactive: rgba(0, 0, 0, 0.2);
-      --active: #00ba69;
+      --gray: rgba(0, 0, 0, 0.2);
+      --dark-gray: rgba(0, 0, 0, 0.75);
+      --green: #00ba69;
+      --red: #df6b51;
+      --orange: #f9bc82;
     }
     * {
       box-sizing: border-box;
@@ -30,7 +33,7 @@
       width: 32%;
       margin: 10px;
       padding: 1rem;
-      border: 1px solid rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--gray);
       border-radius: 4px;
     }
     .feature-header {
@@ -47,18 +50,18 @@
       width: 10px;
       height: 10px;
       margin-right: 8px;
-      background-color: var(--inactive);
+      background-color: var(--gray);
       border-radius: 5px;
     }
     .feature.on h3::before {
-      background-color: var(--active);
+      background-color: var(--green);
     }
     .feature-switch {
       display: block;
       position: relative;
       width: 50px;
       height: 26px;
-      background-color: var(--inactive);
+      background-color: var(--gray);
       border-radius: 13px;
     }
     .feature-switch::after {
@@ -73,7 +76,7 @@
       background-color: #FFFFFF;
     }
     .feature.on .feature-switch {
-      background-color: var(--active);
+      background-color: var(--green);
     }
     .feature.on .feature-switch::after {
       left: initial;
@@ -103,7 +106,7 @@
       bottom: 0;
       justify-content: center;
       align-items: center;
-      background-color: rgba(0, 0, 0, 0.7);
+      background-color: var(--dark-gray);
       z-index: 1000;
     }
     .modal {
@@ -121,8 +124,8 @@
       margin-bottom: 0.5rem;
       font-size: 3.3rem;
       text-align: center;
-      color: #f9bc82;
-      border: 2px solid #f9bc82;
+      color: var(--orange);
+      border: 2px solid var(--orange);
       border-radius: 50%;
     }
     .modal h2 {
@@ -147,12 +150,16 @@
       transition: all 0.1s ease-in-out;
     }
     button:hover {
-      -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-      -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+      -webkit-box-shadow: 0px 0px 5px 0px var(--dark-gray);
+      -moz-box-shadow: 0px 0px 5px 0px var(--dark-gray);
+      box-shadow: 0px 0px 5px 0px var(--dark-gray);
     }
     .disable-text {
       display: none;
+    }
+    .error-text {
+      display: none;
+      color: var(--red);
     }
     .modal-container.disable .enable-text {
       display: none;
@@ -161,10 +168,13 @@
       display: initial;
     }
     button.btn-confirm {
-      background-color: var(--active);
+      background-color: var(--green);
     }
     .modal-container.disable button.btn-confirm {
-      background-color: #df6b51;
+      background-color: var(--red);
+    }
+    .modal-container.error .error-text {
+      display: block;
     }
   </style>
 </head>
@@ -183,7 +193,7 @@
       </div>
       <div class="feature-info">
         <div><b>Created At:</b> {{ feature_flag.created_at|date }}</div>
-        <div class="update-date"><b>Updated At:</b> {{ feature_flag.updated_at|date }}</div>
+        <div><b>Updated At:</b> <span class="update-date">{{ feature_flag.updated_at|date }}</span></div>
         <div><b>Enabled After:</b> {{ feature_flag.enabled_after|date|default:"-" }}</div>
         <div><b>Disabled After:</b> {{ feature_flag.disabled_after|date|default:"-" }}</div>
       </div>
@@ -196,6 +206,7 @@
       <h2>Are you sure?</h2>
       <p class="enable-text">The feature <b class="feature-name"></b> will be <b>Enabled</b> and all content will be usable.</p>
       <p class="disable-text">The feature <b class="feature-name"></b> will be <b>Disabled</b> and will not be usable.</p>
+      <p class="error-text">An error occured while trying to process the request.</p>
       <div class="modal-buttons">
         <button class="btn-close">Cancel</button>
         <button class="btn-confirm">
@@ -213,9 +224,11 @@
       const url = '{% url 'htk_apps_features_toggle' 0 %}';
       const modal = $('.modal-container');
       let feature;
+
       $('a.feature-switch').on('click', function(e) {
         e.preventDefault();
         feature = $(this).closest('.feature');
+        modal.removeClass('error')
         modal.toggleClass('disable', feature.hasClass('on'));
         modal.find('.feature-name').text(feature.find('h3').text());
         modal.attr('style', 'display: flex;');
@@ -227,10 +240,16 @@
 
       $('.btn-confirm').on('click', function(e) {
         const id = feature.data('id');
-        fetch(url.replace('0', id)).then((response) => response.json()).then((response) => {
-          modal.attr('style', '');
-          feature.toggleClass('on', response.enabled);
-        });
+        fetch(url.replace('0', id))
+          .then((response) => response.json())
+          .then((response) => {
+            modal.attr('style', '');
+            feature.find('.update-date').text(response.updated_at);
+            feature.toggleClass('on', response.enabled);
+          })
+          .catch((error) => {
+            modal.addClass('error');
+          });
       });
     });
   </script>

@@ -1,3 +1,6 @@
+# Django Imports
+from django.template.defaultfilters import date
+
 # HTK Imports
 from htk.api.utils import (
     json_response_not_found,
@@ -38,7 +41,7 @@ def features_toggle_view(request, fid):
         response = json_response_okay(
             {
                 'enabled': feature_flag.enabled,
-                'updated_at': feature_flag.updated_at,
+                'updated_at': date(feature_flag.updated_at),
             }
         )
 
