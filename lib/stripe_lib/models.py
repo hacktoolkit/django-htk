@@ -1,5 +1,3 @@
-# Python Standard Library Imports
-
 # Third Party (PyPI) Imports
 import rollbar
 import stripe
@@ -20,6 +18,9 @@ from htk.lib.stripe_lib.utils import (
 )
 from htk.utils import htk_setting
 from htk.utils.request import get_current_request
+
+
+# isort: off
 
 
 class BaseStripeModel(models.Model):
@@ -55,9 +56,7 @@ class BaseStripeModel(models.Model):
         - https://stripe.com/docs/api/plans/retrieve
         """
         _initialize_stripe(live_mode=self.live_mode)
-        args = (
-            self.stripe_id,
-        )
+        args = (self.stripe_id,)
         stripe_obj = safe_stripe_call(self.STRIPE_API_CLASS.retrieve, *args)
         return stripe_obj
 
@@ -67,6 +66,7 @@ class BaseStripeCustomer(BaseStripeModel):
 
     See: https://stripe.com/docs/api/customers
     """
+
     # class attributes
     STRIPE_API_CLASS = stripe.Customer
 
@@ -82,19 +82,12 @@ class BaseStripeCustomer(BaseStripeModel):
         https://stripe.com/docs/api/customers/update
         """
         _initialize_stripe(live_mode=self.live_mode)
-        args = (
-            self.stripe_id,
-        )
-        cu = safe_stripe_call(
-            self.STRIPE_API_CLASS.modify,
-            *args,
-            **kwargs
-        )
+        args = (self.stripe_id,)
+        cu = safe_stripe_call(self.STRIPE_API_CLASS.modify, *args, **kwargs)
         return cu
 
     def update_email(self, email=None):
-        """Updates the email for this Customer
-        """
+        """Updates the email for this Customer"""
         stripe_customer = None
         if email is not None:
             stripe_customer = self.retrieve()
@@ -174,6 +167,7 @@ class BaseStripeCustomer(BaseStripeModel):
         https://stripe.com/docs/api/invoices/create
         """
         _initialize_stripe(live_mode=self.live_mode)
+
         stripe_invoice = safe_stripe_call(
             stripe.Invoice.create,
             **{
@@ -182,7 +176,10 @@ class BaseStripeCustomer(BaseStripeModel):
         )
 
         if stripe_invoice is None:
-            rollbar.report_message('Could not create invoice for Customer %s' % self.stripe_id, 'error')
+            rollbar.report_message(
+                'Could not create invoice for Customer %s' % self.stripe_id,
+                'error',
+            )
         else:
             pass
 
@@ -196,9 +193,7 @@ class BaseStripeCustomer(BaseStripeModel):
         """
         stripe_invoice = self.create_invoice()
         if stripe_invoice:
-            args = (
-                stripe_invoice['id'],
-            )
+            args = (stripe_invoice['id'],)
             result = safe_stripe_call(stripe.Invoice.pay, *args)
         else:
             # invoice not created, do nothing
@@ -214,9 +209,9 @@ class BaseStripeCustomer(BaseStripeModel):
 
         https://stripe.com/docs/api/cards/create
         """
-        args = (
-            self.stripe_id,
-        )
+        _initialize_stripe(live_mode=self.live_mode)
+
+        args = (self.stripe_id,)
         kwargs = {
             'source': card,
         }
@@ -233,6 +228,8 @@ class BaseStripeCustomer(BaseStripeModel):
 
         https://stripe.com/docs/api/cards/retrieve
         """
+        _initialize_stripe(live_mode=self.live_mode)
+
         args = (
             self.stripe_id,
             card_id,
@@ -251,6 +248,8 @@ class BaseStripeCustomer(BaseStripeModel):
         - https://stripe.com/docs/api/cards/update
         - https://stripe.com/docs/api/customers/update
         """
+        _initialize_stripe(live_mode=self.live_mode)
+
         # first, add the card
         stripe_card = self.add_card(card)
 
@@ -282,9 +281,9 @@ class BaseStripeCustomer(BaseStripeModel):
         return card
 
     def get_cards(self):
-        args = (
-            self.stripe_id,
-        )
+        _initialize_stripe(live_mode=self.live_mode)
+
+        args = (self.stripe_id,)
         kwargs = {
             'object': 'card',
         }
@@ -299,8 +298,7 @@ class BaseStripeCustomer(BaseStripeModel):
         return cards
 
     def has_card(self):
-        """Determines whether this StripeCustomer has a card
-        """
+        """Determines whether this StripeCustomer has a card"""
         cards = self.get_cards()
         has_card = len(cards) > 0
         return has_card
@@ -313,12 +311,11 @@ class BaseStripeCustomer(BaseStripeModel):
         return self.make_subscription_obj()
 
     def make_subscription_obj(self, subscription_id=None):
-        """Creates a subscription object to make it easier to handle this
-        """
+        """Creates a subscription object to make it easier to handle this"""
         return BaseStripeSubscription(
             stripe_id=subscription_id,
             live_mode=self.live_mode,
-            customer=self
+            customer=self,
         )
 
     def create_subscription(self, price_or_plan, invoice=True):
@@ -326,7 +323,9 @@ class BaseStripeCustomer(BaseStripeModel):
 
         https://stripe.com/docs/api/subscriptions/create
         """
-        stripe_subscription = self.subscription_obj.create(price_or_plan, invoice=invoice)
+        stripe_subscription = self.subscription_obj.create(
+            price_or_plan, invoice=invoice
+        )
         return stripe_subscription
 
     def retrieve_subscription(self, subscription_id):
@@ -334,6 +333,8 @@ class BaseStripeCustomer(BaseStripeModel):
 
         https://stripe.com/docs/api/subscriptions/retrieve
         """
+        _initialize_stripe(live_mode=self.live_mode)
+
         if subscription_id:
             subscription = self.make_subscription_obj(
                 subscription_id
@@ -344,7 +345,9 @@ class BaseStripeCustomer(BaseStripeModel):
 
         return subscription
 
-    def change_subscription_plan(self, subscription_id, new_price_or_plan, prorate=True, invoice=True):
+    def change_subscription_plan(
+        self, subscription_id, new_price_or_plan, prorate=True, invoice=True
+    ):
         """Changes the plan on a Subscription for this Customer
 
         NOTE: This function/model only assumes one current active price per subscription
@@ -358,15 +361,17 @@ class BaseStripeCustomer(BaseStripeModel):
             item = {
                 'id': stripe_subscription['items']['data'][0]['id'],
             }
-            if (
-                isinstance(new_price_or_plan, str)
-                or isinstance(new_price_or_plan, type(u''))
+            if isinstance(new_price_or_plan, str) or isinstance(
+                new_price_or_plan, type(u'')
             ):
                 item['price'] = new_price_or_plan
             elif isinstance(new_price_or_plan, dict):
                 item['price_data'] = new_price_or_plan
             else:
-                raise Exception('Unsupported price_or_plan type: %s' % type(new_price_or_plan))
+                raise Exception(
+                    'Unsupported price_or_plan type: %s'
+                    % type(new_price_or_plan)
+                )
 
             kwargs = {
                 'items': [
@@ -374,13 +379,13 @@ class BaseStripeCustomer(BaseStripeModel):
                     item,
                 ],
                 # https://stripe.com/docs/billing/subscriptions/billing-cycle#prorations
-                'proration_behavior': 'create_prorations' if prorate else 'none',
+                'proration_behavior': 'create_prorations'
+                if prorate
+                else 'none',
             }
             updated_subscription = self.make_subscription_obj(
                 subscription_id
-            ).modify(
-                **kwargs
-            )
+            ).modify(**kwargs)
 
             if updated_subscription and invoice:
                 # Note on Prorations:
@@ -415,7 +420,7 @@ class BaseStripeCustomer(BaseStripeModel):
             subscription_id,
             new_price_or_plan,
             prorate=False,
-            invoice=False
+            invoice=False,
         )
         return updated_subscription
 
@@ -428,9 +433,7 @@ class BaseStripeCustomer(BaseStripeModel):
         - True if `subscription_id` was canceled
         - False if `subscription_id` was not found
         """
-        was_deleted = self.make_subscription_obj(
-            subscription_id
-        ).cancel()
+        was_deleted = self.make_subscription_obj(subscription_id).cancel()
         return was_deleted
 
     ##
@@ -443,9 +446,7 @@ class BaseStripeCustomer(BaseStripeModel):
         """
         stripe_customer = self.retrieve()
         if stripe_customer:
-            obj = safe_stripe_call(
-                stripe_customer.delete
-            )
+            obj = safe_stripe_call(stripe_customer.delete)
             if obj:
                 super(BaseStripeCustomer, self).delete()
             else:
@@ -461,16 +462,19 @@ class BaseStripeSubscription(BaseStripeModel):
 
     https://stripe.com/docs/api/subscriptions
     """
+
     # class attributes
     STRIPE_API_CLASS = stripe.Subscription
 
     # fields
     # overrides `stripe_id`: unlike others, this will get set after creating
-    stripe_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    stripe_id = models.CharField(
+        max_length=255, unique=True, null=True, blank=True
+    )
     customer = models.ForeignKey(
         htk_setting('HTK_STRIPE_CUSTOMER_MODEL'),
         related_name='subscriptions',
-        on_delete=models.DO_NOTHING
+        on_delete=models.DO_NOTHING,
     )
 
     def create(self, price_or_plan, invoice=True):
@@ -481,15 +485,16 @@ class BaseStripeSubscription(BaseStripeModel):
         _initialize_stripe(live_mode=self.live_mode)
 
         item = {}
-        if (
-            isinstance(price_or_plan, str)
-            or isinstance(price_or_plan, type(u''))
+        if isinstance(price_or_plan, str) or isinstance(
+            price_or_plan, type(u'')
         ):
             item['price'] = price_or_plan
         elif isinstance(price_or_plan, dict):
             item['price_data'] = price_or_plan
         else:
-            raise Exception('Unsupported price_or_plan type: %s' % type(price_or_plan))
+            raise Exception(
+                'Unsupported price_or_plan type: %s' % type(price_or_plan)
+            )
 
         kwargs = {
             'customer': self.customer.stripe_id,
@@ -518,9 +523,7 @@ class BaseStripeSubscription(BaseStripeModel):
 
         https://stripe.com/docs/api/subscriptions/update
         """
-        args = (
-            self.stripe_id,
-        )
+        args = (self.stripe_id,)
         subscription = safe_stripe_call(
             self.STRIPE_API_CLASS.modify,
             *args,
@@ -540,13 +543,8 @@ class BaseStripeSubscription(BaseStripeModel):
         subscription = self.retrieve()
 
         if subscription:
-            args = (
-                subscription.get('id'),
-            )
-            _ = safe_stripe_call(
-                self.STRIPE_API_CLASS.delete,
-                *args
-            )
+            args = (subscription.get('id'),)
+            _ = safe_stripe_call(self.STRIPE_API_CLASS.delete, *args)
             was_deleted = True
         else:
             was_deleted = False
@@ -554,12 +552,12 @@ class BaseStripeSubscription(BaseStripeModel):
         return was_deleted
 
 
-
 class BaseStripeProduct(BaseStripeModel):
     """Django model for Stripe Product
 
     https://stripe.com/docs/api/products
     """
+
     # class attributes
     STRIPE_API_CLASS = stripe.Product
 
@@ -596,13 +594,20 @@ class BaseStripePrice(BaseStripeModel):
 
     See: https://stripe.com/docs/api/prices
     """
+
     # class attributes
     STRIPE_API_CLASS = stripe.Price
 
     # fields
     # overrides `stripe_id`: unlike others, this will get set after creating
-    stripe_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    product = models.ForeignKey(htk_setting('HTK_STRIPE_PRODUCT_MODEL'), related_name='prices', on_delete=models.CASCADE)
+    stripe_id = models.CharField(
+        max_length=255, unique=True, null=True, blank=True
+    )
+    product = models.ForeignKey(
+        htk_setting('HTK_STRIPE_PRODUCT_MODEL'),
+        related_name='prices',
+        on_delete=models.CASCADE,
+    )
     unit_amount = models.PositiveIntegerField(default=0)
     currency = models.CharField(max_length=3, default=DEFAULT_STRIPE_CURRENCY)
     active = models.BooleanField(default=True)
@@ -659,6 +664,7 @@ class BaseStripePlan(BaseStripeModel):
 
     New integrations should use `BaseStripePrice`
     """
+
     STRIPE_API_CLASS = stripe.Plan
 
     # fields
@@ -676,7 +682,10 @@ class BaseStripePlan(BaseStripeModel):
         abstract = True
 
         unique_together = (
-            ('stripe_id', 'live_mode',),
+            (
+                'stripe_id',
+                'live_mode',
+            ),
         )
 
     def create(self):
@@ -708,7 +717,7 @@ class AbstractStripeCustomerHolder(models.Model):
         null=True,
         default=None,
         on_delete=models.SET_DEFAULT,
-        related_name=htk_setting('HTK_STRIPE_CUSTOMER_HOLDER_RELATED_NAME')
+        related_name=htk_setting('HTK_STRIPE_CUSTOMER_HOLDER_RELATED_NAME'),
     )
 
     class Meta:
@@ -728,11 +737,15 @@ class AbstractStripeCustomerHolder(models.Model):
         if self.stripe_customer:
             pass
         else:
-            # HTK Imports
             from htk.lib.stripe_lib.utils import create_customer
+
             email = self.get_stripe_customer_email()
             description = self.get_stripe_customer_description()
-            customer, stripe_customer = create_customer(card=card, email=email, description=description)
+            customer, stripe_customer = create_customer(
+                card=card,
+                email=email,
+                description=description,
+            )
             self.stripe_customer = customer
             self.save()
         return self.stripe_customer
