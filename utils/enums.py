@@ -1,7 +1,46 @@
 # Python Standard Library Imports
+from enum import Enum
 
 # HTK Imports
 from htk.utils import htk_setting
+
+
+# isort: off
+
+
+class HtkEnum(Enum):
+    def json_encode(self):
+        """json_encode Generate a valid dict for JSON
+
+        Given enum item is converted to a dict that is encodable to JSON.
+
+        Returns:
+            dict: { 'name': str, 'value': int, 'isHidden': bool }
+        """
+        payload = {
+            'name': enum_to_str(self),
+            'value': self.value,
+            'isHidden': (
+                self.is_hidden() if hasattr(self, 'is_hidden') else False
+            ),
+        }
+        return payload
+
+    @classmethod
+    def choices(cls):
+        """choices Dict of enum items
+
+        An helper method to easily build enum into a `dict`. This dict can be
+        used easily pass to JS frameworks.
+
+        Returns:
+            dict: { [NAME]: { 'name': str, 'value': int, 'isHidden': bool } }
+        """
+        choices = {
+            _enum.name: _enum.json_encode()
+            for _enum in cls
+        }
+        return choices
 
 
 def enum_to_str(enum_obj):
