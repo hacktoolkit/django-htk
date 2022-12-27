@@ -16,13 +16,15 @@ from htk.view_helpers import (
 # isort: off
 
 
-def features_view(request):
-    data = wrap_data(request)
+def features_view(request, template, data=None, renderer=_r):
     FeatureFlag = get_feature_flag_model()
+
+    if data is None:
+        data = wrap_data(request)
 
     data['feature_flags'] = FeatureFlag.objects.all()
 
-    response = _r(request, 'features.html', data)
+    response = renderer(request, template, data)
     return response
 
 
