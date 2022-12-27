@@ -218,7 +218,7 @@
   <script src="https://code.jquery.com/jquery-3.6.2.slim.min.js" integrity="sha256-E3P3OaTZH+HlEM7f1gdAT3lHAn4nWBZXuYe89DFg2d0=" crossorigin="anonymous"></script>
   <script>
     $(document).ready(() => {
-      const url = '{% url 'htk_apps_features_toggle' 0 %}';
+      const url = '{% url api_url_name 0 %}';
       const modal = $('.modal-container');
       let feature;
 
