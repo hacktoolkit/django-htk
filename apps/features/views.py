@@ -26,10 +26,10 @@ def features_view(request):
     return response
 
 
-def features_toggle_view(request, fid):
+def features_toggle_view(request, feature_id):
     FeatureFlag = get_feature_flag_model()
     try:
-        feature_flag = FeatureFlag.objects.get(id=fid)
+        feature_flag = FeatureFlag.objects.get(id=feature_id)
     except FeatureFlag.DoesNotExist:
         feature_flag = None
 

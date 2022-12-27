@@ -1,31 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Features</title>
   <style>
-    :root {
+    .features-wrapper {
       --gray: rgba(0, 0, 0, 0.2);
       --dark-gray: rgba(0, 0, 0, 0.75);
       --green: #00ba69;
       --red: #df6b51;
       --orange: #f9bc82;
-    }
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    }
-    .wrapper {
+
       display: flex;
       position: relative;
       margin: 2rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
       flex-wrap: wrap;
       z-index: 900;
+    }
+    .features-wrapper * {
+      box-sizing: border-box;
     }
     .feature {
       display: flex;
@@ -55,6 +44,13 @@
     }
     .feature.on h3::before {
       background-color: var(--green);
+    }
+    .feature h3 span {
+      display: block;
+      margin-left: 23px;
+      font: monospace;
+      font-size: 0.75rem;
+      font-weight: normal;
     }
     .feature-switch {
       display: block;
@@ -177,13 +173,14 @@
       display: block;
     }
   </style>
-</head>
-<body>
-  <div class="wrapper">
+  <div class="features-wrapper">
     {% for feature_flag in feature_flags %}
     <div class="feature{% if feature_flag.is_enabled %} on{% endif %}" data-id="{{ feature_flag.id }}">
       <div class="feature-header">
-        <h3>{{ feature_flag.title }}</h3>
+        <h3>
+          {{ feature_flag.title }}
+          <span>{{ feature_flag.name }}</span>
+        </h3>
         <div class="feature-switch-wrapper">
           <a href="#" class="feature-switch"></a>
         </div>
@@ -253,5 +250,3 @@
       });
     });
   </script>
-</body>
-</html>
