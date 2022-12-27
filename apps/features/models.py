@@ -17,15 +17,10 @@ class AbstractFeatureFlag(HtkBaseModel):
 
     class Meta:
         abstract = True
-        ordering = (
-            'name',
-        )
+        ordering = ('name',)
 
     def __str__(self):
-        value = '{} - {}'.format(
-            self.__class__.__name__,
-            self.name
-        )
+        value = '{} - {}'.format(self.__class__.__name__, self.name)
         return value
 
     def as_dict(self):
@@ -41,6 +36,7 @@ class AbstractFeatureFlag(HtkBaseModel):
     def save(self, *args, **kwargs):
         super(AbstractFeatureFlag, self).save(*args, **kwargs)
         from htk.apps.features.utils import clear_cache
+
         clear_cache()
 
     @property
@@ -50,12 +46,8 @@ class AbstractFeatureFlag(HtkBaseModel):
         if not is_enabled:
             if self.enabled_after is not None:
                 now = utcnow()
-                is_enabled = (
-                    now >= self.enabled_after
-                    and (
-                        self.disabled_after is None
-                        or now <= self.disabled_after
-                    )
+                is_enabled = now >= self.enabled_after and (
+                    self.disabled_after is None or now <= self.disabled_after
                 )
             else:
                 pass
@@ -63,3 +55,8 @@ class AbstractFeatureFlag(HtkBaseModel):
             pass
 
         return is_enabled
+
+    @property
+    def title(self):
+        value = ' '.join([word.capitalize() for word in self.name.split('_')])
+        return value
