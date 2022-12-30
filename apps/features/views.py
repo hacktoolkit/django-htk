@@ -16,13 +16,22 @@ from htk.view_helpers import (
 # isort: off
 
 
-def features_view(request):
-    data = wrap_data(request)
+def features_view(
+    request,
+    template,
+    data=None,
+    renderer=_r,
+    api_url_name='htk_apps_features_toggle'
+):
     FeatureFlag = get_feature_flag_model()
 
-    data['feature_flags'] = FeatureFlag.objects.all()
+    if data is None:
+        data = wrap_data(request)
 
-    response = _r(request, 'features.html', data)
+    data['feature_flags'] = FeatureFlag.objects.all()
+    data['api_url_name'] = api_url_name
+
+    response = renderer(request, template, data)
     return response
 
 

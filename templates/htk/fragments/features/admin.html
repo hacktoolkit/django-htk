@@ -1,11 +1,12 @@
   <style>
-    .features-wrapper {
+    .features-app {
       --gray: rgba(0, 0, 0, 0.2);
       --dark-gray: rgba(0, 0, 0, 0.75);
       --green: #00ba69;
       --red: #df6b51;
       --orange: #f9bc82;
-
+    }
+    .features-wrapper {
       display: flex;
       position: relative;
       margin: 2rem;
@@ -31,6 +32,7 @@
     .feature h3 {
       position: relative;
       margin: 0;
+      margin-bottom: 15px;
       flex-grow: 1;
     }
     .feature h3::before {
@@ -48,8 +50,8 @@
     .feature h3 span {
       display: block;
       margin-left: 23px;
-      font: monospace;
-      font-size: 0.75rem;
+      font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+      font-size: 0.75em;
       font-weight: normal;
     }
     .feature-switch {
@@ -93,7 +95,7 @@
       padding-right: 10px;
       box-sizing: border-box;
     }
-    .modal-container {
+    .features-modal-container {
       position: fixed;
       display: none;
       top: 0;
@@ -105,7 +107,7 @@
       background-color: var(--dark-gray);
       z-index: 1000;
     }
-    .modal {
+    .features-modal {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -114,7 +116,7 @@
       border-radius: 6px;
       background-color: #fff;
     }
-    .modal h1 {
+    .features-modal h1 {
       width: 80px;
       height: 80px;
       margin-bottom: 0.5rem;
@@ -124,13 +126,13 @@
       border: 2px solid var(--orange);
       border-radius: 50%;
     }
-    .modal h2 {
+    .features-modal h2 {
       margin-bottom: 0.5rem;
     }
-    .modal p {
+    .features-modal p {
       text-align: center;
     }
-    .modal-buttons {
+    .features-modal-buttons {
       margin: 1rem 0;
     }
     button {
@@ -157,69 +159,71 @@
       display: none;
       color: var(--red);
     }
-    .modal-container.disable .enable-text {
+    .features-modal-container.disable .enable-text {
       display: none;
     }
-    .modal-container.disable .disable-text {
+    .features-modal-container.disable .disable-text {
       display: initial;
     }
     button.btn-confirm {
       background-color: var(--green);
     }
-    .modal-container.disable button.btn-confirm {
+    .features-modal-container.disable button.btn-confirm {
       background-color: var(--red);
     }
-    .modal-container.error .error-text {
+    .features-modal-container.error .error-text {
       display: block;
     }
   </style>
-  <div class="features-wrapper">
-    {% for feature_flag in feature_flags %}
-    <div class="feature{% if feature_flag.is_enabled %} on{% endif %}" data-id="{{ feature_flag.id }}">
-      <div class="feature-header">
-        <h3>
-          {{ feature_flag.title }}
-          <span>{{ feature_flag.name }}</span>
-        </h3>
-        <div class="feature-switch-wrapper">
-          <a href="#" class="feature-switch"></a>
+  <div class="features-app">
+    <div class="features-wrapper">
+      {% for feature_flag in feature_flags %}
+      <div class="feature{% if feature_flag.is_enabled %} on{% endif %}" data-id="{{ feature_flag.id }}">
+        <div class="feature-header">
+          <h3>
+            {{ feature_flag.title }}
+            <span>{{ feature_flag.name }}</span>
+          </h3>
+          <div class="feature-switch-wrapper">
+            <a href="#" class="feature-switch"></a>
+          </div>
+        </div>
+        <div class="feature-description">
+          <p>{{ feature_flag.description }}</p>
+        </div>
+        <div class="feature-info">
+          <div><b>Created At:</b> {{ feature_flag.created_at|date }}</div>
+          <div><b>Updated At:</b> <span class="update-date">{{ feature_flag.updated_at|date }}</span></div>
+          <div><b>Enabled After:</b> {{ feature_flag.enabled_after|date|default:"-" }}</div>
+          <div><b>Disabled After:</b> {{ feature_flag.disabled_after|date|default:"-" }}</div>
         </div>
       </div>
-      <div class="feature-description">
-        <p>{{ feature_flag.description }}</p>
-      </div>
-      <div class="feature-info">
-        <div><b>Created At:</b> {{ feature_flag.created_at|date }}</div>
-        <div><b>Updated At:</b> <span class="update-date">{{ feature_flag.updated_at|date }}</span></div>
-        <div><b>Enabled After:</b> {{ feature_flag.enabled_after|date|default:"-" }}</div>
-        <div><b>Disabled After:</b> {{ feature_flag.disabled_after|date|default:"-" }}</div>
-      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
-  <div class="modal-container">
-    <div class="modal disable">
-      <h1>!</h1>
-      <h2>Are you sure?</h2>
-      <p class="enable-text">The feature <b class="feature-name"></b> will be <b>Enabled</b> and all content will be usable.</p>
-      <p class="disable-text">The feature <b class="feature-name"></b> will be <b>Disabled</b> and will not be usable.</p>
-      <p class="error-text">An error occured while trying to process the request.</p>
-      <div class="modal-buttons">
-        <button class="btn-close">Cancel</button>
-        <button class="btn-confirm">
-          Yes,
-          <span class="disable-text">Disable</span>
-          <span class="enable-text">Enable</span>
-          it!
-        </button>
+    <div class="features-modal-container">
+      <div class="features-modal disable">
+        <h1>!</h1>
+        <h2>Are you sure?</h2>
+        <p class="enable-text">The feature <b class="feature-name"></b> will be <b>Enabled</b>.</p>
+        <p class="disable-text">The feature <b class="feature-name"></b> will be <b>Disabled</b>.</p>
+        <p class="error-text">An error occured while trying to process the request.</p>
+        <div class="features-modal-buttons">
+          <button class="btn-close">Cancel</button>
+          <button class="btn-confirm">
+            Yes,
+            <span class="disable-text">Disable</span>
+            <span class="enable-text">Enable</span>
+            it!
+          </button>
+        </div>
       </div>
     </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.6.2.slim.min.js" integrity="sha256-E3P3OaTZH+HlEM7f1gdAT3lHAn4nWBZXuYe89DFg2d0=" crossorigin="anonymous"></script>
   <script>
     $(document).ready(() => {
-      const url = '{% url 'htk_apps_features_toggle' 0 %}';
-      const modal = $('.modal-container');
+      const url = '{% url api_url_name 0 %}';
+      const modal = $('.features-modal-container');
       let feature;
 
       $('a.feature-switch').on('click', function(e) {
