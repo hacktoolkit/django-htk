@@ -35,9 +35,14 @@ class Htk321FormsAPI(object):
 
     https://api.321forms.com/docs
     """
+
     def __init__(self, username=None, secret_key=None, *args, **kwargs):
-        self.username = username if username else htk_setting('HTK_321FORMS_USERNAME')
-        self.secret_key = secret_key if secret_key else htk_setting('HTK_321FORMS_SECRET')
+        self.username = (
+            username if username else htk_setting('HTK_321FORMS_USERNAME')
+        )
+        self.secret_key = (
+            secret_key if secret_key else htk_setting('HTK_321FORMS_SECRET')
+        )
         self.entry_point_url = htk_setting('HTK_321FORMS_ENTRY_POINT_URL')
 
     def _get_rollbar_extra_data(self):
@@ -56,15 +61,22 @@ class Htk321FormsAPI(object):
         Secret key-hashed Base64
         """
         import base64
+
         base_string = '{"Username":"%s","SentDate":"%s","Action":"%s"}' % (
             headers['Username'],
             headers['SentDate'],
             headers['Action'],
         )
-        signature = base64.b64encode(hmac.new(bytes(secret_key), base_string, digestmod=hashlib.sha1).digest())
+        signature = base64.b64encode(
+            hmac.new(
+                bytes(secret_key), base_string, digestmod=hashlib.sha1
+            ).digest()
+        )
         return signature
 
-    def make_request_headers(self, action='GET', username=None, secret_key=None):
+    def make_request_headers(
+        self, action='GET', username=None, secret_key=None
+    ):
         """Creates a header to pass in for GET/POST request
 
         `action`: 'GET' or 'POST'
@@ -85,44 +97,60 @@ class Htk321FormsAPI(object):
         headers['Authorization'] = authorization_key
         return headers
 
-    def handle_bad_response(self, response):
+    def handle_bad_response(self, response, response_json=None):
         request = get_current_request()
         api_request = response.request
 
         extra_data = self._get_rollbar_extra_data()
-        extra_data.update({
-            'api_request': {
-                'url': api_request.url,
-                'method': api_request.method,
-                'body': api_request.body,
-            },
-            'response': {
-                'status_code': response.status_code,
-                'text': response.text,
-            },
-        })
+        response_data = {
+            'status_code': response.status_code,
+        }
 
-        rollbar.report_message(
-            '321Forms API Bad Response',
-            request=request,
-            extra_data=extra_data
+        default_message = '321Forms API Bad Response'
+
+        if response_json:
+            response_data['json'] = response_json
+            error_message = response_json.get('message')
+        else:
+            response_data['text'] = response.text
+            error_message = None
+
+        extra_data.update(
+            {
+                'api_request': {
+                    'url': api_request.url,
+                    'method': api_request.method,
+                    'body': api_request.body,
+                },
+                'response': response_data,
+            }
         )
+
+        message = error_message or default_message
+
+        rollbar.report_message(message, request=request, extra_data=extra_data)
 
     def handle_response(self, response):
         try:
             response_json = response.json()
-            response_json = None if type(response_json) == dict and response_json.get('error') else response_json
+            response_json = (
+                None
+                if type(response_json) == dict and response_json.get('error')
+                else response_json
+            )
         except ValueError:
             response_json = None
 
         if response_json is None:
-            self.handle_bad_response(response)
+            self.handle_bad_response(response, response_json=response_json)
         else:
             pass
 
         return response_json
 
-    def request_get(self, request_url=None, params=None, should_retry=True, **kwargs):
+    def request_get(
+        self, request_url=None, params=None, should_retry=True, **kwargs
+    ):
         if request_url is None:
             request_url = self.get_request_url()
 
@@ -133,7 +161,13 @@ class Htk321FormsAPI(object):
         attempts = 0
         while should_retry:
             attempts += 1
-            response = requests.get(request_url, headers=headers, params=params, allow_redirects=True, **kwargs)
+            response = requests.get(
+                request_url,
+                headers=headers,
+                params=params,
+                allow_redirects=True,
+                **kwargs
+            )
 
             try:
                 response_json = response.json()
@@ -142,15 +176,14 @@ class Htk321FormsAPI(object):
 
             if response.status_code < 400:
                 should_retry = False
-                bad_response = (
-                    response_json is None
-                    or (
-                        type(response_json) == dict
-                        and response_json.get('error')
-                    )
+                bad_response = response_json is None or (
+                    type(response_json) == dict and response_json.get('error')
                 )
             elif 400 <= response.status_code < 500:
-                if response.status_code == 429 and attempts < MAX_RETRY_ATTEMPTS:
+                if (
+                    response.status_code == 429
+                    and attempts < MAX_RETRY_ATTEMPTS
+                ):
                     should_retry = True
                     time.sleep(2 ** (attempts - 1))
                 else:
@@ -161,7 +194,7 @@ class Htk321FormsAPI(object):
                 should_retry = False
 
         if bad_response:
-            self.handle_bad_response(response)
+            self.handle_bad_response(response, response_json=response_json)
             response_json = None
         else:
             pass
@@ -173,7 +206,9 @@ class Htk321FormsAPI(object):
             request_url = self.get_request_url()
 
         headers = self.make_request_headers(action='POST')
-        response = requests.post(request_url, headers=headers, json=data, **kwargs)
+        response = requests.post(
+            request_url, headers=headers, json=data, **kwargs
+        )
         response_json = self.handle_response(response)
 
         return response_json
@@ -183,7 +218,9 @@ class Htk321FormsAPI(object):
             request_url = self.get_request_url()
 
         headers = self.make_request_headers(action='PUT')
-        response = requests.put(request_url, headers=headers, json=data, **kwargs)
+        response = requests.put(
+            request_url, headers=headers, json=data, **kwargs
+        )
         response_json = self.handle_response(response)
 
         return response_json
@@ -275,27 +312,34 @@ class Htk321FormsAPI(object):
         return employee
 
     def get_hr_staff_users_by_company(self, company_id):
-        return self.get_users_by_company(company_id, DSS_321FORMS_API_USER_TYPE_HR_STAFF)
+        return self.get_users_by_company(
+            company_id, DSS_321FORMS_API_USER_TYPE_HR_STAFF
+        )
 
     def get_hr_admin_users_by_company(self, company_id):
-        return self.get_users_by_company(company_id, DSS_321FORMS_API_USER_TYPE_HR_ADMIN)
+        return self.get_users_by_company(
+            company_id, DSS_321FORMS_API_USER_TYPE_HR_ADMIN
+        )
 
     def get_employee_users_by_company(self, company_id):
-        return self.get_users_by_company(company_id, DSS_321FORMS_API_USER_TYPE_EMPLOYEE)
+        return self.get_users_by_company(
+            company_id, DSS_321FORMS_API_USER_TYPE_EMPLOYEE
+        )
 
     def get_onboarded_employee_users_by_company(self, company_id):
         """Returns a list of 100% onboarded users in the provided company.
 
         Sorted by latest approved form date (provided in response as 'utc_latest_approved_date')
         """
-        return self.get_users_by_company(company_id, DSS_321FORMS_API_USER_TYPE_EMPLOYEE_COMPLETE)
+        return self.get_users_by_company(
+            company_id, DSS_321FORMS_API_USER_TYPE_EMPLOYEE_COMPLETE
+        )
 
     ##
     # Companies
 
     def get_companies(self):
-        """Returns a JSON response of companies that the user can access
-        """
+        """Returns a JSON response of companies that the user can access"""
         offset = 0
         limit = 50
 
@@ -303,7 +347,15 @@ class Htk321FormsAPI(object):
 
         done = False
         while not done:
-            request_url = self.get_request_url(resource_path=DSS_321FORMS_API_RESOURCE_COMPANY) + ("?limit=%s&offset=%s" % (limit, offset,))
+            request_url = self.get_request_url(
+                resource_path=DSS_321FORMS_API_RESOURCE_COMPANY
+            ) + (
+                "?limit=%s&offset=%s"
+                % (
+                    limit,
+                    offset,
+                )
+            )
             response_json = self.request_get(request_url)
             companies = response_json or []
             all_companies.extend(companies)
@@ -319,8 +371,7 @@ class Htk321FormsAPI(object):
     # Divisions
 
     def get_divisions_by_company(self, company_id):
-        """Returns a JSON response with two elements. The companyID provided and an array of divisions
-        """
+        """Returns a JSON response with two elements. The companyID provided and an array of divisions"""
         resource_path = DSS_321FORMS_API_RESOURCE_COMPANY_DIVISIONS % {
             'company_id': company_id,
         }
@@ -369,12 +420,18 @@ class Htk321FormsAPI(object):
         return form
 
     def get_combined_form_by_company(self, company_id, form_id):
-        questions_form = self.get_form_by_company(company_id, form_id, form_type='questions')
-        resolution_form = self.get_form_by_company(company_id, form_id, form_type='resolution')
+        questions_form = self.get_form_by_company(
+            company_id, form_id, form_type='questions'
+        )
+        resolution_form = self.get_form_by_company(
+            company_id, form_id, form_type='resolution'
+        )
 
         combined_form = {}
         combined_form.update(questions_form)
-        combined_questions = questions_form['form_questions'] + resolution_form['form_questions']
+        combined_questions = (
+            questions_form['form_questions'] + resolution_form['form_questions']
+        )
 
         combined_form['form_questions'] = combined_questions
 
@@ -398,7 +455,9 @@ class Htk321FormsAPI(object):
         forms = response_json or []
         return forms
 
-    def get_form_by_user(self, user_id, form_id, form_type='questions', status='approved'):
+    def get_form_by_user(
+        self, user_id, form_id, form_type='questions', status='approved'
+    ):
         """Receives response information of a user's latest form of a particular status
 
         `form_type` can be one of:
@@ -423,13 +482,15 @@ class Htk321FormsAPI(object):
         }
 
         response_json = self.request_get(request_url, params=params)
-        forms = response_json or []
+        forms = response_json or {}
         return forms
 
     ##
     # Responses
 
-    def get_responses_by_user(self, user_id, questions=None, offset=0, limit=100):
+    def get_responses_by_user(
+        self, user_id, questions=None, offset=0, limit=100
+    ):
         """Receives response information to questions asked of a user
 
         `questions` a list of question ids  for which to return responses
@@ -459,7 +520,9 @@ class Htk321FormsAPI(object):
         should_fetch = True
 
         while should_fetch:
-            user_responses = self.get_responses_by_user(self.username, offset=offset, limit=limit)
+            user_responses = self.get_responses_by_user(
+                self.username, offset=offset, limit=limit
+            )
             all_responses.extend(user_responses)
             if len(user_responses) == limit:
                 # get next page of responses
@@ -556,7 +619,9 @@ class Htk321FormsAPI(object):
     # SSO - Single Sign-On
 
     def generate_sso_key(self):
-        request_url = self.get_request_url(resource_path=DSS_321FORMS_API_RESOURCE_SSO_GENERATE)
+        request_url = self.get_request_url(
+            resource_path=DSS_321FORMS_API_RESOURCE_SSO_GENERATE
+        )
         response_json = self.request_get(request_url) or {}
 
         sso_key = response_json.get('SSOKey')
