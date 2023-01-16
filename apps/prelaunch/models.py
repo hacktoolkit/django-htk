@@ -52,6 +52,49 @@ class PrelaunchSignup(models.Model):
         )
         return s
 
+    @classmethod
+    def get_or_create_by_email(
+        cls,
+        email,
+        first_name='',
+        last_name='',
+        site=None,
+        enable_early_access=False,
+    ):
+        """Gets or creates a `PrelaunchSignup` object by `email` and `site`
+
+        If `enable_early_access` is `True`, will also enable for early access.
+        """
+        try:
+            prelaunch_signup = cls.objects.get(email=email, site=site)
+            should_update = False
+            was_updated = False
+
+            # update existing details
+            if prelaunch_signup.first_name != first_name:
+                prelaunch_signup.first_name = first_name
+                should_update = True
+
+            if prelaunch_signup.last_name != last_name:
+                prelaunch_signup.last_name = last_name
+                should_update = True
+
+            if enable_early_access and not prelaunch_signup.early_access:
+                prelaunch_signup.grant_early_access()
+                was_updated = True
+
+            if should_update and not was_updated:
+                prelaunch_signup.save()
+
+        except cls.DoesNotExist:
+            prelaunch_signup = cls(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                site=site,
+            )
+            prelaunch_signup.grant_early_access()
+
     @property
     def full_name(self):
         separator = (
