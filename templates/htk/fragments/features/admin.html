@@ -177,7 +177,7 @@
     .features-app .features-modal-container.error .error-text {
       display: block;
     }
-    .features-app .features .modal-container .feature-name {
+    .features-app .features-modal-container .feature-name {
       font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
     }
   </style>
@@ -214,7 +214,7 @@
         <p class="disable-text">The feature <b class="feature-title"></b> (<b class="feature-name"></b>) will be <b>Disabled</b>.</p>
         <p class="error-text">An error occured while trying to process the request.</p>
         <div class="features-modal-buttons">
-          <button class="btn-close">Cancel</button>
+          <button class="btn-cancel">Cancel</button>
           <button class="btn-confirm">
             Yes,
             <span class="disable-text">Disable</span>
@@ -242,7 +242,7 @@
         modal.attr('style', 'display: flex;');
       });
 
-      $('.btn-close').on('click', function(e) {
+      $('.btn-cancel').on('click', function(e) {
         modal.attr('style', '');
       });
 
