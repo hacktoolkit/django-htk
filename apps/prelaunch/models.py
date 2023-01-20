@@ -95,6 +95,8 @@ class PrelaunchSignup(models.Model):
             )
             prelaunch_signup.grant_early_access()
 
+        return prelaunch_signup
+
     @property
     def full_name(self):
         separator = (
