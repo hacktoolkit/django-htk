@@ -36,10 +36,7 @@ class HtkEnum(Enum):
         Returns:
             dict: { [NAME]: { 'name': str, 'value': int, 'isHidden': bool } }
         """
-        choices = {
-            _enum.name: _enum.json_encode()
-            for _enum in cls
-        }
+        choices = {_enum.name: _enum.json_encode() for _enum in cls}
         return choices
 
 
@@ -63,14 +60,20 @@ def get_enum_symbolic_name(enum_obj):
     return symbolic_name
 
 
-def get_enum_choices(enum_class):
+def get_enum_choices(enum_class, include_hidden=False):
     choices = [
         (
             en.value,
             get_enum_symbolic_name(en),
         )
         for en in enum_class
-        if not hasattr(en, 'is_hidden') or not en.is_hidden()
+        if (
+            include_hidden
+            or (
+                not include_hidden
+                and (not hasattr(en, 'is_hidden') or not en.is_hidden())
+            )
+        )
     ]
     return choices
 
