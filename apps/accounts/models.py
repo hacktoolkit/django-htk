@@ -54,13 +54,20 @@ from htk.utils.request import get_current_request
 
 
 class UserAttribute(AbstractAttribute):
-    holder = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='attributes')
+    holder = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='attributes',
+    )
 
     class Meta:
         app_label = 'accounts'
         verbose_name = 'User Attribute'
         unique_together = (
-            ('holder', 'key',),
+            (
+                'holder',
+                'key',
+            ),
         )
 
     def __str__(self):
@@ -71,23 +78,43 @@ class UserAttribute(AbstractAttribute):
 UserAttributeHolder = AbstractAttributeHolderClassFactory(
     UserAttribute,
     holder_resolver=lambda self: self.user,
-    defaults=htk_setting('HTK_USER_ATTRIBUTE_DEFAULTS')
+    defaults=htk_setting('HTK_USER_ATTRIBUTE_DEFAULTS'),
 ).get_class()
 
 
-class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserMixin):
+class BaseAbstractUserProfile(
+    HtkBaseModel, UserAttributeHolder, HtkCompanyUserMixin
+):
     """
     django.contrib.auth.models.User does not have a unique email
     """
+
     # TODO: related_name="%(app_label)s_%(class)s_related"
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile',
+    )
     salt = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     has_username_set = models.BooleanField(default=False)
 
-    timezone = models.CharField(max_length=64, choices=[(tz, tz,) for tz in pytz.common_timezones], blank=True, default='America/Los_Angeles')
+    timezone = models.CharField(
+        max_length=64,
+        choices=[
+            (
+                tz,
+                tz,
+            )
+            for tz in pytz.common_timezones
+        ],
+        blank=True,
+        default='America/Los_Angeles',
+    )
 
     # tracking
-    last_login_ip = models.CharField(max_length=39, blank=True) # IPv4: 4*3 + 3; IPv6: 8*4 + 7
+    last_login_ip = models.CharField(
+        max_length=39, blank=True
+    )  # IPv4: 4*3 + 3; IPv6: 8*4 + 7
     # http://en.wikipedia.org/wiki/ISO_3166-2
     detected_country = models.CharField(max_length=2, blank=True)
     detected_timezone = models.CharField(max_length=36, blank=True)
@@ -106,9 +133,11 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     def json_encode(self):
         value = super(BaseAbstractUserProfile, self).json_encode()
 
-        value.update({
-            'username' : self.user.username,
-        })
+        value.update(
+            {
+                'username': self.user.username,
+            }
+        )
 
         return value
 
@@ -146,21 +175,30 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         return display_name
 
     def get_display_username(self):
-        display_username = self.user.username if self.has_username_set else htk_setting('HTK_ACCOUNTS_DEFAULT_DISPLAY_NAME')
+        display_username = (
+            self.user.username
+            if self.has_username_set
+            else htk_setting('HTK_ACCOUNTS_DEFAULT_DISPLAY_NAME')
+        )
         return display_username
 
     def get_nav_display_name(self):
-        """Gets the name to be displayed to the user in app navigation context
-        """
+        """Gets the name to be displayed to the user in app navigation context"""
         display_name = self.get_display_name()
         if display_name.strip() == '':
-            display_name = self.user.username if self.has_username_set else (self.user.profile.confirmed_email or self.user.email)
+            display_name = (
+                self.user.username
+                if self.has_username_set
+                else (self.user.profile.confirmed_email or self.user.email)
+            )
         return display_name
 
     def get_org_display_name(self):
-        """Gets the name to be displayed to other users in Organization context
-        """
-        display_name = '%s (%s)' % (self.get_full_name(), self.user.username,)
+        """Gets the name to be displayed to other users in Organization context"""
+        display_name = '%s (%s)' % (
+            self.get_full_name(),
+            self.user.username,
+        )
         return display_name
 
     def has_completed_account_setup(self, require_name=False):
@@ -185,8 +223,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     # emails
 
     def has_email(self, email):
-        """Determine whether this User owns `email`
-        """
+        """Determine whether this User owns `email`"""
         user_email = get_user_email(self.user, email)
         has_email = user_email and user_email.is_confirmed
         return has_email
@@ -202,22 +239,23 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
             old_email = user.email
             user.email = email
             user.save()
-            from htk.apps.accounts.utils.notifiers import notify_user_email_update
+            from htk.apps.accounts.utils.notifiers import (
+                notify_user_email_update,
+            )
+
             notify_user_email_update(user, old_email, email)
         else:
             pass
         return user
 
     def has_primary_email(self):
-        """Determines whether this `User` has a primary email set
-        """
+        """Determines whether this `User` has a primary email set"""
         primary_email = self.get_primary_email()
         value = primary_email is not None
         return value
 
     def get_primary_email(self, verified_only=True):
-        """Retrieve this `User`'s primary email
-        """
+        """Retrieve this `User`'s primary email"""
         email = self.user.email
         if email and (not verified_only or self.has_email(email)):
             primary_email = email
@@ -226,8 +264,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         return primary_email
 
     def get_primary_email_unverified(self):
-        """Retrieve this `User`'s primary email, even if it has not been verified
-        """
+        """Retrieve this `User`'s primary email, even if it has not been verified"""
         primary_email = self.get_primary_email(verified_only=False)
         return primary_email
 
@@ -238,7 +275,9 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         # TODO: cache this
         primary_email = self.get_primary_email()
         if primary_email:
-            user_emails = self.user.emails.exclude(email=primary_email).order_by('-is_confirmed', 'id')
+            user_emails = self.user.emails.exclude(
+                email=primary_email
+            ).order_by('-is_confirmed', 'id')
         else:
             user_emails = self.user.emails.order_by('-is_confirmed', 'id')
         return user_emails
@@ -268,6 +307,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         primary_email = self.get_primary_email(verified_only=False)
         if primary_email:
             from htk.lib.gravatar.utils import get_gravatar_hash
+
             gravatar_hash = get_gravatar_hash(primary_email)
         else:
             gravatar_hash = ''
@@ -277,17 +317,26 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         primary_email = self.get_primary_email(verified_only=False)
         if primary_email:
             from htk.lib.gravatar.utils import get_gravatar_for_email
+
             gravatar = get_gravatar_for_email(primary_email, size=size)
         else:
             gravatar = ''
         return gravatar
 
+    @CachedAttribute
+    def gravatar(self):
+        return self.get_gravatar()
+
     # send emails
 
-    def send_activation_reminder_email(self, template=None, subject=None, sender=None):
+    def send_activation_reminder_email(
+        self, template=None, subject=None, sender=None
+    ):
         user_email = get_user_email(self.user, self.user.email)
         if user_email:
-            user_email.send_activation_reminder_email(template=template, subject=subject, sender=sender)
+            user_email.send_activation_reminder_email(
+                template=template, subject=subject, sender=sender
+            )
         else:
             extra_data = {
                 'user_id': self.user.id,
@@ -296,10 +345,11 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
             rollbar.report_exc_info(extra_data=extra_data)
 
     def send_welcome_email(self, template=None, subject=None, sender=None):
-        """Sends a welcome email to the user
-        """
+        """Sends a welcome email to the user"""
         try:
-            welcome_email(self.user, template=template, subject=subject, sender=sender)
+            welcome_email(
+                self.user, template=template, subject=subject, sender=sender
+            )
         except:
             request = get_current_request()
             rollbar.report_exc_info(request=request)
@@ -308,9 +358,9 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     # social auth stuff
 
     def get_social_auths(self, provider=None):
-        """Gets all associated UserSocialAuth objects
-        """
+        """Gets all associated UserSocialAuth objects"""
         from social_django.models import UserSocialAuth
+
         social_auths = UserSocialAuth.objects.filter(user__id=self.user.id)
         if provider:
             social_auths = social_auths.filter(provider=provider)
@@ -318,31 +368,27 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
 
     def get_social_user(self, provider, provider_id=None):
         from social_django.models import UserSocialAuth
+
         try:
             if provider_id:
                 social_user = UserSocialAuth.objects.get(
-                    user__id=self.user.id,
-                    provider=provider,
-                    uid=provider_id
+                    user__id=self.user.id, provider=provider, uid=provider_id
                 )
             else:
                 social_user = UserSocialAuth.objects.get(
-                    user__id=self.user.id,
-                    provider=provider
+                    user__id=self.user.id, provider=provider
                 )
         except UserSocialAuth.DoesNotExist:
             social_user = None
         return social_user
 
     def get_fb_social_user(self):
-        """Gets a Facebook UserSocialAuth
-        """
+        """Gets a Facebook UserSocialAuth"""
         social_user = self.get_social_user(SOCIAL_AUTH_PROVIDER_FACEBOOK)
         return social_user
 
     def get_fbid(self):
-        """Gets a user's Facebook id
-        """
+        """Gets a user's Facebook id"""
         fbid = None
         social_user = self.get_fb_social_user()
         if social_user:
@@ -350,14 +396,12 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         return fbid
 
     def get_tw_social_user(self):
-        """Gets a Twitter UserSocialAuth
-        """
+        """Gets a Twitter UserSocialAuth"""
         social_user = self.get_social_user(SOCIAL_AUTH_PROVIDER_TWITTER)
         return social_user
 
     def get_twid(self):
-        """Gets a user's Twitter id
-        """
+        """Gets a user's Twitter id"""
         twid = None
         social_user = self.get_tw_social_user()
         if social_user:
@@ -366,7 +410,10 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
 
     def get_social_auth_linkedin(self):
         from social_django.models import UserSocialAuth
-        social_auth = UserSocialAuth.objects.get(user__id=self.user.id, provider=SOCIAL_AUTH_PROVIDER_LINKEDIN)
+
+        social_auth = UserSocialAuth.objects.get(
+            user__id=self.user.id, provider=SOCIAL_AUTH_PROVIDER_LINKEDIN
+        )
         return social_auth
 
     def has_social_auth_connected(self, provider):
@@ -376,17 +423,23 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
 
     def has_social_auth_facebook(self):
         # TODO: cache this
-        has_facebook = self.has_social_auth_connected(SOCIAL_AUTH_PROVIDER_FACEBOOK)
+        has_facebook = self.has_social_auth_connected(
+            SOCIAL_AUTH_PROVIDER_FACEBOOK
+        )
         return has_facebook
 
     def has_social_auth_linkedin(self):
         # TODO: cache this
-        has_linkedin = self.has_social_auth_connected(SOCIAL_AUTH_PROVIDER_LINKEDIN)
+        has_linkedin = self.has_social_auth_connected(
+            SOCIAL_AUTH_PROVIDER_LINKEDIN
+        )
         return has_linkedin
 
     def has_social_auth_twitter(self):
         # TODO: cache this
-        has_twitter = self.has_social_auth_connected(SOCIAL_AUTH_PROVIDER_TWITTER)
+        has_twitter = self.has_social_auth_connected(
+            SOCIAL_AUTH_PROVIDER_TWITTER
+        )
         return has_twitter
 
     def can_disconnect_social_auth(self):
@@ -396,7 +449,10 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
         - user has multiple connected social auths
         """
         can_disconnect = False
-        if self.user.has_usable_password() and self.user.emails.filter(is_confirmed=True).exists():
+        if (
+            self.user.has_usable_password()
+            and self.user.emails.filter(is_confirmed=True).exists()
+        ):
             can_disconnect = True
         else:
             social_auths = self.get_social_auths()
@@ -410,14 +466,20 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     @CachedAttribute
     def organizations(self):
         from htk.utils.general import resolve_model_dynamically
-        Organization = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MODEL'))
-        organizations = Organization.objects.filter(
-            members__user=self.user,
-            members__active=True
-        ).order_by(
-            'name',
-            'handle',
-        ).distinct()
+
+        Organization = resolve_model_dynamically(
+            htk_setting('HTK_ORGANIZATION_MODEL')
+        )
+        organizations = (
+            Organization.objects.filter(
+                members__user=self.user, members__active=True
+            )
+            .order_by(
+                'name',
+                'handle',
+            )
+            .distinct()
+        )
         return organizations
 
     def is_organization_member(self, organization):
@@ -428,15 +490,18 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     # Account, Auth, ACLs
 
     def get_user_token_auth_token(self, expires_minutes=None):
-        """Returns the token to auth/log in the `user`
-        """
+        """Returns the token to auth/log in the `user`"""
         from htk.apps.accounts.utils.auth import get_user_token_auth_token
-        token = get_user_token_auth_token(self.user, expires_minutes=expires_minutes)
+
+        token = get_user_token_auth_token(
+            self.user, expires_minutes=expires_minutes
+        )
         return token
 
-    def activate(self, email_template=None, email_subject=None, email_sender=None):
-        """Activate the User if not already activated
-        """
+    def activate(
+        self, email_template=None, email_subject=None, email_sender=None
+    ):
+        """Activate the User if not already activated"""
         was_activated = False
         user = self.user
         if not user.is_active:
@@ -451,24 +516,35 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
             if htk_setting('HTK_ITERABLE_ENABLED'):
                 try:
                     itbl_opts = htk_setting('HTK_ITERABLE_OPTIONS')
-                    should_send_welcome_email = not itbl_opts.get('override_welcome_email', False)
+                    should_send_welcome_email = not itbl_opts.get(
+                        'override_welcome_email', False
+                    )
 
                     from htk.lib.iterable.utils import get_iterable_api_client
+
                     itbl = get_iterable_api_client()
                     itbl.notify_account_activation(user)
                 except:
                     rollbar.report_exc_info()
 
             if should_send_welcome_email:
-                self.send_welcome_email(template=email_template, subject=email_subject, sender=email_sender)
+                self.send_welcome_email(
+                    template=email_template,
+                    subject=email_subject,
+                    sender=email_sender,
+                )
 
             if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
                 try:
                     from htk.utils.notifications import slack_notify
-                    slack_notify('*%s* has activated their account on %s' % (
-                        user.email,
-                        htk_setting('HTK_SITE_NAME'),
-                    ))
+
+                    slack_notify(
+                        '*%s* has activated their account on %s'
+                        % (
+                            user.email,
+                            htk_setting('HTK_SITE_NAME'),
+                        )
+                    )
                 except:
                     rollbar.report_exc_info()
 
@@ -521,6 +597,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
     @CachedAttribute
     def current_iso_week_date(self):
         from htk.utils.datetime_utils import iso_to_gregorian
+
         iso_year, iso_week, iso_day = self.localized_date.isocalendar()
         return iso_to_gregorian(iso_year, iso_week, 1)
 
@@ -534,9 +611,9 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
 
     @CachedAttribute
     def next_iso_week_date(self):
-        """The first day of the next ISO week
-        """
+        """The first day of the next ISO week"""
         from htk.utils.datetime_utils import iso_to_gregorian
+
         iso_year, iso_week, iso_day = self.one_week_later_date.isocalendar()
         return iso_to_gregorian(iso_year, iso_week, 1)
 
@@ -560,6 +637,7 @@ class BaseAbstractUserProfile(HtkBaseModel, UserAttributeHolder, HtkCompanyUserM
                         get_country_code_by_ip,
                         get_timezone_by_ip,
                     )
+
                     detected_country = get_country_code_by_ip(ip) or ''
                     detected_timezone = get_timezone_by_ip(ip) or ''
                     self.detected_country = detected_country
@@ -585,14 +663,18 @@ class AbstractUserProfile(BaseAbstractUserProfile):
     share_location = models.BooleanField(default=False)
 
     # profile, links, and social
-    avatar = models.PositiveIntegerField(default=ProfileAvatarType.GRAVATAR.value)
+    avatar = models.PositiveIntegerField(
+        default=ProfileAvatarType.GRAVATAR.value
+    )
     website = models.CharField(max_length=128, blank=True)
     facebook = models.CharField(max_length=32, blank=True)
     twitter = models.CharField(max_length=32, blank=True)
     biography = models.TextField(max_length=2000, blank=True)
 
     # community
-    following = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='followers', blank=True)
+    following = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name='followers', blank=True
+    )
 
     class Meta:
         abstract = True
@@ -643,7 +725,9 @@ class AbstractUserProfile(BaseAbstractUserProfile):
         """Gets User followers
         Returns a list of User objects
         """
-        prekey = [self.user.id,]
+        prekey = [
+            self.user.id,
+        ]
         c = UserFollowersCache(prekey=self.user.id)
         followers = c.get()
         if followers is None:
@@ -653,35 +737,43 @@ class AbstractUserProfile(BaseAbstractUserProfile):
         return followers
 
     def has_follower(self, user=None):
-        """Check if the currently logged-in user is following self.user
-        """
+        """Check if the currently logged-in user is following self.user"""
         if user is None:
             request = get_current_request()
             user = request.user
         else:
             pass
         if user:
-            value = user.profile.get_following().filter(id=self.user.id).exists()
+            value = (
+                user.profile.get_following().filter(id=self.user.id).exists()
+            )
         else:
             value = False
         return value
 
     def get_follow_uri(self):
         follow_user_url_name = htk_setting('HTK_API_USERS_FOLLOW_URL_NAME')
-        follow_uri = reverse(follow_user_url_name, args=(encrypt_uid(self.user),))
+        follow_uri = reverse(
+            follow_user_url_name, args=(encrypt_uid(self.user),)
+        )
         return follow_uri
 
     def get_unfollow_uri(self):
         unfollow_user_url_name = htk_setting('HTK_API_USERS_UNFOLLOW_URL_NAME')
-        unfollow_uri = reverse(unfollow_user_url_name, args=(encrypt_uid(self.user),))
+        unfollow_uri = reverse(
+            unfollow_user_url_name, args=(encrypt_uid(self.user),)
+        )
         return unfollow_uri
 
 
 class UserEmail(models.Model):
-    """A User can have multiple email addresses using this table
+    """A User can have multiple email addresses using this table"""
 
-    """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='emails')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='emails',
+    )
     email = models.EmailField(_('email address'))
     # set in self._reset_activation_key()
     activation_key = models.CharField(max_length=40, blank=True)
@@ -693,11 +785,17 @@ class UserEmail(models.Model):
         app_label = 'accounts'
         verbose_name = 'User Email'
         unique_together = (
-            ('user', 'email',),
+            (
+                'user',
+                'email',
+            ),
         )
 
     def __str__(self):
-        s = '%s, %s' % (self.user, self.email,)
+        s = '%s, %s' % (
+            self.user,
+            self.email,
+        )
         return s
 
     def _reset_activation_key(self, resend=False):
@@ -713,14 +811,20 @@ class UserEmail(models.Model):
             if now < self.key_expires:
                 # do not reset key if remaining time has not fallen below threshold
                 remaining_time = self.key_expires - now
-                threshold = datetime.timedelta(hours=EMAIL_ACTIVATION_KEY_REUSE_THRESHOLD_HOURS)
+                threshold = datetime.timedelta(
+                    hours=EMAIL_ACTIVATION_KEY_REUSE_THRESHOLD_HOURS
+                )
                 should_reset = remaining_time < threshold
 
         if should_reset:
             user = self.user
             salt = sha1(str(random.random()).encode('utf-8')).hexdigest()[:5]
-            activation_key = sha1((salt + user.username).encode('utf-8')).hexdigest()
-            key_expires = utcnow() + datetime.timedelta(hours=EMAIL_ACTIVATION_KEY_EXPIRATION_HOURS)
+            activation_key = sha1(
+                (salt + user.username).encode('utf-8')
+            ).hexdigest()
+            key_expires = utcnow() + datetime.timedelta(
+                hours=EMAIL_ACTIVATION_KEY_EXPIRATION_HOURS
+            )
 
             self.activation_key = activation_key
             self.key_expires = key_expires
@@ -730,14 +834,12 @@ class UserEmail(models.Model):
             pass
 
     def is_primary(self):
-        """Determines whether this UserEmail is the primary email address of `self.user`
-        """
+        """Determines whether this UserEmail is the primary email address of `self.user`"""
         value = self.is_confirmed and self.user.email == self.email
         return value
 
     def set_primary_email(self):
-        """Sets the primary email address of `self.user` to `self.email`
-        """
+        """Sets the primary email address of `self.user` to `self.email`"""
         user = self.user
         if self.is_confirmed:
             # only able to set primary email address to this one if it has been confirmed
@@ -761,14 +863,12 @@ class UserEmail(models.Model):
         return result
 
     def delete_replaced_email(self):
-        """Deletes an email that was replaced
-        """
+        """Deletes an email that was replaced"""
         success = False
         if self.is_confirmed and self.replacing is not None:
             try:
                 old_email = UserEmail.objects.get(
-                    user=self.user,
-                    email=self.replacing
+                    user=self.user, email=self.replacing
                 )
                 old_email.delete()
                 success = True
@@ -776,9 +876,15 @@ class UserEmail(models.Model):
                 pass
         return success
 
-    def send_activation_email(self, domain=None, resend=False, template=None, subject=None, sender=None):
-        """Sends an activation email
-        """
+    def send_activation_email(
+        self,
+        domain=None,
+        resend=False,
+        template=None,
+        subject=None,
+        sender=None,
+    ):
+        """Sends an activation email"""
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         self._reset_activation_key(resend=resend)
 
@@ -792,23 +898,32 @@ class UserEmail(models.Model):
                 )
 
                 if resend:
-                    campaign_key = 'triggered.transactional.account.confirm_email_resend'
+                    campaign_key = (
+                        'triggered.transactional.account.confirm_email_resend'
+                    )
                 else:
-                    campaign_key = 'triggered.transactional.account.sign_up_confirm_email'
+                    campaign_key = (
+                        'triggered.transactional.account.sign_up_confirm_email'
+                    )
                 itbl_campaign_id = get_campaign_id(campaign_key)
 
                 if itbl_campaign_id:
                     should_send_activation_email = False
 
                     data = {
-                        'activation_uri' : self.get_activation_uri(domain=domain),
+                        'activation_uri': self.get_activation_uri(
+                            domain=domain
+                        ),
                     }
 
                     itbl = get_iterable_api_client()
-                    itbl.send_triggered_email(self.email, itbl_campaign_id, data=data)
+                    itbl.send_triggered_email(
+                        self.email, itbl_campaign_id, data=data
+                    )
 
             if should_send_activation_email:
                 from htk.utils.security import should_use_https
+
                 use_https = should_use_https()
 
                 activation_email(
@@ -817,7 +932,7 @@ class UserEmail(models.Model):
                     domain=domain,
                     template=template,
                     subject=subject,
-                    sender=sender
+                    sender=sender,
                 )
         except:
             request = get_current_request()
@@ -827,28 +942,40 @@ class UserEmail(models.Model):
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
 
         values = {
-            'protocol' : 'https' if use_https else 'http',
-            'domain' : domain,
-            'confirm_email_path' : reverse(
+            'protocol': 'https' if use_https else 'http',
+            'domain': domain,
+            'confirm_email_path': reverse(
                 htk_setting('HTK_ACCOUNTS_CONFIRM_EMAIL_URL_NAME'),
-                args=(self.activation_key,)
+                args=(self.activation_key,),
             ),
         }
-        activation_uri = '%(protocol)s://%(domain)s%(confirm_email_path)s' % values
+        activation_uri = (
+            '%(protocol)s://%(domain)s%(confirm_email_path)s' % values
+        )
         return activation_uri
 
-    def send_activation_reminder_email(self, template=None, subject=None, sender=None):
+    def send_activation_reminder_email(
+        self, template=None, subject=None, sender=None
+    ):
         """Sends an account activation reminder email
 
         Piggybacks off of `self.send_activation_email`
         """
         if template is None:
-            template = htk_setting('HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE')
+            template = htk_setting(
+                'HTK_ACCOUNT_ACTIVATION_REMINDER_EMAIL_TEMPLATE'
+            )
         if subject is None:
-            subject = 'Reminder to activate your account on %s' % htk_setting('HTK_SITE_NAME')
-        self.send_activation_email(resend=True, template=template, subject=subject, sender=sender)
+            subject = 'Reminder to activate your account on %s' % htk_setting(
+                'HTK_SITE_NAME'
+            )
+        self.send_activation_email(
+            resend=True, template=template, subject=subject, sender=sender
+        )
 
-    def confirm_and_activate_account(self, email_template=None, email_subject=None, email_sender=None):
+    def confirm_and_activate_account(
+        self, email_template=None, email_subject=None, email_sender=None
+    ):
         """Confirms the email address, and activates the associated account if not already activated
 
         Side effect: Once an email address is confirmed by an account, no other accounts can have that email address in a pending (unconfirmed state)
@@ -858,11 +985,18 @@ class UserEmail(models.Model):
             self.is_confirmed = True
             self.save()
             if self.replacing:
-                from htk.apps.accounts.utils.notifiers import notify_user_email_update
+                from htk.apps.accounts.utils.notifiers import (
+                    notify_user_email_update,
+                )
+
                 notify_user_email_update(self.user, self.replacing, self.email)
                 self.delete_replaced_email()
 
-        was_activated = self.user.profile.activate(email_template=email_template, email_subject=email_subject, email_sender=email_sender)
+        was_activated = self.user.profile.activate(
+            email_template=email_template,
+            email_subject=email_subject,
+            email_sender=email_sender,
+        )
         # purge all other records with same email addresses that aren't confirmed
         # NOTE: Be careful to not delete the wrong ones!
         UserEmail.objects.filter(email=self.email, is_confirmed=False).delete()
