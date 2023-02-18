@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 I18N_GREETINGS = {
+    'am' : [
+        'ሰላም',
+        'ጤና ይስጥልኝ',
+    ],
     'ar' : [
         'مرحبا',
     ],
@@ -18,10 +22,6 @@ I18N_GREETINGS = {
     'es' : [
         'Hola',
         'Como estas',
-    ],
-    'am' : [
-        'ሰላም',
-        'ጤና ይስጥልኝ',
     ],
     'fr' : [
         'Salut',
