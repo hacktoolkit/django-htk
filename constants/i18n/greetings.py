@@ -19,6 +19,10 @@ I18N_GREETINGS = {
         'Hola',
         'Como estas',
     ],
+    'eth' : [
+        'ሰላም',
+        'ጤና ይስጥልኝ',
+    ],
     'fr' : [
         'Salut',
     ],
