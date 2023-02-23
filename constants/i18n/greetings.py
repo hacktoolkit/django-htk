@@ -2,61 +2,65 @@
 # -*- coding: utf-8 -*-
 
 I18N_GREETINGS = {
-    'am' : [
+    'am': [
         'ሰላም',
         'ጤና ይስጥልኝ',
     ],
-    'ar' : [
+    'ar': [
         'مرحبا',
     ],
-    'el' : [
+    'el': [
         'Χαίρετε',
     ],
-    'en' : [
+    'en': [
         'Greetings',
         'Hello',
     ],
-    'eo' : [
+    'eo': [
         'saluton',
     ],
-    'es' : [
+    'es': [
         'Hola',
         'Como estas',
     ],
-    'fr' : [
+    'fr': [
         'Salut',
     ],
-    'haw' : [
+    'haw': [
         'Aloha',
     ],
-    'he' : [
+    'he': [
         'שלום',
     ],
-    'hi' : [
+    'hi': [
         'नमस्ते'
     ],
-    'it' : [
+    'it': [
         'Ciao',
     ],
-    'ja' : [
+    'ja': [
         'こんにちは',
     ],
-    'ko' : [
+    'ko': [
         '안녕하세요',
     ],
-    'mn' : [
+    'mn': [
         'Сайн уу',
     ],
-    'nl' : [
+    'nl': [
         'Hallo',
     ],
-    'r' : [
+    'r': [
         'Здравствуйте',
     ],
-    'vi' : [
+    'tr': [
+        'Merhaba',
+        'Selamlar',
+    ],
+    'vi': [
         'chào bạn',
     ],
-    'zh' : [
+    'zh': [
         '你好',
     ],
 }
