@@ -14,11 +14,11 @@ def get_token_model(model=None):
     return Token
 
 
-def get_token(key, model=None):
+def get_token(key, model=None, **kwargs):
     Token = get_token_model(model=model)
 
     try:
-        token = Token.objects.get(key=key)
+        token = Token.objects.get(key=key, **kwargs)
     except Token.DoesNotExist:
         token = None
 
@@ -32,6 +32,7 @@ def set_token(
     valid_after=None,
     valid_until=None,
     model=None,
+    **kwargs,
 ):
     Token = get_token_model(model=model)
 
@@ -51,13 +52,14 @@ def set_token(
             description=description or '',
             valid_after=valid_after,
             valid_until=valid_until,
+            **kwargs,
         )
 
     return token
 
 
-def get_valid_token_value(key, model=None):
-    token = get_token(key, model=model)
+def get_valid_token_value(key, model=None, **kwargs):
+    token = get_token(key, model=model, **kwargs)
     value = token.value if token and token.is_valid else None
 
     return value
