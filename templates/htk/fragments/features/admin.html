@@ -1,4 +1,9 @@
   <style>
+    .text-truncate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .features-app {
       --gray: rgba(0, 0, 0, 0.2);
       --dark-gray: rgba(0, 0, 0, 0.75);
@@ -20,22 +25,37 @@
     .features-app .feature {
       display: flex;
       flex-direction: column;
-      width: 32%;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
       margin: 10px;
       padding: 1rem;
       border: 1px solid var(--gray);
       border-radius: 4px;
     }
+    @media (min-width: 1200px) {
+      .features-app .feature {
+        flex: 0 0 auto;
+        width: 48.22%;
+      }
+    }
+    @media (min-width: 1400px) {
+      .features-app .feature {
+        flex: 0 0 auto;
+        width: 31.82%;
+      }
+    }
     .features-app .feature-header {
       display: flex;
+      flex-wrap: nowrap;
     }
-    .features-app .feature h3 {
+    .features-app .feature .feature-header h3 {
       position: relative;
       margin: 0;
       margin-bottom: 15px;
       flex-grow: 1;
     }
-    .features-app .feature h3::before {
+    .features-app .feature .feature-header h3::before {
       content: "";
       display: inline-block;
       width: 10px;
@@ -185,14 +205,14 @@
     <div class="features-wrapper">
       {% for feature_flag in feature_flags %}
       <div class="feature{% if feature_flag.is_enabled %} on{% endif %}" data-id="{{ feature_flag.id }}">
-        <div class="feature-header flex-column">
-          <div class="feature-switch-wrapper">
-            <a href="#" class="feature-switch float-end"></a>
-          </div>
-          <h3 data-title="{{ feature_flag.title }}" data-name="{{ feature_flag.name }}">
+        <div class="feature-header">
+          <h3 data-title="{{ feature_flag.title }}" data-name="{{ feature_flag.name }}" class="text-truncate">
             {{ feature_flag.title }}
             <span>{{ feature_flag.name }}</span>
           </h3>
+          <div class="feature-switch-wrapper">
+            <a href="#" class="feature-switch float-end"></a>
+          </div>
         </div>
         <div class="feature-description">
           <p>{{ feature_flag.description }}</p>
