@@ -185,14 +185,14 @@
     <div class="features-wrapper">
       {% for feature_flag in feature_flags %}
       <div class="feature{% if feature_flag.is_enabled %} on{% endif %}" data-id="{{ feature_flag.id }}">
-        <div class="feature-header">
+        <div class="feature-header flex-column">
+          <div class="feature-switch-wrapper">
+            <a href="#" class="feature-switch float-end"></a>
+          </div>
           <h3 data-title="{{ feature_flag.title }}" data-name="{{ feature_flag.name }}">
             {{ feature_flag.title }}
             <span>{{ feature_flag.name }}</span>
           </h3>
-          <div class="feature-switch-wrapper">
-            <a href="#" class="feature-switch"></a>
-          </div>
         </div>
         <div class="feature-description">
           <p>{{ feature_flag.description }}</p>
