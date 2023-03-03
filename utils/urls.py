@@ -1,3 +1,6 @@
+# Python Standard Library Imports
+import urllib
+
 # Third Party (PyPI) Imports
 import requests
 
@@ -47,6 +50,45 @@ def build_url_with_query_params(base_url, query_params):
         )
 
     return url
+
+
+def build_updated_url_with_query_params(raw_url, query_params):
+    """
+    Split the URL into parts so that `query_params` can be merged
+
+    Example usage:
+
+    >>> build_updated_url_with_query_params(
+    ...    'https://www.hacktoolkit.com?utm_source=google',
+    ...    {
+    ...        'utm_source': 'hacktoolkit',
+    ...    }
+    ... )
+    'https://www.hacktoolkit.com?utm_source=hacktoolkit',
+
+    """
+
+    # Docs: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlsplit
+    scheme, netloc, path, query_string, fragment = urllib.parse.urlsplit(
+        raw_url
+    )
+
+    amended_query_params = urllib.parse.parse_qs(query_string)
+    amended_query_params.update(query_params)
+    amended_query_string = urllib.parse.urlencode(
+        amended_query_params, doseq=True
+    )
+    amended_url = urllib.parse.urlunsplit(
+        (
+            scheme,
+            netloc,
+            path,
+            amended_query_string,
+            fragment,
+        )
+    )
+
+    return amended_url
 
 
 def build_full_url(partial_url, request=None, use_secure=True):
