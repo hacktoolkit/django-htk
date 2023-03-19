@@ -10,10 +10,7 @@ from django.db import models
 
 # HTK Imports
 from htk.apps.prelaunch.emails import prelaunch_email
-from htk.utils import (
-    htk_setting,
-    utcnow,
-)
+from htk.utils import htk_setting
 from htk.utils.notifications import notify
 from htk.utils.request import get_current_request
 
@@ -66,7 +63,16 @@ class PrelaunchSignup(models.Model):
         If `enable_early_access` is `True`, will also enable for early access.
         """
         try:
-            prelaunch_signup = cls.objects.get(email=email, site=site)
+            prelaunch_signups = cls.objects.filter(email=email, site=site)
+            prelaunch_signups_with_early_access = prelaunch_signups.filter(
+                early_access=True
+            )
+            prelaunch_signup = (
+                prelaunch_signups_with_early_access.first()
+                if prelaunch_signups_with_early_access.count() > 0
+                else prelaunch_signups.first()
+            )
+
             should_update = False
             was_updated = False
 
