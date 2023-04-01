@@ -32,7 +32,7 @@ def set_token(
     valid_after=None,
     valid_until=None,
     model=None,
-    **kwargs,
+    **kwargs
 ):
     Token = get_token_model(model=model)
 
@@ -52,7 +52,7 @@ def set_token(
             description=description or '',
             valid_after=valid_after,
             valid_until=valid_until,
-            **kwargs,
+            **kwargs
         )
 
     return token
