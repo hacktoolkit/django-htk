@@ -1,6 +1,6 @@
 # Python Standard Library Imports
 # Future Imports
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import contextlib
 import logging
@@ -44,8 +44,8 @@ def materialized_property(
     eventually_consistent=False,
     verify_qs=None,
 ):
-    """Decorator to create a Materialized Property
-    """
+    """Decorator to create a Materialized Property"""
+
     def wrap(f):
         return MaterializedPropertySubstitution(
             f,
@@ -67,8 +67,7 @@ prepare_handlers = []
 
 
 def to_field_name(mp_name):
-    """Get the field name for the Materialized Property named `mp_name`
-    """
+    """Get the field name for the Materialized Property named `mp_name`"""
     return '_' + mp_name
 
 
@@ -103,7 +102,11 @@ class MaterializedPropertySubstitution(object):
 
     def contribute_to_class(self, cls, name):
         if self.verify_qs is not None and not callable(self.verify_qs):
-            raise Exception('verify_qs on {}.{} should be lambda, got {}'.format(cls, name, type(self.verify_qs)))
+            raise Exception(
+                'verify_qs on {}.{} should be lambda, got {}'.format(
+                    cls, name, type(self.verify_qs)
+                )
+            )
         if not self.name:
             self.name = name
         registered_mps[cls][self.name] = self
@@ -111,12 +114,17 @@ class MaterializedPropertySubstitution(object):
         self.field_name = to_field_name(self.name)
         if not self.field_definition.db_column:
             self.field_definition.db_column = self.name
-        is_set_field_name = self.field_definition.db_column + '_is_set' if self.use_is_set_field else None
+        is_set_field_name = (
+            self.field_definition.db_column + '_is_set'
+            if self.use_is_set_field
+            else None
+        )
         self.is_set_field_name = is_set_field_name
 
         if not self.no_auto_back_fill and not self.use_is_set_field:
-            if isinstance(self.field_definition, models.CharField) or \
-                    isinstance(self.field_definition, models.TextField):
+            if isinstance(
+                self.field_definition, models.CharField
+            ) or isinstance(self.field_definition, models.TextField):
                 is_set_q = {self.field_name: MAGIC_VALUE_NOT_SET_STRING}
                 is_magic = lambda x: x == MAGIC_VALUE_NOT_SET_STRING
                 self.field_definition.default = MAGIC_VALUE_NOT_SET_STRING
@@ -133,37 +141,47 @@ class MaterializedPropertySubstitution(object):
                 if v == 'Not set':
                     extra_data = {}
                     try:
-                        extra_data['all_field_names'] = ','.join(type(instance)._meta.get_all_field_names())
-                        extra_data['stacktrace'] = '\n'.join(('%s, %s, %s, %s' % x for x in traceback.extract_stack()))
+                        extra_data['all_field_names'] = ','.join(
+                            type(instance)._meta.get_all_field_names()
+                        )
+                        extra_data['stacktrace'] = '\n'.join(
+                            (
+                                '%s, %s, %s, %s' % x
+                                for x in traceback.extract_stack()
+                            )
+                        )
                     except:
                         rollbar.report_exc_info(
                             extra_data={
-                                'message' : 'Failed to evaluate extra_data for MP {} report'.format(name),
+                                'message': 'Failed to evaluate extra_data for MP {} report'.format(
+                                    name
+                                ),
                             }
                         )
                     rollbar.report_message(
                         'instance of type {} for MP {} does not have property {}'.format(
-                            type(instance),
-                            name,
-                            is_set_field_name
+                            type(instance), name, is_set_field_name
                         ),
                         level='error',
-                        extra_data=extra_data
+                        extra_data=extra_data,
                     )
                     return True
                 return not v
+
             self.is_not_set = is_not_set
 
         def get_real(instance):
             real = self.f(instance)
-            if not self.no_auto_back_fill and not self.use_is_set_field and is_magic(real):
+            if (
+                not self.no_auto_back_fill
+                and not self.use_is_set_field
+                and is_magic(real)
+            ):
                 rollbar.report_message(
                     'Real value returned by {}(pk={})::{} same as MAGIC_VALUE_NOT_SET, will cause cache miss (can impact performance)'.format(
-                        cls.__name__,
-                        instance.pk,
-                        self.name
+                        cls.__name__, instance.pk, self.name
                     ),
-                    level='error'
+                    level='error',
                 )
             return real
 
@@ -187,15 +205,15 @@ class MaterializedPropertySubstitution(object):
 
         def prop(instance):
             cached = get_cached(instance)
-            if False and settings.DEBUG_MATERIALIZED_PROPERTIES and not self._force_no_debug:
+            if (
+                False
+                and settings.DEBUG_MATERIALIZED_PROPERTIES
+                and not self._force_no_debug
+            ):
                 real = get_real(instance)
                 if not self.values_equal(real, cached):
                     message = "Real value '{}' does not match cached value '{}' for {}::{} on {}".format(
-                        real,
-                        cached,
-                        cls.__name__,
-                        self.name,
-                        instance.pk
+                        real, cached, cls.__name__, self.name, instance.pk
                     )
                     if settings.MATERIALIZED_PROPERTIES_STRICT_CHECK:
                         raise Exception(message)
@@ -210,7 +228,9 @@ class MaterializedPropertySubstitution(object):
         setattr(cls, name, property(prop))
         self.field_definition.contribute_to_class(cls, self.field_name)
         if self.use_is_set_field:
-            models.BooleanField(default=False, null=False).contribute_to_class(cls, is_set_field_name)
+            models.BooleanField(default=False, null=False).contribute_to_class(
+                cls, is_set_field_name
+            )
         prepare_handlers.append(self.handle_prepared)
 
     def values_equal(self, x, y):
@@ -218,13 +238,17 @@ class MaterializedPropertySubstitution(object):
             if x is None or y is None:
                 return x == y
             try:
-                return self.field_definition.format_number(x) == self.field_definition.format_number(y)
+                return self.field_definition.format_number(
+                    x
+                ) == self.field_definition.format_number(y)
             except:
                 rollbar.report_exc_info(
                     extra_data={
-                        'message' : 'Failed to compare values for mp {}.{}, fallback to =='.format(self.cls, self.name),
+                        'message': 'Failed to compare values for mp {}.{}, fallback to =='.format(
+                            self.cls, self.name
+                        ),
                         'x': x,
-                        'y': y
+                        'y': y,
                     }
                 )
         return x == y
@@ -237,12 +261,19 @@ class MaterializedPropertySubstitution(object):
                 depends_on_mp = registered_mps.get(model, {}).get(attr, None)
                 if depends_on_mp:
                     if EXTRA_VERBOSITY:
-                        print('MP dependency found: {}->{}'.format(self.name, attr))
+                        print(
+                            'MP dependency found: {}->{}'.format(
+                                self.name, attr
+                            )
+                        )
                     depends_on_mp.dependent_mps.append((self, path))
                     continue
 
                 if EXTRA_VERBOSITY:
-                    print('Parsing dependency cls=%s, model=%s attr=%s path=%s' % (self.cls, model, attr, path))
+                    print(
+                        'Parsing dependency cls=%s, model=%s attr=%s path=%s'
+                        % (self.cls, model, attr, path)
+                    )
                 dependent_models[model].add(attr)
                 if attr != '*':
                     try:
@@ -253,17 +284,14 @@ class MaterializedPropertySubstitution(object):
                             self.name,
                             dependency,
                             attr,
-                            model.__name__
+                            model.__name__,
                         )
                         raise Exception(message)
                 if model in paths:
                     if paths[model] != path:
                         message = 'Model {} (dependent for {}) is accessible by dependents by using different paths {} and {}, which is not supported now'.format(
-                                model,
-                                self.cls,
-                                paths[model],
-                                path
-                            )
+                            model, self.cls, paths[model], path
+                        )
 
                         raise Exception(message)
                 else:
@@ -274,7 +302,9 @@ class MaterializedPropertySubstitution(object):
             depends_on = dependent_models[model]
             self.connect_receiver(model, path, depends_on)
 
-    def update_on_instance(self, instance, value, more_q=None, save=True, force=None):
+    def update_on_instance(
+        self, instance, value, more_q=None, save=True, force=None
+    ):
         if more_q is None:
             more_q = {}
 
@@ -291,12 +321,25 @@ class MaterializedPropertySubstitution(object):
         if not self.cls.objects.filter(pk=instance.pk, **more_q).update(**upd):
             if not more_q:
                 rollbar.report_message(
-                    'Update failed when saving value of %s for %s with %s' % (self.name, fmt(instance), value,),
-                    level='warning'
+                    'Update failed when saving value of %s for %s with %s'
+                    % (
+                        self.name,
+                        fmt(instance),
+                        value,
+                    ),
+                    level='warning',
                 )
 
-    def store_mp_or_async(self, resolved_instance, source=None, save=True, force=None, changed_only=True):
+    def store_mp_or_async(
+        self,
+        resolved_instance,
+        source=None,
+        save=True,
+        force=None,
+        changed_only=True,
+    ):
         from htk.apps.mp.tasks import async_store_mp
+
         if self.eventually_consistent:
             cls = type(resolved_instance)
             async_store_mp.delay(
@@ -305,9 +348,22 @@ class MaterializedPropertySubstitution(object):
                 self.name,
             )
         else:
-            self.store_mp(resolved_instance, source=source, save=save, force=force, changed_only=changed_only)
+            self.store_mp(
+                resolved_instance,
+                source=source,
+                save=save,
+                force=force,
+                changed_only=changed_only,
+            )
 
-    def store_mp(self, resolved_instance, source=None, save=True, force=None, changed_only=True):
+    def store_mp(
+        self,
+        resolved_instance,
+        source=None,
+        save=True,
+        force=None,
+        changed_only=True,
+    ):
         if resolved_instance.pk in pending_delete:
             # this `resolved_instance` is pending deletion
             # rollbar.report_message(
@@ -322,7 +378,9 @@ class MaterializedPropertySubstitution(object):
             # calculate the updated value
             value = self.f(resolved_instance)
 
-            if changed_only and value == getattr(resolved_instance, self.field_name):
+            if changed_only and value == getattr(
+                resolved_instance, self.field_name
+            ):
                 # skip for unchanged values
 
                 # rollbar.report_message(
@@ -347,15 +405,37 @@ class MaterializedPropertySubstitution(object):
                 #     ),
                 #     level='info'
                 # )
-                self.update_on_instance(resolved_instance, value, save=save, force=force)
+                self.update_on_instance(
+                    resolved_instance, value, save=save, force=force
+                )
 
     def __repr__(self):
-        return 'MaterializedProperty {} on {}'.format(self.name, self.cls.__name__)
+        return 'MaterializedProperty {} on {}'.format(
+            self.name, self.cls.__name__
+        )
 
     def connect_receiver(self, model, path, depends_on):
-        def change_receiver(instance, signame, update_fields=None, save=True, force=None, second_check=False, *args, **kwargs):
-            source = '%s receiver %s, path %s, update_fields %s' % (signame, fmt(instance), path, update_fields)
-            if '*' not in depends_on and update_fields is not None and not (set(update_fields) & depends_on):
+        def change_receiver(
+            instance,
+            signame,
+            update_fields=None,
+            save=True,
+            force=None,
+            second_check=False,
+            *args,
+            **kwargs  # fmt: skip
+        ):
+            source = '%s receiver %s, path %s, update_fields %s' % (
+                signame,
+                fmt(instance),
+                path,
+                update_fields,
+            )
+            if (
+                '*' not in depends_on
+                and update_fields is not None
+                and not (set(update_fields) & depends_on)
+            ):
                 return
             if save:
                 force = None
@@ -363,53 +443,71 @@ class MaterializedPropertySubstitution(object):
                 old_resolved_instance = None
                 if second_check:
                     old_resolved_instance = resolved_instance
-                    resolved_instance = resolved_instance._meta.model.objects.get(pk=resolved_instance.pk)
-                self.store_mp_or_async(resolved_instance, source=source, save=save, force=force, changed_only=second_check)
+                    resolved_instance = (
+                        resolved_instance._meta.model.objects.get(
+                            pk=resolved_instance.pk
+                        )
+                    )
+                self.store_mp_or_async(
+                    resolved_instance,
+                    source=source,
+                    save=save,
+                    force=force,
+                    changed_only=second_check,
+                )
                 if old_resolved_instance:
-                    setattr(old_resolved_instance, self.field_name, getattr(resolved_instance, self.field_name))
+                    setattr(
+                        old_resolved_instance,
+                        self.field_name,
+                        getattr(resolved_instance, self.field_name),
+                    )
 
             if second_check:
                 return
 
             for dependent_mp, dependent_path in self.dependent_mps:
-                for resolved_instance in resolve_instances(instance, dependent_path):
-                    dependent_mp.store_mp_or_async(resolved_instance, source=source)
+                for resolved_instance in resolve_instances(
+                    instance, dependent_path
+                ):
+                    dependent_mp.store_mp_or_async(
+                        resolved_instance, source=source
+                    )
 
         if model == self.cls and not self.eventually_consistent:
             priority_connect(
                 signals.pre_save,
                 partial(change_receiver, signame='pre_save', save=False),
-                sender=model
+                sender=model,
             )
             if self.dbl_check_on_post_save:
                 priority_connect(
                     signals.post_save,
-                    partial(change_receiver, signame='post_save(2)', second_check=True),
+                    partial(
+                        change_receiver,
+                        signame='post_save(2)',
+                        second_check=True,
+                    ),
                     sender=model,
                 )
         else:
             priority_connect(
                 signals.post_save,
                 partial(change_receiver, signame='post_save'),
-                sender=model
+                sender=model,
             )
 
         if model != self.cls:
             priority_connect(
                 signals.post_delete,
                 partial(change_receiver, signame='post_delete'),
-                sender=model
+                sender=model,
             )
         else:
             priority_connect(
-                signals.pre_delete,
-                mark_pending_delete,
-                sender=model
+                signals.pre_delete, mark_pending_delete, sender=model
             )
             priority_connect(
-                signals.post_delete,
-                unmark_pending_delete,
-                sender=model
+                signals.post_delete, unmark_pending_delete, sender=model
             )
 
 
@@ -452,8 +550,10 @@ def resolve_instances(instance, path):
                 yield x
     else:
         rollbar.report_message(
-            'Unknown value in resolve_instance({}, {}): {}'.format(instance, path, value),
-            level='error'
+            'Unknown value in resolve_instance({}, {}): {}'.format(
+                instance, path, value
+            ),
+            level='error',
         )
 
 
@@ -468,18 +568,27 @@ def parse_dependency(model, dependency):
             field = getattr(model, attr_name)
             # for ReverseSingleRelatedObjectDescriptor
             if hasattr(field, 'field'):
+                is_reverse = field.__class__.__name__.startswith('Reverse')
                 field = field.field
-                model = field.rel.to
+                model = field.rel.related_model if is_reverse else field.rel.to
                 related_name = field.rel.related_name
 
                 if not related_name or related_name == '+':
-                    raise Exception("Fields with no explicit related name aren't supported for now: {}".format(field))
+                    raise Exception(
+                        "Fields with no explicit related name aren't supported for now: {}".format(
+                            field
+                        )
+                    )
             else:
                 model = field.related.model
                 related_name = field.related.field.name
             path.insert(0, related_name)
         except Exception as e:
-            raise Exception('Failed to parse dependency {} on {}: {}'.format(attr_name, model, e.message))
+            raise Exception(
+                'Failed to parse dependency {} on {}: {}'.format(
+                    attr_name, model, e.message
+                )
+            )
 
 
 def invalidate_for_instance(instance, mps, save=False):
@@ -537,24 +646,27 @@ class Throttler(object):
             self.counter = 0
             time.sleep(1)
 
+
 NOP_THROTTLER = Throttler(0)
 
 
 def test_mp(
-        it,
-        model,
-        mp,
-        fix=False,
-        log_dbg=default_dbg,
-        log_stat=default_stat,
-        log_err=default_exception,
-        throttler=NOP_THROTTLER
+    it,
+    model,
+    mp,
+    fix=False,
+    log_dbg=default_dbg,
+    log_stat=default_stat,
+    log_err=default_exception,
+    throttler=NOP_THROTTLER,
 ):
     if isinstance(mp, basestring):
         mp_name = mp
         mp = registered_mps[model].get(mp_name, None)
         if not mp:
-            raise Exception('Unknown mp {} on {}'.format(mp_name, model.__name__))
+            raise Exception(
+                'Unknown mp {} on {}'.format(mp_name, model.__name__)
+            )
     total = 0
     failed = 0
     not_set = 0
@@ -568,8 +680,10 @@ def test_mp(
                 instance = model.objects.get(**{pk_name: suspect_pk})
             except model.DoesNotExist:
                 rollbar.report_message(
-                    '{}(pk={}) did not exist in test_mp'.format(model.__name__, suspect_pk),
-                    level='warning'
+                    '{}(pk={}) did not exist in test_mp'.format(
+                        model.__name__, suspect_pk
+                    ),
+                    level='warning',
                 )
                 continue
             throttler.throttle()
@@ -578,9 +692,9 @@ def test_mp(
             except:
                 rollbar.report_exc_info(
                     extra={
-                        'message' : 'Invalidation failed in test_mp',
+                        'message': 'Invalidation failed in test_mp',
                         'model': model.__name__,
-                        'suspect_pk': suspect_pk
+                        'suspect_pk': suspect_pk,
                     }
                 )
                 continue
@@ -590,10 +704,12 @@ def test_mp(
 
 def extract_stack_safe():
     try:
-        stack = '\n'.join(('%s, %s, %s, %s' % x for x in traceback.extract_stack()))
+        stack = '\n'.join(
+            ('%s, %s, %s, %s' % x for x in traceback.extract_stack())
+        )
     except:
-        rollbar.report_exc_info(extra_data={
-            'message' : 'Failed to get stack trace for MP warning'
-        })
+        rollbar.report_exc_info(
+            extra_data={'message': 'Failed to get stack trace for MP warning'}
+        )
         stack = '<stack unknown>'
     return stack
