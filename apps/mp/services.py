@@ -1,10 +1,7 @@
-# Python Standard Library Imports
 # Future Imports
 from __future__ import absolute_import, print_function
 
-import contextlib
-import logging
-import threading
+# Python Standard Library Imports
 import time
 import traceback
 import weakref
@@ -17,7 +14,6 @@ import rollbar
 # Django Imports
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import ProgrammingError
 from django.db import models
 from django.db.models import signals
 
@@ -571,7 +567,9 @@ def parse_dependency(model, dependency):
                 is_reverse = field.__class__.__name__.startswith('Reverse')
                 field = field.field
                 model = field.rel.related_model if is_reverse else field.rel.to
-                related_name = field.rel.related_name
+                related_name = (
+                    field.name if is_reverse else field.rel.related_name
+                )
 
                 if not related_name or related_name == '+':
                     raise Exception(
