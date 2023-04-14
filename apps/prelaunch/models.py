@@ -69,8 +69,7 @@ class PrelaunchSignup(models.Model):
             )
             prelaunch_signup = (
                 prelaunch_signups_with_early_access.first()
-                if prelaunch_signups_with_early_access.count() > 0
-                else prelaunch_signups.first()
+                or prelaunch_signups.first()
             )
 
             should_update = False
