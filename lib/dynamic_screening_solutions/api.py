@@ -133,15 +133,12 @@ class Htk321FormsAPI(object):
     def handle_response(self, response):
         try:
             response_json = response.json()
-            response_json = (
-                None
-                if type(response_json) == dict and response_json.get('error')
-                else response_json
-            )
+            is_bad_response = type(response_json) == dict and response_json.get('error')
         except ValueError:
-            response_json = None
+            is_bad_response = True
+            response_json = {}
 
-        if response_json is None:
+        if is_bad_response:
             self.handle_bad_response(response, response_json=response_json)
         else:
             pass
