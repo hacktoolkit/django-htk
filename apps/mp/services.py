@@ -24,7 +24,7 @@ from htk.apps.mp.utils import format_model_name
 
 EXTRA_VERBOSITY = False
 
-MAGIC_VALUE_NOT_SET_STRING = '\0'
+MAGIC_VALUE_NOT_SET_STRING = ''
 
 registered_mps = defaultdict(dict)
 
