@@ -1,6 +1,9 @@
 # Python Standard Library Imports
 import json
 
+# Third Party (PyPI) Imports
+import rollbar
+
 # Django Imports
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -34,26 +37,36 @@ def stripe_webhook_view(request):
     invoice.payment_succeeded
     """
     # Retrieve the request's body and parse it as JSON
-    event_json = json.loads(request.body)
+    try:
+        event_json = json.loads(request.body)
 
-    event_id = event_json.get('id', None)
-    live_mode = event_json.get('livemode', False)
+        event_id = event_json.get('id', None)
+        live_mode = event_json.get('livemode', False)
 
-    event = retrieve_event(event_id, live_mode=live_mode)
+        event = retrieve_event(event_id, live_mode=live_mode)
 
-    if event:
-        if live_mode:
-            # always log the event for live mode
+        if event:
+            if live_mode:
+                # always log the event for live mode
+                log_event(event_json, request=request)
+            else:
+                pass
+
+            handle_event(event, request=request)
+        elif event_id and not live_mode:
+            # handle the Stripe dashboard webhook test case
             log_event(event_json, request=request)
         else:
             pass
-
-        handle_event(event, request=request)
-    elif event_id and not live_mode:
-        # handle the Stripe dashboard webhook test case
-        log_event(event_json, request=request)
-    else:
-        pass
+    except Exception as e:
+        extra_data = {
+            'data': request.body,
+            'error': '{}'.format(e),
+        }
+        rollbar.report_message(
+            'Stripe event: failed',
+            extra_data=extra_data
+        )
 
     response = HttpResponse(status=200)
     return response
