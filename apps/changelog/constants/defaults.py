@@ -1,0 +1,5 @@
+HTK_CHANGELOG_FILE_PATH = 'CHANGELOG.md'
+HTK_CHANGELOG_SLACK_CHANNEL_RELEASES = '#release-notes'
+HTK_CHANGELOG_SLACK_FULL_LOG_MESSAGE = (
+    'The full change log can be found at CHANGELOG.md'
+)
