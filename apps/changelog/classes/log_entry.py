@@ -1,3 +1,6 @@
+# Python Standard Library Imports
+from collections import namedtuple
+
 # Third Party (PyPI) Imports
 import dateparser
 import emoji
@@ -11,34 +14,15 @@ from htk.apps.changelog.constants.regexes import (
 )
 
 
-class LogEntry:
-    origin_url = ''
-    commit_hash = ''
-    date_iso = ''
-    author = ''
-    refs_raw = ''
-    subject = ''
-    sep = ''
-
-    def __init__(
-        self,
-        origin_url,
-        commit_hash='',
-        date_iso='',
-        author='',
-        refs_raw='',
-        subject='',
-    ):
-        self.origin_url = origin_url
-        self.commit_hash = commit_hash
-        self.date_iso = date_iso
-        self.author = author
-        self.refs_raw = refs_raw
-        self.subject = subject
-
+class LogEntry(
+    namedtuple(
+        'LogEntry',
+        'origin_url,commit_hash,date_iso,author,refs_raw,subject',
+    )
+):
     @classmethod
-    def from_line(cls, origin_url, line, sep=SEPERATOR):
-        log_entry = cls(origin_url, *line.strip().split(sep))
+    def from_line(cls, origin_url, line):
+        log_entry = cls(origin_url, *line.strip().split(SEPERATOR))
         return log_entry
 
     @property
