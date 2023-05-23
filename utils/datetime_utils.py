@@ -69,7 +69,7 @@ def datetime_to_unix_time(dt):
 
 
 def unix_time_to_datetime(timestamp, tzinfo=pytz.utc):
-    dt = datetime.datetime.fromtimestamp(timestamp).replace(tzinfo=tzinfo)
+    dt = datetime.datetime.fromtimestamp(timestamp, tz=tzinfo)
     return dt
 
 
