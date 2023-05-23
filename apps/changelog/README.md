@@ -46,12 +46,8 @@ This app adds a new command to `manage.py`. It can be used with following comman
 venv/bin/python manage.py changelog
 ```
 
-If slack announcement wanted `--slack-announce` can be passed to command:
+If Slack announcement wanted `--slack-announce` can be passed to command:
 
 ```bash
 venv/bin/python manage.py changelog --slack-announce
 ```
-
-### Direct Command Tool
-There is an alternative way to add command tool if Django command is not choosen.
-There is an example in `commands.py` for usage.
