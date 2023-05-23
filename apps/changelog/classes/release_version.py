@@ -1,20 +1,16 @@
 # Python Standard Library Imports
 import datetime
+from collections import namedtuple
 
 
-class ReleaseVersion:
-    origin_url = ''
-    ref = ''
-    date = ''
-    sha = ''
-    branch = ''
-
-    def __init__(self, origin_url, ref='', date='', sha='', branch=''):
-        self.origin_url = origin_url
-        self.ref = ref
-        self.date = date
-        self.sha = sha
-        self.branch = branch
+class ReleaseVersion(
+    namedtuple('ReleaseVersion', 'origin_url,ref,date,sha,branch')
+):
+    # origin_url: str
+    # ref: str
+    # date: str
+    # sha: str
+    # branch: str
 
     @property
     def readable_date(self):
