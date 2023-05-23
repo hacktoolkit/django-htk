@@ -46,8 +46,26 @@ This app adds a new command to `manage.py`. It can be used with following comman
 venv/bin/python manage.py changelog
 ```
 
+### Options
+
+#### --slack-announce
 If Slack announcement wanted `--slack-announce` can be passed to command:
 
 ```bash
 venv/bin/python manage.py changelog --slack-announce
 ```
+
+#### --silent
+The command prints messages upon successful execution. if `--silent` option
+is present, the output will be none.
+
+```bash
+venv/bin/python manage.py changelog --silent
+# or
+venv/bin/python manage.py changelog --silent --slack-announce
+```
+
+
+## Standalone CLI command
+If Django management command is not wanted, it is also possible to create a
+standalone CLI command tool. An example can be found in `commands.py` file.

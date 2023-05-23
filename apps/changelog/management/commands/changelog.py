@@ -37,6 +37,13 @@ class Command(BaseCommand):
             dest='slack_announce',
             help='Announce release notes in Slack',
         )
+        parser.add_argument(
+            '--silent',
+            action='store_true',
+            default=False,
+            dest='silent',
+            help='Run the command in silent',
+        )
 
     def handle(self, *args, **kwargs):
 
@@ -49,6 +56,7 @@ class Command(BaseCommand):
         changelog = ChangeLog(origin_url, log_entries)
 
         slack_announce = kwargs.get('slack_announce', False)
+        silent = kwargs.get('silent', False)
         changelog_file_name = htk_setting('HTK_CHANGELOG_FILE_PATH')
         slack_channel = htk_setting('HTK_CHANGELOG_SLACK_CHANNEL_RELEASES')
         web_url_name = htk_setting('HTK_CHANGELOG_VIEW_IN_WEB_URL_NAME')
@@ -59,11 +67,12 @@ class Command(BaseCommand):
                 url = reverse(web_url_name)
                 web_url = build_full_url(url, use_secure=True)
             except Exception:
-                print(
-                    'Given web URL name "{}" does not exist.'.format(
-                        web_url_name
+                if not silent:
+                    print(
+                        'Given web URL name "{}" does not exist.'.format(
+                            web_url_name
+                        )
                     )
-                )
                 exit()
 
         changelog.write_changelog(
@@ -73,10 +82,11 @@ class Command(BaseCommand):
             web_url=web_url,
         )
 
-        print('Change Log written to "{}".'.format(changelog_file_name))
-        if slack_announce:
-            print(
-                'Announcement is sent to "{}" channel in Slack'.format(
-                    slack_channel
+        if not silent:
+            print('Change Log written to "{}".'.format(changelog_file_name))
+            if slack_announce:
+                print(
+                    'Announcement is sent to "{}" channel in Slack'.format(
+                        slack_channel
+                    )
                 )
-            )
