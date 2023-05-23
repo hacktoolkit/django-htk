@@ -41,11 +41,6 @@ class LogEntry:
         log_entry = cls(origin_url, *line.strip().split(sep))
         return log_entry
 
-    @classmethod
-    def from_lines(cls, origin_url, lines, sep=SEPERATOR):
-        log_entries = [cls.from_line(origin_url, line, sep) for line in lines]
-        return log_entries
-
     @property
     def simple_subject(self):
         return GITHUB_ISSUE_REGEX.sub('', self.subject).strip()
