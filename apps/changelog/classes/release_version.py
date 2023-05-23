@@ -4,7 +4,10 @@ from collections import namedtuple
 
 
 class ReleaseVersion(
-    namedtuple('ReleaseVersion', 'origin_url,ref,date,sha,branch')
+    namedtuple(
+        'ReleaseVersion',
+        'origin_url,ref,date,sha,branch',
+    )
 ):
     # origin_url: str
     # ref: str
