@@ -16,9 +16,9 @@ class ChangeLog(
 
     def write_changelog(
         self,
-        changelog_file_name='CHANGELOG.md',
+        changelog_file_name,
+        slack_channel,
         slack_announce=False,
-        slack_channel='#releases',
         web_url=None,
     ):
         """Write Change Log to given file.
