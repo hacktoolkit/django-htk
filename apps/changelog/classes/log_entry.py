@@ -7,7 +7,7 @@ import emoji
 
 # HTK Imports
 from htk.apps.changelog.classes.release_version import ReleaseVersion
-from htk.apps.changelog.constants.general import SEPERATOR
+from htk.apps.changelog.constants.general import SEPARATOR
 from htk.apps.changelog.constants.regexes import (
     GITHUB_ISSUE_REGEX,
     RELEASE_TAG_REGEXES,
@@ -22,7 +22,7 @@ class LogEntry(
 ):
     @classmethod
     def from_line(cls, origin_url, line):
-        log_entry = cls(origin_url, *line.strip().split(SEPERATOR))
+        log_entry = cls(origin_url, *line.strip().split(SEPARATOR))
         return log_entry
 
     @property

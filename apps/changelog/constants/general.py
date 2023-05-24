@@ -1,1 +1,1 @@
-SEPERATOR = '|||'
+SEPARATOR = '|||'

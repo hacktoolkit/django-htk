@@ -2,7 +2,7 @@
 from invoke import run
 
 # HTK Imports
-from htk.apps.changelog.constants.general import SEPERATOR
+from htk.apps.changelog.constants.general import SEPARATOR
 from htk.apps.changelog.constants.regexes import ORIGIN_URL_REGEX
 
 
@@ -31,7 +31,7 @@ def fetch_git_logs():
     @return: list[str]
     """
     command = 'git log --format="%H{SEP}%aI{SEP}%aL{SEP}%D{SEP}%s"'.format(
-        SEP=SEPERATOR
+        SEP=SEPARATOR
     )
     result = run(command, hide=True)
 
