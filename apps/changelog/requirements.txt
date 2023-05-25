@@ -1,0 +1,5 @@
+# Python 2.7 requirements
+click==6.7
+dateparser==0.7.6
+emoji==2.2.0
+invoke==1.7.3
