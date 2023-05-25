@@ -13,8 +13,8 @@ from htk.apps.changelog.utils import (
 
 
 def update_changelog_command_factory(
-    slack_channel,
     changelog_file_name,
+    slack_channel,
     web_url,
     slack_webhook_url=None,
 ):
@@ -62,11 +62,3 @@ def update_changelog_command_factory(
         )
 
     return update_changelog_command
-
-
-if __name__ == '__main__':
-    update_changelog_command = update_changelog_command_factory(
-        '#releases',
-        './CHANGELOG.md',
-    )
-    update_changelog_command()
