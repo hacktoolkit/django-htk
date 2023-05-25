@@ -12,8 +12,8 @@ from htk.apps.changelog.utils import (
 )
 
 
-def update_changelog_command_creator(slack_channel, changelog_file_name):
-    """Update Changelog Command Creator
+def update_changelog_command_factory(slack_channel, changelog_file_name):
+    """Update Changelog Command Factory
 
     Creates standalone CLI command tool to create/update change log file.
 
@@ -56,8 +56,8 @@ def update_changelog_command_creator(slack_channel, changelog_file_name):
 
 
 if __name__ == '__main__':
-    # Example usage
-    update_changelog_command = update_changelog_command_creator(
-        '#releases', './CHANGELOG.md'
+    update_changelog_command = update_changelog_command_factory(
+        '#releases',
+        './CHANGELOG.md',
     )
     update_changelog_command()
