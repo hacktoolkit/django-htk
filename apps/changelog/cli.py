@@ -12,7 +12,12 @@ from htk.apps.changelog.utils import (
 )
 
 
-def update_changelog_command_factory(slack_channel, changelog_file_name):
+def update_changelog_command_factory(
+    slack_channel,
+    changelog_file_name,
+    web_url,
+    slack_webhook_url=None,
+):
     """Update Changelog Command Factory
 
     Creates standalone CLI command tool to create/update change log file.
@@ -20,10 +25,12 @@ def update_changelog_command_factory(slack_channel, changelog_file_name):
     Args:
         slack_channel       (str): Slack channel name with leading '#'
         changelog_file_name (str): Change log file name with relative or absolute file path.
+        web_url             (str): The URL of Change Log web view to post in Slack Message
+        slack_webhook_url   (str): Web Hook URL provided from Slack
 
     Usage:
         ```
-        update_changelog_command = update_changelog_command_creator(
+        update_changelog_command = update_changelog_command_factory(
             '#releases',
             './CHANGELOG.md',
         )
@@ -50,6 +57,8 @@ def update_changelog_command_factory(slack_channel, changelog_file_name):
             changelog_file_name=changelog_file_name,
             slack_announce=slack_announce,
             slack_channel=slack_channel,
+            web_url=web_url,
+            slack_webhook_url=slack_webhook_url,
         )
 
     return update_changelog_command

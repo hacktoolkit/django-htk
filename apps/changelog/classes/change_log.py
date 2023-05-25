@@ -19,6 +19,7 @@ class ChangeLog(
         changelog_file_name,
         slack_announce=False,
         slack_channel=None,
+        slack_webhook_url=None,
         web_url=None,
     ):
         """Write Change Log to given file.
@@ -81,6 +82,7 @@ class ChangeLog(
             slack_message = '\n'.join(slack_buf)
 
             slack_webhook_call(
+                webhook_url=slack_webhook_url,
                 channel=slack_channel,
                 text=slack_message,
                 unfurl_links=False,
