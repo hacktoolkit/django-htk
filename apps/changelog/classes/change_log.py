@@ -17,8 +17,8 @@ class ChangeLog(
     def write_changelog(
         self,
         changelog_file_name,
-        slack_channel,
         slack_announce=False,
+        slack_channel=None,
         web_url=None,
     ):
         """Write Change Log to given file.
@@ -65,6 +65,11 @@ class ChangeLog(
             f.write('\n'.join(buf))
 
         if slack_announce:
+            if slack_channel is None:
+                raise Exception(
+                    'Channel name must be provided to be able to post Slack'
+                )
+
             from htk.lib.slack.utils import webhook_call as slack_webhook_call
 
             if web_url is not None:
