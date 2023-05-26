@@ -73,11 +73,6 @@ def unix_time_to_datetime(timestamp, tzinfo=pytz.utc):
     return dt
 
 
-def unix_time_to_utcdatetime(timestamp):
-    dt = datetime.datetime.utcfromtimestamp(timestamp).replace(tzinfo=pytz.utc)
-    return dt
-
-
 def iso_datetime_to_unix_time(iso):
     """Converts an ISO datetime string to UNIX timestamp
     """
