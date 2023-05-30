@@ -178,10 +178,13 @@ def get_incomplete_signup_user_by_email(email):
         is_confirmed=False,
         user__is_active=False,
     )
-    num_results = user_emails.count()
+
     user = None
-    if num_results == 1:
-        user = user_emails[0].user
+    user_email = user_emails.first()
+    num_results = user_emails.count()
+
+    if user_email is not None and num_results == 1:
+        user = user_email.user
     elif num_results > 1:
         # there should only be one User with this email...
         # if there are more, we have a data error!
