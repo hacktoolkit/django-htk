@@ -82,7 +82,7 @@ class LogEntry(
                             sha=m.group('sha'),
                             branch=m.group('branch'),
                         )
-                    except Exception as ex:
+                    except Exception:
                         # old format
                         # TODO: rewrite older tags to match the new format
                         version = ReleaseVersion(
