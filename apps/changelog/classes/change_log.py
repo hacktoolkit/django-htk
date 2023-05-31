@@ -63,7 +63,8 @@ class ChangeLog(
         buf.append('')
 
         with open(changelog_file_name, 'w') as f:
-            f.write('\n'.join(buf))
+            string_to_write = '\n'.join(buf)
+            f.write(string_to_write.encode('UTF-8'))
 
         if slack_announce:
             if slack_channel is None:
