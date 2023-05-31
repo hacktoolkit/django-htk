@@ -3,7 +3,7 @@ from invoke import run
 
 # HTK Imports
 from htk.apps.changelog.constants.general import SEPARATOR
-from htk.apps.changelog.constants.regexes import ORIGIN_URL_REGEX
+from htk.apps.changelog.constants.regex import ORIGIN_URL_REGEX
 
 
 def fetch_origin_url():

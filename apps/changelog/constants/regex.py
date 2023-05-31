@@ -3,7 +3,7 @@ import re
 
 
 RELEASE_TAG_REGEXES = [
-    # never format: 'tag: deploy-202211031730-4acb099a93-master'
+    # newer format: 'tag: deploy-202211031730-4acb099a93-master'
     re.compile(
         r'^tag: deploy-(?P<dt>\d{12})-(?P<sha>[a-f0-9]{10})-(?P<branch>[a-z]+)$'
     ),

@@ -7,7 +7,7 @@ import dateparser
 # HTK Imports
 from htk.apps.changelog.classes.release_version import ReleaseVersion
 from htk.apps.changelog.constants.general import SEPARATOR
-from htk.apps.changelog.constants.regexes import (
+from htk.apps.changelog.constants.regex import (
     GITHUB_ISSUE_REGEX,
     RELEASE_TAG_REGEXES,
 )
