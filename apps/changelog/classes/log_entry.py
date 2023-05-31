@@ -3,7 +3,6 @@ from collections import namedtuple
 
 # Third Party (PyPI) Imports
 import dateparser
-import emoji
 
 # HTK Imports
 from htk.apps.changelog.classes.release_version import ReleaseVersion
@@ -83,8 +82,7 @@ class LogEntry(
                             sha=m.group('sha'),
                             branch=m.group('branch'),
                         )
-                    except Exception as ex:
-                        print(ex)
+                    except Exception:
                         # old format
                         # TODO: rewrite older tags to match the new format
                         version = ReleaseVersion(
@@ -117,11 +115,10 @@ class LogEntry(
 
     @property
     def html(self):
-        simple_subject = emoji.demojize(self.simple_subject)
         issue_links = self.issue_links
         issue_links_sep = '; ' if issue_links else ''
-        html = '- {} _by {} on {}_ ([{}]({}){}{})'.format(
-            simple_subject,
+        html = u'- {} _by {} on {}_ ([{}]({}){}{})'.format(
+            self.simple_subject,
             self.author,
             self.short_date,
             self.commit_hash[:10],
@@ -135,7 +132,7 @@ class LogEntry(
     def slack_message(self):
         issue_links = self.issue_links_slack
         issue_links_sep = '; ' if issue_links else ''
-        html = '* {} _by {} on {}_ (<{}|{}>){}{}'.format(
+        html = u'* {} _by {} on {}_ (<{}|{}>){}{}'.format(
             self.simple_subject,
             self.author,
             self.short_date,
