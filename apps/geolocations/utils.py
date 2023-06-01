@@ -3,10 +3,11 @@ import math
 
 # HTK Imports
 from htk.apps.geolocations.cachekeys import GeocodeCache
-from htk.apps.geolocations.constants import *
+from htk.apps.geolocations.constants.general import *
 from htk.apps.geolocations.enums import DistanceUnit
 from htk.lib.google.geocode.geocode import get_latlng as get_latlng_google
 from htk.lib.mapbox.geocode import get_latlng as get_latlng_mapbox
+from htk.utils import htk_setting
 from htk.utils.maths.trigonometry import (
     deg2rad,
     rad2deg,
@@ -55,7 +56,12 @@ def get_latlng(location_name, refresh=False, providers=None):
     latlng = c.get()
     if latlng is None or refresh:
         if provider == 'mapbox':
-            latlng = get_latlng_mapbox(location_name)
+            min_relevance_threshold = htk_setting(
+                'HTK_GEOLOCATIONS_MAPBOX_MIN_RELEVANCE_THRESHOLD'
+            )
+            latlng = get_latlng_mapbox(
+                location_name, min_relevance_threshold=min_relevance_threshold
+            )
         elif provider == 'google':
             latlng = get_latlng_google(location_name)
         else:

@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.safestring import mark_safe
 
 # HTK Imports
-from htk.apps.geolocations.constants import *
+from htk.apps.geolocations.constants.general import *
 from htk.apps.geolocations.enums import DistanceUnit
 from htk.apps.geolocations.utils import convert_meters
 from htk.apps.geolocations.utils import get_bounding_box
