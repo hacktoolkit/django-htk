@@ -114,7 +114,7 @@ def _report_exc_info(extra_data=None):
         pass
 
 
-def get_latlng(address):
+def get_latlng(address, min_relevance_threshold=1):
     extra_data = {
         'address': address,
     }
@@ -141,7 +141,7 @@ def get_latlng(address):
             results = response_json.get('features', [])
             if len(results) > 0:
                 result = results[0]
-                if result.get('relevance') >= 1:
+                if result.get('relevance') >= min_relevance_threshold:
                     center = result['center']
                     longitude, latitude = center
                 else:
