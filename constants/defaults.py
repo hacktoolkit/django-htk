@@ -87,6 +87,7 @@ from htk.apps.bible.constants.defaults import *
 from htk.apps.changelog.constants.defaults import *
 from htk.apps.cpq.constants.defaults import *
 from htk.apps.file_storage.constants.defaults import *
+from htk.apps.geolocations.constants.defaults import *
 from htk.apps.i18n.constants.defaults import *
 from htk.apps.invitations.constants.defaults import *
 from htk.apps.maintenance_mode.constants.defaults import *
