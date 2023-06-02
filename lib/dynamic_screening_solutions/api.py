@@ -6,6 +6,7 @@ import time
 # Third Party (PyPI) Imports
 import requests
 import rollbar
+from six.moves import urllib
 
 # HTK Imports
 from htk.lib.dynamic_screening_solutions.constants import *
@@ -17,14 +18,6 @@ from htk.utils.request import get_current_request
 
 
 # isort: off
-
-
-# Python 2 to 3 compatable import
-# See: https://python-future.org/compatible_idioms.html#urllib-module
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    import urlparse
 
 
 MAX_RETRY_ATTEMPTS = 5
@@ -52,7 +45,7 @@ class Htk321FormsAPI(object):
         return extra_data
 
     def get_request_url(self, resource_path=None):
-        request_url = urlparse.urljoin(self.entry_point_url, resource_path)
+        request_url = urllib.parse.urljoin(self.entry_point_url, resource_path)
         return request_url
 
     def _make_authorization_key(self, headers, secret_key):

@@ -1,9 +1,7 @@
-# Python Standard Library Imports
-import urlparse
-
 # Third Party (PyPI) Imports
 import requests
 import rollbar
+from six.moves import urllib
 
 # HTK Imports
 from htk.utils.request import get_current_request
@@ -21,7 +19,7 @@ class ZipRecruiterAPI(object):
         self.api_key = api_key
 
     def build_request_url(self, resource_path=None):
-        request_url = urlparse.urljoin(ZIPRECRUITER_ENTRY_POINT_URL, resource_path)
+        request_url = urllib.parse.urljoin(ZIPRECRUITER_ENTRY_POINT_URL, resource_path)
         return request_url
 
     def build_request_headers(self):
