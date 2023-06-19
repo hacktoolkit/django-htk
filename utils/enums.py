@@ -104,11 +104,11 @@ if sys.version_info.major == 3 and sys.version_info.minor >= 6:
         Reference: https://docs.python.org/3.6/library/enum.html#enum.IntFlag
         """
         @classmethod
-        def list_flags(cls, value):
+        def list_flags(cls, int_value):
             """List Flags
 
             Returns the list of flags that value contains, running bitwise
             `&` (and) operator against the value.
             """
-            flags = [flag for flag in cls if value & flag > 0]
+            flags = [flag for flag in cls if int_value & flag > 0]
             return flags
