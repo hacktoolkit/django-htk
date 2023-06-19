@@ -17,10 +17,10 @@ class HtkIntFlag(IntFlag):
     Provides extra functionalities to Python's built-in IntFlag enum type
     """
     @classmethod
-    def extract_flags(cls, flags):
+    def list_flags(cls, value: int):
         """Extract Flags
 
         Returns: list of the bitwise or'ed combination.
         """
-        flag_list = [flag for flag in flags if cls & flag > 0]
+        flag_list = [flag for flag in cls if value & flag > 0]
         return flag_list
