@@ -18,7 +18,7 @@ class HtkIntFlag(IntFlag):
     """
     @classmethod
     def list_flags(cls, value: int):
-        """Extract Flags
+        """List Flags
 
         Returns: list of the bitwise or'ed combination.
         """
