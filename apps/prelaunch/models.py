@@ -1,5 +1,6 @@
 # Python Standard Library Imports
 import uuid
+from enum import IntFlag
 
 # Third Party (PyPI) Imports
 import rollbar
@@ -154,10 +155,10 @@ class PrelaunchSignup(models.Model):
         self.save()
 
 
+class CustomerType(IntFlag):
+    JOBSEEKER = 1
+    EMPLOYER = 2
+
+
 class GoodPeoplePrelaunchSignup(PrelaunchSignup):
-    class Type(models.TextChoices):
-        JOBSEEKER = 'jobseeker'
-        EMPLOYER = 'employer'
-    
-    customer_type = models.CharField(choices=Type.choices, max_length=10)
-        
+    customer_type = models.PositiveIntegerField(choices=CustomerType.choices)
