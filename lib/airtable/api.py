@@ -14,6 +14,7 @@ class AirtableAPI:
 
     API Docs: https://airtable.com/{baseId}/api/docs
     """
+
     def __init__(self, base_id, api_key_ro=None, api_key_rw=None):
         if base_id is None:
             raise AirtableNoBaseConfigured
@@ -22,7 +23,12 @@ class AirtableAPI:
         self.api_key_ro = api_key_ro
         self.api_key_rw = api_key_rw
 
-    def get_records(self, table, view_name, limit=100, page_size=100):
+    def fetch_records(self, table, view_name, limit=100, page_size=100):
+        """Fetch records from
+
+        API Docs:
+        - https://airtable.com/developers/web/api/list-records
+        """
         headers = {
             'Authorization': 'Bearer {}'.format(self.api_key_ro),
         }
@@ -34,8 +40,7 @@ class AirtableAPI:
         }
 
         url = 'https://api.airtable.com/v0/{base_id}/{table}'.format(
-            base_id=self.base_id,
-            table=table
+            base_id=self.base_id, table=table
         )
 
         # TODO: handle 429
@@ -75,6 +80,16 @@ class AirtableAPI:
                     'params': params,
                     'response': response_json,
                 }
-                rollbar.report_message('Airtable API error: No records matching query', extra_data=extra_data)
+                rollbar.report_message(
+                    'Airtable API error: No records matching query',
+                    extra_data=extra_data,
+                )
 
         return records
+
+    def get_records(self, *args, **kwargs):
+        """Deprecated - use `self.fetch_records()` instead
+
+        Backwards compatibility function.
+        """
+        return self.fetch_records(*args, **kwargs)
