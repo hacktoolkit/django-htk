@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import sys
 from enum import Enum
 
 # HTK Imports
@@ -88,3 +89,26 @@ def build_enum_data(enum_class):
         for en in enum_class
     ]
     return enum_data
+
+
+if sys.version_info.major == 3 and sys.version_info.minor >= 6:
+    from enum import IntFlag
+
+    class HtkIntFlag(IntFlag):
+        """ HTK IntFlag
+
+        Wrapper around Python's built-in `enum.IntFlag` to provide extra
+        functionalities.
+
+        Requires: Python 3.6 or greater
+        Reference: https://docs.python.org/3.6/library/enum.html#enum.IntFlag
+        """
+        @classmethod
+        def list_flags(cls, int_value):
+            """List Flags
+
+            Returns the list of flags that value contains, running bitwise
+            `&` (and) operator against the value.
+            """
+            flags = [flag for flag in cls if int_value & flag > 0]
+            return flags
