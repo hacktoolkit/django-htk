@@ -152,3 +152,12 @@ class PrelaunchSignup(models.Model):
         self.early_access = False
         self.early_access_code = None
         self.save()
+
+
+class GoodPeoplePrelaunchSignup(PrelaunchSignup):
+    class Type(models.TextChoices):
+        JOBSEEKER = 'jobseeker'
+        EMPLOYER = 'employer'
+    
+    customer_type = models.CharField(choices=Type.choices, max_length=10)
+        

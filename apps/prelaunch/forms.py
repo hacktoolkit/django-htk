@@ -5,7 +5,7 @@ import rollbar
 from django import forms
 
 # HTK Imports
-from htk.apps.prelaunch.models import PrelaunchSignup
+from htk.apps.prelaunch.models import PrelaunchSignup, GoodPeoplePrelaunchSignup
 from htk.forms.utils import (
     set_input_attrs,
     set_input_placeholder_labels,
@@ -13,6 +13,7 @@ from htk.forms.utils import (
 
 
 # isort: off
+
 
 class PrelaunchSignupForm(forms.ModelForm):
     class Meta:
@@ -35,10 +36,18 @@ class PrelaunchSignupForm(forms.ModelForm):
         set_input_placeholder_labels(self)
 
     def save(self, site, commit=False, *args, **kwargs):
-        prelaunch_signup = super(PrelaunchSignupForm, self).save(commit=False, *args, **kwargs)
+        prelaunch_signup = super(PrelaunchSignupForm, self).save(
+            commit=False, *args, **kwargs
+        )
         prelaunch_signup.site = site
         prelaunch_signup.save()
 
         prelaunch_signup.send_notifications()
 
         return prelaunch_signup
+
+
+class GoodPeoplePrelaunchSignupForm(PrelaunchSignupForm):
+    class Meta(PrelaunchSignup.Meta):
+        model = GoodPeoplePrelaunchSignup
+        fields = PrelaunchSignupForm.Meta.fields + ['customer_type']
