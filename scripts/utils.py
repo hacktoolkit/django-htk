@@ -2,9 +2,9 @@
 import datetime
 import inspect
 import logging
+import sys
 import time
 import traceback
-import sys
 
 # Third Party (PyPI) Imports
 import MySQLdb
