@@ -4,6 +4,7 @@ import inspect
 import logging
 import time
 import traceback
+import sys
 
 # Third Party (PyPI) Imports
 import MySQLdb
@@ -87,3 +88,20 @@ def slog(m, level='info'):
         'func': previous_fn,
     }
     logger_fn(m, extra=extra)
+
+
+def progress_bar(current_count, total_count):
+    completed = int(round((float(current_count) / float(total_count)) * 100))
+    remaining = 100 - completed
+    ending = "\n" if total_count == current_count else "\r"
+    print(
+        'Progress: {} of {} ({}%) [{}{}]'.format(
+            current_count,
+            total_count,
+            completed,
+            '#' * completed,
+            '-' * remaining,
+        ),
+        end=ending,
+    )
+    sys.stdout.flush()
