@@ -19,14 +19,14 @@ from htk.view_helpers import render_custom as _r
 # isort: off
 
 
-def prelaunch(request):
+def prelaunch(request, form_class=PrelaunchSignupForm):
     if is_prelaunch_mode() and not has_early_access(request):
         data = get_view_context(request)
         data.update(csrf(request))
 
         success = False
         if request.method == 'POST':
-            prelaunch_signup_form = PrelaunchSignupForm(request.POST)
+            prelaunch_signup_form = form_class(request.POST)
             if prelaunch_signup_form.is_valid():
                 try:
                     site = get_current_site(request)
@@ -38,7 +38,7 @@ def prelaunch(request):
                 for error in prelaunch_signup_form.non_field_errors():
                     data['errors'].append(error)
         else:
-            prelaunch_signup_form = PrelaunchSignupForm()
+            prelaunch_signup_form = form_class()
         data['prelaunch_signup_form'] = prelaunch_signup_form
         data['success'] = success
         prelaunch_template = htk_setting(
