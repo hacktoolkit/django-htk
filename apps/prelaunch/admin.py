@@ -4,7 +4,10 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 # HTK Imports
-from htk.apps.prelaunch.models import PrelaunchSignup
+from htk.apps.prelaunch.utils import PrelaunchSignup
+
+
+# isort: off
 
 
 class PrelaunchSignupAdmin(admin.ModelAdmin):
@@ -21,9 +24,7 @@ class PrelaunchSignupAdmin(admin.ModelAdmin):
         'updated_at',
     )
 
-    list_filter = (
-        'site',
-    )
+    list_filter = ('site',)
     search_fields = (
         'first_name',
         'last_name',
@@ -33,8 +34,11 @@ class PrelaunchSignupAdmin(admin.ModelAdmin):
     @mark_safe
     def toggle_early_access(self, obj):
         url = reverse('admintools_api_prelaunch_toggle', args=(obj.id,))
-        value = '<a href="{}" target="_blank">Toggle Early Access</a>'.format(url)
+        value = '<a href="{}" target="_blank">Toggle Early Access</a>'.format(
+            url
+        )
         return value
+
     toggle_early_access.allow_tags = True
     toggle_early_access.short_description = 'Toggle Early Access'
 

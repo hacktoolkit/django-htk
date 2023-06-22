@@ -93,6 +93,7 @@ from htk.apps.invitations.constants.defaults import *
 from htk.apps.maintenance_mode.constants.defaults import *
 from htk.apps.notifications.constants.defaults import *
 from htk.apps.organizations.constants.defaults import *
+from htk.apps.prelaunch.constants.defaults import *
 from htk.cache.constants.defaults import *
 from htk.forms.constants.defaults import *
 from htk.lib.alexa.constants.defaults import *
