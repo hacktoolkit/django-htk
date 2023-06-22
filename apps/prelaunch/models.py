@@ -18,7 +18,7 @@ from htk.utils.request import get_current_request
 # isort: off
 
 
-class PrelaunchSignup(models.Model):
+class BasePrelaunchSignup(models.Model):
     site = models.ForeignKey(
         Site,
         on_delete=models.CASCADE,
@@ -39,8 +39,7 @@ class PrelaunchSignup(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        app_label = 'htk'
-        verbose_name = 'Prelaunch Signup'
+        abstract = True
 
     def __str__(self):
         s = '%s - %s' % (
@@ -157,3 +156,9 @@ class PrelaunchSignup(models.Model):
         self.early_access = False
         self.early_access_code = None
         self.save()
+
+
+class PrelaunchSignup(BasePrelaunchSignup):
+    class Meta:
+        app_label = 'htk'
+        verbose_name = 'Prelaunch Signup'
