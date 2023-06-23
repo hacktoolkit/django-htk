@@ -4,7 +4,6 @@ from django.shortcuts import redirect
 from django.template.context_processors import csrf
 
 # HTK Imports
-from htk.apps.prelaunch.constants import *
 from htk.apps.prelaunch.forms import PrelaunchSignupForm
 from htk.apps.prelaunch.utils import (
     PrelaunchSignup,
@@ -41,10 +40,15 @@ def prelaunch(request, form_class=PrelaunchSignupForm):
             prelaunch_signup_form = form_class()
         data['prelaunch_signup_form'] = prelaunch_signup_form
         data['success'] = success
-        prelaunch_template = htk_setting(
-            'HTK_PRELAUNCH_TEMPLATE', HTK_PRELAUNCH_TEMPLATE
+        prelaunch_template = htk_setting('HTK_PRELAUNCH_TEMPLATE')
+        prelaunch_success_template = htk_setting(
+            'HTK_PRELAUNCH_SUCCESS_TEMPLATE', None
         )
-        response = _r(request, prelaunch_template, data)
+
+        if success and prelaunch_success_template:
+            response = _r(request, prelaunch_success_template, data)
+        else:
+            response = _r(request, prelaunch_template, data)
     else:
         response = redirect(htk_setting('HTK_INDEX_URL_NAME'))
 

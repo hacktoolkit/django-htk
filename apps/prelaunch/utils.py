@@ -10,13 +10,6 @@ from django.urls import (
 )
 
 # HTK Imports
-from htk.apps.prelaunch.constants import (
-    HTK_PRELAUNCH_EXCEPTION_URLS,
-    HTK_PRELAUNCH_EXCEPTION_VIEWS,
-    HTK_PRELAUNCH_HOST_REGEXPS,
-    HTK_PRELAUNCH_MODE,
-    HTK_PRELAUNCH_URL_NAME,
-)
 from htk.utils import (
     htk_setting,
     resolve_model_dynamically,
@@ -30,7 +23,7 @@ PrelaunchSignup = resolve_model_dynamically(htk_setting('HTK_PRELAUNCH_MODEL'))
 
 
 def get_prelaunch_url_name():
-    url_name = htk_setting('HTK_PRELAUNCH_URL_NAME', HTK_PRELAUNCH_URL_NAME)
+    url_name = htk_setting('HTK_PRELAUNCH_URL_NAME')
     return url_name
 
 
@@ -41,7 +34,7 @@ def get_prelaunch_uri():
 
 
 def is_prelaunch_mode():
-    is_prelaunch = htk_setting('HTK_PRELAUNCH_MODE', HTK_PRELAUNCH_MODE)
+    is_prelaunch = htk_setting('HTK_PRELAUNCH_MODE')
     if settings.TEST:
         from htk.test_scaffold.models import TestScaffold
 
@@ -53,9 +46,7 @@ def is_prelaunch_mode():
 
 def is_prelaunch_host(host):
     is_prelaunch = False
-    prelaunch_host_regexps = htk_setting(
-        'HTK_PRELAUNCH_HOST_REGEXPS', HTK_PRELAUNCH_HOST_REGEXPS
-    )
+    prelaunch_host_regexps = htk_setting('HTK_PRELAUNCH_HOST_REGEXPS')
     for prelaunch_host_regexp in prelaunch_host_regexps:
         match = re.match(prelaunch_host_regexp, host)
         is_prelaunch = match is not None
@@ -79,9 +70,7 @@ def is_prelaunch_exception(path):
 
 def is_prelaunch_exception_url(path):
     is_excepted = False
-    prelaunch_exception_urls = htk_setting(
-        'HTK_PRELAUNCH_EXCEPTION_URLS', HTK_PRELAUNCH_EXCEPTION_URLS
-    )
+    prelaunch_exception_urls = htk_setting('HTK_PRELAUNCH_EXCEPTION_URLS')
     for url in prelaunch_exception_urls:
         if re.match(url, path):
             is_excepted = True
@@ -91,9 +80,7 @@ def is_prelaunch_exception_url(path):
 
 def is_prelaunch_exception_view(path):
     is_excepted = False
-    prelaunch_exception_views = htk_setting(
-        'HTK_PRELAUNCH_EXCEPTION_VIEWS', HTK_PRELAUNCH_EXCEPTION_VIEWS
-    )
+    prelaunch_exception_views = htk_setting('HTK_PRELAUNCH_EXCEPTION_VIEWS')
     for view_name in prelaunch_exception_views:
         try:
             uri = reverse(view_name)
