@@ -1,6 +1,7 @@
 HTK_PRELAUNCH_MODE = False
 
 HTK_PRELAUNCH_MODEL = 'htk.PrelaunchSignup'
+HTK_PRELAUNCH_FORM_CLASS = 'htk.apps.prelaunch.forms.PrelaunchSignupForm'
 
 HTK_PRELAUNCH_URL_NAME = 'htk_prelaunch'
 

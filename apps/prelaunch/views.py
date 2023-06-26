@@ -4,21 +4,28 @@ from django.shortcuts import redirect
 from django.template.context_processors import csrf
 
 # HTK Imports
-from htk.apps.prelaunch.forms import PrelaunchSignupForm
 from htk.apps.prelaunch.utils import (
     PrelaunchSignup,
     has_early_access,
     is_prelaunch_mode,
 )
 from htk.apps.prelaunch.view_helpers import get_view_context
-from htk.utils import htk_setting
+from htk.utils import (
+    htk_setting,
+    resolve_method_dynamically,
+)
 from htk.view_helpers import render_custom as _r
 
 
 # isort: off
 
 
-def prelaunch(request, form_class=PrelaunchSignupForm):
+def prelaunch(request, form_class=None):
+    if form_class is None:
+        form_class = resolve_method_dynamically(
+            htk_setting('HTK_PRELAUNCH_FORM_CLASS')
+        )
+
     if is_prelaunch_mode() and not has_early_access(request):
         data = get_view_context(request)
         data.update(csrf(request))
