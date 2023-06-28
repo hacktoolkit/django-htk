@@ -113,16 +113,22 @@ class BasePrelaunchSignup(models.Model):
         )
         return full_name
 
+    @property
+    def notification_message(self):
+        message = (
+            '{} <{}> just signed up for the pre-launch waiting list.'.format(
+                self.full_name,
+                self.email,
+            )
+        )
+        return message
+
     def send_notifications(self):
         if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
             from htk.utils.notifications import slack_notify
 
             try:
-                message = '{} <{}> just signed up for the pre-launch waiting list.'.format(
-                    self.full_name,
-                    self.email,
-                )
-                slack_notify(message)
+                slack_notify(self.notification_message)
             except:
                 request = get_current_request()
                 rollbar.report_exc_info(request=request)
