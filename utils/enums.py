@@ -42,8 +42,13 @@ class HtkEnum(Enum):
 
 def enum_to_str(enum_obj):
     """Converts an enum.Enum to a string"""
-    value = ' '.join([word.capitalize() for word in enum_obj.name.split('_')])
-    return value
+    if enum_obj.name is not None:
+        value = ' '.join(
+            [word.capitalize() for word in enum_obj.name.split('_')]
+        )
+        return value
+    else:
+        pass
 
 
 def get_enum_symbolic_name(enum_obj):
