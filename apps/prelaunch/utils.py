@@ -18,8 +18,12 @@ from htk.utils import (
 
 # isort: off
 
-
-PrelaunchSignup = resolve_model_dynamically(htk_setting('HTK_PRELAUNCH_MODEL'))
+try:
+    PrelaunchSignup = resolve_model_dynamically(
+        htk_setting('HTK_PRELAUNCH_MODEL')
+    )
+except LookupError:
+    pass
 
 
 def get_prelaunch_url_name():
