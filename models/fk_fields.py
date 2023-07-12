@@ -5,6 +5,10 @@ import copy
 from django.conf import settings
 from django.db import models
 
+# HTK Imports
+from htk.models.fields import CrossDBForeignKey
+from htk.utils import htk_setting
+
 
 # isort: off
 
@@ -38,10 +42,30 @@ def build_kwargs(required: bool = False, **kwargs) -> dict:
 
 
 def fk_user(
-    related_name: str, required: bool = False, **kwargs
+    related_name: str, required: bool = False, cross_db: bool = False
 ) -> models.ForeignKey:
-    field = models.ForeignKey(
+    fk_class = CrossDBForeignKey if cross_db else models.ForeignKey
+    field = fk_class(
         settings.AUTH_USER_MODEL,
+        related_name=related_name,
+        **build_kwargs(required=required),
+    )
+    return field
+
+
+##
+# Organizations
+
+
+def fk_organization(
+    related_name: str,
+    required: bool = False,
+    cross_db: bool = False,
+    **kwargs,
+) -> models.ForeignKey:
+    fk_class = CrossDBForeignKey if cross_db else models.ForeignKey
+    field = fk_class(
+        htk_setting('HTK_ORGANIZATION_MODEL'),
         related_name=related_name,
         **build_kwargs(required=required, **kwargs),
     )
