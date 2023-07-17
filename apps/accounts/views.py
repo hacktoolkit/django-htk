@@ -2,12 +2,16 @@
 
 # Django Imports
 from django.contrib import messages
-from django.contrib.auth import authenticate
-from django.contrib.auth import get_user_model
-from django.contrib.auth import logout
+from django.contrib.auth import (
+    authenticate,
+    get_user_model,
+    logout,
+)
 from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import get_object_or_404
-from django.shortcuts import redirect
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
 from django.template.context_processors import csrf
 from django.urls import reverse
 from django.utils.http import base36_to_int
@@ -17,23 +21,32 @@ from django.views.decorators.http import require_GET
 # HTK Imports
 from htk.apps.accounts.decorators import logout_required
 from htk.apps.accounts.exceptions import NonUniqueEmail
-from htk.apps.accounts.forms.auth import ResendConfirmationForm
-from htk.apps.accounts.forms.auth import UpdatePasswordForm
-from htk.apps.accounts.forms.auth import UsernameEmailAuthenticationForm
-from htk.apps.accounts.forms.auth import UserRegistrationForm
+from htk.apps.accounts.forms.auth import (
+    ResendConfirmationForm,
+    UpdatePasswordForm,
+    UsernameEmailAuthenticationForm,
+    UserRegistrationForm,
+)
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
 from htk.apps.accounts.utils import get_user_by_email
 from htk.apps.accounts.utils.auth import login_authenticated_user
-from htk.apps.accounts.view_helpers import get_resend_confirmation_help_message
-from htk.apps.accounts.view_helpers import redirect_to_social_auth_complete
+from htk.apps.accounts.view_helpers import (
+    get_resend_confirmation_help_message,
+    redirect_to_social_auth_complete,
+)
 from htk.forms.utils import set_input_attrs
-from htk.utils import htk_setting
-from htk.utils import utcnow
+from htk.utils import (
+    htk_setting,
+    utcnow,
+)
 from htk.utils.general import clear_messages
 from htk.utils.request import extract_request_ip
 from htk.view_helpers import render_custom as _r
 from htk.view_helpers import wrap_data
+
+
+# isort: off
 
 
 ################################################################################
@@ -52,6 +65,13 @@ def login_view(
     if data is None:
         data = wrap_data(request)
     data.update(csrf(request))
+
+
+    default_next_uri = reverse(default_next_url_name)
+    next_uri = request.GET.get('next', default_next_uri)
+    if next_uri:
+        data['next_uri'] = next_uri
+
     success = False
     if request.method == 'POST':
         recaptcha_success = True
@@ -74,8 +94,6 @@ def login_view(
 
             login_authenticated_user(request, user)
             success = True
-            default_next_uri = reverse(default_next_url_name)
-            next_uri = request.GET.get('next', default_next_uri)
         else:
             for error in auth_form.non_field_errors():
                 data['errors'].append(error)

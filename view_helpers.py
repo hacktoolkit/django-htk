@@ -113,7 +113,15 @@ def wrap_data(request, data=None):
     data.update(csrf(request))
 
     ##
+    # login/authentication flow "next"
+
+    next_uri = request.GET.get('next')
+    if next_uri:
+        data['next_uri'] = next_uri
+
+    ##
     # meta, server, request info
+
     from htk.utils.request import get_request_metadata
     data['request'] = get_request_metadata(request)
     data['server'] = {
