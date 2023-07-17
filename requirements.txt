@@ -7,7 +7,7 @@ pydantic==1.7.4
 pygeoip==0.2.6
 redis==4.4.4
 reportlab==3.5.55
-requests==2.20.0
+requests==2.31.0
 requests-oauthlib==1.0.0
 rollbar==0.8.2
 stripe==1.19.0
