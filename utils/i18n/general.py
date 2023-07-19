@@ -5,6 +5,35 @@ import random
 # isort: off
 
 
+def get_country_choices(
+    ordering=(
+        'US',
+        'CA',
+    )
+):
+    """Builds a list of country choices
+
+    `ordering` - A custom list of country codes which should appear first
+
+    Returns a list of pairs: (ISO 3166 country code, country name)
+    """
+    from htk.constants.i18n.countries import COUNTRIES_EN_NAMES_MAP
+
+    country_codes = [country_code for country_code in ordering] + [
+        country_code
+        for country_code in COUNTRIES_EN_NAMES_MAP.keys()
+        if country_code not in ordering
+    ]
+    choices = [
+        (
+            country_code,
+            COUNTRIES_EN_NAMES_MAP[country_code],
+        )
+        for country_code in country_codes
+    ]
+    return choices
+
+
 def get_language_name(language_code):
     from htk.constants.i18n import LANGUAGE_NAMES_MAP
 
