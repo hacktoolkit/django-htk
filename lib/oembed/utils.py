@@ -14,6 +14,8 @@ from htk.utils.request import get_current_request
 
 def get_oembed_html(url, autoplay=False):
     """Gets the oEmbed HTML for a URL, if it is an oEmbed type
+
+    Returns `None` if no applicable oembed type, or the URL if oembed does not resolve
     """
     oembed_type = get_oembed_type(url)
 
@@ -41,7 +43,7 @@ def get_oembed_html_for_service(url, service):
         try:
             oembed_base_url = OEMBED_BASE_URLS[service]
             oembed_url = oembed_base_url % {
-                'url' : urllib.parse.quote(url),
+                'url': urllib.parse.quote(url),
             }
 
             response = requests.get(oembed_url)
@@ -52,24 +54,30 @@ def get_oembed_html_for_service(url, service):
                 html = data['html']
                 c.cache_store(html)
                 success = True
-        except:
+        except Exception:
             request = get_current_request()
             extra_data = {
-                'message' : 'Bad oembed URL',
-                'oembed_url' : oembed_url,
-                'url' : url,
-                'response' : {
-                    'status_code' : response.status_code,
-                    'content' : response.content,
-                }
+                'message': 'Bad oembed URL',
+                'oembed_url': oembed_url,
+                'url': url,
             }
-            rollbar.report_exc_info(level='warning', request=request, extra_data=extra_data)
+            try:
+                extra_data['response'] = {
+                    'status_code': response.status_code,
+                    'content': response.content,
+                }
+            except (NameError, UnboundLocalError):
+                pass
+
+            rollbar.report_exc_info(
+                level='warning', request=request, extra_data=extra_data
+            )
 
         if success:
             pass
         else:
             html = '<a href="%(url)s" target="_blank">%(url)s</a>' % {
-                'url' : url,
+                'url': url,
             }
     else:
         pass
@@ -78,6 +86,8 @@ def get_oembed_html_for_service(url, service):
 
 def get_oembed_type(url):
     """Determines the type of oEmbed this URL is, if it exists
+
+    Otherwise, returns `None`
     """
     oembed_type = None
     for service, pattern in OEMBED_URL_SCHEME_REGEXPS.items():
@@ -93,11 +103,7 @@ def youtube_oembed(url, autoplay=False):
         replacement = '?feature=oembed&autoplay=1&rel=0&modestbranding=1'
     else:
         replacement = '?feature=oembed&rel=0&modestbranding=1'
-    html = re.sub(
-        r'\?feature=oembed',
-        replacement,
-        html
-    )
+    html = re.sub(r'\?feature=oembed', replacement, html)
     return html
 
 
