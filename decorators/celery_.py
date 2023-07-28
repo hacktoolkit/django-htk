@@ -19,12 +19,14 @@ class safe_timed_task(object):
     def __init__(self, task_name, notify=False):
         self.task_name = task_name
         self.notify = notify
-        self.time_created = datetime.now()
+
+        current_time = datetime.now()
+        formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        self.time_created = formatted_time
 
         with celery_app.connection() as connection:
             queue = connection.default_channel.queue_declare(queue='zippy_prod_celery', passive=True)
             queue_position = queue.message_count + 1
-        
         self.queue_position = queue_position
 
     def __call__(self, task_fn):
