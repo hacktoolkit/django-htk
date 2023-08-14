@@ -4,6 +4,7 @@ import re
 
 # Django Imports
 from django.conf import settings
+from django.core.exceptions import AppRegistryNotReady
 from django.urls import (
     NoReverseMatch,
     reverse,
@@ -22,7 +23,7 @@ try:
     PrelaunchSignup = resolve_model_dynamically(
         htk_setting('HTK_PRELAUNCH_MODEL')
     )
-except LookupError:
+except (LookupError, AppRegistryNotReady):
     pass
 
 
