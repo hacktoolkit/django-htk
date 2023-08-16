@@ -91,15 +91,18 @@ def _parse_resolver(
 
 
 def _prepare_url_part(url_pattern):
-    """
-    Prepares URL path with changing dynamic parts to `{0}`.
-    Converts `/some_path/(?P<id>\d)` to `/some_path/{0}`
+    """Prepare URL Part
 
-    It supports
+    Prepares URL path with changing dynamic parts to a placeholder can be set by
+    HTK_JS_ROUTES_DYNAMIC_PART_PLACEHOLDER setting. Default is `{0}`
+
+    - Converts `/some_path/(?P<id>\d)` to `/some_path/{0}`
+    - Removes optional parts like `(\d+)?`
+
+    It supports:
       - Named regexp paths like `(?P<id>\d+)`
       - Unnamed regexp paths like `(\d+)`
       - Django paths like `<id:int>`
-    Removes optional parts like `(\d+)?`
     """
     url = ""
     placeholder = htk_setting('HTK_JS_ROUTES_DYNAMIC_PART_PLACEHOLDER')

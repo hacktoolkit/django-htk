@@ -3,11 +3,10 @@ from functools import reduce
 
 
 def replace(data, replacements):
-    """
-    Allows to perform several string substitutions.
+    """Allows to perform several string substitutions.
 
     This function performs several string replacements on the initial `data`
-    string using a list of 2-iterables `(old, new)`.
+    string using a list of 2-tuples `(old, new)`.
     """
     value = reduce(
         lambda string, replacement: string.replace(*replacement),
