@@ -80,6 +80,15 @@ HTK_LUHN_XOR_KEYS = {}
 # Enums
 HTK_ENUM_SYMBOLIC_NAME_OVERRIDES = {}
 
+##
+# JS Routes
+HTK_JS_ROUTES_ENABLED = False
+HTK_JS_ROUTER_USE_CAMEL_CASE_URL_NAMES = False
+HTK_JS_ROUTES_URL_NAMES = []
+HTK_JS_ROUTES_DYNAMIC_PART_PLACEHOLDER = '{0}'
+HTK_JS_ROUTES_JS_OBJECT_NAME = 'window.Site'
+
+
 # HTK Imports
 from htk.admintools.constants.defaults import *
 from htk.apps.accounts.constants.defaults import *
@@ -90,7 +99,6 @@ from htk.apps.file_storage.constants.defaults import *
 from htk.apps.geolocations.constants.defaults import *
 from htk.apps.i18n.constants.defaults import *
 from htk.apps.invitations.constants.defaults import *
-from htk.apps.js_urls.constants.defaults import *
 from htk.apps.maintenance_mode.constants.defaults import *
 from htk.apps.notifications.constants.defaults import *
 from htk.apps.organizations.constants.defaults import *
