@@ -90,6 +90,7 @@ from htk.apps.file_storage.constants.defaults import *
 from htk.apps.geolocations.constants.defaults import *
 from htk.apps.i18n.constants.defaults import *
 from htk.apps.invitations.constants.defaults import *
+from htk.apps.js_urls.constants.defaults import *
 from htk.apps.maintenance_mode.constants.defaults import *
 from htk.apps.notifications.constants.defaults import *
 from htk.apps.organizations.constants.defaults import *
