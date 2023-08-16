@@ -544,8 +544,8 @@ class BaseStripeSubscription(BaseStripeModel):
 
         if subscription:
             args = (subscription.get('id'),)
-            _ = safe_stripe_call(self.STRIPE_API_CLASS.delete, *args)
-            was_deleted = True
+            obj = safe_stripe_call(self.STRIPE_API_CLASS.delete, *args)
+            was_deleted = obj is not None and obj.get('status') == 'canceled'
         else:
             was_deleted = False
 
