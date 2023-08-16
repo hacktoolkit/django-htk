@@ -63,6 +63,7 @@ def _parse_resolver(
 
     urls = []
     for url_pattern in resolver.url_patterns:
+        # This is an URL with `include`
         if isinstance(url_pattern, URLResolver):
             new_url_prefix = _prepare_url_part(url_pattern)
             new_url_prefix = (
@@ -71,12 +72,15 @@ def _parse_resolver(
                 else urljoin(url_prefix or '/', new_url_prefix)
             )
 
+            # Traverse for URLs inside `include`
             urls += _parse_resolver(
                 url_pattern,
                 namespace=current_namespace,
                 url_prefix=new_url_prefix,
                 include_all=include_all,
             )
+        # This is an URL with a view function in it.
+        # If URL name does not exist, we do not consider it at all.
         elif isinstance(url_pattern, URLPattern) and url_pattern.name:
             url_name = (
                 f'{current_namespace}:{url_pattern.name}'
