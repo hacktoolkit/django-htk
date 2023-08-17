@@ -14,8 +14,8 @@ from django.urls.resolvers import (
 
 # HTK Imports
 from htk.utils import htk_setting
-from htk.utils.strings import (
-    replace,
+from htk.utils.text.general import (
+    replace_many,
     snake_case_to_lower_camel_case,
 )
 
@@ -100,12 +100,12 @@ def _prepare_url_part(url_pattern):
     Prepares URL path with changing dynamic parts to a placeholder can be set by
     HTK_JS_ROUTES_DYNAMIC_PART_PLACEHOLDER setting. Default is `{0}`
 
-    - Converts `/some_path/(?P<id>\d)` to `/some_path/{0}`
-    - Removes optional parts like `(\d+)?`
+    - Converts `/some_path/(?P<id>[0-9]+)` to `/some_path/{0}`
+    - Removes optional parts like `([0-9]+)?`
 
     It supports:
-      - Named regexp paths like `(?P<id>\d+)`
-      - Unnamed regexp paths like `(\d+)`
+      - Named regexp paths like `(?P<id>[0-9]+)`
+      - Unnamed regexp paths like `([0-9]+)`
       - Django paths like `<id:int>`
     """
     url = ""
@@ -120,12 +120,12 @@ def _prepare_url_part(url_pattern):
     elif isinstance(url_pattern.pattern, RoutePattern):
         url = url_pattern.pattern._route
 
-    final_url = replace(url, [('^', ''), ('$', '')])
+    final_url = replace_many(url, [('^', ''), ('$', '')])
 
     # Removes optional groups from the URL pattern.
     optional_group_matches = URL_OPTIONAL_GROUP_RE.findall(final_url)
     final_url = (
-        replace(final_url, [(el, "") for el in optional_group_matches])
+        replace_many(final_url, [(el, "") for el in optional_group_matches])
         if optional_group_matches
         else final_url
     )
@@ -133,7 +133,7 @@ def _prepare_url_part(url_pattern):
     # Removes optional characters from the URL pattern.
     optional_char_matches = URL_OPTIONAL_CHAR_RE.findall(final_url)
     final_url = (
-        replace(final_url, [(el, "") for el in optional_char_matches])
+        replace_many(final_url, [(el, "") for el in optional_char_matches])
         if optional_char_matches
         else final_url
     )
@@ -141,7 +141,7 @@ def _prepare_url_part(url_pattern):
     # Identifies named URL arguments inside the URL pattern.
     kwarg_matches = URL_KWARG_RE.findall(final_url)
     final_url = (
-        replace(final_url, [(el[0], placeholder) for el in kwarg_matches])
+        replace_many(final_url, [(el[0], placeholder) for el in kwarg_matches])
         if kwarg_matches
         else final_url
     )
@@ -149,7 +149,7 @@ def _prepare_url_part(url_pattern):
     # Identifies unnamed URL arguments inside the URL pattern.
     args_matches = URL_ARG_RE.findall(final_url)
     final_url = (
-        replace(final_url, [(el, placeholder) for el in args_matches])
+        replace_many(final_url, [(el, placeholder) for el in args_matches])
         if args_matches
         else final_url
     )
@@ -157,7 +157,7 @@ def _prepare_url_part(url_pattern):
     # Identifies path expression and associated converters inside the URL pattern.
     path_matches = URL_PATH_RE.findall(final_url)
     final_url = (
-        replace(final_url, [(el, placeholder) for el in path_matches])
+        replace_many(final_url, [(el, placeholder) for el in path_matches])
         if (path_matches and not (kwarg_matches or args_matches))
         else final_url
     )
