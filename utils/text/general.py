@@ -29,18 +29,3 @@ def replace_many(s, replacements):
         s,
     )
     return value
-
-
-def snake_case_to_camel_case(string):
-    """Convert `snake_case` string to `CamelCase`"""
-    camel_string = ''.join(
-        part.capitalize() for part in string.lower().split('_')
-    )
-    return camel_string
-
-
-def snake_case_to_lower_camel_case(string):
-    """Convert `snake_case` string to `camelCase`"""
-    camel_string = snake_case_to_camel_case(string)
-    camel_string = camel_string[0].lower() + camel_string[1:]
-    return camel_string

@@ -14,10 +14,8 @@ from django.urls.resolvers import (
 
 # HTK Imports
 from htk.utils import htk_setting
-from htk.utils.text.general import (
-    replace_many,
-    snake_case_to_lower_camel_case,
-)
+from htk.utils.text.general import replace_many
+from htk.utils.text.transformers import snake_case_to_lower_camel_case
 
 
 URL_ARG_RE = re.compile(r'(\(.*?\))')
