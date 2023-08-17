@@ -80,6 +80,13 @@ HTK_LUHN_XOR_KEYS = {}
 # Enums
 HTK_ENUM_SYMBOLIC_NAME_OVERRIDES = {}
 
+##
+# JS Routes
+HTK_JS_ROUTER_USE_CAMEL_CASE_URL_NAMES = True
+HTK_JS_ROUTES_URL_NAMES = []
+HTK_JS_ROUTES_DYNAMIC_PART_PLACEHOLDER = '{0}'
+
+
 # HTK Imports
 from htk.admintools.constants.defaults import *
 from htk.apps.accounts.constants.defaults import *

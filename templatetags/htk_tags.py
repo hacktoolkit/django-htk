@@ -458,3 +458,11 @@ def credit_card_icon(credit_card_brand):
     else:
         credit_card_icon = DEFAULT_CREDIT_CARD_ICON
     return credit_card_icon
+
+
+@register.simple_tag()
+@mark_safe
+def print_js_routes():
+    from htk.utils.js_route_serializer import build_routes
+    urls = build_routes(as_json=True)
+    return urls
