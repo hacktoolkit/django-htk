@@ -200,6 +200,9 @@ class BaseStripeCustomer(BaseStripeModel):
         """Delete invoices with status `pending`
 
         Ref: https://stripe.com/docs/api/invoiceitems/delete
+
+        Note: Should not refund any money already paid.
+              But should only prevent adding new charges.
         """
         _initialize_stripe(live_mode=self.live_mode)
         invoices = self.list_invoice_items(customer=self.stripe_id, pending='true')
