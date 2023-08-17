@@ -1,3 +1,47 @@
+"""
+# JavaScript Routes
+
+These functions help to export Django URLs as a JS object so that it can be used
+inside JavaScript/TypeScript files.
+
+## Setup
+First, `HTK_JS_ROUTES_URL_NAMES` list constant must be added to `settings.py` file.
+
+```python
+HTK_JS_ROUTES_URL_NAMES = []
+```
+
+This list should contain the URL names or URL namespaces that needs to be exported.
+That's it!
+
+## Usage
+`htk_tags` need to be loaded in the template file first:
+```jinja
+{% load htk_tags %}
+```
+Then `print_js_routes` template tag can be used with anyway it desired.
+This template tag prints out routes as a JSON object and it can be defined to any
+desired JS variable:
+
+```html
+<script type="text/javascript">
+window.Site.urls = {% print_js_routes %};
+</script>
+```
+
+## Optional Setting
+
+ -> `HTK_JS_ROUTER_USE_CAMEL_CASE_URL_NAMES`    Default: True
+    This setting determines whether URL names should be transformed or not.
+    Python uses `snake_case` and JS uses `camelCase`. As default `some_url_name`
+    is being transformed to `someUrlName`. This behavior can be disabled with
+    setting this constant to `False` in `settings.py`
+
+ -> `HTK_JS_ROUTES_DYNAMIC_PART_PLACEHOLDER`    Default: '{0}'
+    This setting hold the placeholder for dynamic parts in URL.
+    `/some/url/(?P<id>[0-9]+)` becomes `/some/url/{0}`.
+    Than it can be replaced inside JS side.
+"""
 # Python Standard Library Imports
 import json
 import re

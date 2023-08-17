@@ -464,12 +464,5 @@ def credit_card_icon(credit_card_brand):
 @mark_safe
 def print_js_routes():
     from htk.utils.js_route_serializer import build_routes
-    js_obj = htk_setting('HTK_JS_ROUTES_JS_OBJECT_NAME')
     urls = build_routes(as_json=True)
-    html = '<script type="text/javascript">'
-    html += '{js_obj} = Object.assign({js_obj} || {{}}, {{ urls: {urls} }});'.format(
-        js_obj=js_obj,
-        urls=urls
-    )
-    html += '</script>'
-    return html
+    return urls
