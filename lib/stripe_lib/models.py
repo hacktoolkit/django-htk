@@ -185,6 +185,31 @@ class BaseStripeCustomer(BaseStripeModel):
 
         return stripe_invoice
 
+    def list_invoice_items(self, **kwargs):
+        """Lists the invoice items
+
+        Input kwargs to filter specific invoice(s)
+        Ref: https://stripe.com/docs/api/invoiceitems/list
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+        stripe_invoices = safe_stripe_call(stripe.InvoiceItem.list, **kwargs)
+        invoices = stripe_invoices.get('data')
+        return invoices
+
+    def delete_pending_invoice_items(self):
+        """Delete invoices with status `pending`
+
+        Ref: https://stripe.com/docs/api/invoiceitems/delete
+
+        Note: Should not refund any money already paid
+              But should only prevent adding new charges
+        """
+        _initialize_stripe(live_mode=self.live_mode)
+        invoices = self.list_invoice_items(customer=self.stripe_id, pending='true')
+        for invoice in invoices:
+            invoice_id = invoice.get('id')
+            _ = safe_stripe_call(stripe.InvoiceItem.delete, invoice_id)
+
     def create_invoice_and_pay(self):
         """
         After creating the Invoice, have the Customer immediately pay it
