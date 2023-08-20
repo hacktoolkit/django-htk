@@ -8,7 +8,6 @@ from django.core.validators import (
     MinValueValidator,
 )
 from django.db import models
-from django.db.models.fields.related import ForeignKey
 from django.db.utils import ConnectionRouter
 
 
@@ -17,8 +16,6 @@ from django.db.utils import ConnectionRouter
 
 if sys.version_info.major >= 3:
     from .fields_py3 import CrossDBForeignKey
-
-
 
 
 class StarRatingField(models.PositiveIntegerField):

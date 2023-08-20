@@ -5,11 +5,14 @@
 # Python Standard Library Imports
 import typing as T
 
+# Django Imports
+from django.db import models
+
 
 # isort: off
 
 
-class CrossDBForeignKey(ForeignKey):
+class CrossDBForeignKey(models.ForeignKey):
     """
     Django does not support for field relations between databases (See Reference 1)
     This is a work around to overcome the obstacle without needing to change
