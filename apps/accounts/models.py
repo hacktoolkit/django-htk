@@ -14,15 +14,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-
-try:
-    # Django 3.x
-    # Django Imports
-    from django.utils.translation import ugettext_lazy as _
-except ImportError:
-    # Django 4.x
-    from django.utils.translation import gettext_lazy as _
-
 # HTK Imports
 from htk.admintools.models import HtkCompanyUserMixin
 from htk.apps.accounts.cachekeys import (
@@ -48,6 +39,17 @@ from htk.utils import (
 )
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.request import get_current_request
+
+
+# isort: off
+try:
+    # Django 3.x
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    # Django 4.x
+    from django.utils.translation import gettext_lazy as _
+# isort: on
+
 
 
 # isort: off
@@ -238,12 +240,12 @@ class BaseAbstractUserProfile(
         if self.has_email(email):
             old_email = user.email
             user.email = email
-            user.save()
-            from htk.apps.accounts.utils.notifiers import (
-                notify_user_email_update,
-            )
-
-            notify_user_email_update(user, old_email, email)
+            user.save(update_fields=['email'])
+            if old_email:
+                from htk.apps.accounts.utils.notifiers import (
+                    notify_user_email_update,
+                )
+                notify_user_email_update(user, old_email, email)
         else:
             pass
         return user

@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import time
+from uuid import uuid4
 
 # Third Party (PyPI) Imports
 import rollbar
@@ -40,27 +41,54 @@ def get_user_profile_model():
 ##
 # login and registration
 
-def create_user(first_name, last_name, email):
+def create_user(
+    first_name,
+    last_name,
+    email,
+    username_prefix=None,
+    set_password=True
+):
+    """Creates a new user
+
+    Side Effects:
+    - Associates User with UserEmail
+    - Sets password if `set_password` is `True`
+    """
+
     UserModel = get_user_model()
-    username = email_to_username_pretty_unique(email)
+
+    if username_prefix and isinstance(username_prefix, str):
+        username = '%s_%s' % (username_prefix, uuid4().get_hex()[:10],)
+    else:
+        username = email_to_username_pretty_unique(email)
+
     user = UserModel.objects.create(
         username=username,
         first_name=first_name,
         last_name=last_name
     )
 
+    # associate user email and sets primary email
     user_email = associate_user_email(user, email, confirmed=True)
     user_email.set_primary_email()
 
-    set_random_password(user)
-    return user
+    if set_password:
+        password = set_random_password(user)
+    else:
+        password = None
+
+    return user, password
 
 
-def set_random_password(user):
-    from uuid import uuid4
-    password = uuid4().get_hex()[:16]
+def set_random_password(user, password_length=16):
+    """Sets a random password for `user`
+
+    Utilizes hex UUID
+    """
+    password = uuid4().get_hex()[:password_length]
     user.set_password(password)
     user.save()
+    return password
 
 
 def email_to_username_hash(email):
@@ -90,7 +118,7 @@ def email_to_username_pretty_unique(email):
     username = handle[:USERNAME_MAX_LENGTH]
     user = get_user_by_username(username)
     if user:
-        # need to do append some hashed chars to it
+        # need to append some hashed chars to it to make a unique username
         hashed = email_to_username_hash(email)
         if len(username) < USERNAME_MAX_LENGTH:
             pad_length = USERNAME_MAX_LENGTH - (len(username) + 1)
@@ -104,6 +132,7 @@ def email_to_username_pretty_unique(email):
 
 def get_user_by_username(username):
     """Gets a user by `username`
+
     Returns None if not found
     """
     UserModel = get_user_model()
