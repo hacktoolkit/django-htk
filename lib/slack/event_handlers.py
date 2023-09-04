@@ -19,7 +19,11 @@ from htk.utils import (
 
 def preprocess_event(event_handler):
     def wrapped_event_handler(event):
-        (text, command, args,) = parse_event_text(event)
+        (
+            text,
+            command,
+            args,
+        ) = parse_event_text(event)
         if args:
             arg_parts = args.split()
             arg1 = arg_parts[0].lower()
@@ -27,8 +31,8 @@ def preprocess_event(event_handler):
                 slack_text = get_usage(event, command)
                 username = 'Hacktoolkit Bot'
                 payload = {
-                    'text' : slack_text,
-                    'username' : username,
+                    'text': slack_text,
+                    'username': username,
                 }
             else:
                 payload = None
@@ -36,12 +40,13 @@ def preprocess_event(event_handler):
             payload = None
         if payload is None:
             kwargs = {
-                'text' : text,
-                'command' : command,
-                'args' : args,
+                'text': text,
+                'command': command,
+                'args': args,
             }
             payload = event_handler(event, **kwargs)
         return payload
+
     return wrapped_event_handler
 
 
@@ -52,24 +57,29 @@ def get_usage(event, command):
     if type(usage_fn) == type(lambda x: True):
         # <type 'function'>
         kwargs = {
-            'event' : event,
+            'event': event,
         }
         usage_dict = usage_fn(**kwargs)
     else:
         usage_dict = {
-            'description' : 'Not specified',
-            'basic' : 'htk: %s' % command,
-            'examples' : [],
+            'description': 'Not specified',
+            'basic': 'htk: %s' % command,
+            'examples': [],
         }
     if usage_dict['examples']:
-        formatted_examples = '```%s```' % '\n'.join('    %s' % example for example in usage_dict['examples'])
+        formatted_examples = '```%s```' % '\n'.join(
+            '    %s' % example for example in usage_dict['examples']
+        )
     else:
         formatted_examples = 'N/A'
     usage_dict['formatted_examples'] = formatted_examples
-    usage = """*Usage*: %(description)s
+    usage = (
+        """*Usage*: %(description)s
 `    %(basic)s`
 *Examples*:
-%(formatted_examples)s""" % usage_dict
+%(formatted_examples)s"""
+        % usage_dict
+    )
     return usage
 
 
@@ -92,8 +102,8 @@ def help(event, **kwargs):
 
     username = 'Hacktoolkit Bot'
     payload = {
-        'text' : slack_text,
-        'username' : username,
+        'text': slack_text,
+        'username': username,
     }
     return payload
 
@@ -112,18 +122,17 @@ def default(event, **kwargs):
     # make another webhook call in response
     channel = event['channel_id']
     slack_text = 'You said:\n>%s\n Roger that.' % text
-    #webhook_call(text=slack_text, channel=channel, username=username)
+    # webhook_call(text=slack_text, channel=channel, username=username)
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
     }
     return payload
 
 
 @preprocess_event
 def bart(event, **kwargs):
-    """BART event handler for Slack webhook events
-    """
+    """BART event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -134,31 +143,52 @@ def bart(event, **kwargs):
             arg1 = arg_parts[0].lower()
             if arg1 == 'stations':
                 from htk.lib.sfbart.utils import get_bart_stations
+
                 stations = get_bart_stations()
-                slack_text = '*BART stations*:\n%s' % '\n'.join(['%s (`%s`)' % (station['name'], station['abbrev'].upper(),) for station in stations])
+                slack_text = '*BART stations*:\n%s' % '\n'.join(
+                    [
+                        '%s (`%s`)'
+                        % (
+                            station['name'],
+                            station['abbrev'].upper(),
+                        )
+                        for station in stations
+                    ]
+                )
             elif len(arg_parts) == 2:
                 # two stations, assume departure lookup
                 from htk.lib.sfbart.utils import get_bart_schedule_depart
+
                 orig_station = arg_parts[0].lower()
                 dest_station = arg_parts[1].lower()
                 data = get_bart_schedule_depart(orig_station, dest_station)
-                data['formatted_trips'] = '\n'.join([
-                    '%(origTimeMin)s - %(destTimeMin)s (%(tripTime)s mins)' % trip
-                    for trip
-                    in data['trips']
-                ])
-                slack_text = """*%(orig_station_name)s* (`%(origin)s`) to *%(dest_station_name)s* (`%(destination)s`)
+                data['formatted_trips'] = '\n'.join(
+                    [
+                        '%(origTimeMin)s - %(destTimeMin)s (%(tripTime)s mins)'
+                        % trip
+                        for trip in data['trips']
+                    ]
+                )
+                slack_text = (
+                    """*%(orig_station_name)s* (`%(origin)s`) to *%(dest_station_name)s* (`%(destination)s`)
 %(formatted_trips)s
-""" % data
+"""
+                    % data
+                )
             else:
-                slack_text = 'No handler for specified arguments.\n%s' % get_usage(event, command)
+                slack_text = (
+                    'No handler for specified arguments.\n%s'
+                    % get_usage(event, command)
+                )
         else:
-            slack_text = 'Please specify a BART request.\n%s' % get_usage(event, command)
+            slack_text = 'Please specify a BART request.\n%s' % get_usage(
+                event, command
+            )
     else:
         slack_text = 'Illegal command.'
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
     }
     return payload
 
@@ -176,6 +206,7 @@ def beacon(event, **kwargs):
 
     if command == 'beacon':
         from htk.lib.slack.beacon.utils import create_slack_beacon_url
+
         beacon_url = create_slack_beacon_url(event)
         if beacon_url:
             beacon_text = 'Open this URL to trigger the beacon: %s' % beacon_url
@@ -188,22 +219,23 @@ def beacon(event, **kwargs):
                 unfurl_links=False,
                 unfurl_media=False,
             )
-            slack_text = 'Homing beacon message deployed to <%s>.' % user_channel
+            slack_text = (
+                'Homing beacon message deployed to <%s>.' % user_channel
+            )
         else:
             slack_text = 'Slack homing beacon not set up correctly.'
     else:
         slack_text = 'Illegal command.'
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
     }
     return payload
 
 
 @preprocess_event
 def bible(event, **kwargs):
-    """Bible event handler for Slack webhook events
-    """
+    """Bible event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -212,11 +244,14 @@ def bible(event, **kwargs):
     if command == 'bible':
         if args:
             from htk.lib.literalword.utils import (
-                get_bible_passage,
+                get_bible_passage as get_bible_passage__literalword,
                 is_bible_version,
             )
+            from htk.lib.awesomebible.utils import (
+                get_bible_passage as get_bible_passage__awesomebible,
+            )
 
-            #from htk.utils.text.converters import markdown2slack
+            # from htk.utils.text.converters import markdown2slack
             arg_parts = args.split()
             arg1 = arg_parts[0].lower()
             if is_bible_version(arg1):
@@ -226,20 +261,45 @@ def bible(event, **kwargs):
                 webhook_settings = event.get('webhook_settings', {})
                 bible_version = webhook_settings.get('bible_version', None)
 
-            passage = get_bible_passage(args, version=bible_version)
+            if bible_version.upper() == 'ESV':
+                bible_provider = 'Literal Word'
+                passage = get_bible_passage__literalword(
+                    args, version=bible_version
+                )
+            else:
+                bible_provider = 'Awesome.Bible'
+                passage = get_bible_passage__awesomebible(
+                    args, version=bible_version
+                )
 
-            passage['query'] = args
+            if passage:
+                passage['ref'] = passage.get('ref', args)
+                passage['bible_provider'] = bible_provider
 
-            slack_text = """Bible passage: *%(query)s*
-Read on Literal Word: %(url)s
-""" % passage
+                slack_text = (
+                    """Bible passage: *%(ref)s*
+Read on *%(bible_provider)s*: %(url)s
+"""
+                    % passage
+                )
 
-            attachments.append({
-                'pretext': '*{}*'.format(passage['query']),
-                'text': passage['text'],
-            })
+                attachments.append(
+                    {
+                        'pretext': '*{}*'.format(passage['ref']),
+                        'text': passage['text'],
+                    }
+                )
+            else:
+                slack_text = (
+                    'Please specify a valid Bible passage to look up.\n%s'
+                    % get_usage(event, command)
+                )
+
         else:
-            slack_text = 'Please specify a Bible passage to look up.\n%s' % get_usage(event, command)
+            slack_text = (
+                'Please specify a Bible passage to look up.\n%s'
+                % get_usage(event, command)
+            )
     else:
         slack_text = 'Illegal command.'
 
@@ -252,8 +312,7 @@ Read on Literal Word: %(url)s
 
 @preprocess_event
 def emaildig(event, **kwargs):
-    """Email dig event handler for Slack webhook events
-    """
+    """Email dig event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -262,15 +321,22 @@ def emaildig(event, **kwargs):
         if args:
             parts = re.sub(r'\<.*\|(.*)\>', r'\g<1>', args).split(' ')
             if len(parts) > 1:
-                slack_text= 'Too many arguments. See usage. `%s`' % args
+                slack_text = 'Too many arguments. See usage. `%s`' % args
             else:
                 email = parts[0]
-                find_person_by_email = resolve_method_dynamically(htk_setting('HTK_EMAIL_PERSON_RESOLVER'))
+                find_person_by_email = resolve_method_dynamically(
+                    htk_setting('HTK_EMAIL_PERSON_RESOLVER')
+                )
                 person = find_person_by_email(email)
                 if person:
-                    slack_text = 'The following information was retrieved for *%s*:\n%s' % (email, person.as_slack())
+                    slack_text = (
+                        'The following information was retrieved for *%s*:\n%s'
+                        % (email, person.as_slack())
+                    )
                 else:
-                    slack_text = 'No information was found for email: %s' % email
+                    slack_text = (
+                        'No information was found for email: %s' % email
+                    )
         else:
             slack_text = 'Missing arguments. See usage.'
     else:
@@ -279,15 +345,14 @@ def emaildig(event, **kwargs):
     channel = event['channel_id']
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
     }
     return payload
 
 
 @preprocess_event
 def findemail(event, **kwargs):
-    """Find email event handler for Slack webhook events
-    """
+    """Find email event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -298,11 +363,12 @@ def findemail(event, **kwargs):
             domain, first_name, middle_name, last_name = parts
 
             from htk.utils.emails import find_company_emails_for_name
+
             emails = find_company_emails_for_name(
                 domain,
                 first_name=first_name,
                 middle_name=middle_name,
-                last_name=last_name
+                last_name=last_name,
             )
             if emails:
                 slack_text = 'Found emails:\n%s' % ', '.join(emails)
@@ -316,15 +382,14 @@ def findemail(event, **kwargs):
     channel = event['channel_id']
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
     }
     return payload
 
 
 @preprocess_event
 def geoip(event, **kwargs):
-    """GeoIP event handler for Slack webhook events
-    """
+    """GeoIP event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -333,6 +398,7 @@ def geoip(event, **kwargs):
         if args:
             ip = args
             from htk.lib.slack.messages import slack_message_geoip
+
             slack_text = slack_message_geoip(ip)
         else:
             slack_text = 'Please specify an IP address.'
@@ -342,17 +408,16 @@ def geoip(event, **kwargs):
     channel = event['channel_id']
 
     payload = {
-        'text' : slack_text,
-        'unfurl_links' : True,
-        'unfurl_media' : True,
+        'text': slack_text,
+        'unfurl_links': True,
+        'unfurl_media': True,
     }
     return payload
 
 
 @preprocess_event
 def github_prs(event, **kwargs):
-    """Github PR status event handler for Slack webhook events
-    """
+    """Github PR status event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -362,9 +427,12 @@ def github_prs(event, **kwargs):
         user_id = webhook_settings['user']
 
         from htk.apps.accounts.utils import get_user_by_id
+
         user = get_user_by_id(user_id)
 
-        github_pr_task = resolve_method_dynamically(htk_setting('HTK_SLACK_CELERY_TASK_GITHUB_PRS'))
+        github_pr_task = resolve_method_dynamically(
+            htk_setting('HTK_SLACK_CELERY_TASK_GITHUB_PRS')
+        )
         if github_pr_task:
             github_pr_task.delay(user.id)
             slack_text = 'Preparing GitHub PR report'
@@ -383,8 +451,7 @@ def github_prs(event, **kwargs):
 
 @preprocess_event
 def ohmygreen(event, **kwargs):
-    """OhMyGreen event handler for Slack webhook events
-    """
+    """OhMyGreen event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -394,6 +461,7 @@ def ohmygreen(event, **kwargs):
         webhook_settings = event['webhook_settings']
         user_id = webhook_settings['user']
         from htk.apps.accounts.utils import get_user_by_id
+
         user = get_user_by_id(user_id)
         ohmygreen_id = user.profile.get_attribute('ohmygreen_id')
         ohmygreen_company = user.profile.get_attribute('ohmygreen_company')
@@ -403,6 +471,7 @@ def ohmygreen(event, **kwargs):
             slack_text = 'Error: Your account does not have an OhMyGreen account id configured. Please check with your Slack admin.'
         else:
             from htk.lib.ohmygreen.api import OhMyGreenAPI
+
             api = OhMyGreenAPI(ohmygreen_id, ohmygreen_company)
             dt = user.profile.get_local_time()
             menu = api.get_menu(dt)
@@ -413,17 +482,16 @@ def ohmygreen(event, **kwargs):
     channel = event['channel_id']
 
     payload = {
-        'text' : slack_text,
-        'unfurl_links' : True,
-        'unfurl_media' : True,
+        'text': slack_text,
+        'unfurl_links': True,
+        'unfurl_media': True,
     }
     return payload
 
 
 @preprocess_event
 def stock(event, **kwargs):
-    """Stock event handler for Slack webhook events
-    """
+    """Stock event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -431,17 +499,31 @@ def stock(event, **kwargs):
     if command == 'stock':
         if args:
             STOCK_TICKER_MAX_LENGTH = 5
-            symbols = map(lambda x: x.upper(), filter(lambda x: 0 < len(x) <= STOCK_TICKER_MAX_LENGTH, re.split(r'[;, ]', args)))
+            symbols = map(
+                lambda x: x.upper(),
+                filter(
+                    lambda x: 0 < len(x) <= STOCK_TICKER_MAX_LENGTH,
+                    re.split(r'[;, ]', args),
+                ),
+            )
             # remove duplicates
             symbols = list(set(symbols))
             # cap number of symbols per request
             MAX_SYMBOLS = 20
             symbols = symbols[:MAX_SYMBOLS]
             from htk.lib.yahoo.finance.utils import get_stock_price
+
             prices = {}
             for symbol in symbols:
                 prices[symbol] = get_stock_price(symbol)
-            prices_strings = ['*%s* - $%s' % (symbol, prices[symbol],) for symbol in sorted(prices.keys())]
+            prices_strings = [
+                '*%s* - $%s'
+                % (
+                    symbol,
+                    prices[symbol],
+                )
+                for symbol in sorted(prices.keys())
+            ]
             slack_text = '\n'.join(prices_strings)
         else:
             slack_text = 'Please enter a list of stock symbols to look up.'
@@ -449,46 +531,46 @@ def stock(event, **kwargs):
         slack_text = 'Illegal command.'
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
     }
     return payload
 
 
 @preprocess_event
 def utcnow_slack(event, **kwargs):
-    """utcnow event handler for Slack webhook events
-    """
+    """utcnow event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
 
     if command == 'utcnow':
         from htk.utils import utcnow
+
         now = utcnow()
         webhook_settings = event['webhook_settings']
         user_id = webhook_settings['user']
         from htk.apps.accounts.utils import get_user_by_id
+
         user = get_user_by_id(user_id)
         slack_text = """*The time is now*:\n
 *UTC*: %s
 *%s*: %s""" % (
-    now,
-    user.profile.get_timezone(),
-    user.profile.get_local_time(dt=now),
-)
+            now,
+            user.profile.get_timezone(),
+            user.profile.get_local_time(dt=now),
+        )
     else:
         slack_text = 'Illegal command.'
 
     payload = {
-        'text' : slack_text,
+        'text': slack_text,
     }
     return payload
 
 
 @preprocess_event
 def weather(event, **kwargs):
-    """Weather event handler for Slack webhook events
-    """
+    """Weather event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -500,6 +582,7 @@ def weather(event, **kwargs):
             from htk.lib.darksky.utils import generate_weather_report
             from htk.utils.text.converters import markdown2slack
             from htk.utils.weather import get_weather
+
             weather = get_weather(location)
             formatted_weather = generate_weather_report(weather, extended=True)
             slack_text = '*Weather for %s*:\n%s' % (
@@ -515,16 +598,15 @@ def weather(event, **kwargs):
     channel = event['channel_id']
 
     payload = {
-        'text' : slack_text,
-        'icon_emoji' : icon_emoji,
+        'text': slack_text,
+        'icon_emoji': icon_emoji,
     }
     return payload
 
 
 @preprocess_event
 def zesty(event, **kwargs):
-    """Zesty event handler for Slack webhook events
-    """
+    """Zesty event handler for Slack webhook events"""
     text = kwargs.get('text')
     command = kwargs.get('command')
     args = kwargs.get('args')
@@ -534,6 +616,7 @@ def zesty(event, **kwargs):
         webhook_settings = event['webhook_settings']
         user_id = webhook_settings['user']
         from htk.apps.accounts.utils import get_user_by_id
+
         user = get_user_by_id(user_id)
         zesty_id = user.profile.get_attribute('zesty_id')
         if args:
@@ -542,6 +625,7 @@ def zesty(event, **kwargs):
             slack_text = 'Error: Your account does not have a Zesty account id configured. Please check with your Slack admin.'
         else:
             from htk.lib.zesty.utils import get_zesty_lunch_menu
+
             dt = user.profile.get_local_time()
             slack_text = ''
             zesty_slack_payload = get_zesty_lunch_menu(zesty_id, dt)
@@ -551,9 +635,9 @@ def zesty(event, **kwargs):
     channel = event['channel_id']
 
     payload = {
-        'text' : slack_text,
-        'unfurl_links' : True,
-        'unfurl_media' : True,
+        'text': slack_text,
+        'unfurl_links': True,
+        'unfurl_media': True,
     }
     payload.update(zesty_slack_payload)
     return payload
