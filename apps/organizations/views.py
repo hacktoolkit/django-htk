@@ -59,7 +59,14 @@ class OrganizationInvitationResponseView(View):
         self.is_authenticated = is_authenticated
 
         # Prepare context data for both GET and POST methods
-        self.data = {'invitation': self.invitation}
+        if self.data and type(self.data) == 'dict':
+            self.data.update(
+                {
+                    'invitation': self.invitation,
+                }
+            )
+        else:
+            self.data = {'invitation': self.invitation}
 
     def get(self, request, *args, **kwargs):
         response = self.render_method(request, self.template_name, self.data)
@@ -74,6 +81,7 @@ class OrganizationInvitationResponseView(View):
 
         if self.invitation.accepted:
             self.invitation.user = request.user
+            # TODO: adding as member but maybe this should be a setting?
             self.invitation.organization.add_member(
                 self.invitation.user, OrganizationMemberRoles.MEMBER
             )
