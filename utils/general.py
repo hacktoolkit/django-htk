@@ -20,6 +20,7 @@ else:
 def htk_setting(key, default=None):
     from django.conf import settings
     import htk.constants.defaults
+
     if hasattr(settings, key):
         value = getattr(settings, key)
     elif default is not None:
@@ -39,17 +40,16 @@ def get_module_name_parts(module_str):
         parts = module_str.split('.')
         module_name = '.'.join(parts[:-1])
         attr_name = parts[-1]
-        values = (module_name, attr_name,)
+        values = (module_name, attr_name)
     else:
-        values = (None, None,)
+        values = (None, None)
     return values
 
 
 @memoized
 def resolve_method_dynamically(module_str):
-    """Returns the method for a module
-    """
-    (module_name, attr_name,) = get_module_name_parts(module_str)
+    """Returns the method for a module"""
+    (module_name, attr_name) = get_module_name_parts(module_str)
     if module_name and attr_name:
         module = import_module(module_name)
         method = getattr(module, attr_name)
@@ -60,9 +60,13 @@ def resolve_method_dynamically(module_str):
 
 def _get_model_fn():
     try:
+        # Django >= 1.9
+        # c.f. https://stackoverflow.com/a/36234846/865091
         from django.apps import apps
+
         get_model = apps.get_model
-    except:
+    except Exception:
+        # Django <= 1.8
         from django.db.models.loading import get_model
     return get_model
 
@@ -76,6 +80,7 @@ def strtobool_safe(value):
     """
     try:
         from distutils.util import strtobool
+
         result = bool(strtobool(value))
     except:
         result = False
@@ -84,7 +89,7 @@ def strtobool_safe(value):
 
 @memoized
 def resolve_model_dynamically(module_str):
-    (module_name, attr_name,) = get_module_name_parts(module_str)
+    (module_name, attr_name) = get_module_name_parts(module_str)
     if module_name and attr_name:
         get_model = _get_model_fn()
         model = get_model(module_name, attr_name)
