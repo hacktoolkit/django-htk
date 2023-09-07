@@ -4,10 +4,7 @@ from django.contrib.sites.shortcuts import get_current_site
 
 # HTK Imports
 from htk.apps.organizations.emailers import send_invitation_email
-from htk.apps.prelaunch.utils import (
-    PrelaunchSignup,
-    is_prelaunch_mode,
-)
+from htk.apps.prelaunch.utils import is_prelaunch_mode
 from htk.utils import htk_setting
 from htk.utils import resolve_model_dynamically
 from htk.utils.enums import get_enum_symbolic_name
@@ -58,6 +55,7 @@ def invite_person_to_organization(request, invitation):
         and is_prelaunch_mode()
         and htk_setting('HTK_ORGANIZATION_INVITATION_AUTO_ADD_TO_WAIT_LIST')
     ):
+        from htk.apps.prelaunch.utils import PrelaunchSignup
         prelaunch_signup = (
             PrelaunchSignup.get_or_create_by_email(
                 email=invitation.email,
