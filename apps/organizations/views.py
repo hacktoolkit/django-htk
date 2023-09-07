@@ -47,16 +47,19 @@ class OrganizationInvitationResponseView(View):
             htk_setting('HTK_ORGANIZATION_INVITATION_MODEL')
         )
         invitation = get_object_or_404(OrganizationInvitation, token=token)
-        is_authenticated = request.user.is_authenticated
+        user = request.user if request.user.is_authenticated else None
 
         # Logged in user cannot accept invitation in place of someone else.
-        if is_authenticated and request.user.email != invitation.email:
+        if (
+            user
+            and user.email != invitation.email
+            and not (user.profile.has_email(invitation.email))
+        ):
             raise Http404
 
         # Set variables that might be needed
         self.invitation = invitation
         self.model = OrganizationInvitation
-        self.is_authenticated = is_authenticated
 
         # Prepare context data for both GET and POST methods
         if self.data and type(self.data) == 'dict':
