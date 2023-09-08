@@ -13,6 +13,7 @@ from htk.utils import (
     resolve_model_dynamically,
 )
 from htk.view_helpers import render_custom as _r
+from htk.view_helpers import wrap_data
 
 
 class OrganizationInvitationResponseView(View):
@@ -62,14 +63,8 @@ class OrganizationInvitationResponseView(View):
         self.model = OrganizationInvitation
 
         # Prepare context data for both GET and POST methods
-        if self.data and type(self.data) == 'dict':
-            self.data.update(
-                {
-                    'invitation': self.invitation,
-                }
-            )
-        else:
-            self.data = {'invitation': self.invitation}
+        self.build_context()
+        self.data['invitation'] = self.invitation
 
     def get(self, request, *args, **kwargs):
         response = self.render_method(request, self.template_name, self.data)
@@ -79,7 +74,7 @@ class OrganizationInvitationResponseView(View):
     def post(self, request, *args, **kwargs):
         invitation_response = request.POST.get('response', None)
 
-        self.invitation.accepted == invitation_response == 'accept'
+        self.invitation.accepted = invitation_response == 'accept'
         self.invitation.responded_at = timezone.datetime.now()
 
         if self.invitation.accepted:
@@ -95,3 +90,6 @@ class OrganizationInvitationResponseView(View):
 
         response = self.render_method(request, self.template_name, self.data)
         return response
+
+    def build_context(self):
+        self.data = wrap_data(self.request)
