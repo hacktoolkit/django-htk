@@ -10,10 +10,10 @@ from django.views import View
 from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.utils import (
     htk_setting,
+    resolve_method_dynamically,
     resolve_model_dynamically,
 )
 from htk.view_helpers import render_custom as _r
-from htk.view_helpers import wrap_data
 
 
 class OrganizationInvitationResponseView(View):
@@ -92,4 +92,7 @@ class OrganizationInvitationResponseView(View):
         return response
 
     def build_context(self):
+        wrap_data = resolve_method_dynamically(
+            htk_setting('HTK_PRELAUNCH_VIEW_CONTEXT_GENERATOR')
+        )
         self.data = wrap_data(self.request)
