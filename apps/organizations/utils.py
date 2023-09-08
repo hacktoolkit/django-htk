@@ -10,6 +10,9 @@ from htk.utils import resolve_model_dynamically
 from htk.utils.enums import get_enum_symbolic_name
 
 
+# isort: off
+
+
 def get_model_organization_member():
     OrganizationMember = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MEMBER_MODEL'))
     return OrganizationMember
@@ -37,7 +40,7 @@ def get_user_organizations_with_attribute(user, key):
     return organizations
 
 
-def invite_person_to_organization(request, invitation):
+def invite_organization_member(request, invitation):
     """Invite person to organization
 
     Sends invitation e-mail to given person.
@@ -66,6 +69,8 @@ def invite_person_to_organization(request, invitation):
             )
         )
         early_access_code = prelaunch_signup.early_access_code
+    else:
+        pass
 
     if invitation.accepted is not None:
         # If invitation is not Invited status, update to Invited.
@@ -76,4 +81,6 @@ def invite_person_to_organization(request, invitation):
     # Save invitation so that updatedAt field will be updated
     invitation.save()
 
-    send_invitation_email(request, invitation, early_access_code)
+    send_invitation_email(
+        request, invitation, early_access_code=early_access_code
+    )
