@@ -6,7 +6,7 @@ numpy==1.22.0
 pydantic==1.7.4
 pygeoip==0.2.6
 redis==4.4.4
-reportlab==3.5.55
+reportlab==3.6.13
 requests==2.31.0
 requests-oauthlib==1.0.0
 rollbar==0.8.2
