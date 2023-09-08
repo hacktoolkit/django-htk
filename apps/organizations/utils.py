@@ -53,11 +53,7 @@ def invite_organization_member(request, invitation):
         invitation (BaseAbstractOrganizationInvitation): Invitation object can be come from form.
     """
     early_access_code = None
-    if (
-        apps.is_installed('htk.apps.prelaunch')
-        and is_prelaunch_mode()
-        and htk_setting('HTK_ORGANIZATION_INVITATION_AUTO_ADD_TO_WAIT_LIST')
-    ):
+    if apps.is_installed('htk.apps.prelaunch') and is_prelaunch_mode():
         from htk.apps.prelaunch.utils import PrelaunchSignup
         prelaunch_signup = (
             PrelaunchSignup.get_or_create_by_email(

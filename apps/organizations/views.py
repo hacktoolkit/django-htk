@@ -93,6 +93,6 @@ class OrganizationInvitationResponseView(View):
 
     def build_context(self):
         wrap_data = resolve_method_dynamically(
-            htk_setting('HTK_PRELAUNCH_VIEW_CONTEXT_GENERATOR')
+            htk_setting('HTK_VIEW_CONTEXT_GENERATOR')
         )
         self.data = wrap_data(self.request)
