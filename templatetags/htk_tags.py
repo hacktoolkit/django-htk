@@ -165,11 +165,8 @@ def timestamp(value):
 def phonenumber(value, country='US'):
     """Formats a phone number for a country
     """
-    import phonenumbers
-    try:
-        formatted = phonenumbers.format_number(phonenumbers.parse(value, country), phonenumbers.PhoneNumberFormat.NATIONAL)
-    except:
-        formatted = value
+    from htk.utils.text import pretty
+    formatted = pretty.phonenumber(value, country=country)
     return formatted
 
 
