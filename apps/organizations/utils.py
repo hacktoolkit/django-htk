@@ -4,9 +4,10 @@ from django.contrib.sites.shortcuts import get_current_site
 
 # HTK Imports
 from htk.apps.organizations.emailers import send_invitation_email
-from htk.apps.prelaunch.utils import is_prelaunch_mode
-from htk.utils import htk_setting
-from htk.utils import resolve_model_dynamically
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 from htk.utils.enums import get_enum_symbolic_name
 
 
@@ -14,29 +15,42 @@ from htk.utils.enums import get_enum_symbolic_name
 
 
 def get_model_organization_member():
-    OrganizationMember = resolve_model_dynamically(htk_setting('HTK_ORGANIZATION_MEMBER_MODEL'))
+    OrganizationMember = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_MEMBER_MODEL')
+    )
     return OrganizationMember
 
 
 def get_organization_member_role_choices():
     from htk.apps.organizations.enums import OrganizationMemberRoles
-    choices = [(role.value, get_enum_symbolic_name(role),) for role in OrganizationMemberRoles]
+
+    choices = [
+        (
+            role.value,
+            get_enum_symbolic_name(role),
+        )
+        for role in OrganizationMemberRoles
+    ]
     return choices
 
 
 def get_organization_team_member_role_choices():
     from htk.apps.organizations.enums import OrganizationTeamMemberRoles
-    choices = [(role.value, get_enum_symbolic_name(role),) for role in OrganizationTeamMemberRoles]
+
+    choices = [
+        (
+            role.value,
+            get_enum_symbolic_name(role),
+        )
+        for role in OrganizationTeamMemberRoles
+    ]
     return choices
 
 
 def get_user_organizations_with_attribute(user, key):
     organizations = user.organizations.filter(
-        active=True,
-        organization__attributes__key=key
-    ).exclude(
-        organization__attributes__value=None
-    )
+        active=True, organization__attributes__key=key
+    ).exclude(organization__attributes__value=None)
     return organizations
 
 
@@ -52,17 +66,18 @@ def invite_organization_member(request, invitation):
         request (Request): Request object. It is needed to build full URL and get current site
         invitation (BaseAbstractOrganizationInvitation): Invitation object can be come from form.
     """
+    from htk.apps.prelaunch.utils import is_prelaunch_mode
+
     early_access_code = None
     if apps.is_installed('htk.apps.prelaunch') and is_prelaunch_mode():
         from htk.apps.prelaunch.utils import PrelaunchSignup
-        prelaunch_signup = (
-            PrelaunchSignup.get_or_create_by_email(
-                email=invitation.email,
-                first_name=invitation.first_name,
-                last_name=invitation.last_name,
-                site=get_current_site(request),
-                enable_early_access=True,
-            )
+
+        prelaunch_signup = PrelaunchSignup.get_or_create_by_email(
+            email=invitation.email,
+            first_name=invitation.first_name,
+            last_name=invitation.last_name,
+            site=get_current_site(request),
+            enable_early_access=True
         )
         early_access_code = prelaunch_signup.early_access_code
     else:

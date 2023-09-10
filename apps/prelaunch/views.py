@@ -4,17 +4,19 @@ from django.shortcuts import redirect
 from django.template.context_processors import csrf
 
 # HTK Imports
+from htk.apps.prelaunch.loading import PrelaunchSignup
 from htk.apps.prelaunch.utils import (
-    PrelaunchSignup,
     has_early_access,
     is_prelaunch_mode,
 )
-from htk.apps.prelaunch.view_helpers import get_view_context
 from htk.utils import (
     htk_setting,
     resolve_method_dynamically,
 )
-from htk.view_helpers import render_custom as _r
+from htk.view_helpers import (
+    get_view_context,
+    render_custom as _r,
+)
 
 
 # isort: off

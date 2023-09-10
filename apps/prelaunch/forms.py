@@ -5,7 +5,7 @@ import rollbar
 from django import forms
 
 # HTK Imports
-from htk.apps.prelaunch.utils import PrelaunchSignup
+from htk.apps.prelaunch.loading import PrelaunchSignup
 from htk.forms.utils import (
     set_input_attrs,
     set_input_placeholder_labels,

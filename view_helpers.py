@@ -27,6 +27,7 @@ from htk.utils import (
     htk_setting,
     utcnow,
 )
+from htk.utils.general import resolve_method_dynamically
 
 
 # isort: off
@@ -63,16 +64,26 @@ def get_javascripts(template_name, template_prefix=''):
     """
     javascripts = []
 
-    admin_template_match = re.match('%sadmintools/(.*)' % template_prefix, template_name)
+    admin_template_match = re.match(
+        '%sadmintools/(.*)' % template_prefix, template_name
+    )
     if admin_template_match:
-        js_fragment_filename = '%sadmintools/fragments/js/%s' % (template_prefix, admin_template_match.group(1),)
+        js_fragment_filename = '%sadmintools/fragments/js/%s' % (
+            template_prefix,
+            admin_template_match.group(1),
+        )
     else:
-        template_prefix_match = re.match('%s(.*)' % template_prefix, template_name)
+        template_prefix_match = re.match(
+            '%s(.*)' % template_prefix, template_name
+        )
         if template_prefix_match:
-            js_fragment_filename = '%sfragments/js/%s' % (template_prefix, template_prefix_match.group(1),)
+            js_fragment_filename = '%sfragments/js/%s' % (
+                template_prefix,
+                template_prefix_match.group(1),
+            )
         else:
             js_fragment_filename = 'fragments/js/%s' % template_name
-    #if template_name in SOME_DICTIONARY_MAPPING_JAVASCRIPTS:
+    # if template_name in SOME_DICTIONARY_MAPPING_JAVASCRIPTS:
     #    javascript.append(SOME_DICTIONARY_MAPPING_JAVASCR
 
     # check to see if there exists the default javascript for this template
@@ -104,8 +115,7 @@ def get_asset_version():
 
 
 def wrap_data(request, data=None):
-    """Puts commonly used values into the template context dictionary, `data`
-    """
+    """Puts commonly used values into the template context dictionary, `data`"""
     if data is None:
         data = {}
 
@@ -123,36 +133,37 @@ def wrap_data(request, data=None):
     # meta, server, request info
 
     from htk.utils.request import get_request_metadata
+
     data['request'] = get_request_metadata(request)
     data['server'] = {
-        'hostname' : gethostname(),
+        'hostname': gethostname(),
     }
 
     data['site_name'] = htk_setting('HTK_SITE_NAME')
 
     data['meta'] = {
-        'title' : {
-            'content' : '',
-            'inverted' : [],
-            'join_value' : ' | ',
-            'static_values' : {},
+        'title': {
+            'content': '',
+            'inverted': [],
+            'join_value': ' | ',
+            'static_values': {},
         },
-        'breadcrumbs' : {
-            'url_names_to_breadcrumbs' : {},
+        'breadcrumbs': {
+            'url_names_to_breadcrumbs': {},
         },
-        'description' : {
-            'content' : '',
-            'inverted' : [],
-            'join_value' : ' ',
-            'static_values' : {},
-         },
-        'keywords' : {
-            'content' : '',
-            'inverted' : [],
-            'join_value' : ',',
-            'static_values' : {},
+        'description': {
+            'content': '',
+            'inverted': [],
+            'join_value': ' ',
+            'static_values': {},
         },
-        'site_verifications' : {},
+        'keywords': {
+            'content': '',
+            'inverted': [],
+            'join_value': ',',
+            'static_values': {},
+        },
+        'site_verifications': {},
     }
 
     data['privacy_url_name'] = 'privacy'
@@ -161,22 +172,29 @@ def wrap_data(request, data=None):
     ##
     # Rollbar
     data['rollbar'] = {
-        'env' : settings.ROLLBAR_ENV,
-        'branch' : settings.ROLLBAR.get('branch', 'master'),
-        'tokens' : {
-            'post_client_item' : settings.ROLLBAR_TOKEN_POST_CLIENT_ITEM,
+        'env': settings.ROLLBAR_ENV,
+        'branch': settings.ROLLBAR.get('branch', 'master'),
+        'tokens': {
+            'post_client_item': settings.ROLLBAR_TOKEN_POST_CLIENT_ITEM,
         },
-        'host_blacklist' : settings.ROLLBAR.get('host_blacklist', None),
-        'host_whitelist' : settings.ROLLBAR.get('host_whitelist', None),
-        'ignored_messages' : settings.ROLLBAR.get('ignored_messages', None),
-        'ignored_messages_regexes' : settings.ROLLBAR.get('ignored_messages_regexes', None),
-        'ignored_uncaught_exception_classes' : settings.ROLLBAR.get('ignored_uncaught_exception_classes', None),
+        'host_blacklist': settings.ROLLBAR.get('host_blacklist', None),
+        'host_whitelist': settings.ROLLBAR.get('host_whitelist', None),
+        'ignored_messages': settings.ROLLBAR.get('ignored_messages', None),
+        'ignored_messages_regexes': settings.ROLLBAR.get(
+            'ignored_messages_regexes', None
+        ),
+        'ignored_uncaught_exception_classes': settings.ROLLBAR.get(
+            'ignored_uncaught_exception_classes', None
+        ),
     }
 
     ##
     # LESS http://lesscss.org/#usage
     asset_version = get_asset_version()
-    css_ext = '%s?v=%s' % (htk_setting('HTK_CSS_EXTENSION'), asset_version,)
+    css_ext = '%s?v=%s' % (
+        htk_setting('HTK_CSS_EXTENSION'),
+        asset_version,
+    )
     useless = settings.ENV_DEV and request.GET.get('useless', False)
     data['css_rel'] = 'stylesheet/less' if useless else 'stylesheet'
     data['css_ext'] = 'less' if useless else css_ext
@@ -186,7 +204,9 @@ def wrap_data(request, data=None):
     # Current Environment
     data['ENV_DEV'] = settings.ENV_DEV
     data['ENV_PROD'] = settings.ENV_PROD
-    data['is_prelaunch_mode'] = is_prelaunch_mode() and not is_prelaunch_host(request.get_host())
+    data['is_prelaunch_mode'] = is_prelaunch_mode() and not is_prelaunch_host(
+        request.get_host()
+    )
 
     ##
     # Javascript reloader
@@ -208,8 +228,7 @@ def wrap_data(request, data=None):
 
 
 def update_top_level_constants(context):
-    """Updates top-level key-values in `context` from `context['constants']`
-    """
+    """Updates top-level key-values in `context` from `context['constants']`"""
     constants = context.get('constants', {})
     if constants:
         keys = [
@@ -228,11 +247,13 @@ def _javascript_reloader(request, data):
     Need to keep track of reload attempts to avoid infinite reloads
     """
     if request.GET.get(YUI_RELOAD, None):
-        request.session[YUI_RELOAD_ATTEMPTS] = request.session.get(YUI_RELOAD_ATTEMPTS, 0) + 1
+        request.session[YUI_RELOAD_ATTEMPTS] = (
+            request.session.get(YUI_RELOAD_ATTEMPTS, 0) + 1
+        )
     else:
         request.session[YUI_RELOAD_ATTEMPTS] = 0
     data['JS_RELOADS'] = {
-        'yui' : request.session[YUI_RELOAD_ATTEMPTS],
+        'yui': request.session[YUI_RELOAD_ATTEMPTS],
     }
 
 
@@ -241,7 +262,9 @@ def _data_processor(data, template_name, template_prefix=''):
         data = {}
 
     # pre-render
-    data['javascripts'] = get_javascripts(template_name, template_prefix=template_prefix)
+    data['javascripts'] = get_javascripts(
+        template_name, template_prefix=template_prefix
+    )
     _build_meta_content(data)
     _build_breadcrumbs(data)
 
@@ -249,8 +272,7 @@ def _data_processor(data, template_name, template_prefix=''):
 
 
 def _build_meta_content(data):
-    """Build page title and META description and keywords before rendering
-    """
+    """Build page title and META description and keywords before rendering"""
     if data is None:
         data = {}
     meta = data.get('meta', {})
@@ -259,8 +281,12 @@ def _build_meta_content(data):
             _add_static_meta_content(meta_type, data)
             try:
                 inverted_content = config.get('inverted', [])
-                config['content'] = config.get('join_value', '').join(inverted_content[::-1])
-                config['value'] = inverted_content[-1] if len(inverted_content) else ''
+                config['content'] = config.get('join_value', '').join(
+                    inverted_content[::-1]
+                )
+                config['value'] = (
+                    inverted_content[-1] if len(inverted_content) else ''
+                )
             except:
                 request = data.get('request', {}).get('request')
                 rollbar.report_exc_info(request=request)
@@ -271,15 +297,23 @@ def _build_breadcrumbs(data):
         request = data.get('request', {}).get('request')
         if request:
             resolver_matches_chain = get_resolver_matches_chain(request)
-            url_names_to_breadcrumbs = data.get('meta', {}).get('breadcrumbs', {}).get('url_names_to_breadcrumbs', {})
+            url_names_to_breadcrumbs = (
+                data.get('meta', {})
+                .get('breadcrumbs', {})
+                .get('url_names_to_breadcrumbs', {})
+            )
             inverted_breadcrumbs = []
             for path, resolver_match in resolver_matches_chain:
-                title = url_names_to_breadcrumbs.get(resolver_match.url_name, None)
+                title = url_names_to_breadcrumbs.get(
+                    resolver_match.url_name, None
+                )
                 if title:
-                    inverted_breadcrumbs.append({
-                        'url' : path,
-                        'title' : title,
-                    })
+                    inverted_breadcrumbs.append(
+                        {
+                            'url': path,
+                            'title': title,
+                        }
+                    )
 
             data['breadcrumbs'] = inverted_breadcrumbs[::-1]
 
@@ -289,10 +323,15 @@ def _update_meta_content(meta_type, value, update_type='set', data=None):
         data = {}
     meta = data.get('meta', {}).get(meta_type)
     if meta:
-        if type(value) in (list, tuple,):
+        if type(value) in (
+            list,
+            tuple,
+        ):
             values_list = value
         else:
-            values_list = [value,]
+            values_list = [
+                value,
+            ]
         if update_type == 'set':
             meta['inverted'] = values_list
         elif update_type == 'add':
@@ -315,14 +354,21 @@ def _add_static_meta_content(meta_type, data=None):
     """
     meta = data.get('meta', {}).get(meta_type, {})
     default_static_values = meta.get('static_values', None)
-    static_values = htk_setting('HTK_STATIC_META_%s_VALUES' % meta_type.upper(), default=default_static_values)
+    static_values = htk_setting(
+        'HTK_STATIC_META_%s_VALUES' % meta_type.upper(),
+        default=default_static_values,
+    )
     request = data.get('request', {}).get('request')
     if meta and static_values and request:
         url_name = request.resolver_match.url_name
         path = request.path
-        static_value = static_values.get(url_name, static_values.get(path, None))
+        static_value = static_values.get(
+            url_name, static_values.get(path, None)
+        )
         if static_value:
-            _update_meta_content(meta_type, static_value, update_type='add', data=data)
+            _update_meta_content(
+                meta_type, static_value, update_type='add', data=data
+            )
         else:
             pass
     else:
@@ -352,13 +398,16 @@ def set_meta_description(description, data=None):
 
     Overwrites any previously set or added META description
     """
-    _update_meta_content('description', description, update_type='set', data=data)
+    _update_meta_content(
+        'description', description, update_type='set', data=data
+    )
 
 
 def add_meta_description(description, data=None):
-    """Adds an additional sentence or phrase to META description
-    """
-    _update_meta_content('description', description, update_type='add', data=data)
+    """Adds an additional sentence or phrase to META description"""
+    _update_meta_content(
+        'description', description, update_type='add', data=data
+    )
 
 
 def set_meta_keywords(keywords, data=None):
@@ -378,18 +427,27 @@ def add_meta_keywords(keywords, data=None):
 
 
 def add_breadcrumb_mapping(url_name, title, data):
-    url_names_to_breadcrumbs = data.get('meta', {}).get('breadcrumbs', {}).get('url_names_to_breadcrumbs', {})
+    url_names_to_breadcrumbs = (
+        data.get('meta', {})
+        .get('breadcrumbs', {})
+        .get('url_names_to_breadcrumbs', {})
+    )
     url_names_to_breadcrumbs[url_name] = title
 
 
 def get_resolver_matches_chain(request, data=None):
-    """Walk the current request URL path up to the top, attempting to resolve along the way
-    """
+    """Walk the current request URL path up to the top, attempting to resolve along the way"""
     from django.urls import Resolver404
     from django.urls import resolve
+
     resolver_matches_chain = []
     path = request.path
-    resolver_matches_chain.append((path, request.resolver_match,))
+    resolver_matches_chain.append(
+        (
+            path,
+            request.resolver_match,
+        )
+    )
     while path:
         try:
             path = path[:path.rindex('/')]
@@ -401,7 +459,9 @@ def get_resolver_matches_chain(request, data=None):
             if request.path != path_with_slash:
                 try:
                     resolver_match = resolve(path_with_slash)
-                    resolver_matches_chain.append((path_with_slash, resolver_match))
+                    resolver_matches_chain.append(
+                        (path_with_slash, resolver_match)
+                    )
                 except Resolver404:
                     pass
         except ValueError:
@@ -433,3 +493,13 @@ def generate_nav_links(request, nav_links_cfg):
             pass
         nav_links.append(nav_link)
     return nav_links
+
+
+def get_view_context(request):
+    view_context_generator = htk_setting('HTK_VIEW_CONTEXT_GENERATOR', '')
+    method = resolve_method_dynamically(view_context_generator)
+    if method:
+        context = method(request)
+    else:
+        context = {}
+    return context

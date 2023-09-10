@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 # HTK Imports
-from htk.apps.prelaunch.utils import PrelaunchSignup
+from htk.apps.prelaunch.loading import PrelaunchSignup
 
 
 # isort: off

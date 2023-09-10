@@ -4,27 +4,17 @@ import re
 
 # Django Imports
 from django.conf import settings
-from django.core.exceptions import AppRegistryNotReady
 from django.urls import (
     NoReverseMatch,
     reverse,
 )
 
 # HTK Imports
-from htk.utils import (
-    htk_setting,
-    resolve_model_dynamically,
-)
+from htk.apps.prelaunch.loading import PrelaunchSignup
+from htk.utils import htk_setting
 
 
 # isort: off
-
-try:
-    PrelaunchSignup = resolve_model_dynamically(
-        htk_setting('HTK_PRELAUNCH_MODEL')
-    )
-except (LookupError, AppRegistryNotReady):
-    pass
 
 
 def get_prelaunch_url_name():
