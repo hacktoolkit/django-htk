@@ -10,7 +10,6 @@ from django.urls import (
 )
 
 # HTK Imports
-from htk.apps.prelaunch.loading import PrelaunchSignup
 from htk.utils import htk_setting
 
 
@@ -98,6 +97,8 @@ def get_early_access_code(request):
 
 
 def has_early_access(request, early_access_code=None):
+    from htk.apps.prelaunch.loading import PrelaunchSignup
+
     has_access = False
 
     if early_access_code is None:
@@ -119,6 +120,8 @@ def get_unique_signups():
     """Returns a list of PrelaunchSignup objects with unique emails,
     as some users may sign up multiple times.
     """
+    from htk.apps.prelaunch.loading import PrelaunchSignup
+
     q = PrelaunchSignup.objects.order_by('email', 'id')
     prelaunch_signups = [
         list(g)[0]
