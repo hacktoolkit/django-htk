@@ -5,7 +5,7 @@ import urllib
 import requests
 
 
-def get_bible_passage(query, version=None):
+def get_bible_passages(query, version=None):
     url = 'https://awesome.bible/api/bible/passage'
     params = {
         'q': query,
@@ -13,19 +13,26 @@ def get_bible_passage(query, version=None):
     }
     response = requests.get(url, params=params)
 
-    title = query
-
     if response.status_code == 200:
+        q = urllib.parse.quote_plus(query)
+        url = f'https://awesome.bible/bible?q={q}'
+
         response_json = response.json()
-        ref = response_json['ref']
-        text = '\n'.join([verse['text'] for verse in response_json['verses']])
-        q = urllib.parse.quote_plus(ref)
-        passage = {
-            'ref': ref,
-            'url': f'https://awesome.bible/bible?q={q}',
-            'text': text,
+        passages = [
+            {
+                'ref': passage['ref'],
+                'text': '\n'.join(
+                    [verse['text'] for verse in passage['verses']]
+                ),
+            }
+            for passage in response_json
+        ]
+
+        result = {
+            'url': url,
+            'passages': passages,
         }
     else:
-        passage = None
+        result = None
 
-    return passage
+    return result

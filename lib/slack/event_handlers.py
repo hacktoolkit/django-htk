@@ -244,11 +244,11 @@ def bible(event, **kwargs):
     if command == 'bible':
         if args:
             from htk.lib.literalword.utils import (
-                get_bible_passage as get_bible_passage__literalword,
+                get_bible_passages as get_bible_passages__literalword,
                 is_bible_version,
             )
             from htk.lib.awesomebible.utils import (
-                get_bible_passage as get_bible_passage__awesomebible,
+                get_bible_passages as get_bible_passages__awesomebible,
             )
 
             # from htk.utils.text.converters import markdown2slack
@@ -259,36 +259,39 @@ def bible(event, **kwargs):
                 args = ' '.join(arg_parts[1:])
             else:
                 webhook_settings = event.get('webhook_settings', {})
-                bible_version = webhook_settings.get('bible_version', None)
+                bible_version = webhook_settings.get('bible_version', 'NASB')
 
             if bible_version.upper() == 'ESV':
                 bible_provider = 'Literal Word'
-                passage = get_bible_passage__literalword(
+                passages = get_bible_passages__literalword(
                     args, version=bible_version
                 )
+                ref = args
             else:
                 bible_provider = 'Awesome.Bible'
-                passage = get_bible_passage__awesomebible(
+                passages = get_bible_passages__awesomebible(
                     args, version=bible_version
                 )
-
-            if passage:
-                passage['ref'] = passage.get('ref', args)
-                passage['bible_provider'] = bible_provider
-
-                slack_text = (
-                    """Bible passage: *%(ref)s*
-Read on *%(bible_provider)s*: %(url)s
-"""
-                    % passage
+                ref = '; '.join(
+                    [passage['ref'] for passage in passages['passages']]
                 )
 
-                attachments.append(
-                    {
-                        'pretext': '*{}*'.format(passage['ref']),
-                        'text': passage['text'],
-                    }
+            if passages:
+                slack_text = """Bible passage: *{ref}*
+Read on *{bible_provider}*: {url}
+""".format(
+                    ref=ref,
+                    bible_provider=bible_provider,
+                    url=passages['url'],
                 )
+
+                for passage in passages['passages']:
+                    attachments.append(
+                        {
+                            'pretext': '*{}*'.format(passage.get('ref', ref)),
+                            'text': passage['text'],
+                        }
+                    )
             else:
                 slack_text = (
                     'Please specify a valid Bible passage to look up.\n%s'
