@@ -1,0 +1,49 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "build:icons": "tsx ./builders/icons.ts",
+    "predev": "npm run build:icons",
+    "dev": "vite",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "clsx": "^2.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.16.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.6",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/react": "^18.2.23",
+    "@types/react-dom": "^18.2.8",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "@vitejs/plugin-react": "^4.1.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "execa": "^8.0.1",
+    "fs-extra": "^11.1.1",
+    "glob": "^10.3.10",
+    "node-html-parser": "^6.1.10",
+    "postcss": "^8.4.30",
+    "prettier": "^3.0.3",
+    "tailwindcss": "^3.3.3",
+    "tsx": "^3.13.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  }
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <title>Admin Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preload" href="/static/admintools/icons/sprite.svg" as="image" />
+    {% if is_react_dev_mode %}
+    <script type="module">
+      import RefreshRuntime from "{{ vite_dev_url }}/@react-refresh"
+      RefreshRuntime.injectIntoGlobalHook(window)
+      window.$RefreshReg$ = () => {}
+      window.$RefreshSig$ = () => (type) => type
+      window.__vite_plugin_react_preamble_installed__ = true
+    </script>
+
+    <script type="module" src="{{ vite_dev_url}}/@vite/client"></script>
+    {% endif %}
+  </head>
+  <body>
+    <div id="root"></div>
+    {% if is_react_dev_mode %}
+    <script type="module" src="{{ vite_dev_url }}/static/src/main.tsx"></script>
+    {% else %}
+    <script type="module" src="/static/admintools/js/main.js"></script>
+    {% endif %}
+  </body>
+</html>

@@ -90,6 +90,7 @@ HTK_JS_ROUTES_DYNAMIC_PART_PLACEHOLDER = '{0}'
 # HTK Imports
 from htk.admintools.constants.defaults import *
 from htk.apps.accounts.constants.defaults import *
+from htk.apps.admintools.constants.defaults import *
 from htk.apps.bible.constants.defaults import *
 from htk.apps.changelog.constants.defaults import *
 from htk.apps.cpq.constants.defaults import *

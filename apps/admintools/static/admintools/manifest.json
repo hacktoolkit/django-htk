@@ -1,0 +1,25 @@
+{
+  "src/components/ui/icons/sprite.svg": {
+    "assets": [
+      "sprite-c86642d5.svg"
+    ],
+    "file": "sprite-3bc16324.js",
+    "isEntry": true,
+    "src": "src/components/ui/icons/sprite.svg"
+  },
+  "src/main.css": {
+    "file": "main-3896717e.css",
+    "src": "src/main.css"
+  },
+  "src/main.tsx": {
+    "css": [
+      "main-3896717e.css"
+    ],
+    "file": "main-a4a09df0.js",
+    "imports": [
+      "src/components/ui/icons/sprite.svg"
+    ],
+    "isEntry": true,
+    "src": "src/main.tsx"
+  }
+}
