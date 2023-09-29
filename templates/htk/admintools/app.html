@@ -21,6 +21,9 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      const APP_CONFIG_URL = '{% url 'htk_admintools_api_app_config' %}'
+    </script>
     {% if is_react_dev_mode %}
     <script type="module" src="{{ vite_dev_url }}/static/src/main.tsx"></script>
     {% else %}

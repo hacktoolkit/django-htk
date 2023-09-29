@@ -1,5 +1,6 @@
 import { Icon } from '@/components/ui/icon';
 import { useTheme } from '@/contexts/theme';
+import { PocketKnifeIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function HeaderLogo() {
@@ -19,6 +20,7 @@ export function HeaderLogo() {
                 >
                     <Icon name="double-caret-right" size="md" />
                 </button>
+                <PocketKnifeIcon className="w-8 h-8 ltr:-ml01 rtl:-mr-1 inline" />
                 {/* <img src="" alt="" className="w-8 ltr:-ml-1 rtl:-mr-1 inline" /> */}
                 <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle hidden md:inline dark:text-white-light transition-all duration-300">
                     AdminTools

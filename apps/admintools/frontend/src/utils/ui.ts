@@ -1,4 +1,11 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 import { ThemeConfig } from '@/theme_config';
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
 
 export function applyTheme(theme: ThemeConfig['theme']) {
     let isDarkMode = false;

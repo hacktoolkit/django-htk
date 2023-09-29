@@ -2,6 +2,7 @@ import React from 'react';
 import { clsx } from 'clsx';
 import { Outlet } from 'react-router-dom';
 
+import { useApp } from '@/contexts/app';
 import { useTheme } from '@/contexts/theme';
 
 import { GoTopButton } from './go_top_button';
@@ -9,9 +10,11 @@ import { SidebarToggler } from './sidebar_toggler';
 import { Sidebar } from './sidebar';
 import { Header } from './header';
 import { Footer } from './footer';
+import { Loader } from './Loader';
 
 export function Layout() {
     const theme = useTheme();
+    const { loading } = useApp();
 
     return (
         <div
@@ -26,6 +29,7 @@ export function Layout() {
             )}
         >
             <SidebarToggler />
+            <Loader show={loading} />
             <GoTopButton />
             <div
                 className={clsx(

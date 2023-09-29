@@ -1,6 +1,7 @@
 import plugin from 'tailwindcss/plugin';
-import formsPlugin from '@tailwindcss/forms';
-import typographyPlugin from '@tailwindcss/typography';
+import animate from 'tailwindcss-animate';
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
 
 const rotateX = plugin(function ({ addUtilities }) {
     addUtilities({
@@ -10,12 +11,22 @@ const rotateX = plugin(function ({ addUtilities }) {
     });
 });
 
-module.exports = {
-    content: ['./src/**/*.{js,ts,jsx,tsx}'],
-    darkMode: 'class',
+/** @type {import('tailwindcss').Config} */
+export default {
+    darkMode: ['class'],
+    content: [
+        './pages/**/*.{ts,tsx}',
+        './components/**/*.{ts,tsx}',
+        './app/**/*.{ts,tsx}',
+        './src/**/*.{ts,tsx}',
+    ],
     theme: {
         container: {
             center: true,
+            padding: '2rem',
+            screens: {
+                '2xl': '1400px',
+            },
         },
         extend: {
             colors: {
@@ -73,7 +84,6 @@ module.exports = {
             },
             boxShadow: {
                 '3xl': '0 2px 2px rgb(224 230 237 / 46%), 1px 6px 7px rgb(224 230 237 / 46%)',
-                sidebar: '5x 0 25px 0 rgb(94 92 154 / 10%',
             },
             typography: ({ theme }) => ({
                 DEFAULT: {
@@ -117,13 +127,21 @@ module.exports = {
                     },
                 },
             }),
+            keyframes: {
+                'accordion-down': {
+                    from: { height: 0 },
+                    to: { height: 'var(--radix-accordion-content-height)' },
+                },
+                'accordion-up': {
+                    from: { height: 'var(--radix-accordion-content-height)' },
+                    to: { height: 0 },
+                },
+            },
+            animation: {
+                'accordion-down': 'accordion-down 0.2s ease-out',
+                'accordion-up': 'accordion-up 0.2s ease-out',
+            },
         },
     },
-    plugins: [
-        formsPlugin({
-            strategy: 'class',
-        }),
-        typographyPlugin,
-        rotateX,
-    ],
+    plugins: [animate, forms({ strategy: 'class' }), typography, rotateX],
 };

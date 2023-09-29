@@ -6,8 +6,11 @@ export type IconName =
     | 'double-caret-left'
     | 'double-caret-right'
     | 'double-caret-up'
+    | 'hammer'
     | 'logout'
     | 'moon'
     | 'notebook'
     | 'screen'
-    | 'sun';
+    | 'sun'
+    | 'user'
+    | 'users';

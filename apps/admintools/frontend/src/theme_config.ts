@@ -30,7 +30,7 @@ export const defaultThemeConfig: ThemeConfig = {
     locale: 'en',
     ...applyTheme(getStorageItemOrDefault('theme', 'light')),
     isSidebarOpen: getStorageItemOrDefault('isSidebarOpen', true),
-    menu: 'vertical',
+    menu: 'collapsible-vertical',
     layout: 'full',
     rtlClass: 'ltr',
     animation: '',

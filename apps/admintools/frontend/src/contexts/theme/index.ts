@@ -3,6 +3,8 @@ import { applyTheme } from '@/utils/ui';
 import { setLocalStorage } from '@/utils/misc';
 import React from 'react';
 
+export * from './provider';
+
 type Action =
     | { type: 'theme'; theme: ThemeConfig['theme'] }
     | { type: 'menu'; menu: ThemeConfig['menu'] }
@@ -38,6 +40,6 @@ export const ThemeContext = React.createContext<
 
 // Custom hook to easily access the ThemeContext
 export function useTheme() {
-    const theme = React.useContext(ThemeContext);
-    return theme;
+    const context = React.useContext(ThemeContext);
+    return context;
 }

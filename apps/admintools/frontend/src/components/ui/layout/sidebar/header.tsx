@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Icon } from '@/components/ui/icon';
 import { useTheme } from '@/contexts/theme';
+import { PocketKnifeIcon } from 'lucide-react';
 
 export function SidebarHeader() {
     const { dispatch } = useTheme();
@@ -10,6 +11,7 @@ export function SidebarHeader() {
     return (
         <div className="flex justify-between items-center px-4 py-3">
             <NavLink to="/" className="main-logo flex items-center shrink-0">
+                <PocketKnifeIcon className="w-8 h-8 ml-1 text-primary flex-none" />
                 {/* <img src="" alt="" className="w-8 ml-[5px] flex-none" /> */}
                 <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle lg:inline dark:text-white-light">
                     AdminTools

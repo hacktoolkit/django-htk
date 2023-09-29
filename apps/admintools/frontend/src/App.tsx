@@ -1,47 +1,32 @@
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
-import { Layout } from '@/components/ui/layout';
-import DashboardRoute from '@/routes/dashboard';
-import { defaultThemeConfig } from '@/theme_config';
-import { Error404, Error500 } from '@/components/ui/errors';
-import { ThemeContext, themeReducer } from '@/contexts/theme';
-
-const router = createBrowserRouter(
-    [
-        {
-            path: '',
-            element: <Layout />,
-            children: [
-                {
-                    index: true,
-                    element: <DashboardRoute />,
-                },
-            ],
-        },
-        {
-            path: '*',
-            element: <Error404 />,
-        },
-    ],
-    { basename: '/admintools' },
-);
+import { Error500 } from '@/components/ui/errors';
+import { ThemeProvider } from '@/contexts/theme';
+import { buildRoutes } from '@/routes';
+import { useFetchApp } from '@/hooks/api/useFetchApp';
+import { useApp } from '@/contexts/app';
 
 export function AdminToolsApp() {
-    const [theme, dispatch] = React.useReducer(
-        themeReducer,
-        defaultThemeConfig,
-    );
+    const { dispatch } = useApp();
+    const { data, isLoading } = useFetchApp();
 
-    const context = React.useMemo(() => ({ ...theme, dispatch }), [theme]);
+    const router = buildRoutes();
+
+    React.useEffect(() => {
+        if (!isLoading) {
+            dispatch({ type: 'finishLoading' });
+        }
+    }, [isLoading, dispatch]);
+
     return (
-        <ThemeContext.Provider value={context}>
+        <ThemeProvider>
             <ErrorBoundary fallback={<Error500 />}>
                 <RouterProvider router={router} />
             </ErrorBoundary>
             <Toaster position="bottom-right" richColors />
-        </ThemeContext.Provider>
+        </ThemeProvider>
     );
 }
