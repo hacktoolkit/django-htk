@@ -8,18 +8,13 @@ import { ThemeProvider } from '@/contexts/theme';
 import { buildRoutes } from '@/routes';
 import { useFetchApp } from '@/hooks/api/useFetchApp';
 import { useApp } from '@/contexts/app';
+import { Loader } from '@/components/ui/layout/Loader';
 
 export function AdminToolsApp() {
-    const { dispatch } = useApp();
-    const { data, isLoading } = useFetchApp();
+    const { loading, dispatch } = useApp();
+    const { data } = useFetchApp();
 
-    const router = buildRoutes();
-
-    React.useEffect(() => {
-        if (!isLoading) {
-            dispatch({ type: 'finishLoading' });
-        }
-    }, [isLoading, dispatch]);
+    const router = buildRoutes(data?.paths ?? []);
 
     React.useEffect(() => {
         if (typeof data !== 'undefined') {
@@ -27,7 +22,9 @@ export function AdminToolsApp() {
         }
     }, [data, dispatch]);
 
-    return (
+    return loading ? (
+        <Loader show />
+    ) : (
         <ThemeProvider>
             <ErrorBoundary fallback={<Error500 />}>
                 <RouterProvider router={router} />

@@ -13,7 +13,7 @@ export function appReducer(state: AppState, action: Action): AppState {
         case 'finishLoading':
             return { ...state, loading: false };
         case 'setPaths':
-            return { ...state, paths: action.paths };
+            return { ...state, loading: false, paths: action.paths };
         default:
             return state;
     }
