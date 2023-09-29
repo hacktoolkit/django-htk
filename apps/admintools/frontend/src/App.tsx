@@ -21,6 +21,12 @@ export function AdminToolsApp() {
         }
     }, [isLoading, dispatch]);
 
+    React.useEffect(() => {
+        if (typeof data !== 'undefined') {
+            dispatch({ type: 'setPaths', paths: data.paths });
+        }
+    }, [data, dispatch]);
+
     return (
         <ThemeProvider>
             <ErrorBoundary fallback={<Error500 />}>

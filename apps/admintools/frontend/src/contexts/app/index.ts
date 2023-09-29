@@ -1,15 +1,21 @@
+import { Path } from '@/types/response';
 import React from 'react';
 
-type Action = { type: 'finishLoading' };
+type Action = { type: 'finishLoading' } | { type: 'setPaths'; paths: Path[] };
 
 interface AppState {
     loading: boolean;
+    paths: Path[];
 }
 
 export function appReducer(state: AppState, action: Action): AppState {
     switch (action.type) {
         case 'finishLoading':
             return { ...state, loading: false };
+        case 'setPaths':
+            return { ...state, paths: action.paths };
+        default:
+            return state;
     }
 }
 
@@ -17,6 +23,7 @@ export const AppContext = React.createContext<
     AppState & { dispatch: React.Dispatch<Action> }
 >({
     loading: true,
+    paths: [],
     dispatch: () => {},
 });
 
