@@ -1,8 +1,11 @@
+import { getStorageItemOrDefault } from '@/utils/misc';
+import { applyTheme } from '@/utils/ui';
+
 export type ThemeConfig = {
     // Locale
     locale: 'en';
+    isDarkMode: boolean;
     theme: 'light' | 'dark' | 'system';
-    sidebarWidth: number; // in pixel
     isSidebarOpen: boolean;
     menu: 'vertical' | 'collapsible-vertical' | 'horizontal';
     layout: 'full' | 'boxed-layout';
@@ -25,9 +28,8 @@ export type ThemeConfig = {
 
 export const defaultThemeConfig: ThemeConfig = {
     locale: 'en',
-    theme: 'light',
-    sidebarWidth: 260,
-    isSidebarOpen: true,
+    ...applyTheme(getStorageItemOrDefault('theme', 'light')),
+    isSidebarOpen: getStorageItemOrDefault('isSidebarOpen', true),
     menu: 'vertical',
     layout: 'full',
     rtlClass: 'ltr',

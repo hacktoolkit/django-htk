@@ -31,6 +31,19 @@ export function Sidebar() {
                             </div>
                         </NavLink>
                     </li>
+                    <li className="nav-item">
+                        <a href="/" className="group">
+                            <div className="flex items-center">
+                                <Icon
+                                    name="logout"
+                                    className="group-hover:!text-primary shrink-0"
+                                />
+                                <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">
+                                    Go Back To Site
+                                </span>
+                            </div>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>

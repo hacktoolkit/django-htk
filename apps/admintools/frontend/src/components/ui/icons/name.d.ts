@@ -6,6 +6,7 @@ export type IconName =
     | 'double-caret-left'
     | 'double-caret-right'
     | 'double-caret-up'
+    | 'logout'
     | 'moon'
     | 'notebook'
     | 'screen'

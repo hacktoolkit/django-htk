@@ -1,5 +1,6 @@
 import { ThemeConfig, defaultThemeConfig } from '@/theme_config';
 import { applyTheme } from '@/utils/ui';
+import { setLocalStorage } from '@/utils/misc';
 import React from 'react';
 
 type Action =
@@ -10,16 +11,18 @@ type Action =
 export function themeReducer(state: ThemeConfig, action: Action): ThemeConfig {
     switch (action.type) {
         case 'theme':
-            return { ...state, theme: applyTheme(action.theme) };
+            return { ...state, ...setLocalStorage(applyTheme(action.theme)) };
         case 'menu':
             return { ...state, menu: action.menu };
         case 'sidebar':
             return {
                 ...state,
-                isSidebarOpen:
-                    action.operation === 'toggle'
-                        ? !state.isSidebarOpen
-                        : action.operation === 'open',
+                ...setLocalStorage({
+                    isSidebarOpen:
+                        action.operation === 'toggle'
+                            ? !state.isSidebarOpen
+                            : action.operation === 'open',
+                }),
             };
         default:
             return state;

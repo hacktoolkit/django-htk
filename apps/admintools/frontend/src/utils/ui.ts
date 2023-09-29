@@ -12,5 +12,5 @@ export function applyTheme(theme: ThemeConfig['theme']) {
 
     document.querySelector('body')!.classList.toggle('dark', isDarkMode);
 
-    return theme;
+    return { theme, isDarkMode };
 }

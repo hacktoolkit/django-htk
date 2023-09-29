@@ -1,55 +1,54 @@
 import React from 'react';
 import { clsx } from 'clsx';
 import { Outlet } from 'react-router-dom';
-import { ThemeContext, themeReducer } from '@/contexts/theme';
-import { ThemeConfig } from '@/theme_config';
+
+import { useTheme } from '@/contexts/theme';
+
 import { GoTopButton } from './go_top_button';
 import { SidebarToggler } from './sidebar_toggler';
 import { Sidebar } from './sidebar';
 import { Header } from './header';
+import { Footer } from './footer';
 
-export function Layout({ themeConfig }: { themeConfig: ThemeConfig }) {
-    const [theme, dispatch] = React.useReducer(themeReducer, themeConfig);
-
-    const context = React.useMemo(() => ({ ...theme, dispatch }), [theme]);
+export function Layout() {
+    const theme = useTheme();
 
     return (
-        <ThemeContext.Provider value={context}>
+        <div
+            className={clsx(
+                'main-section antialiased relative font-nunito, text-sm font-normal',
+                theme.menu,
+                theme.layout,
+                theme.rtlClass,
+                {
+                    'toggle-sidebar': !theme.isSidebarOpen,
+                },
+            )}
+        >
+            <SidebarToggler />
+            <GoTopButton />
             <div
                 className={clsx(
-                    'main-section antialiased relative font-nunito, text-sm font-normal',
-                    theme.menu,
-                    theme.layout,
-                    theme.rtlClass,
-                    {
-                        'toggle-sidebar': !theme.isSidebarOpen,
-                    },
+                    theme.navbar,
+                    'main-container text-black dark:text-white-dark min-h-screen',
                 )}
             >
-                <SidebarToggler />
-                <GoTopButton />
-                <div
-                    className={clsx(
-                        theme.navbar,
-                        'main-container text-black dark:text-white-dark min-h-screen',
-                    )}
-                >
-                    <Sidebar />
-                    <div className="main-content flex flex-col min-h-screen">
-                        <Header />
-                        <React.Suspense>
-                            <div
-                                className={clsx(
-                                    theme.animation,
-                                    'p-6 animate__animated',
-                                )}
-                            >
-                                <Outlet />
-                            </div>
-                        </React.Suspense>
-                    </div>
+                <Sidebar />
+                <div className="main-content flex flex-col min-h-screen">
+                    <Header />
+                    <React.Suspense>
+                        <div
+                            className={clsx(
+                                theme.animation,
+                                'p-6 animate__animated',
+                            )}
+                        >
+                            <Outlet />
+                        </div>
+                    </React.Suspense>
+                    <Footer />
                 </div>
             </div>
-        </ThemeContext.Provider>
+        </div>
     );
 }
