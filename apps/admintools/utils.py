@@ -25,37 +25,54 @@ class AdminToolNamespace(object):
     to get needed information like label and icon.
     """
 
-    def __init__(self, label, icon):
+    def __init__(self, label, icon, show_in_menu):
         self.label = label
         self.icon = icon
+        self.show_in_menu = show_in_menu
 
     def __str__(self):
         value = self.label.lower()
         return value
 
 
-def admintool_path_group(route, label, icon, group):
+def admintool_path_group(route, label, icon, group, show_in_menu):
     value = re_path(
-        route, include(group, namespace=AdminToolNamespace(label, icon))
+        route,
+        include(group, namespace=AdminToolNamespace(label, icon, show_in_menu)),
     )
     return value
 
 
 def admintool_path(
-    route, view, name, label=None, icon=None, index=False, *args, **kwargs
+    route,
+    view,
+    name,
+    label=None,
+    icon=None,
+    index=False,
+    show_in_menu=False,
+    *args,
+    **kwargs,
 ):
     value = re_path(
         route,
         view,
         name=name,
-        kwargs={'label': label, 'icon': icon, 'index': index},
+        kwargs={
+            'label': label,
+            'icon': icon,
+            'index': index,
+            'show_in_menu': show_in_menu,
+        },
         *args,
         **kwargs,
     )
     return value
 
 
-def build_admintools_paths(resolver=None, url_prefix=None, namespace=None):
+def build_admintools_paths(
+    resolver=None, url_prefix=None, namespace=None, icon=None, label=None
+):
     resolver = (
         resolver if resolver else get_resolver('htk.apps.admintools.pages.urls')
     )
@@ -75,10 +92,13 @@ def build_admintools_paths(resolver=None, url_prefix=None, namespace=None):
                 'url': new_url_prefix,
                 'label': url_pattern.namespace.label,
                 'icon': url_pattern.namespace.icon,
+                'show_in_menu': url_pattern.namespace.show_in_menu,
                 'children': build_admintools_paths(
                     resolver=url_pattern,
                     url_prefix=new_url_prefix,
                     namespace=current_namespace,
+                    icon=url_pattern.namespace.icon,
+                    label=url_pattern.namespace.label,
                 ),
             }
 
@@ -89,8 +109,14 @@ def build_admintools_paths(resolver=None, url_prefix=None, namespace=None):
             api_url = f'/admintools/pages/{url}'
             if is_index:
                 current = {
-                    'index': True,
+                    'url': url_prefix,
                     'api_url': api_url,
+                    'label': url_pattern.default_args.get('label', label),
+                    'icon': icon,
+                    'index': True,
+                    'show_in_menu': url_pattern.default_args.get(
+                        'show_in_menu', False
+                    ),
                 }
             else:
                 current = {
@@ -98,6 +124,10 @@ def build_admintools_paths(resolver=None, url_prefix=None, namespace=None):
                     'api_url': api_url,
                     'label': url_pattern.default_args.get('label', None),
                     'icon': url_pattern.default_args.get('icon', None),
+                    'show_in_menu': url_pattern.default_args.get(
+                        'show_in_menu', False
+                    ),
+                    'index': False,
                 }
             paths.append(current)
     return paths

@@ -7,7 +7,8 @@ urlpatterns = [
     admintool_path_group(
         r'^users/',
         'Users',
-        'Users',
+        'users',
         'htk.apps.admintools.pages.users.urls',
+        show_in_menu=True,
     ),
 ]
