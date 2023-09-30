@@ -275,22 +275,20 @@ class AbstractBiblePassage(models.Model):
                 else:
                     chapter_end_obj = None
 
+                passage_kwargs = {
+                    'book': book,
+                    'chapter_start': chapter_start_obj,
+                    'verse_start': verse_start,
+                    'chapter_end': chapter_end_obj,
+                    'verse_end': verse_end,
+                }
+
                 if persist:
                     bible_passage, was_created = cls.objects.get_or_create(
-                        book=book,
-                        chapter_start=chapter_start_obj,
-                        verse_start=verse_start,
-                        chapter_end=chapter_end_obj,
-                        verse_end=verse_end,
+                        **passage_kwargs
                     )
                 else:
-                    bible_passage = cls(
-                        book=book,
-                        chapter_start=chapter_start_obj,
-                        verse_start=verse_start,
-                        chapter_end=chapter_end_obj,
-                        verse_end=verse_end,
-                    )
+                    bible_passage = cls(**passage_kwargs)
             except BibleBook.DoesNotExist:
                 bible_passage = None
             except BibleChapter.DoesNotExist:
