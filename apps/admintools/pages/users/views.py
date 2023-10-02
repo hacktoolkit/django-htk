@@ -13,6 +13,14 @@ class UsersView(View):
         response = json_response_okay({})
         return response
 
+    def options(self, request, *args, **kwargs):
+        response = json_response_okay(
+            {
+                'page_type': 'table-list',
+            }
+        )
+        return response
+
 
 @method_decorator(company_employee_required, name='dispatch')
 class UserView(View):

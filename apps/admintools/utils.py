@@ -82,12 +82,15 @@ def build_admintools_paths(
     )
     for url_pattern in resolver.url_patterns:
         if isinstance(url_pattern, URLResolver):
+            # This is only an include path. It does not have an view but loads
+            # another `urls.py` file.
             url = _prepare_url_part(url_pattern)
             new_url_prefix = (
                 f'/{url}'
                 if url_prefix is None
                 else urljoin(url_prefix or '/', url)
             )
+            # TODO: Convert this to dataclass
             current = {
                 'url': new_url_prefix,
                 'label': url_pattern.namespace.label,
@@ -101,33 +104,32 @@ def build_admintools_paths(
                     label=url_pattern.namespace.label,
                 ),
             }
-
-            paths.append(current)
         elif isinstance(url_pattern, URLPattern) and url_pattern.name:
+            # Only add url patterns that have a `name` defined.
             is_index = url_pattern.default_args.get('index', False)
             url = urljoin(url_prefix or '/', _prepare_url_part(url_pattern))
-            api_url = f'/admintools/pages/{url}'
-            if is_index:
-                current = {
-                    'url': url_prefix,
-                    'api_url': api_url,
-                    'label': url_pattern.default_args.get('label', label),
-                    'icon': icon,
-                    'index': True,
-                    'show_in_menu': url_pattern.default_args.get(
-                        'show_in_menu', False
-                    ),
-                }
-            else:
-                current = {
-                    'url': url,
-                    'api_url': api_url,
-                    'label': url_pattern.default_args.get('label', None),
-                    'icon': url_pattern.default_args.get('icon', None),
-                    'show_in_menu': url_pattern.default_args.get(
-                        'show_in_menu', False
-                    ),
-                    'index': False,
-                }
+            api_url = f'/admintools/pages{url}'
+            # TODO: Convert this to dataclass
+            current = {
+                'url': url_prefix if is_index else url,
+                'content_url': api_url,
+                'label': url_pattern.default_args.get(
+                    'label', label if is_index else None
+                ),
+                'icon': (
+                    icon
+                    if is_index
+                    else url_pattern.default_args.get('icon', None)
+                ),
+                'show_in_menu': url_pattern.default_args.get(
+                    'show_in_menu', False
+                ),
+                'index': is_index,
+            }
+        else:
+            current = None
+
+        if current:
             paths.append(current)
+
     return paths

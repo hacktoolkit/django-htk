@@ -38,6 +38,10 @@ export function build_paths(paths: Path[]): RouteObject[] {
                   path: path.index ? '' : path.url,
                   index: path.index ?? undefined,
                   element: <DynamicRoute />,
+                  loader: (request) => {
+                      console.log(request);
+                      return null;
+                  },
               },
     );
 }
