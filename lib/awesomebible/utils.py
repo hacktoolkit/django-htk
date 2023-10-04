@@ -3,6 +3,7 @@ import urllib
 
 # Third Party (PyPI) Imports
 import requests
+from bs4 import BeautifulSoup
 
 
 def get_bible_passages(query, version=None):
@@ -22,7 +23,10 @@ def get_bible_passages(query, version=None):
             {
                 'ref': passage['ref'],
                 'text': '\n'.join(
-                    [verse['text'] for verse in passage['verses']]
+                    [
+                        _format_html_to_plaintext(verse['html'])
+                        for verse in passage['verses']
+                    ]
                 ),
             }
             for passage in response_json
@@ -36,3 +40,9 @@ def get_bible_passages(query, version=None):
         result = None
 
     return result
+
+
+def _format_html_to_plaintext(html):
+    soup = BeautifulSoup(html)
+    plaintext = soup.text
+    return plaintext
