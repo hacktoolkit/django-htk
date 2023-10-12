@@ -12,6 +12,7 @@ from functools import partial
 import rollbar
 
 # Django Imports
+import django
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -562,24 +563,53 @@ def parse_dependency(model, dependency):
             return
         try:
             field = getattr(model, attr_name)
-            # for ReverseSingleRelatedObjectDescriptor
-            if hasattr(field, 'field'):
-                is_reverse = field.__class__.__name__.startswith('Reverse')
-                field = field.field
-                model = field.rel.related_model if is_reverse else field.rel.to
-                related_name = (
-                    field.name if is_reverse else field.rel.related_name
+            relation_class_name = field.__class__.__name__
+            # django.VERSION is a tuple. First item is major version
+            if django.VERSION[0] == 1:
+                if hasattr(field, 'field'):
+                    # for ReverseSingleRelatedObjectDescriptor
+                    is_reverse = relation_class_name.startswith('Reverse')
+                    field = field.field
+                    model = field.rel.related_model if is_reverse else field.rel.to
+                    related_name = (
+                        field.name if is_reverse else field.rel.related_name
+                    )
+
+                else:
+                    model = field.related.model
+                    related_name = field.related.field.name
+            else:  # Django version is >= 2
+                if relation_class_name == 'ForwardManyToOneDescriptor':
+                    model = field.field.related_model
+                    related_name = field.field.remote_field.related_name
+                elif relation_class_name == 'ReverseManyToOneDescriptor':
+                    model = field.field.model
+                    related_name = field.field.name
+                elif relation_class_name == 'ForwardOneToOneDescriptor':
+                    model = field.field.related_model
+                    related_name = field.field.remote_field.related_name
+                elif relation_class_name == 'ReverseOneToOneDescriptor':
+                    model = field.related.related_model
+                    related_name = field.related.related_name
+                elif relation_class_name == 'ManyToManyDescriptor':
+                    if field.reverse:
+                        model = field.field.related_model
+                        related_name = field.field.remote_field.related_name
+                    else:
+                        model = field.field.model
+                        related_name = field.field.name
+                else:
+                    raise TypeError('Unknown relation Descriptor: `{}`'.format(
+                        relation_class_name
+                    ))
+
+            if not related_name or related_name == '+':
+                raise Exception(
+                    "Fields with no explicit related name aren't supported for now: {}".format(
+                        field
+                    )
                 )
 
-                if not related_name or related_name == '+':
-                    raise Exception(
-                        "Fields with no explicit related name aren't supported for now: {}".format(
-                            field
-                        )
-                    )
-            else:
-                model = field.related.model
-                related_name = field.related.field.name
             path.insert(0, related_name)
         except Exception as e:
             raise Exception(
