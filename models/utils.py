@@ -1,6 +1,3 @@
-# Django Imports
-from django.db import models
-
 # HTK Imports
 from htk.utils.datetime_utils import parse_datetime
 from htk.utils.general import strtobool_safe
@@ -10,7 +7,10 @@ from htk.utils.general import strtobool_safe
 
 
 def normalize_model_field_value(model, field, value):
-    """Normalizes the value for a particular model field.
+    """Deserializes/normalizes the value for a particular model field.
+
+    `value` typically comes from the value of a particular `field` of a JSON payload
+    from an API call.
 
     For example, if the `value` is `None`, but the `field` is `models.BooleanField`,
     apply `bool(value)`
