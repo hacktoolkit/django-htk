@@ -578,7 +578,7 @@ def parse_dependency(model, dependency):
                 else:
                     model = field.related.model
                     related_name = field.related.field.name
-            else:  # Django version is >= 2 - (Tested on Django 2.2.28, 3.2.22, 4.2.6)
+            else:  # Django version is >= 2 (Tested on Django 2.2.28, 3.2.22, 4.2.6)
                 if relation_class_name == 'ForwardManyToOneDescriptor':
                     model = field.field.related_model
                     related_name = field.field.remote_field.related_name
