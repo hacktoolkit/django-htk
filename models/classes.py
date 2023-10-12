@@ -15,6 +15,7 @@ from django.utils.http import (
 )
 
 # HTK Imports
+from htk.models.utils import normalize_model_field_value
 from htk.utils import (
     htk_setting,
     utcnow,
@@ -38,27 +39,32 @@ Others, like imaging libraries, require PIL, etc
 
 
 class HtkBaseModel(models.Model):
-    """An abstract class extending Django models.Model for performing common operations
+    """An abstract class extending Django models.Model
+    for performing common operations
     """
+
     class Meta:
         abstract = True
 
     def json_encode(self):
-        """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
-        """
+        """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object"""
         value = {
-            'id' : self.id,
+            'id': self.id,
         }
         return value
 
     def json_decode(self, payload):
-        """Iterates over a flat dictionary `payload` and updates the attributes on `self`
+        """Iterates over a flat dictionary `payload` and
+        updates the attributes on `self`, a model instance object.
+
+        Saves the model instance object.
         """
         was_updated = False
         for key, value in payload.items():
             if hasattr(self, key):
+                normalized_value = normalize_model_field_value(self, key, value)
                 was_updated = True
-                setattr(self, key, value)
+                setattr(self, key, normalized_value)
 
         if was_updated:
             self.save()
@@ -76,6 +82,7 @@ class HtkBaseModel(models.Model):
     @CachedAttribute
     def id_with_luhn_base36(self):
         from htk.utils.luhn import calculate_luhn
+
         xor_key = self.__class__._luhn_xor_key()
         xored = self.id ^ xor_key
         check_digit = calculate_luhn(xored)
@@ -86,11 +93,12 @@ class HtkBaseModel(models.Model):
     @classmethod
     def from_encoded_id_luhn_base36(cls, encoded_id):
         from htk.utils.luhn import is_luhn_valid
+
         id_with_luhn = base36_to_int(encoded_id)
         if is_luhn_valid(id_with_luhn):
             xored = id_with_luhn // 10
             xor_key = cls._luhn_xor_key()
-            obj_id =  xored ^ xor_key
+            obj_id = xored ^ xor_key
             obj = cls.objects.get(id=obj_id)
         else:
             obj = None
@@ -112,7 +120,10 @@ class HtkBaseModel(models.Model):
 
     def get_admin_url(self):
         content_type = ContentType.objects.get_for_model(self.__class__)
-        url = reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
+        url = reverse(
+            "admin:%s_%s_change" % (content_type.app_label, content_type.model),
+            args=(self.id,),
+        )
         return url
 
     def get_absolute_url(self):
@@ -144,6 +155,7 @@ class AbstractAttribute(models.Model):
       holder = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='attributes')
 
     """
+
     key = models.CharField(max_length=128, blank=True)
     value = models.TextField(max_length=4096, blank=True)
 
@@ -168,7 +180,19 @@ class AbstractAttribute(models.Model):
 
 class AbstractAttributeHolderClassFactory(object):
     """Creates an attribute holder class for multi-inheritance
+
+    Usages:
+    - CustomerAttributeHolder
+    - OrganizationCustomerAttributeHolder
+    - UserAttributeHolder
+    - OrganizationAttributeHolder
+
+    NOTE: Django migrations using this will tend to get confused.
+
+    Any auto-generated migrations will need to be updated by hand to point to the correct class.
+    In the future, perhaps it might be worth exploring `functools.wraps`.
     """
+
     def __init__(self, attribute_class, holder_resolver=None, defaults=None):
         self.attribute_class = attribute_class
         if holder_resolver is None:
@@ -179,6 +203,7 @@ class AbstractAttributeHolderClassFactory(object):
 
     def get_class(self):
         factory = self
+
         class AbstractAttributeHolderClass(object):
             def set_attribute(self, key, value, as_bool=False):
                 if as_bool:
@@ -189,7 +214,7 @@ class AbstractAttributeHolderClassFactory(object):
                     attribute = factory.attribute_class.objects.create(
                         holder=holder,
                         key=key,
-                        value=value
+                        value=value,
                     )
                 else:
                     attribute.set_value(value)
@@ -198,17 +223,18 @@ class AbstractAttributeHolderClassFactory(object):
             def _get_attribute_object(self, key):
                 try:
                     holder = factory.holder_resolver(self)
-                    attribute = holder.attributes.get(
-                        holder=holder,
-                        key=key
-                    )
+                    attribute = holder.attributes.get(holder=holder, key=key)
                 except factory.attribute_class.DoesNotExist:
                     attribute = None
                 return attribute
 
             def get_attribute(self, key, as_bool=False):
                 attribute = self._get_attribute_object(key)
-                value = attribute.value if attribute else factory.defaults.get(key, None)
+                value = (
+                    attribute.value
+                    if attribute
+                    else factory.defaults.get(key, None)
+                )
 
                 if as_bool:
                     try:
@@ -226,13 +252,16 @@ class AbstractAttributeHolderClassFactory(object):
 
             @CachedAttribute
             def attribute_fields(self):
-                """Returns a list of attribute keys
+                """Returns a sequence (list or tuple) of attribute keys
+
+                Usage: ?
                 """
                 return ()
 
             @CachedAttribute
             def boolean_attributes_lookup(self):
-                """Returns a dictionary of attribute keys that are boolean values
+                """Returns a dictionary of attribute keys that are
+                boolean values
                 """
                 return {}
 
