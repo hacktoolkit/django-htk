@@ -66,9 +66,9 @@ class HtkOrganizationAdmin(admin.ModelAdmin):
     )
     inlines = (
         HtkOrganizationAttributeInline,
-        HtkOrganizationMemberInline,
-        HtkOrganizationTeamInline,
-        HtkOrganizationInvitationInline,
+        # HtkOrganizationMemberInline,
+        # HtkOrganizationTeamInline,
+        # HtkOrganizationInvitationInline,
     )
 
 
@@ -98,6 +98,20 @@ class HtkOrganizationMemberAdmin(admin.ModelAdmin):
         )
         value = f'<a href="{url}">{obj.organization.name}</a>'
         return value
+
+
+class HtkOrganizationInvitationAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'organization',
+        'invited_by',
+        'user',
+        'email',
+        'token',
+        'accepted',
+        'timestamp',
+        'responded_at',
+    )
 
 
 class HtkOrganizationTeamAdmin(admin.ModelAdmin):
