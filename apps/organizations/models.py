@@ -317,6 +317,21 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
 
         return status
 
+    ##
+    # Notifications
+
+    def build_notification_message__created(self):
+        """Builds a message that will be displayed as an internal Slack notification
+        when this invitation object is created.
+        """
+        msg = '{invited_by_name} ({invited_by_username}) has sent an invitation for organization {organization_name} to {email}'.format(
+            invited_by_name=self.invited_by.profile.get_full_name(),
+            invited_by_username=self.invited_by.username,
+            organization_name=self.organization.name,
+            email=self.email,
+        )
+        return msg
+
 
 class BaseAbstractOrganizationTeam(HtkBaseModel):
     name = models.CharField(max_length=128)
