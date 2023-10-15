@@ -5,10 +5,11 @@ django-grappelli==2.5.3
 numpy==1.22.0
 pydantic==1.7.4
 pygeoip==0.2.6
+python-dateutil>=2.8.2,<3
 redis==4.4.4
 reportlab==3.6.13
-requests==2.31.0
-requests-oauthlib==1.0.0
-rollbar==0.8.2
+requests-oauthlib>=1.0.0
+requests>=2.31.0
+rollbar>=0.8.2
 stripe==1.19.0
 xhtml2pdf==0.0.6

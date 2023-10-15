@@ -81,7 +81,7 @@ def strtobool_safe(value):
     try:
         from distutils.util import strtobool
 
-        result = bool(strtobool(value))
+        result = bool(strtobool(str(value)))
     except:
         result = False
     return result

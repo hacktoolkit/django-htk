@@ -3,6 +3,7 @@ import datetime
 import time
 
 # Third Party (PyPI) Imports
+import dateutil.parser
 import pytz
 
 # Django Imports
@@ -17,10 +18,14 @@ from django.utils.timezone import (
 from htk.constants.time import *
 
 
+# isort: off
+
+
 def utcnow():
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
     if settings.TEST:
         from htk.test_scaffold.models import TestScaffold
+
         fake_time = TestScaffold.get_fake_timestamp()
         if fake_time:
             now = fake_time
@@ -34,15 +39,22 @@ def tznow(timezone_name='America/Los_Angeles'):
 
 
 def localized_datetime(naive_dt, timezone_name='America/Los_Angeles'):
-    """Attaches a timezone to a `naive_dt`
-    """
+    """Attaches a timezone to a `naive_dt`"""
     tz = pytz.timezone(timezone_name)
     dt = tz.localize(naive_dt)
     return dt
 
 
 def parse_datetime(dt_str):
-    return django_parse_datetime(dt_str)
+    """Parses a datetime-like string into a DateTime object
+
+    Utilizes `dateutil.parser.parse` from `python-dateutil` package,
+    and Django's `parse_datetime` as a fallback.
+    """
+    dt = dateutil.parser.parse(dt_str)
+    if dt is None:
+        dt = django_parse_datetime(dt_str)
+    return dt
 
 
 def datetime_to_unix_time(dt):
@@ -75,9 +87,11 @@ def unix_time_to_datetime(timestamp, tzinfo=pytz.utc):
 
 def iso_datetime_to_unix_time(iso):
     """Converts an ISO datetime string to UNIX timestamp
+
+    Returns `None` if `iso` is `None`
     """
-    dt = parse_datetime(iso)
-    unix_time = datetime_to_unix_time(dt)
+    dt = parse_datetime(iso) if iso is not None else None
+    unix_time = datetime_to_unix_time(dt) if dt is not None else None
     return unix_time
 
 
@@ -91,38 +105,49 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
     fourth_jan = datetime.date(iso_year, 1, 4)
     _, fourth_jan_week, fourth_jan_day = fourth_jan.isocalendar()
     delta = datetime.timedelta(
-        days=iso_day - fourth_jan_day,
-        weeks=iso_week - fourth_jan_week
+        days=iso_day - fourth_jan_day, weeks=iso_week - fourth_jan_week
     )
     gregorian = fourth_jan + delta
     return gregorian
 
 
-def is_within_hour_bounds_for_timezone(start_hour, end_hour, timezone_name='America/Los_Angeles'):
+def is_within_hour_bounds_for_timezone(
+    start_hour, end_hour, timezone_name='America/Los_Angeles'
+):
     """Determine if the local time for given `timezone_name` is currently within `start_hour` and `end_hour` bounds
+
+    This function is used to check whether a daemon or long-running job should execute when it wakes from sleep.
     """
     local_datetime = tznow(timezone_name)
     is_within_hour_bounds = start_hour <= local_datetime.hour < end_hour
     return is_within_hour_bounds
+
 
 def is_business_hours_for_timezone(timezone_name='America/Los_Angeles'):
     """Determine if the local time for given `timezone_name` is currently during business hours
 
     Business hours defined as BUSINESS_HOURS_START to BUSINESS_HOURS_END (approx: 9:00am to 5:59pm)
     """
-    is_business_hours = is_within_hour_bounds(BUSINESS_HOURS_START, BUSINESS_HOURS_END, timezone_name=timezone_name)
+    is_business_hours = is_within_hour_bounds(
+        BUSINESS_HOURS_START, BUSINESS_HOURS_END, timezone_name=timezone_name
+    )
     return is_business_hours
+
 
 def is_morning_hours_for_timezone(timezone_name='America/Los_Angeles'):
     """Determine if the local time for given `timezone_name` is currently during morning hours
 
     Morning hours defined as MORNING_HOURS_START to MORNING_HOURS_END (approx: 6:00am to 9:59am)
     """
-    is_morning_hours = is_within_hour_bounds(MORNING_HOURS_START, MORNING_HOURS_END, timezone_name=timezone_name)
+    is_morning_hours = is_within_hour_bounds(
+        MORNING_HOURS_START, MORNING_HOURS_END, timezone_name=timezone_name
+    )
     return is_morning_hours
 
 
-def get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweekdays=None):
+def get_timezones_within_current_local_time_bounds(
+    start_hour, end_hour, isoweekdays=None
+):
     """Get a list of all timezone names whose current local time is within `start_hour` and `end_hour`
 
     If `isoweekdays` specified, also checks that it falls on one of the days of the week (Monday = 1, Sunday = 7)
@@ -132,11 +157,15 @@ def get_timezones_within_current_local_time_bounds(start_hour, end_hour, isoweek
     all_timezones = pytz.all_timezones
     timezone_names = []
     now = utcnow()
+
     def _is_within_time_bounds(tz_name):
         tz = pytz.timezone(tz_name)
         tz_datetime = now.astimezone(tz)
-        result = start_hour <= tz_datetime.hour < end_hour and (isoweekdays is None or now.isoweekday() in isoweekdays)
+        result = start_hour <= tz_datetime.hour < end_hour and (
+            isoweekdays is None or now.isoweekday() in isoweekdays
+        )
         return result
+
     timezone_names = filter(_is_within_time_bounds, all_timezones)
     return timezone_names
 

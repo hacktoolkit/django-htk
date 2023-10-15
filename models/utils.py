@@ -20,7 +20,7 @@ def normalize_model_field_value(model, field, value):
     if internal_type == 'BooleanField':
         normalized_value = strtobool_safe(value)
     elif internal_type in ('DateField', 'DateTimeField'):
-        normalized_value = parse_datetime(value)
+        normalized_value = parse_datetime(value) if value is not None else None
     else:
         normalized_value = value
 
