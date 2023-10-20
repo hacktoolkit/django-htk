@@ -19,48 +19,28 @@ from htk.utils import (
 
 
 @disable_for_loaddata
-def organization_invitation_created(sender, instance, created, **kwargs):
+def organization_invitation_updated(sender, instance, created, **kwargs):
     """Signal handler for when a new OrganizationInvitation object is created or updated"""
-    if created:
-        invitation = instance
+    invitation = instance
+    if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+        from htk.utils.notifications import slack_notify
 
-        if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+        if created:
+            msg = invitation.build_notification_message__created()
+        else:
+            INVITATION_ACCEPTANCE_MESSAGE_BUILDERS = {
+                True: invitation.build_notification_message__accepted,
+                False: invitation.build_notification_message__declined,
+                None: invitation.build_notification_message__resent,
+            }
+            msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS.get(invitation.accepted)
+
+        if msg_builder is not None:
+            msg = msg_builder()
             try:
-                from htk.utils.notifications import slack_notify
-
-                msg = invitation.build_notification_message__created()
                 slack_notify(msg)
-            except:
+            except Exception:
                 rollbar.report_exc_info()
-    if created == False:
-        invitation = instance
-
-        if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            if invitation.accepted == True:
-                try:
-                    from htk.utils.notifications import slack_notify
-
-                    msg = invitation.build_notification_message__accepted()
-                    slack_notify(msg)
-                except:
-                    rollbar.report_exc_info()
-            if invitation.accepted == False:
-                try:
-                    from htk.utils.notifications import slack_notify
-
-                    msg = invitation.build_notification_message__declined()
-                    slack_notify(msg)
-                except:
-                    rollbar.report_exc_info()
-            if invitation.accepted == True:
-                try:
-                    from htk.utils.notifications import slack_notify
-
-                    msg = invitation.build_notification_message__resent()
-                    slack_notify(msg)
-                except:
-                    rollbar.report_exc_info()
-
 
 class HtkOrganizationAppConfig(HtkAppConfig):
     name = 'htk.apps.organizations'
