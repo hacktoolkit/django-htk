@@ -25,7 +25,7 @@ def organization_invitation_updated(sender, instance, created, **kwargs):
     if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
         from htk.utils.notifications import slack_notify
 
-        if created:
+        if created and msg is not None:
             msg = invitation.build_notification_message__created()
         else:
             INVITATION_ACCEPTANCE_MESSAGE_BUILDERS = {
