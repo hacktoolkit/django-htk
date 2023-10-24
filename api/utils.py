@@ -13,6 +13,7 @@ from django.http import (
     HttpResponse,
     QueryDict,
 )
+from django.shortcuts import _get_queryset
 
 # HTK Imports
 from htk.api.constants import *
@@ -188,3 +189,41 @@ def extract_post_params(
             if value is not None:
                 data[param] = value
     return data
+
+
+def get_object_or_json_error(klass, *args, **kwargs):
+    """
+    This is exact replica of `django.shortcuts.get_object_or_404()` function
+    but instead the raised error is a `json_response_error()`.
+
+    Default message is `Not Found` and default HTTP status is `404`.
+
+    _status: int = Status code. Default 404
+    _error_message: str = Error message. Default `Not Found`
+
+    Reason for underscore in above params is that it might conflict with model
+    field; especially `status` word. `_error_message` is just for consistency.
+    """
+    queryset = _get_queryset(klass)
+    if not hasattr(queryset, 'get'):
+        klass__name = (
+            klass.__name__
+            if isinstance(klass, type)
+            else klass.__class__.__name__
+        )
+        raise ValueError(
+            "First argument to get_object_or_json_error() must be a Model "
+            "Manager or QuerySet, not '%s'." % klass__name
+        )
+
+    error_message = kwargs.pop('_error_message', 'Not Found')
+    status = kwargs.pop('_status', 404)
+    try:
+        return queryset.get(*args, **kwargs)
+    except queryset.model.DoesNotExist:
+        raise json_response_error(
+            {
+                'message': error_message,
+            },
+            status=status
+        )
