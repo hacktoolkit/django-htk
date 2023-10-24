@@ -321,17 +321,14 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     ##
     # Notifications
 
-    User = get_user_model()
-
-    def _build_notification_message(self, subject: User, verb: str) -> str:
+    def _build_notification_message(self, subject, verb):
         """Builds a message that will be displayed as an internal Slack notification.
         """
-        msg = '{subject_name} ({subject_username}<{email}>) has {verb} an invitation for Organization <{organization_url}|{organization_name}>'.format( # noqa: E501
+        msg = '{subject_name} ({subject_username}<{email}>) has {verb} an invitation for Organization <{organization_name}>'.format( # noqa: E501
             verb=verb,
             subject_name=subject.profile.get_full_name(),
             subject_username=subject.username,
             email=subject.email,
-            organization_url=self.organization.profile_url,
             organization_name=self.organization.name,
         )
         return msg
