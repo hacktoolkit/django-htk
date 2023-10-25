@@ -19,28 +19,25 @@ from htk.utils import (
 
 
 @disable_for_loaddata
-def organization_invitation_updated(sender, instance, created, **kwargs):
+def organization_invitation_created_or_updated(sender, instance, created, **kwargs):
     """Signal handler for when a new OrganizationInvitation object is created or updated"""
     invitation = instance
     if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
         from htk.utils.notifications import slack_notify
 
-        if created and msg is not None:
-            msg = invitation.build_notification_message__created()
-        else:
-            INVITATION_ACCEPTANCE_MESSAGE_BUILDERS = {
-                True: invitation.build_notification_message__accepted,
-                False: invitation.build_notification_message__declined,
-                None: invitation.build_notification_message__resent,
-            }
-            msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS.get(invitation.accepted)
-
-        if msg_builder is not None:
-            msg = msg_builder()
-            try:
-                slack_notify(msg)
-            except Exception:
-                rollbar.report_exc_info()
+        INVITATION_ACCEPTANCE_MESSAGE_BUILDERS = {
+            'created': invitation.build_notification_message__created,
+            True: invitation.build_notification_message__accepted,
+            False: invitation.build_notification_message__declined,
+            None: invitation.build_notification_message__resent,
+        }
+        msg_builder_key = 'created' if created else invitation.accepted
+        msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS[msg_builder_key]
+        msg = msg_builder()
+        try:
+            slack_notify(msg)
+        except Exception:
+            rollbar.report_exc_info()
 
 class HtkOrganizationAppConfig(HtkAppConfig):
     name = 'htk.apps.organizations'
@@ -53,7 +50,7 @@ class HtkOrganizationAppConfig(HtkAppConfig):
         )
 
         signals.post_save.connect(
-            organization_invitation_created,
+            organization_invitation_created_or_updated,
             sender=OrganizationInvitation,
             dispatch_uid='htk_organization_invitation_created',
         )
