@@ -35,6 +35,7 @@ def organization_invitation_created_or_updated(sender, instance, created, **kwar
         msg_builder_key = 'created' if created else invitation.accepted
         msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS[msg_builder_key]
         msg = msg_builder()
+        
         try:
             slack_notify(msg)
         except Exception:
