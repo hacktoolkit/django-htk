@@ -13,6 +13,7 @@ from django.utils.deprecation import MiddlewareMixin
 from htk.middleware.session_keys import *
 from htk.session_keys import *
 from htk.utils import htk_setting
+from htk.utils.http.response import ResponseError
 from htk.utils.request import is_allowed_host
 
 
@@ -130,3 +131,18 @@ class TimezoneMiddleware(MiddlewareMixin):
             django_timezone = None
         if django_timezone:
             timezone.activate(django_timezone)
+
+
+class RaiseResponse:
+    """
+    Processes exceptions, returning a response if it's the case or raising
+    the exception.
+    """
+
+    def process_exception(self, request, exception):
+        if isinstance(exception, ResponseError):
+            response = exception.response
+        else:
+            response = None
+
+        return response
