@@ -322,8 +322,6 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     # Notifications
 
     def _build_notification_message(self, subject, verb):
-        """Builds a message that will be displayed as an internal Slack notification.
-        """
         msg = '{subject_name} ({subject_username}<{email}>) has {verb} an invitation for Organization <{organization_name}>'.format( # noqa: E501
             verb=verb,
             subject_name=subject.profile.get_full_name(),
@@ -334,32 +332,21 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
         return msg
 
     def build_notification_message__created(self):
-        """Builds a message that will be displayed as an internal Slack notification
-        when this invitation object is created.
-        """
         msg = self._build_notification_message(self.invited_by, 'sent')
         return msg
-    
+
+    def build_notification_message__resent(self):
+        msg = self._build_notification_message(self.invited_by, 're-sent')
+        return msg
+
     def build_notification_message__accepted(self):
-        """Builds a message that will be displayed as an internal Slack notification
-        when this invitation object is accepted.
-        """
         msg = self._build_notification_message(self.user, 'accepted')
         return msg
 
     def build_notification_message__declined(self):
-        """Builds a message that will be displayed as an internal Slack notification
-        when this invitation object is declined.
-        """
         msg = self._build_notification_message(self.user, 'declined')
         return msg
-    
-    def build_notification_message__resent(self):
-        """Builds a message that will be displayed as an internal Slack notification
-        when this invitation object is re-sent.
-        """
-        msg = self._build_notification_message(self.invited_by, 're-sent')
-        return msg
+
 
 class BaseAbstractOrganizationTeam(HtkBaseModel):
     name = models.CharField(max_length=128)
