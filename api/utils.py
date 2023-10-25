@@ -16,8 +16,14 @@ from django.http import (
 from django.shortcuts import _get_queryset
 
 # HTK Imports
-from htk.api.constants import *
+from htk.api.constants import (
+    HTK_API_JSON_KEY_SUCCESS,
+    HTK_API_JSON_KEY_STATUS,
+    HTK_API_JSON_VALUE_OKAY,
+    HTK_API_JSON_VALUE_ERROR,
+)
 from htk.models import HtkBaseModel
+from htk.utils.http.response import ResponseError
 
 
 # isort: off
@@ -50,7 +56,7 @@ class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
         else:
             try:
                 value = super(HtkJSONEncoder, self).default(obj)
-            except:
+            except Exception:
                 rollbar.report_exc_info(
                     extra_data={
                         'obj': obj,
@@ -198,11 +204,11 @@ def get_object_or_json_error(klass, *args, **kwargs):
 
     Default message is `Not Found` and default HTTP status is `404`.
 
-    _status: int = Status code. Default 404
-    _error_message: str = Error message. Default `Not Found`
+    http_status_code: int = Status code. Default 404
+    http_error_message: str = Error message. Default `Not Found`
 
-    Reason for underscore in above params is that it might conflict with model
-    field; especially `status` word. `_error_message` is just for consistency.
+    IMPORTANT NOTE: `htk.middleware.classes.RaiseResponse` MUST be added to
+                    middlewares in settings to make this work!
     """
     queryset = _get_queryset(klass)
     if not hasattr(queryset, 'get'):
@@ -216,14 +222,16 @@ def get_object_or_json_error(klass, *args, **kwargs):
             "Manager or QuerySet, not '%s'." % klass__name
         )
 
-    error_message = kwargs.pop('_error_message', 'Not Found')
-    status = kwargs.pop('_status', 404)
+    error_message = kwargs.pop('http_error_message', 'Not Found')
+    status = kwargs.pop('http_status_code', 404)
     try:
         return queryset.get(*args, **kwargs)
     except queryset.model.DoesNotExist:
-        raise json_response_error(
-            {
-                'message': error_message,
-            },
-            status=status
+        raise ResponseError(
+            json_response_error(
+                {
+                    'message': error_message,
+                },
+                status=status,
+            )
         )
