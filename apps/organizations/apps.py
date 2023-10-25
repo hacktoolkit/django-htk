@@ -31,6 +31,7 @@ def organization_invitation_created_or_updated(sender, instance, created, **kwar
             False: invitation.build_notification_message__declined,
             None: invitation.build_notification_message__resent,
         }
+
         msg_builder_key = 'created' if created else invitation.accepted
         msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS[msg_builder_key]
         msg = msg_builder()
