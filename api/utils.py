@@ -23,7 +23,7 @@ from htk.api.constants import (
     HTK_API_JSON_VALUE_ERROR,
 )
 from htk.models import HtkBaseModel
-from htk.utils.http.response import ResponseError
+from htk.utils.http.errors import ResponseError
 
 
 # isort: off
@@ -207,8 +207,10 @@ def get_object_or_json_error(klass, *args, **kwargs):
     http_status_code: int = Status code. Default 404
     http_error_message: str = Error message. Default `Not Found`
 
-    IMPORTANT NOTE: `htk.middleware.classes.RaiseResponse` MUST be added to
-                    middlewares in settings to make this work!
+    NOTE: `htk.middleware.classes.CatchRaisedExceptionResponseMiddleware` MUST
+          be in MIDDLEWARES in Django Settings.
+
+    Reference: https://github.com/django/django/blob/718b32c6918037cfc746d7867333d79a3c887a8c/django/shortcuts.py#L64
     """
     queryset = _get_queryset(klass)
     if not hasattr(queryset, 'get'):
