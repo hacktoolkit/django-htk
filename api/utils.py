@@ -9,7 +9,6 @@ import rollbar
 
 # Django Imports
 from django.core import serializers
-from django.core.serializers.json import DjangoJSONEncoder
 from django.http import (
     HttpResponse,
     QueryDict,
@@ -135,6 +134,33 @@ def json_response_not_found():
 def json_response_forbidden():
     response = json_response_error({'error': 'Forbidden'}, status=403)
     return response
+
+
+def json_response_form_error(form):
+    """Helper function for returning Django form errors originating from an API call
+
+    Returns a dictionary of field and non-field errors.
+
+    Example:
+    {
+        'errors': {
+            'form_fields': {
+                'username': ['message': 'error message', ...],
+                'password': ['message': 'error message', ...],
+            },
+            'non_fields': ['error message', ...],
+        }
+    }
+    """
+    payload = json_response_error(
+        {
+            'errors': {
+                'form_fields': form.errors,
+                'non_fields': form.non_field_errors(),
+            },
+        }
+    )
+    return payload
 
 
 def extract_post_params(
