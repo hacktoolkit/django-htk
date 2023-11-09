@@ -17,8 +17,8 @@ class HTKOrganizationTeamForm(forms.ModelForm):
     def clean_name(self):
         team_name = self.cleaned_data.get('name')
         q = self.instance.organization.teams.filter(name=team_name)
-        # If this form is being used to edit a team, we should exclude the current
-        # team from filter.
+        # NOTE: If this form is being used to edit a team, we should exclude the
+        #       current team from filter.
         if self.instance.id is not None:
             q = q.exclude(id=self.instance.id)
         if q.exists():
