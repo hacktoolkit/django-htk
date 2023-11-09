@@ -10,10 +10,11 @@ import rollbar
 # Django Imports
 from django.core import serializers
 from django.http import (
+    Http404,
     HttpResponse,
     QueryDict,
 )
-from django.shortcuts import _get_queryset
+from django.shortcuts import get_object_or_404
 
 # HTK Imports
 from htk.api.constants import (
@@ -197,43 +198,23 @@ def extract_post_params(
     return data
 
 
-def get_object_or_json_error(klass, *args, **kwargs):
+def get_object_or_json_error(*args, **kwargs):
     """
     This is exact replica of `django.shortcuts.get_object_or_404()` function
     but instead the raised error is a `json_response_error()`.
 
-    Default message is `Not Found` and default HTTP status is `404`.
-
-    http_status_code: int = Status code. Default 404
-    http_error_message: str = Error message. Default `Not Found`
-
     NOTE: `htk.middleware.classes.CatchRaisedExceptionResponseMiddleware` MUST
           be in MIDDLEWARES in Django Settings.
-
-    Reference: https://github.com/django/django/blob/718b32c6918037cfc746d7867333d79a3c887a8c/django/shortcuts.py#L64
     """
-    queryset = _get_queryset(klass)
-    if not hasattr(queryset, 'get'):
-        klass__name = (
-            klass.__name__
-            if isinstance(klass, type)
-            else klass.__class__.__name__
-        )
-        raise ValueError(
-            "First argument to get_object_or_json_error() must be a Model "
-            "Manager or QuerySet, not '%s'." % klass__name
-        )
-
-    error_message = kwargs.pop('http_error_message', 'Not Found')
-    status = kwargs.pop('http_status_code', 404)
     try:
-        return queryset.get(*args, **kwargs)
-    except queryset.model.DoesNotExist:
+        obj = get_object_or_404(*args, **kwargs)
+    except Http404:
         raise ResponseError(
             json_response_error(
                 {
-                    'message': error_message,
+                    'message': 'Not Found',
                 },
-                status=status,
+                status=404,
             )
         )
+    return obj
