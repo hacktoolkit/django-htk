@@ -98,8 +98,8 @@ def _parse_resolver(
     """
     defined_url_names = htk_setting('HTK_JS_ROUTES_URL_NAMES')
 
-    current_namespace = (
-        f'{namespace}:{resolver.namespace}' if namespace else resolver.namespace
+    current_namespace = ':'.join(
+        filter(lambda n: n, [namespace, resolver.namespace])
     )
     include_all = include_all or (current_namespace in defined_url_names)
 
