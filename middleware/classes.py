@@ -9,7 +9,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 # HTK Imports
 from htk.utils import htk_setting
-from htk.utils.http.errors import ResponseError
+from htk.utils.http.errors import HttpErrorResponseError
 from htk.utils.request import is_allowed_host
 
 
@@ -130,15 +130,14 @@ class TimezoneMiddleware(MiddlewareMixin):
             timezone.activate(django_timezone)
 
 
-class CatchRaisedExceptionResponseMiddleware:
-    """Catch Raised Exception Response Middleware
-
-    Catches exceptions that raised by `htk.utils.http.errors.ResponseError` and
-    returns a response instead.
+class HttpErrorResponseMiddleware:
+    """This middleware allows `HttpErrorResponseError`s to be thrown
+    to short-circuit processing of a view, and allows a response to be returned
+    instead.
     """
 
     def process_exception(self, request, exception):
-        if isinstance(exception, ResponseError):
+        if isinstance(exception, HttpErrorResponseError):
             response = exception.response
         else:
             response = None

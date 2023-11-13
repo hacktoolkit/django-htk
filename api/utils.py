@@ -24,7 +24,7 @@ from htk.api.constants import (
     HTK_API_JSON_VALUE_ERROR,
 )
 from htk.models import HtkBaseModel
-from htk.utils.http.errors import ResponseError
+from htk.utils.http.errors import HttpErrorResponseError
 
 
 # isort: off
@@ -204,13 +204,13 @@ def get_object_or_json_error(*args, **kwargs):
     This is exact replica of `django.shortcuts.get_object_or_404()` function
     but instead the raised error is a `json_response_error()`.
 
-    NOTE: `htk.middleware.classes.CatchRaisedExceptionResponseMiddleware` MUST
-    be in MIDDLEWARES in Django Settings.
+    NOTE: `htk.middleware.classes.HttpErrorResponseMiddleware` MUST be in
+    MIDDLEWARES in Django Settings.
     """
     try:
         obj = get_object_or_404(*args, **kwargs)
     except Http404:
-        raise ResponseError(
+        raise HttpErrorResponseError(
             json_response_error(
                 {
                     'message': 'Not Found',
