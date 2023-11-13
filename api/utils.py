@@ -205,7 +205,7 @@ def get_object_or_json_error(*args, **kwargs):
     but instead the raised error is a `json_response_error()`.
 
     NOTE: `htk.middleware.classes.CatchRaisedExceptionResponseMiddleware` MUST
-          be in MIDDLEWARES in Django Settings.
+    be in MIDDLEWARES in Django Settings.
     """
     try:
         obj = get_object_or_404(*args, **kwargs)
