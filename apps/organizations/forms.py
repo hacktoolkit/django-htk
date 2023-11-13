@@ -1,8 +1,84 @@
+# Django Imports
 from django import forms
-from htk.apps.accounts.utils.general import get_user_by_id
+
+# HTK Imports
+from htk.apps.accounts.utils import get_user_by_id, get_user_by_email
+from htk.apps.organizations.utils import invite_organization_member
 
 
-class HTKOrganizationTeamForm(forms.ModelForm):
+class AbstractOrganizationInvitationForm(forms.ModelForm):
+    ERROR_MESSAGES = {
+        'already_accepted': 'This email address has already been accepted the invitation.',
+    }
+
+    class Meta:
+        fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs={'placeholder': 'Email'}),
+        }
+
+    def __init__(self, organization, invited_by, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.organization = organization
+        self.instance.invited_by = invited_by
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        q = self.instance.organization.invitations.filter(email=email)
+        if q.exists():
+            self.instance = q.first()
+        else:
+            pass
+
+        if self.instance.accepted:
+            raise forms.ValidationError(self.ERROR_MESSAGES['already_accepted'])
+        else:
+            pass
+
+        return email
+
+    def save(self, request, *args, **kwargs):
+        invitation = super().save(commit=False)
+        invitation = invite_organization_member(request, invitation)
+        return invitation
+
+
+class AbstractOrganizationMemberForm(forms.ModelForm):
+    ERROR_MESSAGES = {
+        'user_not_found': 'There is no user with this email address',
+        'already_member': 'That user is already a member of this organization.',
+    }
+
+    class Meta:
+        fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs={'placeholder': 'Email'}),
+        }
+
+    def __init__(self, organization, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.organization = organization
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        user = get_user_by_email(email)
+
+        if user is None:
+            raise forms.ValidationError(self.ERROR_MESSAGES['user_not_found'])
+        else:
+            pass
+
+        q = self.instance.organization.members.filter(user__id=user.id)
+        if q.exists():
+            raise forms.ValidationError(self.ERROR_MESSAGES['already_member'])
+        else:
+            pass
+
+        return email
+
+
+class AbstractOrganizationTeamForm(forms.ModelForm):
     ERROR_MESSAGES = {
         'already_member': 'A team with this name already exists',
     }
@@ -27,7 +103,7 @@ class HTKOrganizationTeamForm(forms.ModelForm):
         return team_name
 
 
-class HTKOrganizationTeamMemberForm(forms.ModelForm):
+class AbstractOrganizationTeamMemberForm(forms.ModelForm):
     ERROR_MESSAGES = {
         'user_not_found': 'There is no user with this email address',
         'already_member': 'That user is already a member of this team.',
