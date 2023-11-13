@@ -199,7 +199,8 @@ def extract_post_params(
 
 
 def get_object_or_json_error(*args, **kwargs):
-    """
+    """Get Object or JSON Error
+
     This is exact replica of `django.shortcuts.get_object_or_404()` function
     but instead the raised error is a `json_response_error()`.
 
