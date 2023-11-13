@@ -4,6 +4,8 @@ class HttpErrorResponseError(Exception):
     It helps to stop processing a view function by raising an exception.
     It is like `Http404` exception but with ability to define your response.
 
+    Status code defaults to 404 but can be overridden.
+
     NOTE: `htk.middleware.classes.HttpErrorResponseMiddleware` MUST be in
     MIDDLEWARES in Django Settings.
     """
