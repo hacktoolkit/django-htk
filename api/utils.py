@@ -18,10 +18,10 @@ from django.shortcuts import get_object_or_404
 
 # HTK Imports
 from htk.api.constants import (
-    HTK_API_JSON_KEY_SUCCESS,
     HTK_API_JSON_KEY_STATUS,
-    HTK_API_JSON_VALUE_OKAY,
+    HTK_API_JSON_KEY_SUCCESS,
     HTK_API_JSON_VALUE_ERROR,
+    HTK_API_JSON_VALUE_OKAY,
 )
 from htk.models import HtkBaseModel
 from htk.utils.http.errors import HttpErrorResponseError
@@ -202,7 +202,7 @@ def get_object_or_json_error(*args, **kwargs):
     """Get Object or JSON Error
 
     This is exact replica of `django.shortcuts.get_object_or_404()` function
-    but instead the raised error is a `json_response_error()`.
+    but instead the raised error is a `json_response_not_found()`.
 
     NOTE: `htk.middleware.classes.HttpErrorResponseMiddleware` MUST be in
     MIDDLEWARES in Django Settings.
@@ -210,5 +210,6 @@ def get_object_or_json_error(*args, **kwargs):
     try:
         obj = get_object_or_404(*args, **kwargs)
     except Http404:
-        raise HttpErrorResponseError('Not Found')
+        raise HttpErrorResponseError(json_response_not_found())
+
     return obj

@@ -1,6 +1,5 @@
 # Django Imports
 from django.http import HttpResponse
-from htk.api.utils import json_response_error
 
 
 class HttpErrorResponseError(Exception):
@@ -9,22 +8,27 @@ class HttpErrorResponseError(Exception):
     It helps to stop processing a view function by raising an exception.
     It is like `Http404` exception but with ability to define your response.
 
-    Status code defaults to 404 but can be overridden.
+    Status code defaults to 404 but can be overridden if response is string.
+    Status code is not changed if response is derived from `HttpResponse`.
 
     NOTE: `htk.middleware.classes.HttpErrorResponseMiddleware` MUST be in
     MIDDLEWARES in Django Settings.
     """
 
-    def __init__(self, response, status_code=404):
+    def __init__(self, response, status_code=None):
         if isinstance(response, str):
-            self.response = json_response_error(
-                {'message': response}, status=status_code
+            self.response = HttpResponse(response)
+            self.response.status_code = (
+                status_code if status_code is not None else 404
             )
-        elif isinstance(response, dict):
-            self.response = json_response_error(response, status=status_code)
         elif issubclass(response.__class__, HttpResponse):
             self.response = response
+            # It does not make sense to have status_code 200 for an error
+            if self.response.status_code == 200:
+                self.response.status_code = (
+                    status_code if status_code is not None else 404
+                )
         else:
             raise TypeError(
-                'response must be a string, dictionary or HttpResponse instance'
+                'response must be a string or HttpResponse instance'
             )
