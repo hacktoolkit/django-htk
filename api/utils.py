@@ -210,12 +210,5 @@ def get_object_or_json_error(*args, **kwargs):
     try:
         obj = get_object_or_404(*args, **kwargs)
     except Http404:
-        raise HttpErrorResponseError(
-            json_response_error(
-                {
-                    'message': 'Not Found',
-                },
-                status=404,
-            )
-        )
+        raise HttpErrorResponseError('Not Found')
     return obj
