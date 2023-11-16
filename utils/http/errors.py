@@ -16,12 +16,18 @@ class HttpErrorResponseError(Exception):
     """
 
     def __init__(self, response, status_code=400):
+        if status_code < 400 or status_code > 599:
+            raise ValueError('Error status codes must be in 4xx or 5xx range')
+
         if isinstance(response, str):
             self.response = HttpResponse(response, status=status_code)
         elif issubclass(response.__class__, HttpResponse):
             self.response = response
-            # replace a 200 status code with 4xx errors
-            if self.response.status_code == 200:
+            # replace any non-error status code with 4xx or 5xx errors
+            if (
+                self.response.status_code < 400
+                or self.response.status_code > 599
+            ):
                 self.response.status_code = status_code
         else:
             raise TypeError(
