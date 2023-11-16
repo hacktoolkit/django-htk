@@ -15,19 +15,14 @@ class HttpErrorResponseError(Exception):
     MIDDLEWARES in Django Settings.
     """
 
-    def __init__(self, response, status_code=None):
+    def __init__(self, response, status_code=400):
         if isinstance(response, str):
-            self.response = HttpResponse(response)
-            self.response.status_code = (
-                status_code if status_code is not None else 404
-            )
+            self.response = HttpResponse(response, status=status_code)
         elif issubclass(response.__class__, HttpResponse):
             self.response = response
-            # It does not make sense to have status_code 200 for an error
+            # replace a 200 status code with 4xx errors
             if self.response.status_code == 200:
-                self.response.status_code = (
-                    status_code if status_code is not None else 404
-                )
+                self.response.status_code = status_code
         else:
             raise TypeError(
                 'response must be a string or HttpResponse instance'
