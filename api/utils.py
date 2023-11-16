@@ -10,13 +10,21 @@ import rollbar
 # Django Imports
 from django.core import serializers
 from django.http import (
+    Http404,
     HttpResponse,
     QueryDict,
 )
+from django.shortcuts import get_object_or_404
 
 # HTK Imports
-from htk.api.constants import *
+from htk.api.constants import (
+    HTK_API_JSON_KEY_STATUS,
+    HTK_API_JSON_KEY_SUCCESS,
+    HTK_API_JSON_VALUE_ERROR,
+    HTK_API_JSON_VALUE_OKAY,
+)
 from htk.models import HtkBaseModel
+from htk.utils.http.errors import HttpErrorResponseError
 
 
 # isort: off
@@ -49,7 +57,7 @@ class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
         else:
             try:
                 value = super(HtkJSONEncoder, self).default(obj)
-            except:
+            except Exception:
                 rollbar.report_exc_info(
                     extra_data={
                         'obj': obj,
@@ -188,3 +196,20 @@ def extract_post_params(
             if value is not None:
                 data[param] = value
     return data
+
+
+def get_object_or_json_error(*args, **kwargs):
+    """Get Object or JSON Error
+
+    This is exact replica of `django.shortcuts.get_object_or_404()` function
+    but instead the raised error is a `json_response_not_found()`.
+
+    NOTE: `htk.middleware.classes.HttpErrorResponseMiddleware` MUST be in
+    MIDDLEWARES in Django Settings.
+    """
+    try:
+        obj = get_object_or_404(*args, **kwargs)
+    except Http404:
+        raise HttpErrorResponseError(json_response_not_found())
+
+    return obj
