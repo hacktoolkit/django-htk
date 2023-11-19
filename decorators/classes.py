@@ -5,14 +5,21 @@ from functools import wraps
 import rollbar
 
 # Django Imports
+from django.http import HttpResponseNotFound
 from django.shortcuts import (
     get_object_or_404,
     redirect,
 )
 
 # HTK Imports
+from htk.api.utils import json_response_not_found
 from htk.decorators.session_keys import DEPRECATED_ROLLBAR_NOTIFIED
+from htk.utils.http.errors import HttpErrorResponseError
 from htk.utils.request import get_current_request
+from htk.utils.text.transformers import pascal_case_to_snake_case
+
+
+# isort: off
 
 
 def deprecated(func):
@@ -20,6 +27,7 @@ def deprecated(func):
 
     Use this decorator sparingly, because we'll be charged if we make too many Rollbar notifications
     """
+
     @wraps(func)
     def wrapped(*args, **kwargs):
         # try to get a request, may not always succeed
@@ -28,8 +36,12 @@ def deprecated(func):
         if request:
             if DEPRECATED_ROLLBAR_NOTIFIED not in request.session:
                 deprecated_notifications = {}
-                request.session[DEPRECATED_ROLLBAR_NOTIFIED] = deprecated_notifications
-            deprecated_notifications = request.session[DEPRECATED_ROLLBAR_NOTIFIED]
+                request.session[
+                    DEPRECATED_ROLLBAR_NOTIFIED
+                ] = deprecated_notifications
+            deprecated_notifications = request.session[
+                DEPRECATED_ROLLBAR_NOTIFIED
+            ]
             key = '%s' % func
             # first get it
             already_notified = deprecated_notifications.get(key, False)
@@ -39,8 +51,13 @@ def deprecated(func):
             already_notified = False
 
         if not already_notified:
-            rollbar.report_message('Deprecated function call warning: %s' % func, 'warning', request)
+            rollbar.report_message(
+                'Deprecated function call warning: %s' % func,
+                'warning',
+                request,
+            )
         return func(*args, **kwargs)
+
     return wrapped
 
 
@@ -48,6 +65,7 @@ class restful_obj_seo_redirect(object):
     """Decorator for redirecting a RESTful object view to its SEO canonical URL
     if not already using it
     """
+
     def __init__(self, cls, obj_id_key):
         self.cls = cls
         self.obj_id_key = obj_id_key
@@ -69,7 +87,124 @@ class restful_obj_seo_redirect(object):
                 kwargs[retrieved_key] = obj
                 response = view_fn(*args, **kwargs)
             return response
+
         return wrapped
+
+
+class resolve_records_from_url(object):
+    """Resolve Records from URL Patterns
+
+    Decorator for resolving records from URL.
+
+    NOTE: Each following record must be related to the previous model.
+
+    Model Map:
+    Model map is a list of tuples, where each tuple is a mapping of:
+    - Model if first item, otherwise relation
+    - URL key
+    - Field name
+    - Extra filters (Optional)
+
+    NOTE: If the first model is being provided from a previous decorator, you should
+    only provide kwargs key and nothing else.
+
+    In extra filters if current user must be used, value should be set to
+    `__current_user__`.
+
+    Example with standard usage:
+    @resolve_records_from_url_patterns(
+        (Organization, 'id', 'organization_id', {'is_active': True, 'user': '__current_user__'}),
+        ('members', 'id', 'member_id'),
+    )
+
+    Example with previous decorator:
+    @require_organization_admin()
+    @resolve_records_from_url_patterns(
+        'organization',  # organization is the kwargs key from previous decorator
+        ('members', 'id', 'member_id'),
+    """
+
+    def __init__(self, model_map, content_type='text/html'):
+        self.content_type = content_type
+        self.model_map = model_map
+
+    def __call__(self, view_fn):
+        @wraps(view_fn)
+        def wrapped(request, *args, **kwargs):
+            self.user = request.user
+
+            # If first item is just a string, it means we need to get the object
+            # from kwargs
+            if isinstance(self.model_map[0], str):
+                obj = kwargs.get(self.model_map[0])
+                model_map = self.model_map[1:]
+            else:
+                obj = None
+                model_map = self.model_map
+
+            for item in model_map:
+                model_or_relation = item[0]
+                field = item[1]
+                url_key = item[2]
+                extra_filter = len(item) > 3 and item[3] or {}
+
+                value = kwargs.get(url_key)
+
+                # Raises exception and breaks loop
+                key, obj = self._resolve_object(
+                    obj, model_or_relation, field, value, extra_filter
+                )
+
+                kwargs[key] = obj
+
+            response = view_fn(request, *args, **kwargs)
+
+            return response
+
+        return wrapped
+
+    def _get_class_name(self, model=None):
+        if model is None:
+            value = self.__class__.__name__
+        elif model.__class__.__name__ == 'RelatedManager':
+            value = model.model.__qualname__
+        else:
+            value = model.__class__.__name__
+
+        return value
+
+    def _resolve_object(
+        self, obj, model_or_relation, field, value, extra_filters
+    ):
+        model = (
+            model_or_relation.objects
+            if obj is None
+            else getattr(obj, model_or_relation)
+        )
+        DoesNotExist = (
+            model.model.DoesNotExist
+            if model.__class__.__name__ == 'RelatedManager'
+            else model_or_relation.DoesNotExist
+        )
+
+        filters = extra_filters.copy()
+        filters.update({field: value})
+        for key, value in filters.items():
+            if value == '__current_user__':
+                filters[key] = self.user
+
+        try:
+            obj = model.get(**filters)
+        except DoesNotExist:
+            response = (
+                json_response_not_found()
+                if self.content_type == 'application/json'
+                else HttpResponseNotFound()
+            )
+            raise HttpErrorResponseError(response)
+
+        key = pascal_case_to_snake_case(self._get_class_name(model))
+        return key, obj
 
 
 def disable_for_loaddata(signal_handler):
@@ -78,12 +213,14 @@ def disable_for_loaddata(signal_handler):
     See:
     - https://stackoverflow.com/a/15625121/865091
     - https://code.djangoproject.com/ticket/17880
-    - https://stackoverflow.com/questions/3499791/how-do-i-prevent-fixtures-from-conflicting-with-django-post-save-signal-code
+    - https://stackoverflow.com/questions/3499791/how-do-i-prevent-fixtures-from-conflicting-with-django-post-save-signal-code  # noqa E501
     - https://docs.djangoproject.com/en/dev/ref/signals/#post-save
     """
+
     @wraps(signal_handler)
     def wrapper(*args, **kwargs):
         if kwargs.get('raw'):
             return
         signal_handler(*args, **kwargs)
+
     return wrapper

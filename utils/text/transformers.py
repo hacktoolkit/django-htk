@@ -1,5 +1,6 @@
 # Python Standard Library Imports
 import re
+import sys
 
 # HTK Imports
 from htk.utils.text.constants import SUMMARY_NUM_SENTENCES
@@ -55,7 +56,7 @@ def summarize(paragraph, num_sentences=SUMMARY_NUM_SENTENCES):
         # the original was already short enough, so just display the original
         summary = paragraph
     else:
-        if not(paragraph_num_sentences):
+        if not paragraph_num_sentences:
             # empty paragraph
             summary = ''
         else:
@@ -83,7 +84,8 @@ def ellipsize(text, max_len=100, truncate=False):
     if not text:
         return ''
 
-    text = unicode(text)
+    if sys.version_info.major == 2:
+        text = unicode(text)  # noqa F401
     text_len = len(text)
 
     if text_len <= max_len:
@@ -96,7 +98,7 @@ def ellipsize(text, max_len=100, truncate=False):
     ellipsis = '...'
     max_len = max_len - len(ellipsis)
 
-    last_break = 0 # store candidate index for break point
+    last_break = 0  # store candidate index for break point
     for i in range(text_len):
         c = text[i]
         if c in boundary_chars:
@@ -118,7 +120,9 @@ def ellipsize(text, max_len=100, truncate=False):
     return text
 
 
-def seo_tokenize(title, lower=True, preserve_ascii_extended=False, preserve_unicode=False):
+def seo_tokenize(
+    title, lower=True, preserve_ascii_extended=False, preserve_unicode=False
+):
     """Get SEO-tokenized version of a string, typically a name or title
 
     `title` the string to tokenize
@@ -141,7 +145,7 @@ def seo_tokenize(title, lower=True, preserve_ascii_extended=False, preserve_unic
             pass
         else:
             cleaned_title = unicode_to_ascii(cleaned_title)
-    except:
+    except Exception:
         pass
 
     if lower:
@@ -181,3 +185,11 @@ def snake_case_to_lower_camel_case(string):
     camel_string = snake_case_to_camel_case(string)
     camel_string = camel_string[0].lower() + camel_string[1:]
     return camel_string
+
+
+def pascal_case_to_snake_case(string):
+    """Convert `PascalCase` string to `snake_case`"""
+    snake_string = ''.join(
+        ['_' + c.lower() if c.isupper() else c for c in string]
+    ).lstrip('_')
+    return snake_string
