@@ -172,24 +172,22 @@ def seo_tokenize(
     return tokenized_title
 
 
-def snake_case_to_camel_case(string):
+def snake_case_to_camel_case(s):
     """Convert `snake_case` string to `CamelCase`"""
-    camel_string = ''.join(
-        part.capitalize() for part in string.lower().split('_')
-    )
+    camel_string = ''.join(part.capitalize() for part in s.lower().split('_'))
     return camel_string
 
 
-def snake_case_to_lower_camel_case(string):
+def snake_case_to_lower_camel_case(s):
     """Convert `snake_case` string to `camelCase`"""
-    camel_string = snake_case_to_camel_case(string)
+    camel_string = snake_case_to_camel_case(s)
     camel_string = camel_string[0].lower() + camel_string[1:]
     return camel_string
 
 
-def pascal_case_to_snake_case(string):
+def pascal_case_to_snake_case(s):
     """Convert `PascalCase` string to `snake_case`"""
     snake_string = ''.join(
-        ['_' + c.lower() if c.isupper() else c for c in string]
+        ['_' + c.lower() if c.isupper() else c for c in s]
     ).lstrip('_')
     return snake_string
