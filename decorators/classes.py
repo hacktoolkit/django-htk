@@ -151,7 +151,7 @@ class resolve_records_from_restful_url(object):
                     )
             else:
                 raise ValueError(
-                    f'[{self._get_class_name()}] Invalid model map item type: {type(entry)}'
+                    f'[{self._get_class_name()}] Invalid model map entry type: {type(entry)}'
                 )
 
     def __call__(self, view_fn):
