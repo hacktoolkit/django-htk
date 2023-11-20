@@ -133,8 +133,8 @@ class resolve_records_from_restful_url(object):
             if isinstance(entry, tuple):
                 if len(entry) == 3:
                     # add a 4th item, `extra_filters`, to make it conform to the
-                    # typical shape of `model_map` a 3-item model map entry is
-                    # allowed as syntactic sugar
+                    # typical shape of `model_map`
+                    # a 3-item model map entry is allowed as syntactic sugar
                     self.model_map.append(entry + ({},))
                 if len(entry) == 4:
                     self.model_map.append(entry)
