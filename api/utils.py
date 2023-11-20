@@ -23,7 +23,6 @@ from htk.api.constants import (
     HTK_API_JSON_VALUE_ERROR,
     HTK_API_JSON_VALUE_OKAY,
 )
-from htk.models import HtkBaseModel
 from htk.utils.http.errors import HttpErrorResponseError
 
 
@@ -32,6 +31,7 @@ from htk.utils.http.errors import HttpErrorResponseError
 
 class HtkJSONEncoder(serializers.json.DjangoJSONEncoder):
     def default(self, obj):
+        from htk.models import HtkBaseModel
         from django.contrib.auth import get_user_model
 
         UserModel = get_user_model()
