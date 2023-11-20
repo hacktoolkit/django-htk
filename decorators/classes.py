@@ -147,7 +147,7 @@ class resolve_records_from_restful_url(object):
                     self.model_map.append(entry)
                 else:
                     raise ValueError(
-                        f'[{self._get_class_name()}] Only first item can be a string, got {entry!r}'
+                        f'[{self._get_class_name()}] Only first entry can be a string, got {entry!r}'
                     )
             else:
                 raise ValueError(
