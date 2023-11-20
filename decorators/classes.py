@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import copy
 from functools import wraps
 
 # Third Party (PyPI) Imports
@@ -113,14 +114,14 @@ class resolve_records_from_restful_url(object):
     `__current_user__`.
 
     Example with standard usage:
-    @resolve_records_from_url_patterns(
+    @resolve_records_from_restful_url(
         (Organization, 'id', 'organization_id', {'is_active': True, 'user': '__current_user__'}),
         ('members', 'id', 'member_id'),
     )
 
-    Example with previous decorator:
+    Example paired with another decorator:
     @require_organization_admin()
-    @resolve_records_from_url_patterns(
+    @resolve_records_from_restful_url(
         'organization',  # organization is the kwargs key from previous decorator
         ('members', 'id', 'member_id'),
     """
@@ -128,26 +129,29 @@ class resolve_records_from_restful_url(object):
     def __init__(self, model_map, content_type='text/html'):
         self.content_type = content_type
         self.model_map = []
-        for index, item in enumerate(model_map):
-            if isinstance(item, tuple):
-                if len(item) == 3:
-                    self.model_map.append(item + ({},))
-                if len(item) == 4:
-                    self.model_map.append(item)
+        for index, entry in enumerate(model_map):
+            if isinstance(entry, tuple):
+                if len(entry) == 3:
+                    # add a 4th item, `extra_filters`, to make it conform to the
+                    # typical shape of `model_map` a 3-item model map entry is
+                    # allowed as syntactic sugar
+                    self.model_map.append(entry + ({},))
+                if len(entry) == 4:
+                    self.model_map.append(entry)
                 else:
                     raise ValueError(
-                        f'[{self._get_class_name()}] Model map tuple must have 3 or 4 items, got {len(item)}'
+                        f'[{self._get_class_name()}] Model map tuple must have 3 or 4 items, got {len(entry)}'
                     )
-            elif isinstance(item, str):
+            elif isinstance(entry, str):
                 if index == 0:
-                    self.model_map.append(item)
+                    self.model_map.append(entry)
                 else:
                     raise ValueError(
-                        f'[{self._get_class_name()}] Only first item can be a string, got {item!r}'
+                        f'[{self._get_class_name()}] Only first item can be a string, got {entry!r}'
                     )
             else:
                 raise ValueError(
-                    f'[{self._get_class_name()}] Invalid model map item type: {type(item)}'
+                    f'[{self._get_class_name()}] Invalid model map item type: {type(entry)}'
                 )
 
     def __call__(self, view_fn):
@@ -155,7 +159,7 @@ class resolve_records_from_restful_url(object):
         def wrapped(request, *args, **kwargs):
             self.user = request.user
 
-            # If first item is just a string, it means we need to get the object
+            # If first entry is just a string, it means we need to get the object
             # from kwargs
             if isinstance(self.model_map[0], str):
                 obj = kwargs.get(self.model_map[0])
@@ -168,13 +172,13 @@ class resolve_records_from_restful_url(object):
                 model_or_relation,
                 field,
                 path_arg_name,
-                extra_filter,
+                extra_filters,
             ) in model_map:
                 value = kwargs.get(path_arg_name)
 
                 # Raises exception and breaks loop
                 key, obj = self._resolve_object(
-                    obj, model_or_relation, field, value, extra_filter
+                    obj, model_or_relation, field, value, extra_filters
                 )
 
                 kwargs[key] = obj
@@ -206,7 +210,7 @@ class resolve_records_from_restful_url(object):
 
         # Since extra_filters is a dict, we need to copy it to avoid modifying
         # the original dict.
-        filters = extra_filters.copy()
+        filters = copy.deepcopy(extra_filters)
         filters.update({field: value})
         for key, value in filters.items():
             if value == '__current_user__':
