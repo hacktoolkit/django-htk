@@ -5,6 +5,7 @@ from functools import wraps
 import rollbar
 
 # Django Imports
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseNotFound
 from django.shortcuts import (
     get_object_or_404,
@@ -91,7 +92,7 @@ class restful_obj_seo_redirect(object):
         return wrapped
 
 
-class resolve_records_from_url(object):
+class resolve_records_from_restful_url(object):
     """Resolve Records from URL Patterns
 
     Decorator for resolving records from URL.
@@ -126,7 +127,12 @@ class resolve_records_from_url(object):
 
     def __init__(self, model_map, content_type='text/html'):
         self.content_type = content_type
-        self.model_map = model_map
+        self.model_map = []
+        for item in model_map:
+            if isinstance(item, tuple) and len(item) == 3:
+                self.model_map.append(item + ({},))
+            else:
+                self.model_map.append(item)
 
     def __call__(self, view_fn):
         @wraps(view_fn)
@@ -142,13 +148,13 @@ class resolve_records_from_url(object):
                 obj = None
                 model_map = self.model_map
 
-            for item in model_map:
-                model_or_relation = item[0]
-                field = item[1]
-                url_key = item[2]
-                extra_filter = len(item) > 3 and item[3] or {}
-
-                value = kwargs.get(url_key)
+            for (
+                model_or_relation,
+                field,
+                path_arg_name,
+                extra_filter,
+            ) in model_map:
+                value = kwargs.get(path_arg_name)
 
                 # Raises exception and breaks loop
                 key, obj = self._resolve_object(
@@ -181,11 +187,6 @@ class resolve_records_from_url(object):
             if obj is None
             else getattr(obj, model_or_relation)
         )
-        DoesNotExist = (
-            model.model.DoesNotExist
-            if model.__class__.__name__ == 'RelatedManager'
-            else model_or_relation.DoesNotExist
-        )
 
         filters = extra_filters.copy()
         filters.update({field: value})
@@ -195,7 +196,7 @@ class resolve_records_from_url(object):
 
         try:
             obj = model.get(**filters)
-        except DoesNotExist:
+        except ObjectDoesNotExist:
             response = (
                 json_response_not_found()
                 if self.content_type == 'application/json'
