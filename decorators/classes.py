@@ -102,7 +102,7 @@ class resolve_records_from_restful_url(object):
     Model Map:
     Model map is a list of tuples, where each tuple is a mapping of:
     - Model if first item, otherwise relation
-    - URL key
+    - Path Arg Name
     - Field name
     - Extra filters (Optional)
 
@@ -128,11 +128,27 @@ class resolve_records_from_restful_url(object):
     def __init__(self, model_map, content_type='text/html'):
         self.content_type = content_type
         self.model_map = []
-        for item in model_map:
-            if isinstance(item, tuple) and len(item) == 3:
-                self.model_map.append(item + ({},))
+        for index, item in enumerate(model_map):
+            if isinstance(item, tuple):
+                if len(item) == 3:
+                    self.model_map.append(item + ({},))
+                if len(item) == 4:
+                    self.model_map.append(item)
+                else:
+                    raise ValueError(
+                        f'[{self._get_class_name()}] Model map tuple must have 3 or 4 items, got {len(item)}'
+                    )
+            elif isinstance(item, str):
+                if index == 0:
+                    self.model_map.append(item)
+                else:
+                    raise ValueError(
+                        f'[{self._get_class_name()}] Only first item can be a string, got {item!r}'
+                    )
             else:
-                self.model_map.append(item)
+                raise ValueError(
+                    f'[{self._get_class_name()}] Invalid model map item type: {type(item)}'
+                )
 
     def __call__(self, view_fn):
         @wraps(view_fn)
@@ -188,6 +204,8 @@ class resolve_records_from_restful_url(object):
             else getattr(obj, model_or_relation)
         )
 
+        # Since extra_filters is a dict, we need to copy it to avoid modifying
+        # the original dict.
         filters = extra_filters.copy()
         filters.update({field: value})
         for key, value in filters.items():
