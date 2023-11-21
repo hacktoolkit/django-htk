@@ -28,6 +28,12 @@ import warnings as warnings_
 from lxml import etree as etree_
 
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
+
 Validate_simpletypes_ = True
 
 
