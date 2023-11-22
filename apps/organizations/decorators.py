@@ -2,6 +2,7 @@
 from functools import wraps
 
 # Django Imports
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import (
     Http404,
     HttpResponseForbidden,
@@ -139,7 +140,7 @@ class require_organization_member_user(object):
 
             try:
                 member = organization.members.get(id=member_id)
-            except organization.members.DoesNotExist:
+            except ObjectDoesNotExist:
                 if self.content_type == 'application/json':
                     response = json_response_not_found()
                 else:
@@ -166,7 +167,7 @@ class require_organization_team(object):
 
             try:
                 team = organization.teams.get(id=team_id)
-            except organization.teams.DoesNotExist:
+            except ObjectDoesNotExist:
                 if self.content_type == 'application/json':
                     response = json_response_not_found()
                 else:
@@ -193,7 +194,7 @@ class require_organization_invitation(object):
 
             try:
                 invitation = organization.invitations.get(id=invitation_id)
-            except organization.invitations.DoesNotExist:
+            except ObjectDoesNotExist:
                 if self.content_type == 'application/json':
                     response = json_response_not_found()
                 else:
