@@ -17,6 +17,10 @@ class AbstractOrganizationInvitationForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'placeholder': 'Email'}),
         }
 
+    def __init_subclass__(cls, model, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        cls.Meta.model = model
+
     def __init__(self, organization, invited_by, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.instance.organization = organization
@@ -56,6 +60,10 @@ class AbstractOrganizationMemberForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'placeholder': 'Email'}),
         }
 
+    def __init_subclass__(cls, model, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        cls.Meta.model = model
+
     def __init__(self, organization, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.instance.organization = organization
@@ -86,6 +94,10 @@ class AbstractOrganizationTeamForm(forms.ModelForm):
     class Meta:
         fields = ['name']
 
+    def __init_subclass__(cls, model, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        cls.Meta.model = model
+
     def __init__(self, organization, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.instance.organization = organization
@@ -113,6 +125,10 @@ class AbstractOrganizationTeamMemberForm(forms.ModelForm):
 
     class Meta:
         fields = ['user_id']
+
+    def __init_subclass__(cls, model, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        cls.Meta.model = model
 
     def __init__(self, team, *args, **kwargs):
         super().__init__(*args, **kwargs)
