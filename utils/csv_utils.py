@@ -1,7 +1,7 @@
 # Python Standard Library Imports
 import codecs
-import cStringIO
 import csv
+from six.moves import cStringIO
 
 
 class UTF8Recoder(object):
@@ -18,6 +18,7 @@ class UTF8Recoder(object):
 
     def next(self):
         return self.reader.next().encode('utf-8')
+
 
 class UnicodeReader(object):
     """
@@ -37,6 +38,7 @@ class UnicodeReader(object):
 
     def __iter__(self):
         return self
+
 
 class UnicodeWriter(object):
     """
@@ -69,6 +71,7 @@ class UnicodeWriter(object):
         for row in rows:
             self.writerow(row)
 
+
 def buffered_csv_from_collection(f, collection, row_generator, headings=None, utf8=True):
     """Buffers CSV to the stream `f`
     """
@@ -83,10 +86,12 @@ def buffered_csv_from_collection(f, collection, row_generator, headings=None, ut
     for item in collection:
         writer.writerow(row_generator(item))
 
+
 def get_csv_stringbuf_from_collection(collection, row_generator, headings=None, utf8=True):
     buf = cStringIO.StringIO()
     buffered_csv_from_collection(buf, collection, row_generator, headings=headings, utf8=utf8)
     return buf
+
 
 def get_csv_response_from_collection(collection, row_generator, headings=None, filename='data.csv', utf8=True):
     from django.http import HttpResponse
@@ -94,6 +99,7 @@ def get_csv_response_from_collection(collection, row_generator, headings=None, f
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
     buffered_csv_from_collection(response, collection, row_generator, headings=headings, utf8=utf8)
     return response
+
 
 class CSVDataExporter(object):
     def __init__(
