@@ -113,12 +113,12 @@ def get_csv_response_from_collection(collection, row_generator, headings=None, f
 
 class CSVDataExporter(object):
     def __init__(
-            self,
-            rows,
-            row_generator,
-            headings,
-            filename
-        ):
+        self,
+        rows,
+        row_generator,
+        headings,
+        filename
+    ):
         self.rows = rows
         self.row_generator = row_generator
         self.headings = headings
@@ -139,7 +139,11 @@ class CSVDataExporter(object):
     def get_csv(self):
         """Returns a CSV string to be used in a stream, other text data source, etc
         """
-        stringbuf = get_csv_stringbuf_from_collection(self.rows, self.row_generator, headings=self.headings)
+        stringbuf = get_csv_stringbuf_from_collection(
+            self.rows,
+            self.row_generator,
+            headings=self.headings
+        )
         return stringbuf.getvalue()
 
     def execute(self):
