@@ -8,13 +8,15 @@ from six import text_type
 from six.moves import cStringIO
 
 
+# isort: off
+
+
 class UTF8Recoder(object):
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
 
     https://docs.python.org/2/library/csv.html
     """
-
     def __init__(self, f, encoding):
         self.reader = codecs.getreader(encoding)(f)
 
@@ -80,10 +82,9 @@ class UnicodeWriter(object):
             self.writerow(row)
 
 
-def buffered_csv_from_collection(
-    f, collection, row_generator, headings=None, utf8=True
-):
-    """Buffers CSV to the stream `f`"""
+def buffered_csv_from_collection(f, collection, row_generator, headings=None, utf8=True):
+    """Buffers CSV to the stream `f`
+    """
     # get csv writer
     if utf8 and sys.version_info.major == 2:
         writer = UnicodeWriter(f)
@@ -96,53 +97,49 @@ def buffered_csv_from_collection(
         writer.writerow(row_generator(item))
 
 
-def get_csv_stringbuf_from_collection(
-    collection, row_generator, headings=None, utf8=True
-):
+def get_csv_stringbuf_from_collection(collection, row_generator, headings=None, utf8=True):
     buf = cStringIO()
-    buffered_csv_from_collection(
-        buf, collection, row_generator, headings=headings, utf8=utf8
-    )
+    buffered_csv_from_collection(buf, collection, row_generator, headings=headings, utf8=utf8)
     return buf
 
 
-def get_csv_response_from_collection(
-    collection, row_generator, headings=None, filename='data.csv', utf8=True
-):
-    # Django Imports
+def get_csv_response_from_collection(collection, row_generator, headings=None, filename='data.csv', utf8=True):
     from django.http import HttpResponse
-
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-    buffered_csv_from_collection(
-        response, collection, row_generator, headings=headings, utf8=utf8
-    )
+    buffered_csv_from_collection(response, collection, row_generator, headings=headings, utf8=utf8)
     return response
 
 
 class CSVDataExporter(object):
-    def __init__(self, rows, row_generator, headings, filename):
+    def __init__(
+            self,
+            rows,
+            row_generator,
+            headings,
+            filename
+        ):
         self.rows = rows
         self.row_generator = row_generator
         self.headings = headings
         self.filename = filename
 
     def get_csv_response(self):
-        """Returns a CSV file response"""
+        """Returns a CSV file response
+        """
         response = get_csv_response_from_collection(
             self.rows,
             self.row_generator,
             headings=self.headings,
-            filename=self.filename,
+            filename=self.filename
         )
 
         return response
 
     def get_csv(self):
-        """Returns a CSV string to be used in a stream, other text data source, etc"""
-        stringbuf = get_csv_stringbuf_from_collection(
-            self.rows, self.row_generator, headings=self.headings
-        )
+        """Returns a CSV string to be used in a stream, other text data source, etc
+        """
+        stringbuf = get_csv_stringbuf_from_collection(self.rows, self.row_generator, headings=self.headings)
         return stringbuf.getvalue()
 
     def execute(self):
