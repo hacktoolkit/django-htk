@@ -1,7 +1,14 @@
 # Python Standard Library Imports
 import codecs
 import csv
+import sys
+
+# Third Party (PyPI) Imports
+from six import text_type
 from six.moves import cStringIO
+
+
+# isort: off
 
 
 class UTF8Recoder(object):
@@ -34,7 +41,7 @@ class UnicodeReader(object):
 
     def next(self):
         row = self.reader.next()
-        return [unicode(s, 'utf-8') for s in row]
+        return [text_type(s, 'utf-8') for s in row]
 
     def __iter__(self):
         return self
@@ -49,8 +56,11 @@ class UnicodeWriter(object):
     """
 
     def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwds):
+        if sys.version_info.major > 2:
+            raise Exception('UnicodeWriter only works in Python 2')
+
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = cStringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
@@ -76,7 +86,7 @@ def buffered_csv_from_collection(f, collection, row_generator, headings=None, ut
     """Buffers CSV to the stream `f`
     """
     # get csv writer
-    if utf8:
+    if utf8 and sys.version_info.major == 2:
         writer = UnicodeWriter(f)
     else:
         writer = csv.writer(f)
@@ -88,7 +98,7 @@ def buffered_csv_from_collection(f, collection, row_generator, headings=None, ut
 
 
 def get_csv_stringbuf_from_collection(collection, row_generator, headings=None, utf8=True):
-    buf = cStringIO.StringIO()
+    buf = cStringIO()
     buffered_csv_from_collection(buf, collection, row_generator, headings=headings, utf8=utf8)
     return buf
 
