@@ -1,18 +1,15 @@
 # Python Standard Library Imports
-import datetime
 import re
 import sys
 
 # Django Imports
-from django.conf import settings
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.deprecation import MiddlewareMixin
 
 # HTK Imports
-from htk.middleware.session_keys import *
-from htk.session_keys import *
 from htk.utils import htk_setting
+from htk.utils.http.errors import HttpErrorResponseError
 from htk.utils.request import is_allowed_host
 
 
@@ -67,7 +64,7 @@ class AllowedHostsMiddleware(MiddlewareMixin):
         https_prefix = 's' if request.is_secure() else ''
         if request_path == '/health_check':
             return False
-        elif not(is_allowed_host(host)):
+        elif not is_allowed_host(host):
             redirect_uri = 'http%s://%s%s' % (https_prefix, htk_setting('HTK_DEFAULT_DOMAIN'), request_path,)
         elif len(host) > 1 and host[-1] == '.':
             redirect_uri = 'http%s://%s%s' % (https_prefix, host[:-1], request_path,)
@@ -100,7 +97,8 @@ class RequestTimerMiddleware(MiddlewareMixin):
 
 
 class RewriteJsonResponseContentTypeMiddleware(MiddlewareMixin):
-    """This middleware exists because IE is a stupid browser and tries to download application/json content type from XHR responses as file
+    """This middleware exists because IE is a stupid browser and tries to
+    download application/json content type from XHR responses as file
     """
     def process_response(self, request, response):
         if self._is_response_json(response) and self._is_user_agent_msie(request):
@@ -119,14 +117,29 @@ class RewriteJsonResponseContentTypeMiddleware(MiddlewareMixin):
 
 class TimezoneMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        #django_timezone = request.session.get(DJANGO_TIMEZONE, None)
-        #if not django_timezone and request.user.is_authenticated:
+        # django_timezone = request.session.get(DJANGO_TIMEZONE, None)
+        # if not django_timezone and request.user.is_authenticated:
         if request.user.is_authenticated:
             user = request.user
             django_timezone = user.profile.get_django_timezone()
             # <DstTzInfo 'America/Los_Angeles' PST-1 day, 16:00:00 STD> is not JSON serializable
-            #request.session[DJANGO_TIMEZONE] = django_timezone
+            # request.session[DJANGO_TIMEZONE] = django_timezone
         else:
             django_timezone = None
         if django_timezone:
             timezone.activate(django_timezone)
+
+
+class HttpErrorResponseMiddleware:
+    """This middleware allows `HttpErrorResponseError`s to be thrown
+    to short-circuit processing of a view, and allows a response to be returned
+    instead.
+    """
+
+    def process_exception(self, request, exception):
+        if isinstance(exception, HttpErrorResponseError):
+            response = exception.response
+        else:
+            response = None
+
+        return response

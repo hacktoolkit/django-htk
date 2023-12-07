@@ -19,20 +19,27 @@ from htk.utils import (
 
 
 @disable_for_loaddata
-def organization_invitation_created(sender, instance, created, **kwargs):
-    """Signal handler for when a new OrganizationInvitation object is created"""
-    if created:
-        invitation = instance
+def organization_invitation_created_or_updated(sender, instance, created, **kwargs):
+    """Signal handler for when a new OrganizationInvitation object is created or updated"""
+    invitation = instance
+    if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+        from htk.utils.notifications import slack_notify
 
-        if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            try:
-                from htk.utils.notifications import slack_notify
+        INVITATION_ACCEPTANCE_MESSAGE_BUILDERS = {
+            'created': invitation.build_notification_message__created,
+            True: invitation.build_notification_message__accepted,
+            False: invitation.build_notification_message__declined,
+            None: invitation.build_notification_message__resent,
+        }
 
-                msg = invitation.build_notification_message__created()
-                slack_notify(msg)
-            except:
-                rollbar.report_exc_info()
-
+        msg_builder_key = 'created' if created else invitation.accepted
+        msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS[msg_builder_key]
+        msg = msg_builder()
+        
+        try:
+            slack_notify(msg)
+        except Exception:
+            rollbar.report_exc_info()
 
 class HtkOrganizationAppConfig(HtkAppConfig):
     name = 'htk.apps.organizations'
@@ -45,7 +52,7 @@ class HtkOrganizationAppConfig(HtkAppConfig):
         )
 
         signals.post_save.connect(
-            organization_invitation_created,
+            organization_invitation_created_or_updated,
             sender=OrganizationInvitation,
             dispatch_uid='htk_organization_invitation_created',
         )

@@ -210,6 +210,31 @@ class BaseStripeCustomer(BaseStripeModel):
             invoice_id = invoice.get('id')
             _ = safe_stripe_call(stripe.InvoiceItem.delete, invoice_id)
 
+    def list_pending_invoice_items(self):
+        """Lists pending invoice items"""
+
+        return self.list_invoice_items(customer=self.stripe_id, pending='true')
+
+
+    def list_invoices(self, status=None):
+        """Lists all invoices
+
+        Lists only specific status invoices if specified with status
+        Ref: https://stripe.com/docs/api/invoices/list
+        """
+
+        _initialize_stripe(live_mode=self.live_mode)
+
+        kwargs = {'customer': self.stripe_id}
+        if status:
+            kwargs.update({'status': status})
+        else:
+            pass
+
+        stripe_invoices = safe_stripe_call(stripe.Invoice.list, **kwargs)
+        invoices = stripe_invoices.get('data')
+        return invoices
+
     def create_invoice_and_pay(self):
         """
         After creating the Invoice, have the Customer immediately pay it

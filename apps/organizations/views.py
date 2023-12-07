@@ -77,8 +77,8 @@ class OrganizationInvitationResponseView(View):
         self.invitation.accepted = invitation_response == 'accept'
         self.invitation.responded_at = timezone.datetime.now()
 
+        self.invitation.user = request.user
         if self.invitation.accepted:
-            self.invitation.user = request.user
             # TODO: adding as member but maybe this should be a setting?
             self.invitation.organization.add_member(
                 self.invitation.user, OrganizationMemberRoles.MEMBER

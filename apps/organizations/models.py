@@ -10,6 +10,7 @@ from typing import (
 # Django Imports
 from django.conf import settings
 from django.db import models
+from django.contrib.auth import get_user_model
 
 # HTK Imports
 from htk.apps.organizations.enums import (
@@ -320,16 +321,30 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     ##
     # Notifications
 
-    def build_notification_message__created(self):
-        """Builds a message that will be displayed as an internal Slack notification
-        when this invitation object is created.
-        """
-        msg = '{invited_by_name} ({invited_by_username}) has sent an invitation for organization {organization_name} to {email}'.format(
-            invited_by_name=self.invited_by.profile.get_full_name(),
-            invited_by_username=self.invited_by.username,
+    def _build_notification_message(self, subject, verb):
+        msg = '{subject_name} ({subject_username}<{email}>) has {verb} an invitation for Organization <{organization_name}>'.format( # noqa: E501
+            verb=verb,
+            subject_name=subject.profile.get_full_name(),
+            subject_username=subject.username,
+            email=subject.email,
             organization_name=self.organization.name,
-            email=self.email,
         )
+        return msg
+
+    def build_notification_message__created(self):
+        msg = self._build_notification_message(self.invited_by, 'sent')
+        return msg
+
+    def build_notification_message__resent(self):
+        msg = self._build_notification_message(self.invited_by, 're-sent')
+        return msg
+
+    def build_notification_message__accepted(self):
+        msg = self._build_notification_message(self.user, 'accepted')
+        return msg
+
+    def build_notification_message__declined(self):
+        msg = self._build_notification_message(self.user, 'declined')
         return msg
 
 

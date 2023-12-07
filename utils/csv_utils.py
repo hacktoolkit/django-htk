@@ -1,7 +1,14 @@
 # Python Standard Library Imports
 import codecs
-import cStringIO
 import csv
+import sys
+
+# Third Party (PyPI) Imports
+from six import text_type
+from six.moves import cStringIO
+
+
+# isort: off
 
 
 class UTF8Recoder(object):
@@ -19,6 +26,7 @@ class UTF8Recoder(object):
     def next(self):
         return self.reader.next().encode('utf-8')
 
+
 class UnicodeReader(object):
     """
     A CSV reader which will iterate over lines in the CSV file "f",
@@ -33,10 +41,11 @@ class UnicodeReader(object):
 
     def next(self):
         row = self.reader.next()
-        return [unicode(s, 'utf-8') for s in row]
+        return [text_type(s, 'utf-8') for s in row]
 
     def __iter__(self):
         return self
+
 
 class UnicodeWriter(object):
     """
@@ -47,8 +56,11 @@ class UnicodeWriter(object):
     """
 
     def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwds):
+        if sys.version_info.major > 2:
+            raise Exception('UnicodeWriter only works in Python 2')
+
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = cStringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()
@@ -69,11 +81,12 @@ class UnicodeWriter(object):
         for row in rows:
             self.writerow(row)
 
+
 def buffered_csv_from_collection(f, collection, row_generator, headings=None, utf8=True):
     """Buffers CSV to the stream `f`
     """
     # get csv writer
-    if utf8:
+    if utf8 and sys.version_info.major == 2:
         writer = UnicodeWriter(f)
     else:
         writer = csv.writer(f)
@@ -83,10 +96,12 @@ def buffered_csv_from_collection(f, collection, row_generator, headings=None, ut
     for item in collection:
         writer.writerow(row_generator(item))
 
+
 def get_csv_stringbuf_from_collection(collection, row_generator, headings=None, utf8=True):
-    buf = cStringIO.StringIO()
+    buf = cStringIO()
     buffered_csv_from_collection(buf, collection, row_generator, headings=headings, utf8=utf8)
     return buf
+
 
 def get_csv_response_from_collection(collection, row_generator, headings=None, filename='data.csv', utf8=True):
     from django.http import HttpResponse
@@ -94,6 +109,7 @@ def get_csv_response_from_collection(collection, row_generator, headings=None, f
     response['Content-Disposition'] = 'attachment; filename="%s"' % filename
     buffered_csv_from_collection(response, collection, row_generator, headings=headings, utf8=utf8)
     return response
+
 
 class CSVDataExporter(object):
     def __init__(

@@ -120,11 +120,11 @@ def render_to_pdf_response_pisa(template_name, context_dict):
 
     PyPI: https://pypi.python.org/pypi/pisa/
     """
-    import cStringIO as StringIO
+    from six.moves import cStringIO as StringIO
     from xhtml2pdf import pisa
     html = generate_html_from_template(template_name, context_dict)
-    result = StringIO.StringIO()
-    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode('utf-8')), result)
+    result = StringIO()
+    pdf = pisa.pisaDocument(StringIO(html.encode('utf-8')), result)
     if pdf:
         response = HttpResponse(result.getvalue(), mimetype='application/pdf')
     else:
