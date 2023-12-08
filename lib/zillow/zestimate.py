@@ -18,7 +18,6 @@
 #
 
 # Python Standard Library Imports
-import base64
 import datetime as datetime_
 import re as re_
 import sys
@@ -26,6 +25,9 @@ import warnings as warnings_
 
 # Third Party (PyPI) Imports
 from lxml import etree as etree_
+
+# HTK Imports
+from htk.compat import b64encode
 
 
 try:
@@ -76,7 +78,7 @@ except ImportError as exp:
             else:
                 return input_data
         def gds_format_base64(self, input_data, input_name=''):
-            value = base64.b64encode(input_data.encode('utf-8'))
+            value = b64encode(input_data)
             if isinstance(value, bytes):
                 value = value.decode('utf-8')
             return value
@@ -541,7 +543,7 @@ class MixedContainer:
             outfile.write('<%s>%g</%s>' % (
                 self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeBase64:
-            value = base64.b64encode(self.value.encode('utf-8'))
+            value = b64encode(self.value)
             if isinstance(value, bytes):
                 value = value.decode('utf-8')
             outfile.write('<%s>%s</%s>' % (self.name, value, self.name))
@@ -577,7 +579,7 @@ class MixedContainer:
         elif self.content_type == MixedContainer.TypeDouble:
             text = '%g' % self.value
         elif self.content_type == MixedContainer.TypeBase64:
-            text = '%s' % base64.b64encode(self.value)
+            text = '%s' % b64encode(self.value)
         return text
     def exportLiteral(self, outfile, level, name):
         if self.category == MixedContainer.CategoryText:

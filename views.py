@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import base64
 import re
 
 # Django Imports
@@ -18,6 +17,7 @@ from django.template import (
 from django.urls import reverse
 
 # HTK Imports
+from htk.compat import b64decode
 from htk.utils import htk_setting
 
 
@@ -151,7 +151,7 @@ def redir(request):
     encoded_url = request.GET.get('url', None)
     if encoded_url:
         try:
-            url = base64.urlsafe_b64decode(str(encoded_url))
+            url = b64decode(str(encoded_url), url_safe=True)
             if not re.match('^https?://', url):
                 url = 'http://%s' % url
             else:

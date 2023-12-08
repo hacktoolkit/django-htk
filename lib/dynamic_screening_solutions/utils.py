@@ -1,10 +1,10 @@
 # Python Standard Library Imports
-import base64
 import hashlib
 import hmac
 import json
 
 # HTK Imports
+from htk.compat import b64encode
 from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
 
@@ -24,10 +24,10 @@ def validate_webhook_request(request):
     hash_key_retriever = resolve_method_dynamically(htk_setting('HTK_321FORMS_WEBHOOK_HASH_KEY_RETRIEVER'))
     hash_key = hash_key_retriever(company_id)
 
-    signature = base64.b64encode(
+    signature = b64encode(
         hmac.new(
-            hash_key.encode('utf-8'),
-            request.body.encode('utf-8'),
+            hash_key.encode(),
+            request.body.encode(),
             digestmod=hashlib.sha1
         ).digest()
     )
