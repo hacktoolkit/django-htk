@@ -26,8 +26,8 @@ def validate_webhook_request(request):
 
     signature = base64.b64encode(
         hmac.new(
-            bytes(hash_key),
-            request.body,
+            hash_key.encode('utf-8'),
+            request.body.encode('utf-8'),
             digestmod=hashlib.sha1
         ).digest()
     )

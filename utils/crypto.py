@@ -7,6 +7,7 @@ from Crypto import Random
 from Crypto.Cipher import AES
 
 
+# TODO: This needs to be refactored.
 class AESCipher(object):
     """Class for encrypting and decrypting data using AES256
 

@@ -12,14 +12,21 @@ from htk.utils import htk_setting
 
 register = template.Library()
 
+
 @register.simple_tag
 def redir_url(url):
     redir_view = htk_setting('HTK_REDIRECT_URL_NAME')
+
+    encoded_url = base64.urlsafe_b64encode(url.encode('utf-8'))
+    if isinstance(encoded_url, bytes):
+        encoded_url = encoded_url.decode('utf-8')
+
     url = '%(path)s?url=%(url)s' % {
-        'path' : reverse(redir_view),
-        'url' : base64.urlsafe_b64encode(url.encode()).decode(),
+        'path': reverse(redir_view),
+        'url': encoded_url
     }
     return url
+
 
 @register.simple_tag
 def redir(url, text=None, target='_blank'):
@@ -33,6 +40,7 @@ def redir(url, text=None, target='_blank'):
     }
     html = mark_safe(html)
     return html
+
 
 @register.simple_tag
 def redir_trunc(url, length, target='_blank'):

@@ -62,7 +62,7 @@ class Htk321FormsAPI(object):
         )
         signature = base64.b64encode(
             hmac.new(
-                bytes(secret_key), base_string, digestmod=hashlib.sha1
+                secret_key.encode('utf-8'), base_string.encode('utf-8'), digestmod=hashlib.sha1
             ).digest()
         )
         return signature

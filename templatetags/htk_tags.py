@@ -107,8 +107,13 @@ def btoa(value):
     if type(value) in (str, SafeText):
         value = value.encode('utf-8')
 
-    # Convert bytes to str for for use in template
-    value = base64.b64encode(value).decode('utf-8')
+    value = base64.b64encode(value)
+
+    # b64encode return str in python2 but bytes in python3
+    if isinstance(value, bytes):
+        # Convert bytes to str for for use in template
+        value = value.decode('utf-8')
+
     return value
 
 

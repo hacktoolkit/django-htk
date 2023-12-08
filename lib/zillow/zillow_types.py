@@ -75,8 +75,15 @@ except ImportError as exp:
                 return ''
             else:
                 return input_data
+
         def gds_format_base64(self, input_data, input_name=''):
-            return base64.b64encode(input_data)
+            value = base64.b64encode(input_data.encode('utf-8'))
+
+            if isinstance(value, bytes):
+                value = value.decode('utf-8')
+
+            return value
+
         def gds_validate_base64(self, input_data, node=None, input_name=''):
             return input_data
         def gds_format_integer(self, input_data, input_name=''):
@@ -537,8 +544,12 @@ class MixedContainer:
             outfile.write('<%s>%g</%s>' % (
                 self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeBase64:
-            outfile.write('<%s>%s</%s>' % (
-                self.name, base64.b64encode(self.value), self.name))
+            value = base64.b64encode(self.value)
+            if isinstance(value, bytes):
+                value = value.decode('utf-8')
+
+            outfile.write('<%s>%s</%s>' % (self.name, value, self.name))
+
     def to_etree(self, element):
         if self.category == MixedContainer.CategoryText:
             # Prevent exporting empty content as empty lines.

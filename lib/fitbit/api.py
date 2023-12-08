@@ -55,7 +55,10 @@ class FitbitAPI(object):
         if auth_type == 'bearer':
             auth_header = 'Bearer %s' % self.social_auth_user.extra_data['access_token']
         else:
-            auth_header = 'Basic %s' % base64.b64encode('%s:%s' % (self.client_id, self.client_secret,))
+            basic_value = '%s:%s' % (self.client_id, self.client_secret,)
+            auth_header = 'Basic %s' % base64.b64encode(basic_value.encode('utf-8'))
+            if isinstance(auth_header, bytes):
+                auth_header = auth_header.decode('utf-8')
         _headers = {
             'Authorization' : auth_header,
             'Accept-Locale' : 'en_US',
