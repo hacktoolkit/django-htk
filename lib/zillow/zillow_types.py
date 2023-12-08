@@ -80,10 +80,6 @@ except ImportError as exp:
 
         def gds_format_base64(self, input_data, input_name=''):
             value = b64encode(input_data)
-
-            if isinstance(value, bytes):
-                value = value.decode('utf-8')
-
             return value
 
         def gds_validate_base64(self, input_data, node=None, input_name=''):
@@ -547,9 +543,6 @@ class MixedContainer:
                 self.name, self.value, self.name))
         elif self.content_type == MixedContainer.TypeBase64:
             value = b64encode(self.value)
-            if isinstance(value, bytes):
-                value = value.decode('utf-8')
-
             outfile.write('<%s>%s</%s>' % (self.name, value, self.name))
 
     def to_etree(self, element):
