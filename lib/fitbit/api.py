@@ -1,11 +1,9 @@
-# Python Standard Library Imports
-import base64
-
 # Third Party (PyPI) Imports
 import requests
 import rollbar
 
 # HTK Imports
+from htk.compat import b64encode
 from htk.lib.fitbit.constants import *
 from htk.utils import refresh
 from htk.utils import utcnow
@@ -55,7 +53,10 @@ class FitbitAPI(object):
         if auth_type == 'bearer':
             auth_header = 'Bearer %s' % self.social_auth_user.extra_data['access_token']
         else:
-            auth_header = 'Basic %s' % base64.b64encode('%s:%s' % (self.client_id, self.client_secret,))
+            basic_value = '%s:%s' % (self.client_id, self.client_secret,)
+            auth_header = 'Basic %s' % b64encode(basic_value)
+            if isinstance(auth_header, bytes):
+                auth_header = auth_header.decode('utf-8')
         _headers = {
             'Authorization' : auth_header,
             'Accept-Locale' : 'en_US',

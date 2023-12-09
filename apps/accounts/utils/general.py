@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import base64
 import hashlib
 import time
 from uuid import uuid4
@@ -20,6 +19,7 @@ from django.utils.http import (
 # HTK Imports
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
+from htk.compat import b64encode
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
 from htk.utils.request import get_current_request
@@ -102,9 +102,10 @@ def email_to_username_hash(email):
     email = email.lower()
     # Deal with internationalized email addresses
     converted = email.encode('utf8', 'ignore')
-    hashed = base64.urlsafe_b64encode(
-        hashlib.sha256(converted).hexdigest().encode()
-    ).decode()[:EMAIL_TO_USERNAME_HASH_LENGTH]
+    hashed = b64encode(
+        hashlib.sha256(converted).hexdigest(),
+        url_safe=True
+    )[:EMAIL_TO_USERNAME_HASH_LENGTH]
     return hashed
 
 

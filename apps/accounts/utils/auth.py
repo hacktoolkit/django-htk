@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import base64
 import datetime
 import hashlib
 import json
@@ -13,6 +12,7 @@ from django.contrib.auth import login
 # HTK Imports
 from htk.apps.accounts.utils import encrypt_uid
 from htk.apps.accounts.utils import resolve_encrypted_uid
+from htk.compat import b64decode, b64encode
 from htk.utils import htk_setting
 from htk.utils import utcnow
 from htk.utils.datetime_utils import datetime_to_unix_time
@@ -55,7 +55,7 @@ def get_user_token_auth_token(user, expires_minutes=None):
         'hash' : hashed,
     }
 
-    token = base64.b64encode(json.dumps(data).encode('utf-8')).decode('utf-8')
+    token = b64encode(json.dumps(data))
     return token
 
 
@@ -89,7 +89,7 @@ def validate_user_token_auth_token(token):
     is_valid = False
 
     try:
-        data = json.loads(base64.b64decode(token))
+        data = json.loads(b64decode(token))
     except ValueError:
         data = None
 

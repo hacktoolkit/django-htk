@@ -16,6 +16,12 @@ from django.utils.safestring import (
     mark_safe,
 )
 
+# HTK Imports
+from htk.compat import (
+    b64decode,
+    b64encode,
+)
+
 
 register = template.Library()
 
@@ -95,7 +101,7 @@ def atob(value):
     """Base64 decode
     ASCII to Binary
     """
-    value = base64.b64decode(value)
+    value = b64decode(value)
     return value
 
 
@@ -107,8 +113,8 @@ def btoa(value):
     if type(value) in (str, SafeText):
         value = value.encode('utf-8')
 
-    # Convert bytes to str for for use in template
-    value = base64.b64encode(value).decode('utf-8')
+    value = b64encode(value)
+
     return value
 
 

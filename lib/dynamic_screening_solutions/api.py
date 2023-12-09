@@ -53,16 +53,16 @@ class Htk321FormsAPI(object):
 
         Secret key-hashed Base64
         """
-        import base64
+        from htk.compat import b64encode
 
         base_string = '{"Username":"%s","SentDate":"%s","Action":"%s"}' % (
             headers['Username'],
             headers['SentDate'],
             headers['Action'],
         )
-        signature = base64.b64encode(
+        signature = b64encode(
             hmac.new(
-                bytes(secret_key), base_string, digestmod=hashlib.sha1
+                secret_key.encode(), base_string.encode(), digestmod=hashlib.sha1
             ).digest()
         )
         return signature
