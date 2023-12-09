@@ -1,6 +1,8 @@
 # Python Standard Library Imports
-import sys
 from collections import namedtuple
+
+# HTK Imports
+from htk.compat import IS_PYTHON_2
 
 
 # isort: off
@@ -65,7 +67,7 @@ class ChangeLog(
 
         with open(changelog_file_name, 'w') as f:
             string_to_write = '\n'.join(buf)
-            if sys.version_info.major == 2:
+            if IS_PYTHON_2:
                 string_to_write = string_to_write.encode('utf-8')
             else:
                 # for Python 3, do nothing, as `.encode()` will convert to bytes

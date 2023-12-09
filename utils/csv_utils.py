@@ -1,11 +1,13 @@
 # Python Standard Library Imports
 import codecs
 import csv
-import sys
 
 # Third Party (PyPI) Imports
 from six import text_type
 from six.moves import cStringIO
+
+# HTK Imports
+from htk.compat import IS_PYTHON_2
 
 
 # isort: off
@@ -56,7 +58,7 @@ class UnicodeWriter(object):
     """
 
     def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwds):
-        if sys.version_info.major > 2:
+        if not IS_PYTHON_2:
             raise Exception('UnicodeWriter only works in Python 2')
 
         # Redirect output to a queue
@@ -86,7 +88,7 @@ def buffered_csv_from_collection(f, collection, row_generator, headings=None, ut
     """Buffers CSV to the stream `f`
     """
     # get csv writer
-    if utf8 and sys.version_info.major == 2:
+    if utf8 and IS_PYTHON_2:
         writer = UnicodeWriter(f)
     else:
         writer = csv.writer(f)

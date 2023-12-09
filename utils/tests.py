@@ -1,12 +1,12 @@
 # Python Standard Library Imports
-import sys
 import unittest
 
 # HTK Imports
+from htk.compat import has_min_python_version
 from htk.utils.text.tests import *  # noqa: F401, F403
 
 
-if sys.version_info.major == 3 and sys.version_info.minor >= 6:
+if has_min_python_version(3, 6):
     from htk.utils.enums import HtkIntFlag
 
     class TestHtkIntFlag(unittest.TestCase):

@@ -1,8 +1,8 @@
 # Python Standard Library Imports
 import re
-import sys
 
 # HTK Imports
+from htk.compat import IS_PYTHON_2
 from htk.utils.text.constants import SUMMARY_NUM_SENTENCES
 from htk.utils.text.general import (
     is_ascii,
@@ -84,7 +84,7 @@ def ellipsize(text, max_len=100, truncate=False):
     if not text:
         return ''
 
-    if sys.version_info.major == 2:
+    if IS_PYTHON_2:
         text = unicode(text)  # noqa F401
     text_len = len(text)
 
