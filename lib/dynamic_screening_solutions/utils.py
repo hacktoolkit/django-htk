@@ -32,7 +32,7 @@ def validate_webhook_request(request):
         hash_key = hash_key.encode() if IS_PYTHON_3 else hash_key
         request_body = request.body.encode() if IS_PYTHON_3 else request.body
 
-        hashed = hmac.new(hash_key, request_body, diggestmod=hashlib.sha1).digest()
+        hashed = hmac.new(hash_key, request_body, digestmod=hashlib.sha1).digest()
 
         signature = b64encode(hashed)
 
