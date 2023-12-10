@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 # Django 1 and >2 compatible import
 try:
     # Django Imports
-    from django.urls import reverse
+    from django.core.urlresolvers import reverse
 except ImportError:
     from django.urls import reverse
 
