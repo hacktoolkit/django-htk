@@ -27,8 +27,7 @@ def validate_webhook_request(request):
     hash_key_retriever = resolve_method_dynamically(htk_setting('HTK_321FORMS_WEBHOOK_HASH_KEY_RETRIEVER'))
     hash_key = hash_key_retriever(company_id)
 
-    # According to Rollbar error, `hash_key` can be `None`. `hmac.new` does not
-    # do well with `None` value for both Python 2 and 3
+    # `hash_key` can be `None`. `hmac.new` does not do well with `None` value for both Python 2 and 3
     if hash_key:
         hash_key = hash_key.encode() if IS_PYTHON_3 else hash_key
         request_body = request.body.encode() if IS_PYTHON_3 else request.body
