@@ -9,7 +9,7 @@ def is_python2():
 
 
 def is_python3():
-    is_python2 = sys.version_info.major == 3
+    is_python3 = sys.version_info.major == 3
     return is_python3
 
 
