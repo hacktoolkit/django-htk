@@ -30,7 +30,7 @@ class AESCipher(object):
         return encoded
 
     def decrypt(self, enc):
-        # base64 encoded data is not convertable to `str` so not using `htk.compat.b64decode`
+        # base64 encoded data is not convertible to `str` so not using `htk.compat.b64decode`
         enc = base64.b64decode(enc)
         iv = enc[:self.bs]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
