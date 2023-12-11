@@ -29,7 +29,11 @@ def validate_webhook_request(request):
 
     # `hash_key` can be `None`. `hmac.new` does not do well with `None` value for both Python 2 and 3
     if hash_key:
-        hash_key = hash_key.encode() if IS_PYTHON_3 else hash_key
+        # Even for Python 2 it seems we need to convert the hash_key to bytes.
+        # REFERENCES:
+        # https://bugs.python.org/issue16063
+        # https://stackoverflow.com/a/31572219
+        hash_key = hash_key.encode() if IS_PYTHON_3 else bytes(hash_key)
         request_body = request.body.encode() if IS_PYTHON_3 else request.body
 
         hashed = hmac.new(hash_key, request_body, digestmod=hashlib.sha1).digest()
