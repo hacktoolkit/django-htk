@@ -31,8 +31,11 @@ def b64encode(content, url_safe=False, as_str=True):
     Args:
         content: str | unicode (Python 2 only) | bytes (Python 3 only)
         url_safe: bool
+        as_str: bool
+            When `True` (default), converts the encoded result to a `str` for convenience.
+            When `False`, the result is preseved as `bytes`
 
-    Returns: str
+    Returns: str if as_str else bytes
     """
     encoder = base64.urlsafe_b64encode if url_safe else base64.b64encode
 
@@ -57,8 +60,11 @@ def b64decode(encoded, url_safe=False, as_str=True):
     Args:
         encoded: str | unicode | bytes
         url_safe: bool
+        as_str: bool
+            When `True` (default), converts the encoded result to a `str` for convenience.
+            When `False`, the result is preseved as `bytes`
 
-    Returns: str
+    Returns: str if as_str else bytes
     """
     decoder = base64.urlsafe_b64decode if url_safe else base64.b64decode
 
