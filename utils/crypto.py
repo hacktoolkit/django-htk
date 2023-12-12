@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import base64
 import hashlib
 
 # Third Party (PyPI) Imports
@@ -7,7 +6,10 @@ from Crypto import Random
 from Crypto.Cipher import AES
 
 # HTK Imports
-from htk.compat import b64encode
+from htk.compat import (
+    b64decode,
+    b64encode,
+)
 
 
 # TODO: This needs to be refactored.
@@ -30,8 +32,10 @@ class AESCipher(object):
         return encoded
 
     def decrypt(self, enc):
-        # base64 encoded data is not convertible to `str` so not using `htk.compat.b64decode`
-        enc = base64.b64decode(enc)
+        # encrypted data cannot be converted to `str` after base64 decoding
+        # the decoded base64 result must remain as `bytes`
+        enc = b64decode(enc, as_str=False)
+
         iv = enc[:self.bs]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         decrypted = self._unpad(cipher.decrypt(enc[self.bs:])).decode('utf-8')
@@ -44,5 +48,5 @@ class AESCipher(object):
 
     @classmethod
     def _unpad(cls, s):
-        unpadded = s[: -ord(s[len(s) - 1:])]
+        unpadded = s[:-ord(s[len(s) - 1:])]
         return unpadded
