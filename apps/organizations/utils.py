@@ -1,6 +1,7 @@
 # Django Imports
 from django.apps import apps
 from django.contrib.sites.shortcuts import get_current_site
+from django.utils import timezone
 
 # HTK Imports
 from htk.apps.organizations.emailers import send_invitation_email
@@ -77,7 +78,7 @@ def invite_organization_member(request, invitation):
             first_name=invitation.first_name,
             last_name=invitation.last_name,
             site=get_current_site(request),
-            enable_early_access=True
+            enable_early_access=True,
         )
         early_access_code = prelaunch_signup.early_access_code
     else:
@@ -90,8 +91,12 @@ def invite_organization_member(request, invitation):
         pass
 
     # Save invitation so that updatedAt field will be updated
+    invitation.invited_at = timezone.now()
+    invitation.invited_by = request.user
     invitation.save()
 
     send_invitation_email(
         request, invitation, early_access_code=early_access_code
     )
+
+    return invitation

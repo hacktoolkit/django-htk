@@ -2,14 +2,17 @@
 from functools import wraps
 
 # Django Imports
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import (
     Http404,
     HttpResponseForbidden,
 )
-from django.shortcuts import get_object_or_404
 
 # HTK Imports
-from htk.api.utils import json_response_error
+from htk.api.utils import (
+    json_response_error,
+    json_response_not_found,
+)
 from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
@@ -122,3 +125,84 @@ class require_organization_member(object):
         return require_organization_permission(
             OrganizationMemberRoles.MEMBER, content_type=self.content_type
         )(view_func)
+
+
+class require_organization_member_user(object):
+    def __init__(self, content_type='text/html'):
+        self.content_type = content_type
+
+    def __call__(self, view_func):
+        @wraps(view_func)
+        def wrapped_view(request, *args, **kwargs):
+            # NOTE: Actual view function might use organization or team_id. Do not pop it.
+            organization = kwargs.get('organization')
+            member_id = kwargs.get('member_id')
+
+            try:
+                member = organization.members.get(id=member_id)
+            except ObjectDoesNotExist:
+                if self.content_type == 'application/json':
+                    response = json_response_not_found()
+                else:
+                    raise Http404
+            else:
+                kwargs['member'] = member
+                response = view_func(request, *args, **kwargs)
+
+            return response
+
+        return wrapped_view
+
+
+class require_organization_team(object):
+    def __init__(self, content_type='text/html'):
+        self.content_type = content_type
+
+    def __call__(self, view_func):
+        @wraps(view_func)
+        def wrapped_view(request, *args, **kwargs):
+            # NOTE: Actual view function might use organization or team_id. Do not pop it.
+            organization = kwargs.get('organization')
+            team_id = kwargs.get('team_id')
+
+            try:
+                team = organization.teams.get(id=team_id)
+            except ObjectDoesNotExist:
+                if self.content_type == 'application/json':
+                    response = json_response_not_found()
+                else:
+                    raise Http404
+            else:
+                kwargs['team'] = team
+                response = view_func(request, *args, **kwargs)
+
+            return response
+
+        return wrapped_view
+
+
+class require_organization_invitation(object):
+    def __init__(self, content_type='text/html'):
+        self.content_type = content_type
+
+    def __call__(self, view_func):
+        @wraps(view_func)
+        def wrapped_view(request, *args, **kwargs):
+            # NOTE: Actual view function might use organization or team_id. Do not pop it.
+            organization = kwargs.get('organization')
+            invitation_id = kwargs.get('invitation_id')
+
+            try:
+                invitation = organization.invitations.get(id=invitation_id)
+            except ObjectDoesNotExist:
+                if self.content_type == 'application/json':
+                    response = json_response_not_found()
+                else:
+                    raise Http404
+            else:
+                kwargs['invitation'] = invitation
+                response = view_func(request, *args, **kwargs)
+
+            return response
+
+        return wrapped_view
