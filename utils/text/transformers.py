@@ -2,7 +2,10 @@
 import re
 
 # HTK Imports
-from htk.compat import IS_PYTHON_2
+from htk.compat import (
+    IS_PYTHON_2,
+    IS_PYTHON_3,
+)
 from htk.utils.text.constants import SUMMARY_NUM_SENTENCES
 from htk.utils.text.general import (
     is_ascii,
@@ -136,6 +139,7 @@ def seo_tokenize(
     <- 'Recreational Sports Facility, Berkeley, CA', lower=False
     -> 'Recreational-Sports-Facility-Berkeley-CA'
     """
+    title = title.decode() if IS_PYTHON_3 and isinstance(title, bytes) else title
     tokens = SEO_TOKEN_INVALID_CHARS_REGEX.split(title.strip())
     cleaned_title = ' '.join(tokens)
 
