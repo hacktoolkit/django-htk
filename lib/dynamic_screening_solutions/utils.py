@@ -34,7 +34,11 @@ def validate_webhook_request(request):
         # https://bugs.python.org/issue16063
         # https://stackoverflow.com/a/31572219
         hash_key = hash_key.encode() if IS_PYTHON_3 else bytes(hash_key)
-        request_body = request.body.encode() if IS_PYTHON_3 else request.body
+        request_body = (
+            request.body.encode()
+            if IS_PYTHON_3 and isinstance(request.body, str)
+            else request.body
+        )
 
         hashed = hmac.new(hash_key, request_body, digestmod=hashlib.sha1).digest()
 
