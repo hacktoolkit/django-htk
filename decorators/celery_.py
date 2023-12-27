@@ -21,25 +21,25 @@ class safe_timed_task(object):
         self.force_cooldown = force_cooldown
 
     @property
-    def cooldown_class(self):
+    def cooldown_obj(self):
         if self.cooldown_secs is not None:
-            class _Cooldown(TaskCooldown):
+            class _CeleryTaskCooldown(TaskCooldown):
                 COOLDOWN_DURATION_SECONDS = self.cooldown_secs
 
-            cls = _Cooldown
+            obj = _CeleryTaskCooldown(prekey=self.task_name)
         else:
-            cls = None
+            obj = None
 
-        return cls
+        return obj
 
     @property
     def has_cooldown(self):
-        has_cooldown = self.cooldown_class is not None and self.cooldown_class().has_cooldown()
+        has_cooldown = self.cooldown_obj is not None and self.cooldown_obj.has_cooldown()
         return has_cooldown
 
     def reset_cooldown(self):
-        if self.cooldown_class:
-            was_reset = self.cooldown_class().reset_cooldown(force=self.force_cooldown)
+        if self.cooldown_obj:
+            was_reset = self.cooldown_obj.reset_cooldown(force=self.force_cooldown)
         else:
             was_reset = False
 
