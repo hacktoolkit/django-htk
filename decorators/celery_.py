@@ -64,8 +64,13 @@ class safe_timed_task(object):
                     # do nothing
                     was_skipped = True
                 else:
+                    # reset cooldown before running task to set a mutex "lock"
+                    # so that separate workers receiving the same task message do not process them concurrently
+                    self.reset_cooldown()
+
                     result = task_fn(*args, **kwargs)
-                    # reset cooldown to prevent future jobs from running too soon
+
+                    # reset cooldown after task completion to prevent future jobs from running too soon
                     self.reset_cooldown()
 
                 timer.stop()
@@ -79,7 +84,7 @@ class safe_timed_task(object):
                         duration,
                     )
                     slack_notify(msg)
-            except:
+            except Exception:
                 result = None
                 extra_data = {
                     'task_name' : self.task_name,
