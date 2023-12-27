@@ -31,21 +31,17 @@ class BaseTask(object):
         """
         prekey = self.get_cooldown_class_prekey(user)
         c = self.cooldown_class(prekey)
-        _has_cooldown = bool(c.get())
+        _has_cooldown = c.has_cooldown()
         return _has_cooldown
 
-    def reset_cooldown(self, user):
+    def reset_cooldown(self, user, force=False):
         """Resets cooldown timer for this `user`
 
         Returns whether cooldown was reset, False if timer was still running
         """
         prekey = self.get_cooldown_class_prekey(user)
         c = self.cooldown_class(prekey)
-        if c.get():
-            was_reset = False
-        else:
-            c.cache_store()
-            was_reset = True
+        was_reset = c.reset_cooldown(force=force)
         return was_reset
 
     def get_users(self):
@@ -77,7 +73,7 @@ class BaseTask(object):
                     # cache right after execution or exception, not before
                     # since each execution costs a non-zero overhead
                     self.reset_cooldown(user)
-            except:
+            except Exception:
                 extra_data = {
                     'user' : {
                         'id' : user.id,
