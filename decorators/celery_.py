@@ -73,7 +73,11 @@ class safe_timed_task(object):
                 if slack_notifications_enabled:
                     duration = timer.duration()
                     skipped_msg = '(SKIPPED) ' if was_skipped else ''
-                    msg = '%sFinished processing *%s* in *%s* seconds %s' % (skipped_msg, self.task_name, duration,)
+                    msg = '{}Finished processing *{}* in *{}* seconds'.format(
+                        skipped_msg,
+                        self.task_name,
+                        duration,
+                    )
                     slack_notify(msg)
             except:
                 result = None
