@@ -240,6 +240,8 @@ class DataTablesQueryParams:
 def model_datatables_api_get_view(
     request: HttpRequest,
     model_class: models.Model,
+    base_exclusion: T.Optional[Q] = None,
+    base_filter: T.Optional[Q] = None,
     search_fields: T.Optional[list[str]] = None,
     default_ordering: T.Optional[list[str]] = None,
 ) -> HttpResponse:
@@ -256,6 +258,14 @@ def model_datatables_api_get_view(
     # Build the QuerySet
 
     q = model_class.objects
+
+    if base_exclusion:
+        q = q.exclude(base_exclusion)
+
+    if base_filter:
+        q = q.exclude(base_filter)
+
+    base_q = q
 
     if search_fields and dtqp.search_value:
         # chain search fields with an OR search
@@ -278,7 +288,7 @@ def model_datatables_api_get_view(
 
     p = Paginator(q, dtqp.length)
 
-    records_total = model_class.objects.count()
+    records_total = base_q.count()
     records_filtered = q.count()
 
     page_num = dtqp.start // dtqp.length + 1
