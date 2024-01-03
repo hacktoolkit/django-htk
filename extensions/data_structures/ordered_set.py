@@ -1,9 +1,8 @@
+# Third Party (PyPI) Imports
+from six.moves import collections_abc
 
-# Python Standard Library Imports
-import collections
 
-
-class OrderedSet(collections.MutableSet):
+class OrderedSet(collections_abc.MutableSet):
     """
     From: https://code.activestate.com/recipes/576694/
      Official Python docs also recommended it: https://docs.python.org/2/library/collections.html#collections.OrderedDict
