@@ -12,7 +12,7 @@ def create_slack_beacon(event):
     if slack_webhook_url:
         from uuid import uuid4
         from htk.lib.slack.beacon.cachekeys import SlackBeaconCache
-        beacon_key = uuid4().get_hex()[:6]
+        beacon_key = uuid4().hex[:6]
         payload = {
             'slack_webhook_url' : slack_webhook_url,
             'channel_name' : event.get('channel_name'),

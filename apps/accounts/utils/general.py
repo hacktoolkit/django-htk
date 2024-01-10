@@ -58,7 +58,7 @@ def create_user(
     UserModel = get_user_model()
 
     if username_prefix and isinstance(username_prefix, str):
-        username = '%s_%s' % (username_prefix, uuid4().get_hex()[:10],)
+        username = '%s_%s' % (username_prefix, uuid4().hex[:10],)
     else:
         username = email_to_username_pretty_unique(email)
 
@@ -85,7 +85,7 @@ def set_random_password(user, password_length=16):
 
     Utilizes hex UUID
     """
-    password = uuid4().get_hex()[:password_length]
+    password = uuid4().hex[:password_length]
     user.set_password(password)
     user.save()
     return password
