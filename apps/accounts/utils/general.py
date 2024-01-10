@@ -1,7 +1,6 @@
 # Python Standard Library Imports
 import hashlib
 import time
-from uuid import uuid4
 
 # Third Party (PyPI) Imports
 import rollbar
@@ -19,7 +18,10 @@ from django.utils.http import (
 # HTK Imports
 from htk.apps.accounts.constants import *
 from htk.apps.accounts.exceptions import NonUniqueEmail
-from htk.compat import b64encode
+from htk.compat import (
+    b64encode,
+    uuid4_hex
+)
 from htk.utils import htk_setting
 from htk.utils.general import resolve_model_dynamically
 from htk.utils.request import get_current_request
@@ -58,7 +60,7 @@ def create_user(
     UserModel = get_user_model()
 
     if username_prefix and isinstance(username_prefix, str):
-        username = '%s_%s' % (username_prefix, uuid4().hex[:10],)
+        username = '%s_%s' % (username_prefix, uuid4_hex()[:10],)
     else:
         username = email_to_username_pretty_unique(email)
 
@@ -85,7 +87,7 @@ def set_random_password(user, password_length=16):
 
     Utilizes hex UUID
     """
-    password = uuid4().hex[:password_length]
+    password = uuid4_hex()[:password_length]
     user.set_password(password)
     user.save()
     return password

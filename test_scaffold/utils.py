@@ -1,11 +1,11 @@
 # Python Standard Library Imports
 import random
-from uuid import uuid4
 
 # Django Imports
 from django.contrib.auth import get_user_model
 
 # HTK Imports
+from htk.compat import uuid4_hex
 from htk.test_scaffold.test_data import *
 
 
@@ -14,13 +14,13 @@ def create_test_user():
     If two randomly assigned usernames overlap, it will fail
     """
     UserModel = get_user_model()
-    username = '%s_%s' % ('test', uuid4().hex[:10],)
+    username = '%s_%s' % ('test', uuid4_hex()[:10],)
     user = UserModel.objects.create(username=username)
     return user
 
 def create_test_email():
     email = 'test%s@%s' % (
-        uuid4().hex[:10],
+        uuid4_hex()[:10],
         'hacktoolkit.com',
     )
     return email
@@ -28,11 +28,11 @@ def create_test_email():
 def create_test_username():
     """Generates a random username
     """
-    username = '%s_%s' % ('test', uuid4().hex[:10],)
+    username = '%s_%s' % ('test', uuid4_hex()[:10],)
     return username
 
 def create_test_password():
-    password = uuid4().hex
+    password = uuid4_hex()
     return password
 
 def create_test_user_with_email_and_password():
@@ -53,7 +53,7 @@ def get_test_username():
     return username
 
 def get_random_string(max_length=0):
-    s = 'randstr%s' % uuid4().hex
+    s = 'randstr%s' % uuid4_hex()
     if max_length > 0:
         s = s[:max_length]
     return s

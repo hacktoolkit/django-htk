@@ -2,6 +2,7 @@
 from django.urls import reverse
 
 # HTK Imports
+from htk.compat import uuid4_hex
 from htk.utils import htk_setting
 
 
@@ -10,9 +11,8 @@ def create_slack_beacon(event):
     webhook_settings = event.get('webhook_settings', {})
     slack_webhook_url = webhook_settings.get('slack_webhook_url')
     if slack_webhook_url:
-        from uuid import uuid4
         from htk.lib.slack.beacon.cachekeys import SlackBeaconCache
-        beacon_key = uuid4().hex[:6]
+        beacon_key = uuid4_hex()[:6]
         payload = {
             'slack_webhook_url' : slack_webhook_url,
             'channel_name' : event.get('channel_name'),

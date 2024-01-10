@@ -1,6 +1,7 @@
 # Python Standard Library Imports
 import base64
 import sys
+import uuid
 
 
 def is_python2():
@@ -76,3 +77,8 @@ def b64decode(encoded, url_safe=False, as_str=True):
     decoded = decoded.decode() if IS_PYTHON_3 and as_str else decoded
 
     return decoded
+
+
+def uuid4_hex():
+    """Python 2/3 compatible uuid4() hex generator"""
+    return uuid.uuid4().hex if IS_PYTHON_3 else uuid.uuid4().get_hex()
