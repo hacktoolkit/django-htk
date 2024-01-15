@@ -46,7 +46,7 @@ def summarize(paragraph, num_sentences=SUMMARY_NUM_SENTENCES):
     `paragraph` is one big long string
     `num_sentences` the number of sentences desired in the summary
 
-    TODO: produce a more faithful summary. This currently converts any terminal punctuation ([\.!?]) to periods (.)
+    TODO: produce a more faithful summary. This currently converts any terminal punctuation (`[.!?]`) to periods (`.`)
     """
     sentences = get_sentences(paragraph)
     paragraph_num_sentences = len(sentences)

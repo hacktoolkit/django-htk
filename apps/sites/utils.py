@@ -18,6 +18,7 @@ def get_current_site(request=None):
     site = None
 
     if request:
+        # Django Imports
         from django.contrib.sites.models import Site
 
         hostname = request.get_host()
@@ -25,7 +26,7 @@ def get_current_site(request=None):
         for _site in Site.objects.all():
             # TODO: expensive, cache
             domain = _site.domain
-            domain_regex = r'^(?:.*\.)?%s$' % domain.replace('.', '\.')
+            domain_regex = r'^(?:.*\.)?%s$' % domain.replace('.', r'\.')
             if re.match(domain_regex, hostname):
                 site = _site
                 break
@@ -36,8 +37,7 @@ def get_current_site(request=None):
 
 
 def get_site_name(request=None):
-    """Returns the current site name
-    """
+    """Returns the current site name"""
     site = get_current_site(request=request)
     site_name = site.name if site else None
 
