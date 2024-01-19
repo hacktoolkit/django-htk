@@ -17,7 +17,6 @@ from django.http import (
 from htk.api.utils import json_response
 from htk.utils import strtobool_safe
 
-
 # isort: off
 
 
@@ -239,7 +238,7 @@ class DataTablesQueryParams:
 
 def model_datatables_api_get_view(
     request: HttpRequest,
-    model_class: models.Model,
+    model_class: T.Union[models.Model, models.QuerySet],
     base_exclusion: T.Optional[Q] = None,
     base_filter: T.Optional[Q] = None,
     search_fields: T.Optional[list[str]] = None,
@@ -247,6 +246,10 @@ def model_datatables_api_get_view(
 ) -> HttpResponse:
     """Generic API view for handling a server-side processed
     Datatables request.
+
+    `model_class` can be either a Django Model or a QuerySet. Allowing queryset
+    is for special circumstances where some aggregation or other operations
+    is needed before.
     """
 
     ##
@@ -257,13 +260,17 @@ def model_datatables_api_get_view(
     ##
     # Build the QuerySet
 
-    q = model_class.objects
+    q = (
+        model_class
+        if isinstance(model_class, models.QuerySet)
+        else model_class.objects
+    )
 
     if base_exclusion:
         q = q.exclude(base_exclusion)
 
     if base_filter:
-        q = q.exclude(base_filter)
+        q = q.filter(base_filter)
 
     base_q = q
 
