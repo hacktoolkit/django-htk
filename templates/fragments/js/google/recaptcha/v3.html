@@ -4,6 +4,12 @@
 grecaptcha.ready(function() {
     grecaptcha.execute('{{ google_recaptcha_v3_site_key }}', {action: '{{ action|default:'pageview' }}'}).then(function(token) {
         $('#id_recaptcha').val(token);
+        // Check if form_id is provided
+        if (typeof form_id !== 'undefined')
+        {
+            // If form_id is provided, trigger form submission
+            $('#{{form_id}}').submit();
+        }
     });
 });
 </script>
