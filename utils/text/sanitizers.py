@@ -2,7 +2,6 @@
 import html
 import re
 
-
 # isort: off
 
 
@@ -27,7 +26,6 @@ def sanitize_cookie_value(value: str) -> str:
     sanitized_value = html.escape(value)
 
     # Further restrict to a safe set of characters
-    # This regular expression allows only alphanumeric characters, hyphens, and underscores
     sanitized_value = re.sub(
         r'[^a-zA-Z0-9-_ !#$%&\'()*+-./:<=>?@[\]^_`{|}~]', '', sanitized_value
     )
