@@ -27,6 +27,6 @@ def sanitize_cookie_value(value: str) -> str:
 
     # Further restrict to a safe set of characters
     sanitized_value = re.sub(
-        r'[^a-zA-Z0-9-_ !#$%&\'()*+-./:<=>?@[\]^_`{|}~]', '', sanitized_value
+        r'[^a-zA-Z0-9-_!#$%&\'()*+-./:<=>?@[\]^_`{|}~]', '', sanitized_value
     )
     return sanitized_value
