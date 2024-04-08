@@ -119,7 +119,9 @@ class AbstractLocalizedString(HtkBaseModel):
         )
 
     def __str__(self):
-        value = '{} - {}'.format(
-            self.localizable_string.key, self.language_code
-        )
+        value = '{} - {}'.format(self.key, self.language_code)
         return value
+
+    @property
+    def key(self):
+        return self.localizable_string.key
