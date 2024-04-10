@@ -85,6 +85,13 @@ class ForumThread(models.Model):
 class ForumMessage(models.Model):
     thread = models.ForeignKey(ForumThread, related_name='messages')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='messages')
+    reply_to = models.ForeignKey(
+        'self',
+        related_name='replies',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
     text = models.TextField(max_length=3000)
     timestamp = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField('ForumTag', blank=True)
