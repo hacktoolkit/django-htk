@@ -1,4 +1,4 @@
-Django==3.2.24
+Django==3.2.25
 Fabric==1.6.1
 South==0.8.4
 django-grappelli==2.15.2
