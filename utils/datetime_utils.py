@@ -70,7 +70,11 @@ def datetime_to_unix_time(dt):
 
     # TODO: for Python 3 compatibility, check hasattr(dt, 'timestamp') and that it is a method
     """
-    if isinstance(dt, datetime.date):
+    if isinstance(dt, datetime.datetime):
+        # datetime.datetime is also an instance of date, do nothing
+        pass
+    elif isinstance(dt, datetime.date):
+        # convert date to datetime before attempting to convert a date to unix
         dt = datetime.datetime.combine(dt, datetime.datetime.min.time())
 
     if is_aware(dt):

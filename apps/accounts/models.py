@@ -51,7 +51,6 @@ except ImportError:
 # isort: on
 
 
-
 # isort: off
 
 
@@ -151,6 +150,21 @@ class BaseAbstractUserProfile(
         return url
 
     ##
+    # Auth
+
+    def get_token_auth_token(self):
+        """Returns a token for token authentication.
+
+        Used in conjunction with:
+        - `htk.apps.accounts.backends.HtkUserTokenAuthBackend`
+        - `htk.apps.accounts.middleware.HtkUserTokenAuthMiddleware`
+        """
+        from htk.apps.accounts.utils.auth import get_user_token_auth_token
+
+        token = get_user_token_auth_token(self.user)
+        return token
+
+    ##
     # name
     def get_full_name(self):
         name_parts = [
@@ -245,6 +259,7 @@ class BaseAbstractUserProfile(
                 from htk.apps.accounts.utils.notifiers import (
                     notify_user_email_update,
                 )
+
                 notify_user_email_update(user, old_email, email)
         else:
             pass
