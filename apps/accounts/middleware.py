@@ -41,7 +41,7 @@ class HtkUserTokenAuthMiddleware(MiddlewareMixin):
             # must use `Bearer` token for now
             auth_header = request.META['HTTP_AUTHORIZATION']
             parts = auth_header.split()
-            if parts.length == 2:
+            if len(parts) == 2:
                 method, token = parts
                 if method != 'Bearer':
                     token = None
