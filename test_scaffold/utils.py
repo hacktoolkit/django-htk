@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 # HTK Imports
 from htk.compat import uuid4_hex
 from htk.test_scaffold.test_data import *
+from htk.utils import htk_setting
 
 
 def create_test_user(
@@ -33,8 +34,11 @@ def create_test_user(
     return user
 
 
-def create_test_email(email_domain='hacktoolkit.com'):
-    email = 'test{}@{}'.format(
+def create_test_email(email_domain=None):
+    if email_domain is None:
+        email_domain = htk_setting('HTK_TEST_EMAIL_DOMAIN')
+
+    email = 'test+{}@{}'.format(
         uuid4_hex()[:10],
         email_domain,
     )

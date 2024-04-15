@@ -238,11 +238,17 @@ class BaseAbstractUserProfile(
     ##
     # emails
 
-    def has_email(self, email):
-        """Determine whether this User owns `email`"""
-        user_email = get_user_email(self.user, email)
-        has_email = user_email and user_email.is_confirmed
+    def has_email(self, email, is_confirmed=True):
+        """Determine whether this User owns `email`
+
+        `is_confirmed`: whether the email is confirmed or not, default `True`
+        """
+        user_email = get_user_email(self.user, email, is_confirmed=is_confirmed)
+        has_email = user_email is not None
         return has_email
+
+    def has_unconfirmed_email(self, email):
+        return self.has_email(email, is_confirmed=False)
 
     def set_primary_email(self, email):
         """Set the primary email address for `self.user`

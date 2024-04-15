@@ -290,11 +290,13 @@ def authenticate_user_by_basic_auth_credentials(request, credentials):
 # email management
 
 
-def get_user_email(user, email):
+def get_user_email(user, email, is_confirmed=True):
     from htk.apps.accounts.models import UserEmail
 
     try:
-        user_email = UserEmail.objects.get(user=user, email__iexact=email)
+        user_email = UserEmail.objects.get(
+            user=user, email__iexact=email, is_confirmed=is_confirmed
+        )
     except UserEmail.DoesNotExist:
         user_email = None
     return user_email
