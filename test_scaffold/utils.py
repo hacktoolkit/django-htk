@@ -61,6 +61,7 @@ def create_test_user_with_email_and_password():
 
     password = create_test_password()
     user.set_password(password)
+    user.save()
 
     return (
         user,
