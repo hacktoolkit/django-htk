@@ -62,7 +62,7 @@ def get_user_token_auth_token(user, expires_minutes=None):
         else htk_setting('HTK_USER_TOKEN_AUTH_EXPIRES_MINUTES')
     )
     expires = utcnow() + datetime.timedelta(minutes=expires_minutes)
-    expires_timestamp = datetime_to_unix_time(expires)
+    expires_timestamp = datetime_to_unix_time(expires, as_millis=True)
 
     hashed = get_user_token_auth_hash(user, expires_timestamp)
 
@@ -113,7 +113,7 @@ def validate_user_token_auth_token(token):
         # verify expiration of token
 
         expires_timestamp = data.get('expires', 0)
-        expires = unix_time_to_datetime(expires_timestamp)
+        expires = unix_time_to_datetime(expires_timestamp, as_millis=True)
 
         if expires > utcnow():
             # token has not expired

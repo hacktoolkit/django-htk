@@ -57,7 +57,7 @@ def parse_datetime(dt_str):
     return dt
 
 
-def datetime_to_unix_time(dt):
+def datetime_to_unix_time(dt, as_millis=False):
     """Converts a datetime to a Unix timestamp
 
     Essentially performs the inverse of datetime.datetime.fromtimestamp(timestamp)
@@ -81,10 +81,17 @@ def datetime_to_unix_time(dt):
         # convert an aware datetime to UTC first
         dt = dt.astimezone(pytz.utc)
     unix_time = time.mktime(dt.timetuple())
+
+    if as_millis:
+        unix_time = int(unix_time * 1000)
+
     return unix_time
 
 
-def unix_time_to_datetime(timestamp, tzinfo=pytz.utc):
+def unix_time_to_datetime(timestamp, tzinfo=pytz.utc, as_millis=False):
+    if as_millis:
+        timestamp /= 1000
+
     dt = datetime.datetime.fromtimestamp(timestamp, tz=tzinfo)
     return dt
 
