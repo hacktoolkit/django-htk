@@ -168,7 +168,8 @@ def json_response_form_error(
     errors = {}
     if include_field_errors:
         field_errors = copy.deepcopy(form.errors)
-        del field_errors['__all__']
+        if '__all__' in field_errors:
+            del field_errors['__all__']
 
         errors['form_fields'] = field_errors
 
