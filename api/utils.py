@@ -171,10 +171,14 @@ def json_response_form_error(
         if '__all__' in field_errors:
             del field_errors['__all__']
 
-        errors['form_fields'] = field_errors
+        if field_errors:
+            errors['form_fields'] = field_errors
 
     if include_non_field_errors:
-        errors['non_fields'] = copy.deepcopy(form.non_field_errors())
+        non_field_errors = copy.deepcopy(form.non_field_errors())
+
+        if non_field_errors:
+            errors['non_fields'] = non_field_errors
 
     response = json_response_error({'errors': errors})
     return response
