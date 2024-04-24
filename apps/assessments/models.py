@@ -19,7 +19,7 @@ class AbstractAssessment(models.Model):
     version = models.IntegerField(default=1)
     # Number of attempts allowed: 0 for unlimited attempts, 1 for only 1.
     num_allowed_attempts = models.PositiveIntegerField(default=0)
-    # when `True` and `num_allowed_attempts` == 1, previous responses are overwritten
+    # When `True` and `num_allowed_attempts` == 1, previous responses are overwritten
     is_repeat_allowed = models.BooleanField(default=False)
     # Optional "Exit message" to display when an incorrect answer is provided
     knockout_message = models.TextField(blank=True, null=True)
@@ -111,9 +111,10 @@ class AbstractAssessmentAttempt(models.Model):
     assessment = models.ForeignKey(
         ASSESSMENT_MODEL, related_name='attempts', on_delete=models.CASCADE
     )
+    # Indicates if the attempt has been completed
     is_completed = models.BooleanField(
         default=False
-    )  # Indicates if the attempt has been completed
+    )
 
     class Meta:
         abstract = True
