@@ -3,11 +3,13 @@ from django.conf import settings
 from django.db import models
 
 # HTK Imports
+from htk.apps.assessments.enums import QuestionType
+from htk.apps.assessments.utils import build_question_type_choices
 from htk.utils import htk_setting
 
 
 class AbstractAssessment(models.Model):
-    """Main class for Assessments app.
+    """Abstract model for Assessments app to extend from.
 
     Possible use cases include:
     - Quizzes and Exams
@@ -22,7 +24,7 @@ class AbstractAssessment(models.Model):
     # When `True` and `num_allowed_attempts` == 1, previous responses are overwritten
     is_repeat_allowed = models.BooleanField(default=False)
     # Optional "Exit message" to display when an incorrect answer is provided
-    knockout_message = models.TextField(blank=True, null=True)
+    knockout_message = models.TextField(blank=True, null=True, max_length=512)
 
     class Meta:
         abstract = True
@@ -36,17 +38,14 @@ class AbstractAssessmentQuestion(models.Model):
 
     ASSESSMENT_MODEL = htk_setting('HTK_ASSESSMENT_MODEL')
 
-    QUESTION_TYPES = (
-        ('FR', 'Free Response'),
-        ('MC', 'Multiple Choice'),
-        ('YN', 'Yes or No'),
-    )
-
     assessment = models.ForeignKey(
         ASSESSMENT_MODEL, related_name='questions', on_delete=models.CASCADE
     )
-    text = models.TextField()
-    question_type = models.CharField(max_length=2, choices=QUESTION_TYPES)
+    text = models.TextField(max_length=256)
+    question_type = models.PositiveSmallIntegerField(
+        default=QuestionType.UNSPECIFIED.value,
+        choices=build_question_type_choices(),
+    )
     # Specifies the order of questions within an assessment
     order = models.IntegerField(default=0)
     # Must be `True` to allow empty text responses or "No Entry" for multiple choice
@@ -55,7 +54,7 @@ class AbstractAssessmentQuestion(models.Model):
     is_knockout = models.BooleanField(default=False)
     # Optional "Exit message" to display when an incorrect answer is provided,
     # overrides `AbstractAssessment.knockout_message`
-    knockout_message = models.TextField(blank=True, null=True)
+    knockout_message = models.TextField(blank=True, null=True, max_length=512)
 
     class Meta:
         abstract = True
@@ -112,9 +111,7 @@ class AbstractAssessmentAttempt(models.Model):
         ASSESSMENT_MODEL, related_name='attempts', on_delete=models.CASCADE
     )
     # Indicates if the attempt has been completed
-    is_completed = models.BooleanField(
-        default=False
-    )
+    is_completed = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
