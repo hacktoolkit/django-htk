@@ -6,6 +6,6 @@ from htk.utils.log.handlers import (
 
 
 __all__ = [
-    RollbarHandler,
-    SlackDebugHandler,
+    'RollbarHandler',
+    'SlackDebugHandler',
 ]
