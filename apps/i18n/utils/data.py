@@ -1,7 +1,11 @@
 # Python Standard Library Imports
 import json
+import operator
 import os
-from functools import lru_cache
+from functools import (
+    lru_cache,
+    reduce,
+)
 
 # HTK Imports
 from htk.utils import (
@@ -27,7 +31,9 @@ def look_up_supported_languages():
     return language_codes
 
 
-def retrieve_all_strings(by_language=False, language_codes=None):
+def retrieve_all_strings(
+    by_language=False, language_codes=None, namespaces=None
+):
     """Returns all translated strings for every possible
     `LocalizableString` in every available language (`LocalizedString`)
 
@@ -81,10 +87,26 @@ def retrieve_all_strings(by_language=False, language_codes=None):
 
         data = {
             language_code: {
-                localized_string.key: localized_string.value
+                localized_string.key_without_namespaces(
+                    namespaces=[
+                        namespace
+                        for namespace in namespaces
+                        if namespace != 'common'
+                    ]
+                ): localized_string.value
                 for localized_string in LocalizedString.objects.filter(
                     language_code=language_code
                 ).order_by('localizable_string__key')
+                if (
+                    len(namespaces) == 0
+                    or reduce(
+                        operator.or_,
+                        (
+                            localized_string.key.startswith(f'{namespace}.')
+                            for namespace in namespaces
+                        ),
+                    )
+                )
             }
             for language_code in language_codes
         }
