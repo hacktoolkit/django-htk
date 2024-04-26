@@ -1,0 +1,25 @@
+{# Docs: https://getbootstrap.com/docs/5.3/components/navs-tabs/ #}
+<ul class="nav nav-pills" id="todosTabs" role="tablist">
+  {% for todos_section in todos_sections %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link{% if forloop.first %} active{% endif %}" id="{{ todos_section.key }}-tab" data-bs-toggle="tab" data-bs-target="#{{ todos_section.key }}-tab-pane" type="button" role="tab" aria-controls="{{ todos_section.key }}-tab-pane" aria-selected="true">{{ todos_section.name }}</button>
+  </li>
+  {% endfor %}
+</ul>
+<div class="tab-content" id="todosTabsContent">
+  {% for todos_section in todos_sections %}
+  <div class="tab-pane fade show{% if forloop.first %} active{% endif %}" id="{{ todos_section.key }}-tab-pane" role="tabpanel" aria-labelledby="{{ todos_section.key }}-tab" tabindex="0">
+    <p>
+      There are <b>{{ todos_section.groups|length }} unresolved TODOs</b> in the <b>{{ todos_section.name }}</b> section of the codebase:
+    </p>
+
+    {% for todos_group in todos_section.groups %}
+
+    {% if forloop.counter0 > 0 %}<hr/>{% endif %}
+    <pre class="todo-block">{{ todos_group }}</pre>
+
+    {% endfor %}{# end todos_group in todos_section.groups #}
+
+  </div>
+  {% endfor %}
+</div>
