@@ -150,7 +150,7 @@ class AbstractAssessmentAnswer(models.Model):
         abstract = True
 
     def __str__(self):
-        if self.question.question_type == 'FR':
+        if self.question.question_type == QuestionType.FREE_RESPONSE.value:
             result = self.user_text
         else:  # MC or Y/N
             result = str(self.option) if self.option else 'No answer'
@@ -159,7 +159,10 @@ class AbstractAssessmentAnswer(models.Model):
 
     @property
     def is_correct(self):
-        if self.question.question_type in ['MC', 'YN']:
+        if self.question.question_type in [
+            QuestionType.MULTIPLE_CHOICE.value,
+            QuestionType.YES_OR_NO.value,
+        ]:
             result = self.option and self.option.is_correct
         else:
             # Free response grading can be subjective and might need manual review
