@@ -113,17 +113,6 @@ class ChangeUsernameForm(UserUpdateForm):
         }
 
 
-class ChangeEmailForm(UserUpdateForm):
-    class Meta:
-        model = UserModel
-        fields = (
-            'email',
-        )
-        help_texts = {
-            'email' : 'Email addresses must consist of alphanumerics (letters (a-z) or digits (0-9)), periods (.), underscores (_), hyphens (-) and must include an "@" symbol followed by a valid domain name ending with a period and a top-level domain',
-        }
-
-
 class ChangePasswordForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super(ChangePasswordForm, self).__init__(*args, **kwargs)
