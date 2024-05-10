@@ -25,9 +25,10 @@ from htk.utils import (
 class AddEmailForm(forms.Form):
     email = forms.EmailField(label='Email')
 
-    def __init__(self, user=None, *args, **kwargs):
+    def __init__(self, user=None, require_verification=True, *args, **kwargs):
         super(AddEmailForm, self).__init__(*args, **kwargs)
         self.user = user
+        self.require_verification = require_verification
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
@@ -40,11 +41,12 @@ class AddEmailForm(forms.Form):
             raise forms.ValidationError('This email is already registered')
         return email
 
-    def save(self, domain=None, commit=True, confirmed=False):
+    def save(self, domain=None, commit=True):
         user = self.user
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         user_email = None
         if user:
             email = self.email
+            confirmed = not self.require_verification
             user_email = associate_user_email(user, email, domain=domain, confirmed=confirmed)
         return user_email
