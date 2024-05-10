@@ -6,22 +6,29 @@ from django import forms
 from django.conf import settings
 
 # HTK Imports
-from htk.apps.accounts.utils import associate_user_email
-from htk.apps.accounts.utils import get_user_by_email
+from htk.apps.accounts.utils import (
+    associate_user_email,
+    get_user_by_email,
+)
 from htk.exceptions import AbstractMethodNotImplemented
-from htk.forms.utils import set_input_attrs
-from htk.forms.utils import set_input_placeholder_labels
+from htk.forms.utils import (
+    set_input_attrs,
+    set_input_placeholder_labels,
+)
 from htk.session_keys import *
-from htk.utils import htk_setting
-from htk.utils import resolve_model_dynamically
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 
 
 class AddEmailForm(forms.Form):
     email = forms.EmailField(label='Email')
 
-    def __init__(self, user=None, *args, **kwargs):
+    def __init__(self, user=None, require_verification=True, *args, **kwargs):
         super(AddEmailForm, self).__init__(*args, **kwargs)
         self.user = user
+        self.require_verification = require_verification
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
@@ -40,5 +47,6 @@ class AddEmailForm(forms.Form):
         user_email = None
         if user:
             email = self.email
-            user_email = associate_user_email(user, email, domain=domain)
+            confirmed = not self.require_verification
+            user_email = associate_user_email(user, email, domain=domain, confirmed=confirmed)
         return user_email
