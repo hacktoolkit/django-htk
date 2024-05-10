@@ -6,14 +6,20 @@ from django import forms
 from django.conf import settings
 
 # HTK Imports
-from htk.apps.accounts.utils import associate_user_email
-from htk.apps.accounts.utils import get_user_by_email
+from htk.apps.accounts.utils import (
+    associate_user_email,
+    get_user_by_email,
+)
 from htk.exceptions import AbstractMethodNotImplemented
-from htk.forms.utils import set_input_attrs
-from htk.forms.utils import set_input_placeholder_labels
+from htk.forms.utils import (
+    set_input_attrs,
+    set_input_placeholder_labels,
+)
 from htk.session_keys import *
-from htk.utils import htk_setting
-from htk.utils import resolve_model_dynamically
+from htk.utils import (
+    htk_setting,
+    resolve_model_dynamically,
+)
 
 
 class AddEmailForm(forms.Form):
@@ -34,11 +40,11 @@ class AddEmailForm(forms.Form):
             raise forms.ValidationError('This email is already registered')
         return email
 
-    def save(self, domain=None, commit=True):
+    def save(self, domain=None, commit=True, confirmed=False):
         user = self.user
         domain = domain or htk_setting('HTK_DEFAULT_EMAIL_SENDING_DOMAIN')
         user_email = None
         if user:
             email = self.email
-            user_email = associate_user_email(user, email, domain=domain)
+            user_email = associate_user_email(user, email, domain=domain, confirmed=confirmed)
         return user_email
