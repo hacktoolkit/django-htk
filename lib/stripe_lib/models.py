@@ -593,9 +593,15 @@ class BaseStripeSubscription(BaseStripeModel):
         subscription = self.retrieve()
 
         if subscription:
-            args = (subscription.get('id'),)
-            obj = safe_stripe_call(self.STRIPE_API_CLASS.delete, *args)
-            was_deleted = obj is not None and obj.get('status') == 'canceled'
+            # Subscription `status` set to `canceled` already
+            # may be due to `Stripe Payment Failure` or other reasons
+            was_deleted = subscription.get('status') == 'canceled'
+
+            # Subscription is `active` and should be deleted
+            if not was_deleted:
+                args = (subscription.get('id'),)
+                obj = safe_stripe_call(self.STRIPE_API_CLASS.delete, *args)
+                was_deleted = obj is not None and obj.get('status') == 'canceled'
         else:
             was_deleted = False
 
