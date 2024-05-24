@@ -75,8 +75,8 @@ class HtkOrganizationAdmin(admin.ModelAdmin):
 class HtkOrganizationMemberAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        # 'organization',
-        'organization_filter',
+        'organization',
+        #'organization_filter',
         'user',
         'role',
     )

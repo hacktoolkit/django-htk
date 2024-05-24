@@ -3,7 +3,12 @@ from django.conf import settings
 from django.db import models
 
 # HTK Imports
-from htk.apps.forums.constants import *
+from htk.apps.forums.constants.defaults import *
+from htk.apps.forums.fk_fields import (
+    fk_forum,
+    fk_forum_thread,
+)
+from htk.models.fk_fields import fk_user
 
 
 class Forum(models.Model):
@@ -15,7 +20,8 @@ class Forum(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        app_label = 'htk'
+        # app_label = 'htk'
+        abstract = True
 
     def __str__(self):
         value = '%s' % (self.name,)
@@ -39,11 +45,9 @@ class Forum(models.Model):
 
 
 class ForumThread(models.Model):
-    forum = models.ForeignKey(Forum, related_name='threads')
+    forum = fk_forum(related_name='threads', required=True)
     subject = models.CharField(max_length=128)
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='authored_threads'
-    )
+    author = fk_user(related_name='authored_threads', required=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     # status
@@ -52,7 +56,8 @@ class ForumThread(models.Model):
     tags = models.ManyToManyField('ForumTag', blank=True)
 
     class Meta:
-        app_label = 'htk'
+        # app_label = 'htk'
+        abstract = True
         verbose_name = 'Forum Thread'
 
     def __str__(self):
@@ -77,10 +82,8 @@ class ForumThread(models.Model):
 
 
 class ForumMessage(models.Model):
-    thread = models.ForeignKey(ForumThread, related_name='messages')
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='messages'
-    )
+    thread = fk_forum_thread(related_name='messages', required=True)
+    author = fk_user(related_name='messages', required=True)
     reply_to = models.ForeignKey(
         'self',
         related_name='replies',
@@ -94,7 +97,8 @@ class ForumMessage(models.Model):
     tags = models.ManyToManyField('ForumTag', blank=True)
 
     class Meta:
-        app_label = 'htk'
+        # app_label = 'htk'
+        abstract = True
         verbose_name = 'Forum Message'
 
     def __str__(self):
@@ -126,7 +130,8 @@ class ForumTag(models.Model):
     name = models.CharField(max_length=64)
 
     class Meta:
-        app_label = 'htk'
+        # app_label = 'htk'
+        abstract = True
         verbose_name = 'Forum Tag'
 
     def __str__(self):
