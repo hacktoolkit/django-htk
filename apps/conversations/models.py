@@ -37,6 +37,12 @@ class BaseConversation(models.Model):
         return value
 
     @classmethod
+    def find_all_by_user(cls, user):
+        """Finds all conversations that a user is a participant in"""
+        conversations = cls.objects.filter(participants__user=user).distinct()
+        return conversations
+
+    @classmethod
     def find_by_participants(cls, participants):
         """Finds a conversation by participants
 
