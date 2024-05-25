@@ -36,6 +36,33 @@ class BaseConversation(models.Model):
         )
         return value
 
+    @classmethod
+    def find_by_participants(cls, participants):
+        """Finds a conversation by participants
+
+        This is useful for finding an existing conversation between a set of participants
+        """
+
+        participant_ids = set([participant.id for participant in participants])
+        num_participants = len(participant_ids)
+
+        conversation = (
+            cls.objects.annotate(
+                n_participants=models.Count('participants'),
+                n_user_matches=models.Count(
+                    'participants',
+                    filter=models.Q(participants__user_id__in=participant_ids),
+                ),
+            )
+            .filter(
+                n_participants=num_participants,
+                n_user_matches=num_participants,
+            )
+            .first()
+        )
+
+        return conversation
+
     @property
     def num_participants(self):
         num = self.participants.count()
@@ -45,6 +72,15 @@ class BaseConversation(models.Model):
     def num_messages(self):
         num = self.messages.count()
         return num
+
+    def add_participant(self, user):
+        """Adds a participant to this conversation"""
+        self.participants.get_or_create(user=user)
+
+    def add_participants(self, users):
+        """Adds several participants to this conversation"""
+        for user in users:
+            self.add_participant(user)
 
 
 class BaseConversationParticipant(models.Model):
