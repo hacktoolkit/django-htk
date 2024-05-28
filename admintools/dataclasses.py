@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import typing as T
 from dataclasses import dataclass
 
 
@@ -33,6 +34,9 @@ class AdminToolsEntry:
 
     name: str
     url_name: str
+    url_params: T.Optional[str] = ''
+    new_window: bool = False
+    should_render: bool = False
 
 
 @dataclass

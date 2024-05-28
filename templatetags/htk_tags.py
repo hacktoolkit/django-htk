@@ -9,6 +9,10 @@ import six.moves.urllib as urllib
 
 # Django Imports
 from django import template
+from django.template import (
+    Context,
+    Template,
+)
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
 from django.utils.safestring import (
@@ -273,6 +277,16 @@ def htk_setting(key):
 
     value = _htk_setting(key)
     return value
+
+
+@register.simple_tag(takes_context=True)
+def render_string(context, template_string):
+    """Renders a Django template string with the given context
+
+    Useful for rendering dynamic template strings in a template
+    """
+    t = Template(template_string)
+    return t.render(Context(context))
 
 
 @register.simple_tag()
