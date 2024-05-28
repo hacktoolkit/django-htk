@@ -22,3 +22,26 @@ class TodosConfig:
     @property
     def exclusion_pattern(self):
         return f'{self.directory}/'
+
+
+@dataclass
+class AdminToolsEntry:
+    """Admin Tools Entry
+
+    This class specifies an admin tool.
+    """
+
+    name: str
+    url_name: str
+
+
+@dataclass
+class AdminToolsGroup:
+    """Admin Tools Group
+
+    This class specifies a group of admin tools.
+    """
+
+    name: str
+    icon: str
+    tools: list[AdminToolsEntry]
