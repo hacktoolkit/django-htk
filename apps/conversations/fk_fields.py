@@ -17,3 +17,16 @@ def fk_conversation(
         **build_kwargs(required=required, **kwargs),
     )
     return field
+
+
+def fk_conversation_message(
+    related_name: str,
+    required: bool = False,
+    **kwargs,
+) -> models.ForeignKey:
+    field = models.ForeignKey(
+        htk_setting('HTK_CONVERSATION_MESSAGE_MODEL'),
+        related_name=related_name,
+        **build_kwargs(required=required, **kwargs),
+    )
+    return field
