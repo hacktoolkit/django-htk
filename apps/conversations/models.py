@@ -1,5 +1,5 @@
 # Third Party (PyPI) Imports
-import emoji
+# import emoji
 
 # Django Imports
 from django.db import models
@@ -182,13 +182,13 @@ class BaseConversationMessageReaction(models.Model):
     message = fk_conversation_message(
         related_name='emoji_reactions', required=True
     )
-    created_at = posted_at = models.DateTimeField(auto_now_add=True)
     user = fk_user(related_name='reacted_by', required=False)
-    emoji = models.CharField(max_length=24)
+    emoji_shortcode = models.CharField(max_length=24)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True
 
-    def __str__(self):
-        value = '%s' % emoji.emojize(self.emoji)
-        return value
+    # def __str__(self):
+    #     value = '%s' % emoji.emojize(self.emoji)
+    #     return value
