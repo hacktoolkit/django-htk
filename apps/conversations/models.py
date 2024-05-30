@@ -179,9 +179,14 @@ class BaseConversationMessage(models.Model):
 
         This method is idempotent. If it is called multiple times with the same arguments, it will remove the record of the emoji reaction.
 
-        If it called multiple times, and the reaction has already been deleted, this method has no effect and just performs a no-op.
+        If it is called multiple times, and the reaction has already been deleted, this method has no effect and just performs a no-op.
         """
-        pass
+        reaction = self.emoji_reactions.filter(
+            user=user,
+            emoji_shortcode=emoji_shortcode,
+        ).first()
+        if reaction:
+            reaction.delete()
 
     def save(self, **kwargs):
         """Saves this message.
