@@ -1,5 +1,5 @@
 # Third Party (PyPI) Imports
-import emoji
+# import emoji
 
 # Django Imports
 from django.db import models
@@ -189,6 +189,6 @@ class BaseConversationMessageReaction(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
-        value = '%s' % emoji.emojize(self.emoji)
-        return value
+    # def __str__(self):
+    #     value = '%s' % emoji.emojize(self.emoji)
+    #     return value
