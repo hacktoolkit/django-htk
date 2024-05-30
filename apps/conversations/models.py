@@ -1,8 +1,14 @@
+# Third Party (PyPI) Imports
+import emoji
+
 # Django Imports
 from django.db import models
 
 # HTK Imports
-from htk.apps.conversations.fk_fields import fk_conversation
+from htk.apps.conversations.fk_fields import (
+    fk_conversation,
+    fk_conversation_message,
+)
 from htk.models.fk_fields import fk_user
 from htk.utils import htk_setting
 
@@ -166,3 +172,23 @@ class BaseConversationMessage(models.Model):
 
         # force update on `Conversation.updated_at`
         self.conversation.save()
+
+
+class BaseConversationMessageReaction(models.Model):
+    """An emoji reaction to a message in
+    a conversation.
+    """
+
+    message = fk_conversation_message(
+        related_name='emoji_reactions', required=True
+    )
+    created_at = posted_at = models.DateTimeField(auto_now_add=True)
+    user = fk_user(related_name='reacted_by', required=False)
+    emoji = models.CharField(max_length=24)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        value = '%s' % emoji.emojize(self.emoji)
+        return value

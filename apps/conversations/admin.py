@@ -9,11 +9,12 @@ from htk.utils.general import resolve_model_dynamically
 Conversation = resolve_model_dynamically(htk_setting('HTK_CONVERSATION_MODEL'))
 ConversationMessage = resolve_model_dynamically(
     htk_setting('HTK_CONVERSATION_MESSAGE_MODEL')
+ConversationMessageReaction = resolve_model_dynamically(
+    htk_setting('HTK_CONVERSATION_MESSAGE_REACTION_MODEL')
 )
 ConversationParticipant = resolve_model_dynamically(
     htk_setting('HTK_CONVERSATION_PARTICIPANT_MODEL')
 )
-
 
 class ConversationParticipantInline(admin.TabularInline):
     model = ConversationParticipant
@@ -89,4 +90,11 @@ class BaseConversationMessageAdmin(admin.ModelAdmin):
         'posted_at',
         'edited_at',
         'deleted_at',
+    )
+
+class BaseConversationMessageReactionAdmin(admin.ModelAdmin):
+    model = ConversationMessageReaction
+
+    list_display = (
+        'id', 'message', 'posted_at', 'emoji',
     )
