@@ -217,3 +217,9 @@ class BaseConversationMessageReaction(models.Model):
     def __str__(self):
         value = '%s' % emoji.emojize(self.emoji_shortcode)
         return value
+
+    # TODO: add method to convert the emoji to shortcode
+    # @property
+    # def emoji_to_shortcode(self, emoji):
+    #     value = '%s' % emoji.demojize(emoji)
+    #     return value
