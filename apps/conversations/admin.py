@@ -101,6 +101,7 @@ class BaseConversationMessageReactionAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'message',
+        'user',
         'created_at',
-        'emoji',
+        'emoji_shortcode',
     )
