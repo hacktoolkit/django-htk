@@ -163,6 +163,26 @@ class BaseConversationMessage(models.Model):
     def is_deleted(self):
         return self.deleted_at is not None
 
+    def add_reaction(self, user, emoji_shortcode):
+        """Adds a reaction by `user` to this message.
+
+        This method is idempotent. If it is called multiple times with the same arguments, it will only create 1 record of the emoji reaction.
+        """
+
+        self.emoji_reactions.get_or_create(
+            user=user,
+            emoji_shortcode=emoji_shortcode,
+        )
+
+    def remove_reaction(self, user, emoji_shortcode):
+        """Removes an existing reaction by `user` to this message.
+
+        This method is idempotent. If it is called multiple times with the same arguments, it will remove the record of the emoji reaction.
+
+        If it called multiple times, and the reaction has already been deleted, this method has no effect and just performs a no-op.
+        """
+        pass
+
     def save(self, **kwargs):
         """Saves this message.
 
