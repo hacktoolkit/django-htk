@@ -188,7 +188,7 @@ def unfollow(request, encrypted_uid):
 @login_required
 def email_add(request):
     user = request.user
-    add_email_form = AddEmailForm(user, request.POST)
+    add_email_form = AddEmailForm(user=user, data=request.POST)
     if add_email_form.is_valid():
         domain = request.get_host()
         user_email = add_email_form.save(domain=domain)
