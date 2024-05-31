@@ -22,6 +22,7 @@ class AddEmailForm(forms.Form):
     def __init__(self, user=None, *args, **kwargs):
         super(AddEmailForm, self).__init__(*args, **kwargs)
         self.user = user
+        self.require_verification = kwargs.pop('require_verification', True)
         set_input_attrs(self)
         set_input_placeholder_labels(self)
 
