@@ -25,7 +25,7 @@ from htk.utils import (
 class AddEmailForm(forms.Form):
     email = forms.EmailField(label='Email')
 
-    def __init__(self, user=None, require_verification=True, *args, **kwargs):
+    def __init__(self, user=None, *args, **kwargs):
         super(AddEmailForm, self).__init__(*args, **kwargs)
         self.user = user
         self.require_verification = kwargs.pop('require_verification', True)
