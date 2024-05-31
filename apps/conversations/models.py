@@ -169,7 +169,7 @@ class BaseConversationMessage(models.Model):
         This method is idempotent. If it is called multiple times with the same arguments, it will only create 1 record of the emoji reaction.
         """
 
-        self.emoji_reactions.get_or_create(
+        self.reactions.get_or_create(
             user=user,
             emoji_shortcode=emoji_shortcode,
         )
@@ -181,12 +181,11 @@ class BaseConversationMessage(models.Model):
 
         If it is called multiple times, and the reaction has already been deleted, this method has no effect and just performs a no-op.
         """
-        reaction = self.emoji_reactions.filter(
+
+        self.reactions.filter(
             user=user,
             emoji_shortcode=emoji_shortcode,
-        ).first()
-        if reaction:
-            reaction.delete()
+        ).delete()
 
     def save(self, **kwargs):
         """Saves this message.
@@ -204,9 +203,7 @@ class BaseConversationMessageReaction(models.Model):
     a conversation.
     """
 
-    message = fk_conversation_message(
-        related_name='emoji_reactions', required=True
-    )
+    message = fk_conversation_message(related_name='reactions', required=True)
     user = fk_user(related_name='reacted_by', required=False)
     emoji_shortcode = models.CharField(max_length=24)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -217,9 +214,3 @@ class BaseConversationMessageReaction(models.Model):
     def __str__(self):
         value = '%s' % emoji.emojize(self.emoji_shortcode)
         return value
-
-    # TODO: add method to convert the emoji to shortcode
-    # @property
-    # def emoji_to_shortcode(self, emoji):
-    #     value = '%s' % emoji.demojize(emoji)
-    #     return value
