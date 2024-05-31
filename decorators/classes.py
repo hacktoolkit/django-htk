@@ -140,18 +140,27 @@ class resolve_records_from_restful_url(object):
                     self.model_map.append(entry)
                 else:
                     raise ValueError(
-                        f'[{self._get_class_name()}] Model map tuple must have 3 or 4 items, got {len(entry)}'
+                        '[{}] Model map tuple must have 3 or 4 items, got {}'.format(
+                            self._get_class_name(),
+                            len(entry)
+                        )
                     )
             elif isinstance(entry, str):
                 if index == 0:
                     self.model_map.append(entry)
                 else:
                     raise ValueError(
-                        f'[{self._get_class_name()}] Only first entry can be a string, got {entry!r}'
+                        '[{}] Only first entry can be a string, got {}'.format(
+                            self._get_class_name(),
+                            repr(entry)
+                        )
                     )
             else:
                 raise ValueError(
-                    f'[{self._get_class_name()}] Invalid model map entry type: {type(entry)}'
+                    '[{}] Invalid model map entry type: {}'.format(
+                        self._get_class_name(),
+                        type(entry)
+                    )
                 )
 
     def __call__(self, view_fn):

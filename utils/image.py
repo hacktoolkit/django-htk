@@ -7,13 +7,14 @@ def get_image_from_url(image_url):
     if image_url:
         response = requests.get(image_url)
         if response:
-            import StringIO
-            image = open_image(StringIO.StringIO(response.content))
+            from six import BytesIO
+            image = open_image(BytesIO(response.content))
         else:
             image = None
     else:
         image = None
     return image
+
 
 def open_image(f):
     try:

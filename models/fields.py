@@ -1,6 +1,3 @@
-# Python Standard Library Imports
-import sys
-
 # Django Imports
 from django.core.exceptions import ValidationError
 from django.core.validators import (
@@ -10,11 +7,14 @@ from django.core.validators import (
 from django.db import models
 from django.db.utils import ConnectionRouter
 
+# HTK Imports
+from htk.compat import has_min_python_version
+
 
 # isort: off
 
 
-if sys.version_info.major >= 3:
+if has_min_python_version(3, 0):
     from .fields_py3 import CrossDBForeignKey
 
 

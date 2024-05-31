@@ -29,6 +29,11 @@ MAGIC_VALUE_NOT_SET_STRING = '\0'
 
 registered_mps = defaultdict(dict)
 
+try:
+    basestring
+except NameError:
+    basestring = str
+
 
 def materialized_property(
     field_definition,

@@ -1,36 +1,52 @@
 # Python Standard Library Imports
-import base64
 import hashlib
 
 # Third Party (PyPI) Imports
 from Crypto import Random
 from Crypto.Cipher import AES
 
+# HTK Imports
+from htk.compat import (
+    b64decode,
+    b64encode,
+)
 
+
+# TODO: This needs to be refactored.
 class AESCipher(object):
     """Class for encrypting and decrypting data using AES256
 
     Source: https://stackoverflow.com/a/21928790/865091
     """
+
+    bs = AES.block_size
+
     def __init__(self, key):
-        self.bs = AES.block_size
         self.key = hashlib.sha256(key.encode()).digest()
 
     def encrypt(self, raw):
         raw = self._pad(raw)
-        iv = Random.new().read(AES.block_size)
+        iv = Random.new().read(self.bs)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(raw.encode()))
+        encoded = b64encode(iv + cipher.encrypt(raw.encode()))
+        return encoded
 
     def decrypt(self, enc):
-        enc = base64.b64decode(enc)
-        iv = enc[:AES.block_size]
+        # encrypted data cannot be converted to `str` after base64 decoding
+        # the decoded base64 result must remain as `bytes`
+        enc = b64decode(enc, as_str=False)
+
+        iv = enc[:self.bs]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
+        decrypted = self._unpad(cipher.decrypt(enc[self.bs:])).decode('utf-8')
+        return decrypted
 
-    def _pad(self, s):
-        return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
+    @classmethod
+    def _pad(cls, s):
+        padded = s + (cls.bs - len(s) % cls.bs) * chr(cls.bs - len(s) % cls.bs)
+        return padded
 
-    @staticmethod
-    def _unpad(s):
-        return s[:-ord(s[len(s)-1:])]
+    @classmethod
+    def _unpad(cls, s):
+        unpadded = s[:-ord(s[len(s) - 1:])]
+        return unpadded

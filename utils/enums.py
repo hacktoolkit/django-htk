@@ -1,8 +1,8 @@
 # Python Standard Library Imports
-import sys
 from enum import Enum
 
 # HTK Imports
+from htk.compat import has_min_python_version
 from htk.utils import htk_setting
 
 
@@ -91,7 +91,7 @@ def build_enum_data(enum_class):
     return enum_data
 
 
-if sys.version_info.major == 3 and sys.version_info.minor >= 6:
+if has_min_python_version(3, 6):
     from enum import IntFlag
 
     class HtkIntFlag(IntFlag):

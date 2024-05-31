@@ -9,19 +9,22 @@ import rollbar
 from htk.lib.airtable.exceptions import AirtableNoBaseConfigured
 
 
+# isort: off
+
+
 class AirtableAPI:
     """Airtable API
 
     API Docs: https://airtable.com/{baseId}/api/docs
     """
 
-    def __init__(self, base_id, api_key_ro=None, api_key_rw=None):
+    def __init__(self, base_id, access_token_ro=None, access_token_rw=None):
         if base_id is None:
             raise AirtableNoBaseConfigured
 
         self.base_id = base_id
-        self.api_key_ro = api_key_ro
-        self.api_key_rw = api_key_rw
+        self.access_token_ro = access_token_ro
+        self.access_token_rw = access_token_rw
 
     def fetch_records(self, table, view_name, limit=100, page_size=100):
         """Fetch records from
@@ -30,7 +33,7 @@ class AirtableAPI:
         - https://airtable.com/developers/web/api/list-records
         """
         headers = {
-            'Authorization': 'Bearer {}'.format(self.api_key_ro),
+            'Authorization': 'Bearer {}'.format(self.access_token_ro),
         }
 
         params = {

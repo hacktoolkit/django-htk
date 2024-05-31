@@ -1,11 +1,8 @@
-# Python Standard Library Imports
-import base64
-import time
-
 # Third Party (PyPI) Imports
 import requests
 
 # HTK Imports
+from htk.compat import b64decode
 from htk.lib.google.gmail.constants import GMAIL_RESOURCES
 from htk.utils import refresh
 from htk.utils.cache_descriptors import CachedAttribute
@@ -412,7 +409,7 @@ class GmailMessage(object):
 
         if html_part:
             message_body_data = html_part['body']['data']
-            message_html = base64.b64decode(message_body_data.replace('-', '+').replace('_', '/'))
+            message_html = b64decode(message_body_data.replace('-', '+').replace('_', '/'))
         else:
             message_html = None
 
@@ -459,7 +456,7 @@ class GmailMessage(object):
 
         if text_part:
             message_body_data = text_part['body']['data']
-            message_text = base64.b64decode(message_body_data.replace('-', '+').replace('_', '/')).decode('utf-8')
+            message_text = b64decode(message_body_data.replace('-', '+').replace('_', '/'))
         else:
             # fallback to HTML
             message_text = self.get_html()

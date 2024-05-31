@@ -4,3 +4,6 @@ HTK_LOCALIZED_STRING_MODEL = None
 HTK_LOCALIZABLE_STRING_LANGUAGE_CODES = [
     'en-US',
 ]
+
+# See: `htk.apps.i18n.dataclasses.LocalizationUsageCheck`
+HTK_ADMINTOOLS_LOCALIZATION_USAGE_CHECKS = []

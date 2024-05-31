@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import collections
 import hashlib
 import uuid
 from typing import (
@@ -7,10 +6,13 @@ from typing import (
     Dict,
 )
 
+# Third Party (PyPI) Imports
+from six.moves import collections_abc
+
 # Django Imports
 from django.conf import settings
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 # HTK Imports
 from htk.apps.organizations.enums import (
@@ -103,7 +105,7 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
     def get_distinct_members(self):
         members = self.get_members()
 
-        if not hasattr(collections, 'MutableSet'):
+        if not hasattr(collections_abc, 'MutableSet'):
             # Python >= 3.6
             # See:
             # - https://stackoverflow.com/a/53657523/865091
@@ -322,7 +324,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     # Notifications
 
     def _build_notification_message(self, subject, verb):
-        msg = '{subject_name} ({subject_username}<{email}>) has {verb} an invitation for Organization <{organization_name}>'.format( # noqa: E501
+        msg = '{subject_name} ({subject_username}<{email}>) has {verb} an invitation for Organization <{organization_name}>'.format(  # noqa: E501
             verb=verb,
             subject_name=subject.profile.get_full_name(),
             subject_username=subject.username,

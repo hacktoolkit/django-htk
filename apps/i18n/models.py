@@ -1,3 +1,6 @@
+# Python Standard Library Imports
+import subprocess
+
 # Django Imports
 from django.db import models
 
@@ -50,6 +53,18 @@ class AbstractLocalizableString(HtkBaseModel):
         )
         return value
 
+    def key_without_namespaces(self, namespaces=None):
+        if namespaces is None:
+            key = self.key
+        else:
+            key = self.key
+            for namespace in namespaces:
+                if key.startswith(f'{namespace}.'):
+                    key = key.removeprefix(f'{namespace}.')
+                    break
+
+        return key
+
     def add_translation(self, language_code, value, update=False):
         """Adds a translation for this `LocalizableString`
 
@@ -70,6 +85,41 @@ class AbstractLocalizableString(HtkBaseModel):
             localized_string.save()
 
         return localized_string
+
+    def is_instrumented(self):
+        """Determines whether this localizable string is actually instrumented in the codebase.
+
+        Checks against `HTK_ADMINTOOLS_LOCALIZATION_USAGE_CHECKS`
+
+        This helps to determine if there are any orphaned translations.
+
+        Returns:
+        - `True` if it is instrumented
+        - `False` if no instrumentations in the codebase are detected
+        """
+        is_instrumented = False  # guilty until proven innocent
+
+        l10n_usage_checks = htk_setting(
+            'HTK_ADMINTOOLS_LOCALIZATION_USAGE_CHECKS'
+        )
+        for l10n_usage_check in l10n_usage_checks:
+            result = subprocess.run(
+                [
+                    'grep',
+                    '-R',  # recursive
+                    self.key_without_namespaces(
+                        namespaces=l10n_usage_check.namespaces
+                    ),
+                    l10n_usage_check.directory,
+                ],
+                capture_output=True,
+            )
+
+            is_instrumented = len(result.stdout) > 0
+            if is_instrumented:
+                break
+
+        return is_instrumented
 
 
 class AbstractLocalizedString(HtkBaseModel):
@@ -119,7 +169,14 @@ class AbstractLocalizedString(HtkBaseModel):
         )
 
     def __str__(self):
-        value = '{} - {}'.format(
-            self.localizable_string.key, self.language_code
-        )
+        value = '{} - {}'.format(self.key, self.language_code)
         return value
+
+    @property
+    def key(self):
+        return self.localizable_string.key
+
+    def key_without_namespaces(self, namespaces=None):
+        return self.localizable_string.key_without_namespaces(
+            namespaces=namespaces
+        )

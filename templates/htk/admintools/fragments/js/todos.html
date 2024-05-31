@@ -1,0 +1,18 @@
+<script>
+  $(function() {
+      $('.todo-block').each((i, elt) => {
+          const html = $(elt).html();
+          const lines = html.split('\n');
+          const mappedLines = lines.map((line) => {
+              // https://coolors.co/cc2936-f3f9d2
+              const mappedLine = line.includes('TODO') ?
+                    `<div style="color: #cc2936; font-weight: bold; font-style: italic; background-color: #f3f9d2;">${line}</div>` :
+                    `${line}\n`;
+              return mappedLine;
+
+          });
+          const newHtml = mappedLines.join('');
+          $(elt).html(newHtml);
+      });
+  });
+</script>

@@ -9,11 +9,21 @@ import six.moves.urllib as urllib
 
 # Django Imports
 from django import template
+from django.template import (
+    Context,
+    Template,
+)
 from django.template.defaultfilters import stringfilter
 from django.urls import reverse
 from django.utils.safestring import (
     SafeText,
     mark_safe,
+)
+
+# HTK Imports
+from htk.compat import (
+    b64decode,
+    b64encode,
 )
 
 
@@ -75,17 +85,16 @@ def concat(value, arg):
 
 @register.filter()
 def zeropad(value, num_digits):
-    """
-    """
+    """ """
     padded = str(value).zfill(num_digits)
     return padded
 
 
 @register.filter(is_safe=True)
 def markdownify(value):
-    """Converts Markdown string to HTML
-    """
+    """Converts Markdown string to HTML"""
     import markdown
+
     html = markdown.markdown(value)
     return html
 
@@ -95,7 +104,7 @@ def atob(value):
     """Base64 decode
     ASCII to Binary
     """
-    value = base64.b64decode(value)
+    value = b64decode(value)
     return value
 
 
@@ -107,8 +116,8 @@ def btoa(value):
     if type(value) in (str, SafeText):
         value = value.encode('utf-8')
 
-    # Convert bytes to str for for use in template
-    value = base64.b64encode(value).decode('utf-8')
+    value = b64encode(value)
+
     return value
 
 
@@ -136,6 +145,7 @@ def make_range(value):
 @register.filter()
 def currency(value):
     from decimal import Decimal
+
     value = Decimal(value).quantize(Decimal('0.01'))
     return value
 
@@ -148,7 +158,11 @@ def currency_symbol(value, symbol):
     else:
         sign = ''
         abs_value = value
-    result = '%s%s%s' % (sign, symbol, abs_value,)
+    result = '%s%s%s' % (
+        sign,
+        symbol,
+        abs_value,
+    )
     return result
 
 
@@ -163,27 +177,27 @@ def timestamp(value):
 
 @register.filter()
 def phonenumber(value, country='US'):
-    """Formats a phone number for a country
-    """
+    """Formats a phone number for a country"""
     from htk.utils.text import pretty
+
     formatted = pretty.phonenumber(value, country=country)
     return formatted
 
 
 @register.filter(is_safe=True)
 def obfuscate(value):
-    """Obfuscates a string
-    """
+    """Obfuscates a string"""
     from htk.utils.obfuscate import html_obfuscate_string
+
     result = html_obfuscate_string(value)
     return result
 
 
 @register.filter(is_safe=True)
 def obfuscate_mailto(value, text=False):
-    """Obfuscates a mailto link
-    """
+    """Obfuscates a mailto link"""
     from htk.utils.obfuscate import html_obfuscate_string
+
     email = html_obfuscate_string(value)
 
     if text:
@@ -205,6 +219,7 @@ def obfuscate_mailto(value, text=False):
 @register.filter(is_safe=True)
 def oembed(value, autoplay=False):
     from htk.lib.oembed.utils import get_oembed_html
+
     html = get_oembed_html(value, autoplay=autoplay)
     html = mark_safe(html)
     return html
@@ -220,8 +235,8 @@ def jsbool(value):
 
 
 @register.filter()
-def jsondumps(value):
-    js_value = mark_safe(json.dumps(value))
+def jsondumps(value, indent=None):
+    js_value = mark_safe(json.dumps(value, indent=indent))
     return js_value
 
 
@@ -247,9 +262,9 @@ def http_header(value):
 
 @register.simple_tag(takes_context=True)
 def get_django_setting(context, key):
-    """Retrieves a Django setting and sets it on the context dictionary
-    """
+    """Retrieves a Django setting and sets it on the context dictionary"""
     from django.conf import settings
+
     if hasattr(settings, key):
         value = getattr(settings, key)
         context[key] = value
@@ -259,13 +274,25 @@ def get_django_setting(context, key):
 @register.simple_tag()
 def htk_setting(key):
     from htk.utils import htk_setting as _htk_setting
+
     value = _htk_setting(key)
     return value
+
+
+@register.simple_tag(takes_context=True)
+def render_string(context, template_string):
+    """Renders a Django template string with the given context
+
+    Useful for rendering dynamic template strings in a template
+    """
+    t = Template(template_string)
+    return t.render(Context(context))
 
 
 @register.simple_tag()
 def get_request_duration():
     from htk.middleware.classes import RequestTimerMiddleware
+
     timer = RequestTimerMiddleware.get_current_timer()
     if timer:
         duration = timer.duration()
@@ -281,35 +308,39 @@ def get_request_duration():
 
 @register.simple_tag(takes_context=True)
 def lesscss(context, css_file_path_base, media=None):
-    """Determine whether to use LESS compilation on-the-fly or CSS files, and includes the appropriate one
-    """
+    """Determine whether to use LESS compilation on-the-fly or CSS files, and includes the appropriate one"""
     media = 'media="%s" ' % media if media else ''
     values = {
-        'css_rel' : context.get('css_rel', 'stylesheet'),
-        'css_ext' : context.get('css_ext', 'css'),
-        'css_file_path_base' : css_file_path_base,
-        'media' : media,
+        'css_rel': context.get('css_rel', 'stylesheet'),
+        'css_ext': context.get('css_ext', 'css'),
+        'css_file_path_base': css_file_path_base,
+        'media': media,
     }
-    html = '<link type="text/css" rel="%(css_rel)s" href="%(css_file_path_base)s.%(css_ext)s" %(media)s/>' % values
+    html = (
+        '<link type="text/css" rel="%(css_rel)s" href="%(css_file_path_base)s.%(css_ext)s" %(media)s/>'
+        % values
+    )
     html = mark_safe(html)
     return html
 
 
 @register.simple_tag(takes_context=True)
 def loadjs(context, js_file_path, jsx=False):
-    """Include a JS file and append a static asset version string
-    """
+    """Include a JS file and append a static asset version string"""
     asset_version = context.get('asset_version')
     if asset_version:
         asset_version_str = '?v=%s' % asset_version
     else:
         asset_version_str = ''
     values = {
-        'script_type' : 'text/babel' if jsx else 'text/javascript',
-        'js_file_path' : js_file_path,
-        'asset_version_str' : asset_version_str,
+        'script_type': 'text/babel' if jsx else 'text/javascript',
+        'js_file_path': js_file_path,
+        'asset_version_str': asset_version_str,
     }
-    html = '<script type="%(script_type)s" src="%(js_file_path)s%(asset_version_str)s"></script>' % values
+    html = (
+        '<script type="%(script_type)s" src="%(js_file_path)s%(asset_version_str)s"></script>'
+        % values
+    )
     html = mark_safe(html)
     return html
 
@@ -326,7 +357,10 @@ def loadjsx(context, js_file_path):
 
 @register.simple_tag()
 def is_feature_enabled(feature_name):
-    from htk.apps.features.utils import is_feature_enabled as _is_feature_enabled
+    from htk.apps.features.utils import (
+        is_feature_enabled as _is_feature_enabled,
+    )
+
     is_enabled = _is_feature_enabled(feature_name)
     return is_enabled
 
@@ -394,19 +428,24 @@ def is_user_organization_member(context, organization):
 ##
 # Geolocations
 
+
 @register.simple_tag()
 def distance_from(obj, lat, lng, unit='mile'):
     from htk.apps.geolocations.enums import DistanceUnit
     from htk.apps.geolocations.models import AbstractGeolocation
 
-    if not isinstance(obj, AbstractGeolocation) and not hasattr(obj, 'distance_from'):
-        raise Exception('Not a Geolocation object or does not have a distance_from method')
+    if not isinstance(obj, AbstractGeolocation) and not hasattr(
+        obj, 'distance_from'
+    ):
+        raise Exception(
+            'Not a Geolocation object or does not have a distance_from method'
+        )
 
     distance_unit_map = {
-        'meter' : DistanceUnit.METER,
-        'kilometer' : DistanceUnit.KILOMETER,
-        'feet' : DistanceUnit.FEET,
-        'mile' : DistanceUnit.MILE,
+        'meter': DistanceUnit.METER,
+        'kilometer': DistanceUnit.KILOMETER,
+        'feet': DistanceUnit.FEET,
+        'mile': DistanceUnit.MILE,
     }
 
     distance_unit = distance_unit_map.get(unit)
@@ -425,11 +464,11 @@ def distance_from(obj, lat, lng, unit='mile'):
 
 @register.simple_tag()
 def qrcode_image_url(qr_data):
-    """Returns the URL to the QR Code image of `qr_data`
-    """
+    """Returns the URL to the QR Code image of `qr_data`"""
     if qr_data:
         from htk.lib.qrcode.utils import generate_qr_key
         from htk.utils import htk_setting
+
         url_name = htk_setting('HTK_QR_IMAGE_URL_NAME')
         if url_name:
             qr_params = urllib.parse.urlencode(
@@ -438,7 +477,10 @@ def qrcode_image_url(qr_data):
                     'data': qr_data,
                 }
             )
-            image_url = '%s?%s' % (reverse(url_name), qr_params,)
+            image_url = '%s?%s' % (
+                reverse(url_name),
+                qr_params,
+            )
         else:
             image_url = None
     else:
@@ -450,6 +492,7 @@ def qrcode_image_url(qr_data):
 def credit_card_icon(credit_card_brand):
     from htk.constants.icons import CREDIT_CARD_ICONS
     from htk.constants.icons import DEFAULT_CREDIT_CARD_ICON
+
     if credit_card_brand in CREDIT_CARD_ICONS:
         credit_card_icon = CREDIT_CARD_ICONS[credit_card_brand]
     else:
@@ -461,5 +504,6 @@ def credit_card_icon(credit_card_brand):
 @mark_safe
 def print_js_routes():
     from htk.utils.js_route_serializer import build_routes
+
     urls = build_routes(as_json=True)
     return urls

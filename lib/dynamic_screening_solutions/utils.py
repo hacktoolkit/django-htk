@@ -1,10 +1,13 @@
 # Python Standard Library Imports
-import base64
 import hashlib
 import hmac
 import json
 
 # HTK Imports
+from htk.compat import (
+    IS_PYTHON_3,
+    b64encode,
+)
 from htk.utils import htk_setting
 from htk.utils.general import resolve_method_dynamically
 
@@ -24,15 +27,27 @@ def validate_webhook_request(request):
     hash_key_retriever = resolve_method_dynamically(htk_setting('HTK_321FORMS_WEBHOOK_HASH_KEY_RETRIEVER'))
     hash_key = hash_key_retriever(company_id)
 
-    signature = base64.b64encode(
-        hmac.new(
-            bytes(hash_key),
-            request.body,
-            digestmod=hashlib.sha1
-        ).digest()
-    )
+    # `hash_key` can be `None`. `hmac.new` does not do well with `None` value for both Python 2 and 3
+    if hash_key:
+        # Even for Python 2 it seems we need to convert the hash_key to bytes.
+        # REFERENCES:
+        # https://bugs.python.org/issue16063
+        # https://stackoverflow.com/a/31572219
+        hash_key = hash_key.encode() if IS_PYTHON_3 else bytes(hash_key)
+        request_body = (
+            request.body.encode()
+            if IS_PYTHON_3 and isinstance(request.body, str)
+            else request.body
+        )
 
-    is_valid = signature == expected_signature
+        hashed = hmac.new(hash_key, request_body, digestmod=hashlib.sha1).digest()
+
+        signature = b64encode(hashed)
+
+        is_valid = signature == expected_signature
+    else:
+        is_valid = False
+
     if is_valid:
         webhook_data = webhook_data
     else:

@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import base64
 import re
 
 # Django Imports
@@ -18,7 +17,9 @@ from django.template import (
 from django.urls import reverse
 
 # HTK Imports
+from htk.compat import b64decode
 from htk.utils import htk_setting
+from htk.view_helpers import get_view_context
 
 
 # isort: off
@@ -32,15 +33,18 @@ def health_check(request):
 def browser_info(request, data=None, template_name=None, renderer=None):
     if data is None:
         from htk.view_helpers import wrap_data
+
         data = wrap_data(request)
     if template_name is None:
         template_name = 'htk/fragments/browser_info.html'
     if renderer is None:
         from htk.view_helpers import render_custom
+
         renderer = render_custom
 
     from htk.utils.constants import REQUEST_HTTP_HEADERS_STANDARD
     from htk.utils.request import get_custom_http_headers
+
     data['standard_http_headers'] = REQUEST_HTTP_HEADERS_STANDARD
     data['custom_http_headers'] = get_custom_http_headers(request)
     response = renderer(request, template_name, data=data)
@@ -49,14 +53,22 @@ def browser_info(request, data=None, template_name=None, renderer=None):
 
 def debugger(request):
     import rollbar
+
     message = request.GET.get('m')
     rollbar.report_message(message, 'debug')
     from htk.api.utils import json_response_okay
+
     response = json_response_okay()
     return response
 
 
-def generic_template_view(request, template_name, context_dict=None, content_type='text/html', missing_template_exception=Http404):
+def generic_template_view(
+    request,
+    template_name,
+    context_dict=None,
+    content_type='text/html',
+    missing_template_exception=Http404,
+):
     try:
         from htk.utils.templates import get_template_context_generator
 
@@ -70,55 +82,79 @@ def generic_template_view(request, template_name, context_dict=None, content_typ
         if context_dict:
             template_context.update(context_dict)
 
-        response = HttpResponse(template.render(template_context), content_type=content_type)
+        response = HttpResponse(
+            template.render(template_context), content_type=content_type
+        )
     except TemplateDoesNotExist:
         response = None
         raise missing_template_exception
     return response
 
 
+def json_file_download(request, data, filename, filename_suffix='.json'):
+    """Returns a JSON file attachment response (downloadable)
+
+    `data` must be `json.dumps()`-able
+    """
+    response = generic_template_view(
+        request,
+        'data.json',
+        context_dict={'json': data},
+        content_type="application/json",
+    )
+
+    response['Content-Disposition'] = (
+        f'attachment; filename={filename}{filename_suffix}'
+    )
+    return response
+
+
 def google_site_verification(request, code):
     from htk.exceptions import MissingGoogleSiteVerificationFile
+
     template_name = 'site_verification/google%s.html' % code
     response = generic_template_view(
         request,
         template_name,
-        missing_template_exception=MissingGoogleSiteVerificationFile
+        missing_template_exception=MissingGoogleSiteVerificationFile,
     )
     return response
 
 
 def html_site_verification(request, code):
     from htk.exceptions import MissingHtmlSiteVerificationFile
+
     template_name = 'site_verification/%s--.html' % code
     response = generic_template_view(
         request,
         template_name,
-        missing_template_exception=MissingHtmlSiteVerificationFile
+        missing_template_exception=MissingHtmlSiteVerificationFile,
     )
     return response
 
 
 def bing_site_auth(request):
     from htk.exceptions import MissingBingSiteVerificationFile
+
     template_name = 'site_verification/BingSiteAuth.xml'
     response = generic_template_view(
         request,
         template_name,
         content_type='text/xml',
-        missing_template_exception=MissingBingSiteVerificationFile
+        missing_template_exception=MissingBingSiteVerificationFile,
     )
     return response
 
 
 def brave_rewards_verification(request):
     from htk.exceptions import MissingBraveRewardsVerificationFile
+
     template_name = '.well-known/brave-rewards-verification.txt'
     response = generic_template_view(
         request,
         template_name,
         content_type='text/plain',
-        missing_template_exception=MissingBraveRewardsVerificationFile
+        missing_template_exception=MissingBraveRewardsVerificationFile,
     )
     return response
 
@@ -130,17 +166,22 @@ def robots(request):
     else:
         template_prefix = ''
     template_name = '%srobots.txt' % template_prefix
-    context_dict = {
-        'request' : {
-            'request' : request,
-            'host' : request.get_host(),
-         },
-    }
+
+    context_dict = get_view_context(request)
+    context_dict.update(
+        {
+            'request': {
+                'request': request,
+                'host': request.get_host(),
+            },
+        }
+    )
+
     response = generic_template_view(
         request,
         template_name,
         context_dict=context_dict,
-        content_type='text/plain'
+        content_type='text/plain',
     )
     return response
 
@@ -151,7 +192,7 @@ def redir(request):
     encoded_url = request.GET.get('url', None)
     if encoded_url:
         try:
-            url = base64.urlsafe_b64decode(str(encoded_url))
+            url = b64decode(str(encoded_url), url_safe=True)
             if not re.match('^https?://', url):
                 url = 'http://%s' % url
             else:
@@ -179,21 +220,22 @@ def error_view(request):
     else:
         template_prefix = ''
 
-    template_name = '%s%s.html' % (template_prefix, path_no_slash,)
+    template_name = '%s%s.html' % (
+        template_prefix,
+        path_no_slash,
+    )
 
     error_messages = {
-        '400' : '400 Bad Request',
-        '403' : '403 Access Denied',
-        '404' : '404 Not Found',
-        '500' : '500 Internal Server Error',
+        '400': '400 Bad Request',
+        '403': '403 Access Denied',
+        '404': '404 Not Found',
+        '500': '500 Internal Server Error',
     }
     context_dict = {
-        'error_message' : error_messages.get(path_no_slash, 'Unknown Error')
+        'error_message': error_messages.get(path_no_slash, 'Unknown Error')
     }
 
     response = generic_template_view(
-        request,
-        template_name,
-        context_dict=context_dict
+        request, template_name, context_dict=context_dict
     )
     return response

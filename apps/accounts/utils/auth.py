@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import base64
 import datetime
 import hashlib
 import json
@@ -11,12 +10,25 @@ import rollbar
 from django.contrib.auth import login
 
 # HTK Imports
-from htk.apps.accounts.utils import encrypt_uid
-from htk.apps.accounts.utils import resolve_encrypted_uid
-from htk.utils import htk_setting
-from htk.utils import utcnow
-from htk.utils.datetime_utils import datetime_to_unix_time
-from htk.utils.datetime_utils import unix_time_to_datetime
+from htk.apps.accounts.utils import (
+    encrypt_uid,
+    resolve_encrypted_uid,
+)
+from htk.compat import (
+    b64decode,
+    b64encode,
+)
+from htk.utils import (
+    htk_setting,
+    utcnow,
+)
+from htk.utils.datetime_utils import (
+    datetime_to_unix_time,
+    unix_time_to_datetime,
+)
+
+
+# isort: off
 
 
 def login_authenticated_user(request, authenticated_user, backend=None):
@@ -29,6 +41,7 @@ def login_authenticated_user(request, authenticated_user, backend=None):
     if htk_setting('HTK_ITERABLE_ENABLED'):
         try:
             from htk.lib.iterable.utils import get_iterable_api_client
+
             itbl = get_iterable_api_client()
             itbl.notify_login(authenticated_user)
         except:
@@ -43,25 +56,28 @@ def get_user_token_auth_token(user, expires_minutes=None):
     """
     encrypted_uid = encrypt_uid(user)
 
-    expires_minutes = expires_minutes if expires_minutes else htk_setting('HTK_USER_TOKEN_AUTH_EXPIRES_MINUTES')
+    expires_minutes = (
+        expires_minutes
+        if expires_minutes
+        else htk_setting('HTK_USER_TOKEN_AUTH_EXPIRES_MINUTES')
+    )
     expires = utcnow() + datetime.timedelta(minutes=expires_minutes)
-    expires_timestamp = datetime_to_unix_time(expires)
+    expires_timestamp = datetime_to_unix_time(expires, as_millis=True)
 
     hashed = get_user_token_auth_hash(user, expires_timestamp)
 
     data = {
-        'user' : encrypted_uid,
-        'expires' : expires_timestamp,
-        'hash' : hashed,
+        'user': encrypted_uid,
+        'expires': expires_timestamp,
+        'hash': hashed,
     }
 
-    token = base64.b64encode(json.dumps(data).encode('utf-8')).decode('utf-8')
+    token = b64encode(json.dumps(data))
     return token
 
 
 def get_user_token_auth_hash(user, expires_timestamp):
-    """Generates the hash portion of a user token-auth token
-    """
+    """Generates the hash portion of a user token-auth token"""
     encrypted_uid = encrypt_uid(user)
     salt = user.profile.salt
     key = htk_setting('HTK_USER_TOKEN_AUTH_ENCRYPTION_KEY')
@@ -89,7 +105,7 @@ def validate_user_token_auth_token(token):
     is_valid = False
 
     try:
-        data = json.loads(base64.b64decode(token))
+        data = json.loads(b64decode(token))
     except ValueError:
         data = None
 
@@ -97,7 +113,7 @@ def validate_user_token_auth_token(token):
         # verify expiration of token
 
         expires_timestamp = data.get('expires', 0)
-        expires = unix_time_to_datetime(expires_timestamp)
+        expires = unix_time_to_datetime(expires_timestamp, as_millis=True)
 
         if expires > utcnow():
             # token has not expired
@@ -110,7 +126,9 @@ def validate_user_token_auth_token(token):
                 # verify hash
 
                 received_hash = data.get('hash', None)
-                expected_hash = get_user_token_auth_hash(user, expires_timestamp)
+                expected_hash = get_user_token_auth_hash(
+                    user, expires_timestamp
+                )
 
                 if received_hash == expected_hash:
                     # hash matches
@@ -126,4 +144,7 @@ def validate_user_token_auth_token(token):
             # token has expired
             pass
 
-    return (user, is_valid,)
+    return (
+        user,
+        is_valid,
+    )

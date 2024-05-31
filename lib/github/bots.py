@@ -15,8 +15,8 @@ import re
 import sys
 
 # Third Party (PyPI) Imports
+import github
 import requests
-from github import Github
 
 
 # isort: off
@@ -42,7 +42,9 @@ class GitHubReminderBot(object):
         self.repositories = repositories
         self.mention_here = mention_here
 
-        self.cli = Github(self.github_access_token)
+        self.cli = github.Github(
+            auth=github.Auth.Token(self.github_access_token)
+        )
 
         self.repos = []
 
@@ -83,13 +85,13 @@ class GitHubReminderBot(object):
             # https://api.slack.com/docs/message-formatting
             num_comments = pull_request.comments
             context = {
-                'num' : len(pr_list) + 1,
-                'repo_name' : repo.name,
-                'pr_author' : pull_request.user.login,
-                'pr_author_url' : pull_request.user.html_url,
-                'pr_title' : pull_request.title,
-                'pr_url' : pull_request.html_url,
-                'num_comments' : pluralize('comment', num_comments),
+                'num': len(pr_list) + 1,
+                'repo_name': repo.name,
+                'pr_author': pull_request.user.login,
+                'pr_author_url': pull_request.user.html_url,
+                'pr_title': pull_request.title,
+                'pr_url': pull_request.html_url,
+                'num_comments': pluralize('comment', num_comments),
             }
 
             msg = """%(num)s) [%(repo_name)s] <%(pr_author_url)s|%(pr_author)s> | <%(pr_url)s|%(pr_title)s> (%(num_comments)s)""" % context
@@ -200,8 +202,10 @@ class GitHubReminderSlackBot(GitHubReminderBot):
     def remind_pull_requests(self):
         markdown_content, attachments = self.pull_request_reminder()
         from htk.utils.text.converters import markdown2slack
+
         slack_text = markdown2slack(markdown_content)
         from htk.lib.slack.utils import webhook_call
+
         webhook_call(
             webhook_url=self.slack_webhook_url,
             channel=self.slack_channel,
@@ -218,7 +222,7 @@ class Usage(Exception):
         self.msg = msg
 
 
-def main(argv = None):
+def main(argv=None):
     OPT_STR = 'ht:o:'
     OPT_LIST = [
         'help',
@@ -232,11 +236,9 @@ def main(argv = None):
     try:
         try:
             progname = argv[0]
-            opts, args = getopt.getopt(argv[1:],
-                                       OPT_STR,
-                                       OPT_LIST)
+            opts, args = getopt.getopt(argv[1:], OPT_STR, OPT_LIST)
         except getopt.error as msg:
-             raise Usage(msg)
+            raise Usage(msg)
         # process options
         for o, a in opts:
             if o in ('-h', '--help'):
@@ -256,6 +258,7 @@ def main(argv = None):
         print(err.msg, file=sys.stderr)
         print('for help use --help', file=sys.stderr)
         return 3.14159
+
 
 if __name__ == '__main__':
     main()

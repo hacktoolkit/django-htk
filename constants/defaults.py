@@ -92,6 +92,7 @@ from htk.admintools.constants.defaults import *
 from htk.apps.accounts.constants.defaults import *
 from htk.apps.bible.constants.defaults import *
 from htk.apps.changelog.constants.defaults import *
+from htk.apps.conversations.constants.defaults import *
 from htk.apps.cpq.constants.defaults import *
 from htk.apps.file_storage.constants.defaults import *
 from htk.apps.geolocations.constants.defaults import *
@@ -114,3 +115,4 @@ from htk.lib.slack.constants.defaults import *
 from htk.lib.stripe_lib.constants.defaults import *
 from htk.lib.yelp.constants.defaults import *
 from htk.lib.zuora.constants.defaults import *
+from htk.test_scaffold.constants.defaults import *
