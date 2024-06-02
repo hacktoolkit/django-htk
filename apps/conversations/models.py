@@ -204,7 +204,7 @@ class BaseConversationMessageReaction(models.Model):
     """
 
     message = fk_conversation_message(related_name='reactions', required=True)
-    user = fk_user(related_name='reacted_by', required=False)
+    user = fk_user(related_name='reactions', required=False)
     emoji_shortcode = models.CharField(max_length=24)
     created_at = models.DateTimeField(auto_now_add=True)
 
