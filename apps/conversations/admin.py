@@ -18,6 +18,11 @@ ConversationParticipant = resolve_model_dynamically(
 )
 
 
+class ConversationMessageReactionInline(admin.TabularInline):
+    model = ConversationMessageReaction
+    extra = 0
+
+
 class ConversationParticipantInline(admin.TabularInline):
     model = ConversationParticipant
     extra = 0
@@ -93,6 +98,8 @@ class BaseConversationMessageAdmin(admin.ModelAdmin):
         'edited_at',
         'deleted_at',
     )
+
+    inlines = (ConversationMessageReactionInline,)
 
 
 class BaseConversationMessageReactionAdmin(admin.ModelAdmin):
