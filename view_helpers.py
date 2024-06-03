@@ -218,6 +218,14 @@ def wrap_data(request, data=None):
     # user
     if request.user.is_authenticated:
         user = request.user
+        if not hasattr(user, 'profile'):
+            # create missing UserProfile
+            # this should not happen, but it does if the signal handler fails
+            # or if the User object was somehow created without invoking the signal
+            from htk.apps.accounts.utils.general import get_user_profile_model
+
+            UserProfileModel = get_user_profile_model()
+            profile = UserProfileModel.objects.create(user=user)
     else:
         user = None
     data['user'] = user
@@ -452,7 +460,7 @@ def get_resolver_matches_chain(request, data=None):
     )
     while path:
         try:
-            path = path[:path.rindex('/')]
+            path = path[: path.rindex('/')]
             resolver_match = resolve(path)
             resolver_matches_chain.append((path, resolver_match))
         except Resolver404:
