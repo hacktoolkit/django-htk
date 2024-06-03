@@ -11,6 +11,11 @@ from htk.apps.conversations.fk_fields import (
 )
 from htk.models.fk_fields import fk_user
 from htk.utils import htk_setting
+from htk.utils.text.unicode import (
+    demojize,
+    is_emoji_shortcode,
+    is_emoji_symbol,
+)
 
 
 # isort: off
@@ -168,6 +173,9 @@ class BaseConversationMessage(models.Model):
 
         This method is idempotent. If it is called multiple times with the same arguments, it will only create 1 record of the emoji reaction.
         """
+        if is_emoji_symbol(emoji_shortcode):
+            # ensure that data is normalized into emoji shortcode
+            emoji_shortcode = emoji.demojize(emoji_shortcode)
 
         self.reactions.get_or_create(
             user=user,
@@ -181,6 +189,9 @@ class BaseConversationMessage(models.Model):
 
         If it is called multiple times, and the reaction has already been deleted, this method has no effect and just performs a no-op.
         """
+        if is_emoji_symbol(emoji_shortcode):
+            # ensure that data is normalized into emoji shortcode
+            emoji_shortcode = emoji.demojize(emoji_shortcode)
 
         self.reactions.filter(
             user=user,
@@ -214,3 +225,15 @@ class BaseConversationMessageReaction(models.Model):
     def __str__(self):
         value = '%s' % emoji.emojize(self.emoji_shortcode)
         return value
+
+    def repair_emoji(self):
+        """Repairs the emoji shortcode to ensure that it is normalized."""
+        if is_emoji_shortcode(self.emoji_shortcode):
+            # normalize into emoji symbol
+            self.emoji_shortcode = emoji.emojize(self.emoji_shortcode)
+            self.save()
+
+        if is_emoji_symbol(self.emoji_shortcode):
+            # normalize into emoji shortcode
+            self.emoji_shortcode = demojize(self.emoji_shortcode)
+            self.save()

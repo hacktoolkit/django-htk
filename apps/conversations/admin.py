@@ -1,3 +1,6 @@
+# Third Party (PyPI) Imports
+import emoji
+
 # Django Imports
 from django.contrib import admin
 
@@ -109,6 +112,10 @@ class BaseConversationMessageReactionAdmin(admin.ModelAdmin):
         'id',
         'message',
         'user',
-        'created_at',
+        'emoji',
         'emoji_shortcode',
+        'created_at',
     )
+
+    def emoji(self, obj):
+        return emoji.emojize(obj.emoji_shortcode, language='alias')
