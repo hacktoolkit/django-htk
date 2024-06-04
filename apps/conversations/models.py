@@ -177,10 +177,11 @@ class BaseConversationMessage(models.Model):
             # ensure that data is normalized into emoji shortcode
             emoji_shortcode = emoji.demojize(emoji_shortcode)
 
-        self.reactions.get_or_create(
+        reaction, was_created = self.reactions.get_or_create(
             user=user,
             emoji_shortcode=emoji_shortcode,
         )
+        return reaction
 
     def remove_reaction(self, user, emoji_shortcode):
         """Removes an existing reaction by `user` to this message.
@@ -224,6 +225,14 @@ class BaseConversationMessageReaction(models.Model):
 
     def __str__(self):
         value = '%s' % emoji.emojize(self.emoji_shortcode)
+        return value
+
+    def as_dict(self):
+        value = {
+            'user': self.user.as_dict(),
+            'emoji_shortcode': self.emoji_shortcode,
+            'created_at': self.created_at,
+        }
         return value
 
     def repair_emoji(self):
