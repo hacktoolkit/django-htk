@@ -190,14 +190,15 @@ class BaseConversationMessage(models.Model):
 
         If it is called multiple times, and the reaction has already been deleted, this method has no effect and just performs a no-op.
         """
-        if is_emoji_symbol(emoji_shortcode):
-            # ensure that data is normalized into emoji shortcode
-            emoji_shortcode = emoji.demojize(emoji_shortcode)
 
+        if is_emoji_symbol(emoji_shortcode):
+            emoji_shortcode = demojize(emoji_shortcode)
         self.reactions.filter(
             user=user,
             emoji_shortcode=emoji_shortcode,
         ).delete()
+
+        self.save()
 
     def save(self, **kwargs):
         """Saves this message.
