@@ -24,6 +24,7 @@ from htk.utils import (
     utcnow,
 )
 from htk.utils.general import resolve_method_dynamically
+from htk.utils.request import get_full_url_name
 
 
 # isort: off
@@ -314,9 +315,8 @@ def _build_breadcrumbs(data):
             )
             inverted_breadcrumbs = []
             for path, resolver_match in resolver_matches_chain:
-                title = url_names_to_breadcrumbs.get(
-                    resolver_match.url_name, None
-                )
+                full_url_name = get_full_url_name(resolver_match)
+                title = url_names_to_breadcrumbs.get(full_url_name, None)
                 if title:
                     inverted_breadcrumbs.append(
                         {

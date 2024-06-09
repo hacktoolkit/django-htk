@@ -12,6 +12,7 @@ from htk.utils.general import strtobool_safe
 
 def get_current_request():
     from htk.middleware.classes import GlobalRequestMiddleware
+
     request = GlobalRequestMiddleware.get_current_request()
     return request
 
@@ -19,7 +20,9 @@ def get_current_request():
 def is_ajax_request(request):
     # content_type = request.META.get('CONTENT_TYPE') or request.content_type
     requested_with = request.META.get('HTTP_X_REQUESTED_WITH')
-    accepts_json = hasattr(request, 'accepts') and request.accepts('application/json')
+    accepts_json = hasattr(request, 'accepts') and request.accepts(
+        'application/json'
+    )
     accept_mimetypes = request.META.get('HTTP_ACCEPT').split(',')
 
     is_ajax = (
@@ -64,17 +67,44 @@ def extract_request_param(request, param, as_type=str, allow_none=True):
     if as_type == str:
         value = raw_value
     elif as_type == bool:
-        value = None if (raw_value is None and allow_none) else strtobool_safe(raw_value)
+        value = (
+            None
+            if (raw_value is None and allow_none)
+            else strtobool_safe(raw_value)
+        )
     elif as_type == int:
-        m = re.match(r'^(?:\+|\-)?(?P<value>\d+)\.?$', raw_value) if raw_value else None
+        m = (
+            re.match(r'^(?:\+|\-)?(?P<value>\d+)\.?$', raw_value)
+            if raw_value
+            else None
+        )
         value = int(m.group('value')) if m else default_value
     elif as_type == float:
-        m = re.match(r'^(?:\+|\-)?(?P<value>\d*\.?\d*)$', raw_value) if raw_value else None
+        m = (
+            re.match(r'^(?:\+|\-)?(?P<value>\d*\.?\d*)$', raw_value)
+            if raw_value
+            else None
+        )
         value = float(m.group('value')) if m else default_value
     else:
         value = raw_value
 
     return value
+
+
+def get_full_url_name(resolver_match):
+    """Returns the full URL name for a resolver match
+
+    This method is needed because Django's `resolver_match.url_name`
+    does not include namespaces automatically.
+    """
+    namespaces = ":".join(resolver_match.namespaces)
+    full_url_name = (
+        f"{namespaces}:{resolver_match.url_name}"
+        if namespaces
+        else resolver_match.url_name
+    )
+    return full_url_name
 
 
 def get_request_metadata(request):
@@ -83,18 +113,24 @@ def get_request_metadata(request):
     host = request.get_host()
     is_secure = request.is_secure()
     protocol = 'http' + ('s' if is_secure else '')
-    base_uri = '%s://%s' % (protocol, host,)
-    full_uri = '%s%s' % (base_uri, path,)
+    base_uri = '%s://%s' % (
+        protocol,
+        host,
+    )
+    full_uri = '%s%s' % (
+        base_uri,
+        path,
+    )
 
     request_metadata = {
-        'request' : request,
-        'is_secure' : is_secure,
-        'host' : host,
-        'path' : path,
-        'url_name' : url_name,
-        'protocol' : protocol,
-        'base_uri' : base_uri,
-        'full_uri' : full_uri,
+        'request': request,
+        'is_secure': is_secure,
+        'host': host,
+        'path': path,
+        'url_name': url_name,
+        'protocol': protocol,
+        'base_uri': base_uri,
+        'full_uri': full_uri,
     }
     return request_metadata
 
@@ -102,25 +138,27 @@ def get_request_metadata(request):
 def get_custom_http_headers(request):
     custom_http_headers = []
     for header_name in request.META.keys():
-        if re.match(r'^HTTP', header_name) and header_name not in REQUEST_HTTP_HEADERS_STANDARD:
+        if (
+            re.match(r'^HTTP', header_name)
+            and header_name not in REQUEST_HTTP_HEADERS_STANDARD
+        ):
             custom_http_headers.append(header_name)
     return custom_http_headers
 
 
 def build_dict_from_request(request):
-    """Build a dictionary from `request` that can be serialized to JSON
-    """
+    """Build a dictionary from `request` that can be serialized to JSON"""
     user = request.user if request.user.is_authenticated else None
     obj = {
-        'request' : {
-            'GET' : request.GET,
-            'POST' : request.POST,
+        'request': {
+            'GET': request.GET,
+            'POST': request.POST,
         },
-        'referrer' : request.META.get('HTTP_REFERER', ''),
-        'user' : user,
-        'user_id' : user.id if user else '',
-        'user_agent' : request.META.get('HTTP_USER_AGENT', ''),
-        'user_ip' : extract_request_ip(request),
+        'referrer': request.META.get('HTTP_REFERER', ''),
+        'user': user,
+        'user_id': user.id if user else '',
+        'user_agent': request.META.get('HTTP_USER_AGENT', ''),
+        'user_ip': extract_request_ip(request),
     }
     return obj
 
@@ -140,9 +178,9 @@ def is_domain_meta_view(request):
 
 
 def is_allowed_host(host):
-    """Determines whether this `host` is explicitly allowed
-    """
+    """Determines whether this `host` is explicitly allowed"""
     from django.conf import settings
+
     allowed = False
     if settings.TEST:
         allowed = True

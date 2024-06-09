@@ -15,5 +15,5 @@ GITHUB_ISSUE_REGEX = re.compile(r'\(#(?P<issue_num>\d+)\)')
 
 # example: 'git@github.com:[organization]/[repository].git'
 ORIGIN_URL_REGEX = re.compile(
-    r'^(?P<user>.+)@(?P<host>[a-z\.]+):(?P<org>[A-Za-z0-9_-]+)/(?P<repository>[A-Za-z0-9_-]+)\.git$'
+    r'^(?P<user>.+)@(?P<host>[a-z.]+):(?P<org>[A-Za-z0-9_-]+)/(?P<repository>[a-zA-Z0-9._-]+)\.git$'
 )
