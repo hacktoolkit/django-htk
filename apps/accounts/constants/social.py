@@ -26,6 +26,7 @@ class SocialAuth:
 SOCIAL_AUTHS = [
     SocialAuth(provider='discord', name='Discord', bg_color='#7289da'),
     SocialAuth(provider='facebook', name='Facebook', bg_color='#3b5998'),
+    SocialAuth(provider='fitbit', name='Fitbit', bg_color='#4cc2c4'),
     SocialAuth(provider='github', name='GitHub', bg_color='#333333'),
     SocialAuth(provider='google-oauth2', name='Google', bg_color='#4285f4'),
     SocialAuth(provider='linkedin-oauth2', name='LinkedIn', bg_color='#0077b5'),

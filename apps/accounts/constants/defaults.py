@@ -61,6 +61,7 @@ HTK_USER_ATTRIBUTE_DEFAULTS = {}
 HTK_SOCIAL_AUTH_PROVIDERS = [
     'discord',
     'facebook',
+    'fitbit',
     'github',
     'google-oauth2',
     'linkedin-oauth2',
@@ -71,6 +72,7 @@ HTK_SOCIAL_AUTH_PROVIDERS = [
 HTK_SOCIAL_AUTH_LOGIN_PROVIDERS = [
     'discord',
     'facebook',
+    'fitbit',
     'github',
     'google-oauth2',
     'linkedin-oauth2',
