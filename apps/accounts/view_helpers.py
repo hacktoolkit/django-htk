@@ -10,7 +10,25 @@ from htk.utils.urls import reverse_with_query_params
 
 
 def get_social_auth_providers():
+    """Return a list of social auth providers.
+
+    The list of providers that have some integration with the app.
+    """
     providers = set(htk_setting('HTK_SOCIAL_AUTH_PROVIDERS'))
+    social_auth_providers = [
+        social_auth
+        for social_auth in SOCIAL_AUTHS
+        if social_auth.provider in providers
+    ]
+    return social_auth_providers
+
+
+def get_social_auth_login_providers():
+    """Return a list of social auth providers.
+
+    The list of providers that are enabled for login.
+    """
+    providers = set(htk_setting('HTK_SOCIAL_AUTH_LOGIN_PROVIDERS'))
     social_auth_providers = [
         social_auth
         for social_auth in SOCIAL_AUTHS

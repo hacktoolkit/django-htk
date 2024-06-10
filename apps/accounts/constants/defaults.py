@@ -64,5 +64,16 @@ HTK_SOCIAL_AUTH_PROVIDERS = [
     'github',
     'google-oauth2',
     'linkedin-oauth2',
+    'strava',
+    'twitter',
+]
+
+HTK_SOCIAL_AUTH_LOGIN_PROVIDERS = [
+    'discord',
+    'facebook',
+    'github',
+    'google-oauth2',
+    'linkedin-oauth2',
+    'strava',
     'twitter',
 ]

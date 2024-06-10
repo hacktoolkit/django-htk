@@ -29,5 +29,6 @@ SOCIAL_AUTHS = [
     SocialAuth(provider='github', name='GitHub', bg_color='#333333'),
     SocialAuth(provider='google-oauth2', name='Google', bg_color='#4285f4'),
     SocialAuth(provider='linkedin-oauth2', name='LinkedIn', bg_color='#0077b5'),
+    SocialAuth(provider='strava', name='Strava', bg_color='#fc4c02'),
     SocialAuth(provider='twitter', name='Twitter', bg_color='#1da1f2'),
 ]
