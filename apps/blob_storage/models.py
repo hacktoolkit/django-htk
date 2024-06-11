@@ -14,7 +14,8 @@ class AbstractBlobStorage(models.Model):
     content_type = models.CharField(max_length=64, blank=True)
     size_bytes = models.PositiveIntegerField(default=0)
     contents = CompressedBinaryField(
-        max_length=htk_setting('HTK_BLOB_CONTENT_MAX_LENGTH')
+        max_length=htk_setting('HTK_BLOB_CONTENT_MAX_LENGTH'),
+        editable=True
     )
 
     class Meta:
