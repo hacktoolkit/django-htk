@@ -22,6 +22,8 @@ def todos_view(
     )
     data = wrap_data(request)
 
+    data['has_dynamic_breadcrumbs'] = True
+
     def _build_todos_section(todos_config):
         result = subprocess.run(
             [
@@ -51,7 +53,6 @@ def todos_view(
     data['todos_sections'] = [
         _build_todos_section(todos_config) for todos_config in todos_configs
     ]
-    data['has_dynamic_breadcrumbs'] = True
 
     response = _r(request, template, data=data)
     return response
