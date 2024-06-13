@@ -302,6 +302,23 @@ def get_request_duration():
     return duration
 
 
+@register.simple_tag()
+def localize(key):
+    '''TODO: handle this based on `by_language`
+    for any language
+    '''
+    from htk.apps.i18n.utils.data import retrieve_all_strings
+
+    language_code = 'en-US'
+    localized_strings = retrieve_all_strings()
+    if key in localized_strings:
+        localized_string = localized_strings[key][language_code]
+    else:
+        localized_string = f'???[{key}]-[{language_code}]???'
+
+    return localized_string
+
+
 ##
 # Load Assets
 
