@@ -303,18 +303,21 @@ def get_request_duration():
 
 
 @register.simple_tag()
-def localize(key):
-    '''TODO: handle this based on `by_language`
-    for any language
-    '''
-    from htk.apps.i18n.utils.data import retrieve_all_strings
+def localize(key, locale='en-US'):
 
-    language_code = 'en-US'
-    localized_strings = retrieve_all_strings()
-    if key in localized_strings:
-        localized_string = localized_strings[key][language_code]
-    else:
-        localized_string = f'???[{key}]-[{language_code}]???'
+    from htk.utils import resolve_model_dynamically
+
+    LocalizedString = resolve_model_dynamically(
+        htk_setting('HTK_LOCALIZED_STRING_MODEL')
+    )
+
+    localized_string = LocalizedString.objects.get(
+        localizable_string__key=key,
+        language_code=locale,
+    ).value
+
+    if not localized_string:
+        localized_string = f'???[{key}]-[{locale}]???'
 
     return localized_string
 
