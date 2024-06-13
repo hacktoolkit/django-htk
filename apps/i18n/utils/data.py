@@ -165,3 +165,20 @@ def load_strings(data, overwrite=False):
             num_translations += 1
 
     return num_strings, num_translations
+
+
+def lookup_localization(key=None, locale='en-US'):
+
+    LocalizedString = resolve_model_dynamically(
+        htk_setting('HTK_LOCALIZED_STRING_MODEL')
+    )
+    try:
+        localized_string = LocalizedString.objects.get(
+            localizable_string__key=key,
+            language_code=locale,
+        ).value
+
+    except LocalizedString.DoesNotExist:
+        localized_string = f'???[{key}]-[{locale}]???'
+
+    return localized_string

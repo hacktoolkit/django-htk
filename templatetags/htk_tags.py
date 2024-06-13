@@ -303,24 +303,10 @@ def get_request_duration():
 
 
 @register.simple_tag()
-def localize(key, locale='en-US'):
+def localize(key=None, locale='en-US'):
+    from htk.apps.i18n.utils.data import lookup_localization
 
-    from htk.utils import resolve_model_dynamically
-    from django.core.exceptions import ObjectDoesNotExist
-
-    LocalizedString = resolve_model_dynamically(
-        htk_setting('HTK_LOCALIZED_STRING_MODEL')
-    )
-
-    try:
-        localized_string = LocalizedString.objects.get(
-            localizable_string__key=key,
-            language_code=locale,
-        ).value
-
-    except ObjectDoesNotExist:
-        localized_string = f'???[{key}]-[{locale}]???'
-
+    localized_string = lookup_localization(key, locale) if key else ""
     return localized_string
 
 
