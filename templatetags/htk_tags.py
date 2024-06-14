@@ -302,6 +302,14 @@ def get_request_duration():
     return duration
 
 
+@register.simple_tag()
+def localize(key=None, locale='en-US'):
+    from htk.apps.i18n.utils.general import lookup_localization
+
+    localized_string = lookup_localization(key, locale) if key else ""
+    return localized_string
+
+
 ##
 # Load Assets
 
