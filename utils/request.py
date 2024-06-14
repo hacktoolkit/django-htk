@@ -110,6 +110,7 @@ def get_full_url_name(resolver_match):
 def get_request_metadata(request):
     path = request.path
     url_name = request.resolver_match.url_name
+    full_url_name = get_full_url_name(request.resolver_match)
     host = request.get_host()
     is_secure = request.is_secure()
     protocol = 'http' + ('s' if is_secure else '')
@@ -128,6 +129,7 @@ def get_request_metadata(request):
         'host': host,
         'path': path,
         'url_name': url_name,
+        'full_url_name': full_url_name,
         'protocol': protocol,
         'base_uri': base_uri,
         'full_uri': full_uri,
