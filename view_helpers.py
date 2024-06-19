@@ -492,7 +492,9 @@ def generate_nav_links(request, nav_links_cfg):
         submenu = link_cfg.get('submenu', None)
         cfg_url_name = link_cfg.get('url_name', None)
         if cfg_url_name:
-            nav_link['uri'] = reverse(cfg_url_name)
+            args = link_cfg.get('url_args', [])
+            kwargs = link_cfg.get('url_kwargs', {})
+            nav_link['uri'] = reverse(cfg_url_name, args=args, kwargs=kwargs)
         else:
             pass
         selected = url_name == cfg_url_name
