@@ -1,0 +1,9 @@
+<script src="//cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+<script>
+  $(function() {
+      new DataTable('#migrations_table', {
+          pageLength: 25,
+  order: [[0, 'desc']],
+      });
+  });
+</script>

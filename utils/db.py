@@ -1,9 +1,20 @@
+# Python Standard Library Imports
+from collections import namedtuple
+
+
+# isort: off
+
+
 def ensure_mysql_connection_usable():
     """Ensure that MySQL connection is usable
 
     From: http://stackoverflow.com/questions/7835272/django-operationalerror-2006-mysql-server-has-gone-away
     """
-    from django.db import connection, connections
+    from django.db import (
+        connection,
+        connections,
+    )
+
     # MySQL is lazily connected to in Django.
     # connection.connection is None means
     # you have not connected to MySQL before
@@ -20,13 +31,16 @@ def ensure_mysql_connection_usable():
         for database in databases:
             del connections._connections.__dict__[database]
 
+
 def attempt_mysql_reconnect():
     """Attempt to reconnect to MySQL
     http://stackoverflow.com/a/29331237/865091
     """
     import MySQLdb
+
     conn = MySQLdb.Connect()
     conn.ping(True)
+
 
 def close_connection():
     """Closes the connection if we are not in an atomic block.
@@ -43,15 +57,18 @@ def close_connection():
     source: http://stackoverflow.com/a/39322632/865091
     """
     from django.db import connection
+
     if not connection.in_atomic_block:
         connection.close()
 
+
 def get_cursor(db_alias):
-    """Returns a DB Cursor that can be used to issue raw SQL statements
-    """
+    """Returns a DB Cursor that can be used to issue raw SQL statements"""
     from django.db import connections
+
     cursor = connections[db_alias].cursor()
     return cursor
+
 
 def raw_sql(statement, db_alias='default'):
     """Execute raw SQL `statement
@@ -62,6 +79,7 @@ def raw_sql(statement, db_alias='default'):
     cursor.execute(statement)
     return cursor
 
+
 def disable_foreign_key_checks():
     """Disable foreign key constraint checks
     Useful for bulk data uploads
@@ -70,9 +88,20 @@ def disable_foreign_key_checks():
     """
     raw_sql('SET FOREIGN_KEY_CHECKS=0;')
 
+
 def enable_foreign_key_checks():
     """Enable foreign key constraint checks
 
     Ensure this is called after disable_foreign_key_checks()
     """
     raw_sql('SET FOREIGN_KEY_CHECKS=1;')
+
+
+def namedtuplefetchall(cursor):
+    """Return all rows from a cursor as a namedtuple
+
+    https://docs.djangoproject.com/en/5.0/topics/db/sql/
+    """
+    desc = cursor.description
+    nt_result = namedtuple('Result', [col[0] for col in desc])
+    return [nt_result(*row) for row in cursor.fetchall()]

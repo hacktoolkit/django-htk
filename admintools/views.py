@@ -5,12 +5,31 @@ import subprocess
 from django.conf import settings
 
 # HTK Imports
+from htk.admintools.utils import retrieve_migrations
 from htk.utils import (
     htk_setting,
     resolve_method_dynamically,
     resolve_model_dynamically,
 )
 from htk.view_helpers import render_custom as _r
+
+
+def migrations_view(
+    request,
+    template='admintools/migrations.html',
+    data=None,
+    renderer=_r,
+):
+    if data is None:
+        wrap_data = resolve_method_dynamically(
+            htk_setting('HTK_VIEW_CONTEXT_GENERATOR')
+        )
+        data = wrap_data(request)
+
+    data['migrations'] = retrieve_migrations()
+
+    response = _r(request, template, data=data)
+    return response
 
 
 def todos_view(

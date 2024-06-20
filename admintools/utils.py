@@ -16,7 +16,11 @@ from htk.apps.accounts.utils import (
     get_user_by_username,
 )
 from htk.utils import htk_setting
+from htk.utils.db import namedtuplefetchall
 from htk.utils.request import get_current_request
+
+
+# isort: off
 
 
 def get_company_officers_id_email_map():
@@ -129,9 +133,7 @@ def emulate_user(
     cookie_name = (
         'emulate_user_id'
         if user_id
-        else 'emulate_user_username'
-        if username
-        else None
+        else 'emulate_user_username' if username else None
     )
 
     cookie_value = user_id or username
@@ -145,3 +147,13 @@ def emulate_user(
     )
 
     return response
+
+
+def retrieve_migrations():
+    from django.db import connection
+
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT * FROM django_migrations ORDER BY id DESC;')
+        migrations = namedtuplefetchall(cursor)
+
+    return migrations

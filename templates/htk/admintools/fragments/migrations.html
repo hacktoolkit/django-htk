@@ -1,0 +1,20 @@
+<table id="migrations_table">
+  <thead>
+    <tr>
+      <th>Migration ID</th>
+      <th>App</th>
+      <th>Name</th>
+      <th>Date Applied</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for migration in migrations %}
+    <tr>
+      <td>{{ migration.id }}</td>
+      <td><code>{{ migration.app }}</code></td>
+      <td><code>{{ migration.name }}</code></td>
+      <td>{{ migration.applied }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
