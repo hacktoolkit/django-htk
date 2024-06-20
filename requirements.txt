@@ -2,6 +2,7 @@ Django==3.2.25
 Fabric==1.6.1
 South==0.8.4
 django-grappelli==2.15.2
+emoji>=2.12.1,<3
 numpy==1.22.0
 pydantic==1.10.13
 pygeoip==0.2.6

@@ -1,3 +1,6 @@
+# Third Party (PyPI) Imports
+import emoji
+
 # Django Imports
 from django.contrib import admin
 
@@ -10,9 +13,17 @@ Conversation = resolve_model_dynamically(htk_setting('HTK_CONVERSATION_MODEL'))
 ConversationMessage = resolve_model_dynamically(
     htk_setting('HTK_CONVERSATION_MESSAGE_MODEL')
 )
+ConversationMessageReaction = resolve_model_dynamically(
+    htk_setting('HTK_CONVERSATION_MESSAGE_REACTION_MODEL')
+)
 ConversationParticipant = resolve_model_dynamically(
     htk_setting('HTK_CONVERSATION_PARTICIPANT_MODEL')
 )
+
+
+class ConversationMessageReactionInline(admin.TabularInline):
+    model = ConversationMessageReaction
+    extra = 0
 
 
 class ConversationParticipantInline(admin.TabularInline):
@@ -90,3 +101,21 @@ class BaseConversationMessageAdmin(admin.ModelAdmin):
         'edited_at',
         'deleted_at',
     )
+
+    inlines = (ConversationMessageReactionInline,)
+
+
+class BaseConversationMessageReactionAdmin(admin.ModelAdmin):
+    model = ConversationMessageReaction
+
+    list_display = (
+        'id',
+        'message',
+        'user',
+        'emoji',
+        'emoji_shortcode',
+        'created_at',
+    )
+
+    def emoji(self, obj):
+        return emoji.emojize(obj.emoji_shortcode, language='alias')

@@ -1,10 +1,21 @@
+# Third Party (PyPI) Imports
+import emoji
+
 # Django Imports
 from django.db import models
 
 # HTK Imports
-from htk.apps.conversations.fk_fields import fk_conversation
+from htk.apps.conversations.fk_fields import (
+    fk_conversation,
+    fk_conversation_message,
+)
 from htk.models.fk_fields import fk_user
 from htk.utils import htk_setting
+from htk.utils.text.unicode import (
+    demojize,
+    is_emoji_shortcode,
+    is_emoji_symbol,
+)
 
 
 # isort: off
@@ -157,6 +168,38 @@ class BaseConversationMessage(models.Model):
     def is_deleted(self):
         return self.deleted_at is not None
 
+    def add_reaction(self, user, emoji_shortcode):
+        """Adds a reaction by `user` to this message.
+
+        This method is idempotent. If it is called multiple times with the same arguments, it will only create 1 record of the emoji reaction.
+        """
+        if is_emoji_symbol(emoji_shortcode):
+            # ensure that data is normalized into emoji shortcode
+            emoji_shortcode = emoji.demojize(emoji_shortcode)
+
+        reaction, was_created = self.reactions.get_or_create(
+            user=user,
+            emoji_shortcode=emoji_shortcode,
+        )
+        return reaction
+
+    def remove_reaction(self, user, emoji_shortcode):
+        """Removes an existing reaction by `user` to this message.
+
+        This method is idempotent. If it is called multiple times with the same arguments, it will remove the record of the emoji reaction.
+
+        If it is called multiple times, and the reaction has already been deleted, this method has no effect and just performs a no-op.
+        """
+
+        if is_emoji_symbol(emoji_shortcode):
+            emoji_shortcode = demojize(emoji_shortcode)
+        self.reactions.filter(
+            user=user,
+            emoji_shortcode=emoji_shortcode,
+        ).delete()
+
+        self.save()
+
     def save(self, **kwargs):
         """Saves this message.
 
@@ -166,3 +209,41 @@ class BaseConversationMessage(models.Model):
 
         # force update on `Conversation.updated_at`
         self.conversation.save()
+
+
+class BaseConversationMessageReaction(models.Model):
+    """An emoji reaction to a message in
+    a conversation.
+    """
+
+    message = fk_conversation_message(related_name='reactions', required=True)
+    user = fk_user(related_name='reactions', required=False)
+    emoji_shortcode = models.CharField(max_length=24)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        value = '%s' % emoji.emojize(self.emoji_shortcode)
+        return value
+
+    def as_dict(self):
+        value = {
+            'user': self.user.as_dict(),
+            'emoji_shortcode': self.emoji_shortcode,
+            'created_at': self.created_at,
+        }
+        return value
+
+    def repair_emoji(self):
+        """Repairs the emoji shortcode to ensure that it is normalized."""
+        if is_emoji_shortcode(self.emoji_shortcode):
+            # normalize into emoji symbol
+            self.emoji_shortcode = emoji.emojize(self.emoji_shortcode)
+            self.save()
+
+        if is_emoji_symbol(self.emoji_shortcode):
+            # normalize into emoji shortcode
+            self.emoji_shortcode = demojize(self.emoji_shortcode)
+            self.save()
