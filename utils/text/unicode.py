@@ -20,10 +20,9 @@ def demojize(s: str, shortest=True) -> str:
     """Strips emojis from a string"""
     demojized = emoji.demojize(s)
     aliases = re.findall(r':\w+?:', demojized)
-    if aliases:
-        # Return the shortest alias
-        return min(aliases, key=len)
-    return demojized
+    # return the shortest alias if they exist
+    result = min(aliases, key=len) if aliases else demojized
+    return result
 
 
 def unicode_to_ascii(s):
