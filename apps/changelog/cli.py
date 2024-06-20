@@ -2,6 +2,7 @@
 import click
 
 # HTK Imports
+import htk.scripts.script_config
 from htk.apps.changelog.classes import (
     ChangeLog,
     LogEntry,

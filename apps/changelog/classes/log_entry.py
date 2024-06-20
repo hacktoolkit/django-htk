@@ -11,6 +11,15 @@ from htk.apps.changelog.constants.regexes import (
     GITHUB_ISSUE_REGEX,
     RELEASE_TAG_REGEXES,
 )
+from htk.utils import htk_setting
+
+
+# isort: off
+
+
+HTK_COMPANY_EMPLOYEE_GITHUB_USERNAMES_MAP = htk_setting(
+    'HTK_COMPANY_EMPLOYEE_GITHUB_USERNAMES_MAP'
+)
 
 
 class LogEntry(
@@ -61,6 +70,12 @@ class LogEntry(
     @property
     def issue_links_slack(self):
         return self.build_issue_links(fmt='slack')
+
+    @property
+    def author_github_url(self):
+        github_username = HTK_COMPANY_EMPLOYEE_GITHUB_USERNAMES_MAP[self.author]
+        github_url = f'https://github.com/{github_username}'
+        return github_url
 
     @property
     def refs(self):
@@ -117,9 +132,10 @@ class LogEntry(
     def html(self):
         issue_links = self.issue_links
         issue_links_sep = '; ' if issue_links else ''
-        html = u'- {} _by {} on {}_ ([{}]({}){}{})'.format(
+        html = u'- {} _by [{}]({}) on {}_ ([{}]({}){}{})'.format(
             self.simple_subject,
             self.author,
+            self.author_github_url,
             self.short_date,
             self.commit_hash[:10],
             self.url,
@@ -132,9 +148,10 @@ class LogEntry(
     def slack_message(self):
         issue_links = self.issue_links_slack
         issue_links_sep = '; ' if issue_links else ''
-        html = u'* {} _by {} on {}_ (<{}|{}>){}{}'.format(
+        html = u'* {} _by <{}|{}> on {}_ (<{}|{}>){}{}'.format(
             self.simple_subject,
             self.author,
+            self.author_github_url,
             self.short_date,
             self.url,
             self.commit_hash[:10],

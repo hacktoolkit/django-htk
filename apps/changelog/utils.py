@@ -30,8 +30,10 @@ def fetch_git_logs():
 
     @return: list[str]
     """
-    command = 'git log --format="%H{SEP}%aI{SEP}%aL{SEP}%D{SEP}%s"'.format(
-        SEP=SEPARATOR
+    command = (
+        'git log --mailmap --format="%H{SEP}%aI{SEP}%aN{SEP}%D{SEP}%s"'.format(
+            SEP=SEPARATOR
+        )
     )
     result = run(command, hide=True)
 
