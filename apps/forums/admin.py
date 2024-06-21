@@ -76,9 +76,3 @@ class ForumTagAdmin(admin.ModelAdmin):
         'id',
         'name',
     )
-
-
-# admin.site.register(Forum, ForumAdmin)
-# admin.site.register(ForumThread, ForumThreadAdmin)
-# admin.site.register(ForumMessage, ForumMessageAdmin)
-# admin.site.register(ForumTag, ForumTagAdmin)
