@@ -1,0 +1,26 @@
+{% load htk_tags %}
+<form method="POST"{% if action_view %} action="{% url action_view %}"{% endif %}{% if form_classes %} class="{{ form_classes }}"{% endif %}>
+  {% csrf_token %}
+  {% for hidden in form.hidden_fields %}
+  {{ hidden }}
+  {% endfor %}
+  {% for field in form.visible_fields %}
+
+  <div>
+    <div>
+      <label class="{{ form_field_label_classes }}{% if field|field_clsname != 'RadioSelect' %} text-center{% endif %}" for="{{ field.id_for_label }}">
+        {{ field.label }}
+      </label>
+      <div class="{% if field|field_clsname == 'RadioSelect' %}{{ form_field_radio_label_classes }}{% else %}{{ form_field_classes }}{% endif %} ">
+        {{ field }}
+      </div>
+    </div>
+    {% if field.errors %}
+    <div class="{{ form_field_error_classes }}">
+      {{ field.errors }}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  <button type="submit" class="{{ submit_button_classes }}">{{ submit_label|default:'Submit' }}</button>
+</form>
