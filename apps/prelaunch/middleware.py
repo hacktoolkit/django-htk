@@ -24,7 +24,9 @@ class PrelaunchModeMiddleware(MiddlewareMixin):
         path = request.path
 
         self.early_access_code = get_early_access_code(request)
-        self.has_early_access = has_early_access(request, early_access_code=self.early_access_code)
+        self.has_early_access = has_early_access(
+            request, early_access_code=self.early_access_code
+        )
 
         should_redirect_to_prelaunch = (
             is_prelaunch_mode()

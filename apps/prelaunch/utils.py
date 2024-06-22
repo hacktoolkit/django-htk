@@ -73,6 +73,15 @@ def is_prelaunch_exception_url(path):
 
 
 def is_prelaunch_exception_view(path):
+    """Determines if the path is an excepted view from prelaunch redirection
+
+    This solution is non-ideal because it reverses the view name from a list of view names, which is
+    not always possible because we do not always have the args and kwargs necessary to reverse the view name.
+
+    A preferred approach would be to take as a parameter the `request` object, and check if the view name matches
+    the `request.resolver_match` object. However, this is not possible because the middleware does not have access
+    at this point -- the request has not yet been resolved to a view.
+    """
     is_excepted = False
     prelaunch_exception_views = htk_setting('HTK_PRELAUNCH_EXCEPTION_VIEWS')
     for view_name in prelaunch_exception_views:
