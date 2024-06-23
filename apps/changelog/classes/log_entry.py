@@ -73,7 +73,9 @@ class LogEntry(
 
     @property
     def author_github_url(self):
-        github_username = HTK_COMPANY_EMPLOYEE_GITHUB_USERNAMES_MAP[self.author]
+        github_username = HTK_COMPANY_EMPLOYEE_GITHUB_USERNAMES_MAP.get(
+            self.author, self.author
+        )
         github_url = f'https://github.com/{github_username}'
         return github_url
 
