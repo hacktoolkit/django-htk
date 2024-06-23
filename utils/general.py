@@ -62,6 +62,7 @@ def _get_model_fn():
     try:
         # Django >= 1.9
         # c.f. https://stackoverflow.com/a/36234846/865091
+        # Ref: https://docs.djangoproject.com/en/3.2/ref/applications/#django.apps.apps.get_model
         from django.apps import apps
 
         get_model = apps.get_model
@@ -92,7 +93,7 @@ def resolve_model_dynamically(module_str):
     (module_name, attr_name) = get_module_name_parts(module_str)
     if module_name and attr_name:
         get_model = _get_model_fn()
-        model = get_model(module_name, attr_name)
+        model = get_model(module_name, attr_name, require_ready=False)
     else:
         model = None
     return model

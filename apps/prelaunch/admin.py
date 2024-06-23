@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 
 # HTK Imports
 from htk.apps.prelaunch.loading import PrelaunchSignup
+from htk.utils import htk_setting
 
 
 # isort: off
@@ -20,7 +21,7 @@ class PrelaunchSignupAdmin(admin.ModelAdmin):
         'early_access',
         'early_access_code',
         'toggle_early_access',
-        'created_on',
+        'created_at',
         'updated_at',
     )
 
@@ -33,7 +34,8 @@ class PrelaunchSignupAdmin(admin.ModelAdmin):
 
     @mark_safe
     def toggle_early_access(self, obj):
-        url = reverse('admintools_api_prelaunch_toggle', args=(obj.id,))
+        url_name = htk_setting('HTK_PRELAUNCH_ADMINTOOLS_TOGGLE_URL_NAME')
+        url = reverse(url_name, args=(obj.id,))
         value = '<a href="{}" target="_blank">Toggle Early Access</a>'.format(
             url
         )

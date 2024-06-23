@@ -8,9 +8,14 @@ from htk.utils import (
 )
 
 
+# isort: off
+
 try:
     PrelaunchSignup = resolve_model_dynamically(
         htk_setting('HTK_PRELAUNCH_MODEL')
     )
 except (LookupError, AppRegistryNotReady):
+    from htk.utils.debug import slack_debug
+
+    slack_debug('AppRegistryNotReady: PrelaunchSignup loading failed')
     pass
