@@ -38,4 +38,7 @@ HTK_PRELAUNCH_EMAIL_TEMPLATE = 'htk/prelaunch'
 HTK_PRELAUNCH_EMAIL_SUBJECT = 'Thanks for signing up'
 HTK_PRELAUNCH_EMAIL_BCC = []
 
+HTK_PRELAUNCH_EARLY_ACCESS_EMAIL_TEMPLATE = 'htk/prelaunch_early_access'
+HTK_PRELAUNCH_EARLY_ACCESS_EMAIL_SUBJECT = 'Early Access Granted'
+
 HTK_PRELAUNCH_ADMINTOOLS_TOGGLE_URL_NAME = 'admintools_api_prelaunch_toggle'

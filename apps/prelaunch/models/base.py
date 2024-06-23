@@ -3,13 +3,17 @@ import uuid
 
 # Third Party (PyPI) Imports
 import rollbar
+from baws.utils.urls import get_full_url
 
 # Django Imports
 from django.contrib.sites.models import Site
 from django.db import models
 
 # HTK Imports
-from htk.apps.prelaunch.emails import prelaunch_email
+from htk.apps.prelaunch.emails import (
+    early_access_email,
+    prelaunch_email,
+)
 from htk.utils import htk_setting
 from htk.utils.notifications import notify
 from htk.utils.request import get_current_request
@@ -98,7 +102,12 @@ class BasePrelaunchSignup(models.Model):
                 email=email,
                 site=site,
             )
-            prelaunch_signup.grant_early_access()
+            if enable_early_access:
+                # granting early access will also save the object
+                prelaunch_signup.grant_early_access()
+            else:
+                # explicitly save the object if not granting early access
+                prelaunch_signup.save()
 
         return prelaunch_signup
 
@@ -159,7 +168,25 @@ class BasePrelaunchSignup(models.Model):
             level='info',
         )
 
+        try:
+            early_access_email(self)
+        except Exception:
+            request = get_current_request()
+            rollbar.report_exc_info(request=request)
+
     def revoke_early_access(self):
         self.early_access = False
         self.early_access_code = None
         self.save()
+
+    @property
+    def early_access_url(self):
+        if self.early_access:
+            early_access_url = '{}?early_access_code={}'.format(
+                get_full_url('/'),
+                self.early_access_code,
+            )
+        else:
+            early_access_url = None
+
+        return early_access_url
