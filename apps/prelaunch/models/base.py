@@ -48,8 +48,8 @@ class BasePrelaunchSignup(models.Model):
 
     def __str__(self):
         s = '%s - %s' % (
-            self.created_at,
             self.email,
+            self.created_at,
         )
         return s
 
@@ -125,6 +125,10 @@ class BasePrelaunchSignup(models.Model):
 
     @property
     def notification_message(self):
+        """Returns a message for Slack notifications about platform activity
+
+        NOTE: This is a template method that should be overridden in subclasses
+        """
         message = (
             '{} <{}> just signed up for the pre-launch waiting list.'.format(
                 self.full_name,
