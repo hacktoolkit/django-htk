@@ -60,12 +60,7 @@ def slack_notify(message, level=None):
         default_level = (
             'debug' if (settings.ENV_DEV or settings.TEST) else 'info'
         )
-        level = (
-            default_level
-            if level not in channels
-            else ('debug' if (settings.ENV_DEV or settings.TEST) else level)
-        )
-
+        level = level if level in channels else default_level
         channel = channels.get(level, htk_setting('HTK_SLACK_DEBUG_CHANNEL'))
         slack_webhook_call(text=message, channel=channel)
     except:
