@@ -169,7 +169,7 @@ class BasePrelaunchSignup(models.Model):
             'Early access has been enabled for {} <{}>'.format(
                 self.full_name, self.email
             ),
-            level='info',
+            level='debug',
         )
 
         try:
