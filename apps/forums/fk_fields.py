@@ -30,3 +30,11 @@ def fk_forum_thread(
         **build_kwargs(required=required, **kwargs),
     )
     return field
+
+
+def forum_tag(**kwargs) -> models.ManyToManyField:
+    field = models.ManyToManyField(
+        htk_setting('HTK_FORUM_TAG_MODEL'),
+        **kwargs,
+    )
+    return field

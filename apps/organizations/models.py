@@ -19,6 +19,7 @@ from htk.apps.organizations.enums import (
     OrganizationMemberRoles,
     OrganizationTeamMemberRoles,
 )
+from htk.apps.organizations.fk_fields import fk_organization
 from htk.apps.organizations.mixins import GoogleOrganizationMixin
 from htk.apps.organizations.utils import (
     get_model_organization_member,
@@ -30,6 +31,7 @@ from htk.models import (
     AbstractAttributeHolderClassFactory,
     HtkBaseModel,
 )
+from htk.models.fk_fields import fk_user
 from htk.utils import htk_setting
 
 
@@ -194,16 +196,8 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
 
 
 class BaseAbstractOrganizationMember(HtkBaseModel):
-    organization = models.ForeignKey(
-        htk_setting('HTK_ORGANIZATION_MODEL'),
-        on_delete=models.CASCADE,
-        related_name='members',
-    )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='organizations',
-    )
+    organization = fk_organization(related_name='members', required=True)
+    user = fk_user(related_name='organizations', required=True)
     role = models.PositiveIntegerField(
         default=OrganizationMemberRoles.MEMBER.value,
         choices=get_organization_member_role_choices(),
@@ -251,23 +245,14 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
 
 
 class BaseAbstractOrganizationInvitation(HtkBaseModel):
-    organization = models.ForeignKey(
-        htk_setting('HTK_ORGANIZATION_MODEL'),
-        on_delete=models.CASCADE,
-        related_name='invitations',
-    )
+    organization = fk_organization(related_name='invitations', required=True)
     invited_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='organization_invitations_sent',
     )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+    user = fk_user(
         related_name='organization_invitations',
-        blank=True,
-        null=True,
-        default=None,
     )
     email = models.EmailField(
         blank=True, null=True, default=None
@@ -352,11 +337,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
 
 class BaseAbstractOrganizationTeam(HtkBaseModel):
     name = models.CharField(max_length=128)
-    organization = models.ForeignKey(
-        htk_setting('HTK_ORGANIZATION_MODEL'),
-        on_delete=models.CASCADE,
-        related_name='teams',
-    )
+    organization = fk_organization(related_name='teams', required=True)
 
     class Meta:
         abstract = True
@@ -382,11 +363,7 @@ class BaseAbstractOrganizationTeam(HtkBaseModel):
 
 
 class BaseAbstractOrganizationTeamMember(HtkBaseModel):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='organization_teams',
-    )
+    user = fk_user(related_name='organization_teams', required=True)
     team = models.ForeignKey(
         htk_setting('HTK_ORGANIZATION_TEAM_MODEL'),
         on_delete=models.CASCADE,
