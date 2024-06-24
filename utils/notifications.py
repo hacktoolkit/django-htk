@@ -57,11 +57,9 @@ def slack_notify(message, level=None):
 
     try:
         channels = htk_setting('HTK_SLACK_NOTIFICATION_CHANNELS')
-
         default_level = (
             'debug' if (settings.ENV_DEV or settings.TEST) else 'info'
         )
-
         level = (
             default_level
             if level not in channels
