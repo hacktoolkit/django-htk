@@ -4,15 +4,24 @@ import rollbar
 
 # HTK Imports
 from htk.compat import b64encode
-from htk.lib.fitbit.constants import *
-from htk.utils import refresh
-from htk.utils import utcnow
+from htk.lib.fitbit.constants import (
+    FITBIT_API_BASE_URL,
+    FITBIT_API_RESOURCES,
+)
+from htk.utils import (
+    refresh,
+    utcnow,
+)
+
+
+# isort: off
 
 
 class FitbitAPI(object):
     """
     https://dev.fitbit.com/docs/
     """
+
     def __init__(self, social_auth_user, client_id, client_secret):
         """Constructor for FitbitAPI
 
@@ -26,8 +35,7 @@ class FitbitAPI(object):
         self.client_secret = client_secret
 
     def get_resource_url(self, resource_type, resource_args=None):
-        """Returns the resource URL for `resource_type`
-        """
+        """Returns the resource URL for `resource_type`"""
         resource_path = FITBIT_API_RESOURCES.get(resource_type)
         if resource_args:
             resource_path = resource_path(*resource_args)
@@ -47,27 +55,43 @@ class FitbitAPI(object):
         # refreshes token if necessary
         if self.social_auth_user.access_token_expired():
             from social_django.utils import load_strategy
-            access_token = self.social_auth_user.get_access_token(load_strategy())
+
+            access_token = self.social_auth_user.get_access_token(
+                load_strategy()
+            )
             self.social_auth_user = refresh(self.social_auth_user)
 
         if auth_type == 'bearer':
-            auth_header = 'Bearer %s' % self.social_auth_user.extra_data['access_token']
+            auth_header = (
+                'Bearer %s' % self.social_auth_user.extra_data['access_token']
+            )
         else:
-            basic_value = '%s:%s' % (self.client_id, self.client_secret,)
+            basic_value = '%s:%s' % (
+                self.client_id,
+                self.client_secret,
+            )
             auth_header = 'Basic %s' % b64encode(basic_value)
             if isinstance(auth_header, bytes):
                 auth_header = auth_header.decode('utf-8')
         _headers = {
-            'Authorization' : auth_header,
-            'Accept-Locale' : 'en_US',
-            'Accept-Language' : 'en_US',
+            'Authorization': auth_header,
+            'Accept-Locale': 'en_US',
+            'Accept-Language': 'en_US',
         }
         if headers:
             _headers.update(headers)
         headers = _headers
         return headers
 
-    def get(self, resource_type, resource_args=None, params=None, headers=None, auth_type='bearer', refresh_token=True):
+    def get(
+        self,
+        resource_type,
+        resource_args=None,
+        params=None,
+        headers=None,
+        auth_type='bearer',
+        refresh_token=True,
+    ):
         """Performs a Fitbit API GET request
         `auth_type` the string 'basic' or 'bearer'
         `refresh_token` if True, will refresh the OAuth token when needed
@@ -85,27 +109,47 @@ class FitbitAPI(object):
                 was_refreshed = self.refresh_oauth2_token()
                 if was_refreshed:
                     # if token was successfully refreshed, repeat request
-                    response = self.get(resource_type, resource_args=resource_args, params=params, headers=headers, auth_type=auth_type, refresh_token=False)
+                    response = self.get(
+                        resource_type,
+                        resource_args=resource_args,
+                        params=params,
+                        headers=headers,
+                        auth_type=auth_type,
+                        refresh_token=False,
+                    )
                 else:
                     pass
             else:
                 extra_data = {
-                    'user_id' : self.social_auth_user.user.id,
-                    'username' : self.social_auth_user.user.username,
-                    'response' : response.json(),
+                    'user_id': self.social_auth_user.user.id,
+                    'username': self.social_auth_user.user.username,
+                    'response': response.json(),
                 }
-                rollbar.report_message('Fitbit OAuth token expired, needs refreshing', extra_data=extra_data)
+                rollbar.report_message(
+                    'Fitbit OAuth token expired, needs refreshing',
+                    extra_data=extra_data,
+                )
         elif response.status_code == 200:
             pass
         else:
             extra_data = {
-                'response' : response.json(),
+                'response': response.json(),
             }
-            rollbar.report_message('Unexpected response from Fitbit API GET request', extra_data=extra_data)
+            rollbar.report_message(
+                'Unexpected response from Fitbit API GET request',
+                extra_data=extra_data,
+            )
 
         return response
 
-    def post(self, resource_type, resource_args=None, params=None, headers=None, auth_type='bearer'):
+    def post(
+        self,
+        resource_type,
+        resource_args=None,
+        params=None,
+        headers=None,
+        auth_type='bearer',
+    ):
         """Performs a Fitbit API POST request
         `auth_type` the string 'basic' or 'bearer'
         """
@@ -120,13 +164,15 @@ class FitbitAPI(object):
     def refresh_oauth2_token(self):
         # TODO: deprecate
         params = {
-            'grant_type' : 'refresh_token',
-            'refresh_token' : self.social_auth_user.extra_data['refresh_token'],
+            'grant_type': 'refresh_token',
+            'refresh_token': self.social_auth_user.extra_data['refresh_token'],
         }
         headers = {
-            'Content-Type' : 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/x-www-form-urlencoded',
         }
-        response = self.post('refresh', params, headers=headers, auth_type='basic')
+        response = self.post(
+            'refresh', params, headers=headers, auth_type='basic'
+        )
         if response.status_code == 200:
             response_json = response.json()
             self.social_auth_user.extra_data.update(response_json)
@@ -135,16 +181,18 @@ class FitbitAPI(object):
         else:
             was_refreshed = False
             extra_data = {
-                'user_id' : self.social_auth_user.user.id,
-                'username' : self.social_auth_user.user.username,
-                'response' : response.json(),
+                'user_id': self.social_auth_user.user.id,
+                'username': self.social_auth_user.user.username,
+                'response': response.json(),
             }
-            rollbar.report_message('Unable to refresh Fitbit OAuth2.0 token', extra_data=extra_data)
+            rollbar.report_message(
+                'Unable to refresh Fitbit OAuth2.0 token', extra_data=extra_data
+            )
         return was_refreshed
 
     def revoke_access(self):
         params = {
-            'token' : self.social_auth_user.extra_data['access_token'],
+            'token': self.social_auth_user.extra_data['access_token'],
         }
         response = self.post('revoke', params, 'basic')
         if response.status_code == 200:
@@ -178,13 +226,12 @@ class FitbitAPI(object):
     # Body & Weight
     # https://dev.fitbit.com/build/reference/web-api/body/
 
-    def get_body_fat_logs_past_day(self):
-        """Get Body Fat logs for the past day
-        """
-        resource_args = (
-            utcnow().strftime('%Y-%m-%d'),
-            '1d',
-        )
+    def get_body_fat_logs(self, dt=None):
+        """Get Body Fat logs for a given date"""
+        if dt is None:
+            dt = utcnow()
+
+        resource_args = (dt.strftime('%Y-%m-%d'),)
         response = self.get('fat', resource_args=resource_args)
         if response.status_code == 200:
             fat_logs = response.json()['fat']
@@ -193,19 +240,26 @@ class FitbitAPI(object):
             fat_logs = None
         return fat_logs
 
-    def get_weight_logs_past_day(self):
-        """Get Weight logs for the past day
-        """
-        resource_args = (
-            utcnow().strftime('%Y-%m-%d'),
-            '1d',
-        )
+    def get_body_fat_logs_past_day(self):
+        fat_logs = self.get_body_fat_logs()
+        return fat_logs
+
+    def get_weight_logs(self, dt=None):
+        """Get Weight logs for a given date"""
+        if dt is None:
+            dt = utcnow()
+
+        resource_args = (dt.strftime('%Y-%m-%d'),)
         response = self.get('weight', resource_args=resource_args)
         if response.status_code == 200:
             weight_logs = response.json()['weight']
             weight_logs = weight_logs[::-1]
         else:
             weight_logs = None
+        return weight_logs
+
+    def get_weight_logs_past_day(self):
+        weight_logs = self.get_weight_logs()
         return weight_logs
 
     def get_most_recent_weight(self):
