@@ -9,6 +9,7 @@ from htk.apps.forums.fk_fields import (
     fk_forum_thread,
 )
 from htk.models.fk_fields import fk_user
+from htk.utils import htk_setting
 
 
 class Forum(models.Model):
@@ -53,7 +54,9 @@ class ForumThread(models.Model):
     # status
     sticky = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
-    tags = models.ManyToManyField('ForumTag', blank=True)
+    tags = models.ManyToManyField(
+        htk_setting('HTK_FORUM_TAG_MODEL'), blank=True
+    )
 
     class Meta:
         # app_label = 'htk'
@@ -94,7 +97,9 @@ class ForumMessage(models.Model):
     text = models.TextField(max_length=3000)
     posted_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
-    tags = models.ManyToManyField('ForumTag', blank=True)
+    tags = models.ManyToManyField(
+        htk_setting('HTK_FORUM_TAG_MODEL'), blank=True
+    )
 
     class Meta:
         # app_label = 'htk'

@@ -9,6 +9,7 @@ from htk.utils.general import resolve_model_dynamically
 Forum = resolve_model_dynamically(htk_setting('HTK_FORUM_MODEL'))
 ForumThread = resolve_model_dynamically(htk_setting('HTK_FORUM_THREAD_MODEL'))
 ForumMessage = resolve_model_dynamically(htk_setting('HTK_FORUM_MESSAGE_MODEL'))
+ForumTag = resolve_model_dynamically(htk_setting('HTK_FORUM_TAG_MODEL'))
 
 
 class ForumThreadInline(admin.TabularInline):
@@ -64,15 +65,14 @@ class ForumMessageAdmin(admin.ModelAdmin):
         'thread',
         'snippet',
         'author',
-        'timestamp',
+        'posted_at',
     )
 
 
 class ForumTagAdmin(admin.ModelAdmin):
-    pass
+    model = ForumTag
 
-
-# admin.site.register(Forum, ForumAdmin)
-# admin.site.register(ForumThread, ForumThreadAdmin)
-# admin.site.register(ForumMessage, ForumMessageAdmin)
-# admin.site.register(ForumTag, ForumTagAdmin)
+    list_display = (
+        'id',
+        'name',
+    )
