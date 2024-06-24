@@ -15,7 +15,7 @@ from htk.apps.prelaunch.emails import (
     prelaunch_email,
 )
 from htk.utils import htk_setting
-from htk.utils.notifications import notify
+from htk.utils.notifications import slack_notify
 from htk.utils.request import get_current_request
 
 
@@ -139,8 +139,6 @@ class BasePrelaunchSignup(models.Model):
 
     def send_notifications(self):
         if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            from htk.utils.notifications import slack_notify
-
             try:
                 slack_notify(self.notification_message)
             except:
@@ -165,11 +163,11 @@ class BasePrelaunchSignup(models.Model):
         self.early_access = True
         self.early_access_code = uuid.uuid4().hex
         self.save()
-        notify(
+        slack_notify(
             'Early access has been enabled for {} <{}>'.format(
                 self.full_name, self.email
             ),
-            level='debug',
+            level='info',
         )
 
         try:
