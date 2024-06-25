@@ -63,23 +63,31 @@ class CurrencyField(models.DecimalField):
             name=name,
             max_digits=max_digits,
             decimal_places=decimal_places,
-            **kwargs
+            **kwargs,
         )
 
     def to_python(self, value):
         try:
-            return super(CurrencyField, self).to_python(value).quantize(Decimal('0.01'))
+            return (
+                super(CurrencyField, self)
+                .to_python(value)
+                .quantize(Decimal('0.01'))
+            )
         except AttributeError:
             return None
 
+
 if SOUTH:
-    add_introspection_rules([
-        (
-            [CurrencyField],
-            [],
-            {
-                'decimal_places': ['decimal_places', { 'default': '2' }],
-                'max_digits': ['max_digits', { 'default': '10' }],
-            },
-        ),
-    ], ['^htk\.fields\.CurrencyField'])
+    add_introspection_rules(
+        [
+            (
+                [CurrencyField],
+                [],
+                {
+                    'decimal_places': ['decimal_places', {'default': '2'}],
+                    'max_digits': ['max_digits', {'default': '10'}],
+                },
+            ),
+        ],
+        [r'^htk\.fields\.CurrencyField'],
+    )
