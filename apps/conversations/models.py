@@ -230,7 +230,7 @@ class BaseConversationMessageReaction(models.Model):
 
     def as_dict(self):
         value = {
-            'user': self.user.as_dict(),
+            'user': self.user,
             'emoji_shortcode': self.emoji_shortcode,
             'created_at': self.created_at,
         }
