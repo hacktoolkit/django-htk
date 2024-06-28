@@ -5,6 +5,7 @@ import random
 from django.contrib.auth import get_user_model
 
 # HTK Imports
+from htk.apps.accounts.utils import associate_user_email
 from htk.compat import uuid4_hex
 from htk.test_scaffold.test_data import *
 from htk.utils import htk_setting
@@ -15,6 +16,7 @@ def create_test_user(
     first_name='',
     last_name='',
     email='',
+    should_associate_user_email=False,
 ):
     """Creates a new user with random username for testing
     If two randomly assigned usernames overlap, it will fail
@@ -30,6 +32,10 @@ def create_test_user(
         last_name=last_name,
         email=email,
     )
+
+    if should_associate_user_email:
+        user_email = associate_user_email(user, email, confirmed=True)
+        user_email.set_primary_email()
 
     return user
 
