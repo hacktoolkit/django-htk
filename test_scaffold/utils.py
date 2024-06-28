@@ -35,7 +35,6 @@ def create_test_user(
 
     if should_associate_user_email:
         user_email = associate_user_email(user, email, confirmed=True)
-        user_email.set_primary_email()
 
     return user
 
