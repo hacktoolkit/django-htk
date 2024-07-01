@@ -168,10 +168,8 @@ class BasePrelaunchSignup(models.Model):
         notify(
             'Early access has been enabled for {} <{}>'.format(
                 self.full_name, self.email
-            ),
-            level='info',
+            )
         )
-
         try:
             early_access_email(self)
         except Exception:
