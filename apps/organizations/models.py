@@ -370,7 +370,6 @@ class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
             'accepted': self.accepted,
             'requested_at': self.timestamp,
             'responded_at': self.responded_at,
-            'request_message': self.request_message,
         }
         return value
 
@@ -403,10 +402,6 @@ class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
 
     def build_notification_message__created(self):
         msg = self._build_notification_message(self.user, 'sent')
-        return msg
-
-    def build_notification_message__resent(self):
-        msg = self._build_notification_message(self.user, 're-sent')
         return msg
 
     def build_notification_message__accepted(self):
