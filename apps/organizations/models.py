@@ -1,5 +1,4 @@
 # Python Standard Library Imports
-import hashlib
 import uuid
 from typing import (
     Any,
@@ -11,7 +10,6 @@ from six.moves import collections_abc
 
 # Django Imports
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
 
 # HTK Imports
@@ -185,7 +183,13 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
 
     def add_owner(self, user):
         OrganizationMember = get_model_organization_member()
-        new_owner = self.add_member(user, OrganizationMemberRoles.OWNER)
+
+        # Owner should be an existing member
+        new_owner = (
+            self.add_member(user, OrganizationMemberRoles.OWNER)
+            if OrganizationMember.objects.filter(user=user)
+            else None
+        )
         return new_owner
 
     def modify_member_role(self, user, role):
@@ -214,7 +218,7 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
 
     def __str__(self):
         value = (
-            '{organization_name} Member - {member_name} (member_email)'.format(
+            '{organization_name} Member - {member_name} {member_email}'.format(
                 organization_name=self.organization.name,
                 member_name=self.user.profile.get_full_name(),
                 member_email=self.user.email,
@@ -315,6 +319,96 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
             subject_username=subject.username,
             email=subject.email,
             organization_name=self.organization.name,
+        )
+        return msg
+
+    def build_notification_message__created(self):
+        msg = self._build_notification_message(self.invited_by, 'sent')
+        return msg
+
+    def build_notification_message__resent(self):
+        msg = self._build_notification_message(self.invited_by, 're-sent')
+        return msg
+
+    def build_notification_message__accepted(self):
+        msg = self._build_notification_message(self.user, 'accepted')
+        return msg
+
+    def build_notification_message__declined(self):
+        msg = self._build_notification_message(self.user, 'declined')
+        return msg
+
+
+class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
+    organization = fk_organization(related_name='join_requests', required=True)
+    user = fk_user(
+        related_name='organization_join_requests',
+    )
+    email = models.EmailField(
+        blank=True, null=True, default=None
+    )  # the email where the request is sent
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    accepted = models.BooleanField(
+        default=None, null=True
+    )  # True: accepted, False: declined, None: not responded yet
+    timestamp = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(blank=True, null=True, default=None)
+    request_message = models.TextField(
+        blank=True,
+        null=True,
+        max_length=htk_setting('HTK_ORGANIZATION_JOIN_REQUEST_MESSAGE'),
+    )
+
+    class Meta:
+        abstract = True
+        verbose_name = 'Organization Join Request'
+
+    def __str__(self):
+        value = '{organization_name} - {user} - {status}'.format(
+            organization_name=self.organization.name,
+            user=self.user,
+            status=self.status,
+        )
+        return value
+
+    def json_encode(self) -> Dict[str, Any]:
+        """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object"""
+        value = {
+            'id': self.id,
+            'organization': self.organization.name,
+            'user': self.user.profile.get_full_name() if self.user else None,
+            'email': self.email,
+            'accepted': self.accepted,
+            'requested_at': self.timestamp,
+            'responded_at': self.responded_at,
+            'request_message': self.request_message,
+        }
+        return value
+
+    ##
+    # properties
+
+    @property
+    def status(self) -> str:
+        status = (
+            'Requested'
+            if self.accepted is None
+            else 'Accepted' if self.accepted else 'Declined'
+        )
+
+        return status
+
+    ##
+    # Notifications
+
+    def _build_notification_message(self, subject, action):
+        msg = '{subject_name} ({subject_username}<{email}>) request to join Organization <{organization_name}> has been {action} - {message}'.format(  # noqa: E501
+            action=action,
+            subject_name=subject.profile.get_full_name(),
+            subject_username=subject.username,
+            email=subject.email,
+            organization_name=self.organization.name,
+            message=self.requested_message,
         )
         return msg
 
