@@ -402,7 +402,7 @@ class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
     # Notifications
 
     def _build_notification_message(self, subject, action):
-        msg = '{subject_name} ({subject_username}<{email}>) request to join Organization <{organization_name}> has been {action} - {message}'.format(  # noqa: E501
+        msg = '{subject_name} ({subject_username}<{email}>) request to join Organization <{organization_name}> has been {action}. Request Message - {message}'.format(  # noqa: E501
             action=action,
             subject_name=subject.profile.get_full_name(),
             subject_username=subject.username,
@@ -413,11 +413,11 @@ class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
         return msg
 
     def build_notification_message__created(self):
-        msg = self._build_notification_message(self.invited_by, 'sent')
+        msg = self._build_notification_message(self.user, 'sent')
         return msg
 
     def build_notification_message__resent(self):
-        msg = self._build_notification_message(self.invited_by, 're-sent')
+        msg = self._build_notification_message(self.user, 're-sent')
         return msg
 
     def build_notification_message__accepted(self):
