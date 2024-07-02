@@ -395,11 +395,7 @@ class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
         return msg
 
     def build_notification_message__created(self):
-        msg = self._build_notification_message(self.invited_by, 'sent')
-        return msg
-
-    def build_notification_message__resent(self):
-        msg = self._build_notification_message(self.invited_by, 're-sent')
+        msg = self._build_notification_message(self.user, 'sent')
         return msg
 
     def build_notification_message__accepted(self):
