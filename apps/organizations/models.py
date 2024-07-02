@@ -344,20 +344,11 @@ class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
     user = fk_user(
         related_name='organization_join_requests',
     )
-    email = models.EmailField(
-        blank=True, null=True, default=None
-    )  # the email where the request is sent
-    token = models.UUIDField(default=uuid.uuid4, unique=True)
     accepted = models.BooleanField(
         default=None, null=True
     )  # True: accepted, False: declined, None: not responded yet
     timestamp = models.DateTimeField(auto_now_add=True)
     responded_at = models.DateTimeField(blank=True, null=True, default=None)
-    request_message = models.TextField(
-        blank=True,
-        null=True,
-        max_length=htk_setting('HTK_ORGANIZATION_JOIN_REQUEST_MESSAGE'),
-    )
 
     class Meta:
         abstract = True
