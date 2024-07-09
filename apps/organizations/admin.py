@@ -34,6 +34,14 @@ class HtkOrganizationInvitationInline(admin.TabularInline):
     can_delete = True
 
 
+class HtkOrganizationJoinRequestInline(admin.TabularInline):
+    model = resolve_model_dynamically(
+        htk_setting('HTK_ORGANIZATION_JOIN_REQUEST_MODEL')
+    )
+    extra = 0
+    can_delete = True
+
+
 class HtkOrganizationTeamMemberInline(admin.TabularInline):
     model = resolve_model_dynamically(
         htk_setting('HTK_ORGANIZATION_TEAM_MEMBER_MODEL')
@@ -68,7 +76,8 @@ class HtkOrganizationAdmin(admin.ModelAdmin):
         HtkOrganizationAttributeInline,
         # HtkOrganizationMemberInline,
         # HtkOrganizationTeamInline,
-        # HtkOrganizationInvitationInline,
+        HtkOrganizationInvitationInline,
+        HtkOrganizationJoinRequestInline,
     )
 
 
@@ -108,6 +117,17 @@ class HtkOrganizationInvitationAdmin(admin.ModelAdmin):
         'user',
         'email',
         'token',
+        'accepted',
+        'timestamp',
+        'responded_at',
+    )
+
+
+class HtkOrganizationJoinRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'organization',
+        'user',
         'accepted',
         'timestamp',
         'responded_at',
