@@ -9,7 +9,6 @@ from typing import (
 from six.moves import collections_abc
 
 # Django Imports
-from django.conf import settings
 from django.db import models
 
 # HTK Imports
@@ -248,10 +247,9 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
 
 class BaseAbstractOrganizationInvitation(HtkBaseModel):
     organization = fk_organization(related_name='invitations', required=True)
-    invited_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+    invited_by = fk_user(
         related_name='organization_invitations_sent',
+        required=True,
     )
     user = fk_user(
         related_name='organization_invitations',
