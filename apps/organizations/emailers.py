@@ -12,7 +12,11 @@ def send_invitation_email(request, invitation, early_access_code=None):
     """Sends invitation E-mail to given person"""
     invitation_response_url = reverse(
         htk_setting('HTK_ORGANIZATION_INVITATION_RESPONSE_URL_NAME'),
-        kwargs={'token': invitation.token.hex},
+        kwargs={
+            htk_setting(
+                'HTK_ORGANIZATION_INVITATION_RESPONSE_URL_KWARG'
+            ): invitation.organization.ulid
+        },
     )
     query_string = (
         f'?early_access_code={early_access_code}' if early_access_code else ''
