@@ -82,6 +82,12 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
         )
         return value
 
+    @classmethod
+    def create_with_owner(cls, user, **kwargs):
+        organization = cls.objects.create(**kwargs)
+        organization.add_owner(user)
+        return organization
+
     ##
     # URLs
 
@@ -180,15 +186,14 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
 
         return member
 
-    def add_owner(self, user):
+    def add_owner(self, user, require_existing_member=False):
         OrganizationMember = get_model_organization_member()
 
-        # Owner should be an existing member
-        new_owner = (
-            self.add_member(user, OrganizationMemberRoles.OWNER)
-            if OrganizationMember.objects.filter(user=user)
-            else None
-        )
+        if not require_existing_member or self.has_member(user):
+            new_owner = self.add_member(user, OrganizationMemberRoles.OWNER)
+        else:
+            new_owner = None
+
         return new_owner
 
     def modify_member_role(self, user, role):
