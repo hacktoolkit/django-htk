@@ -100,12 +100,25 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
     ##
     # Accessors
 
-    def get_members(self):
+    def get_members(self, roles=None):
+        """Returns all active members of this organization
+        If `roles` is specified, only returns members with those roles
+        """
         sort_order = htk_setting('HTK_ORGANIZATION_MEMBERS_SORT_ORDER')
-        members = self.members.filter(
-            active=True, user__is_active=True
-        ).order_by(*sort_order)
+        filter_kwargs = {
+            'active': True,
+            'user__is_active': True,
+        }
+        if roles:
+            filter_kwargs['role__in'] = [role.value for role in roles]
+
+        members = self.members.filter(**filter_kwargs).order_by(*sort_order)
         return members
+
+    def get_owners(self):
+        """Returns all active owners of this organization"""
+        owners = self.get_members(roles=(OrganizationMemberRoles.OWNER,))
+        return owners
 
     def get_distinct_members(self):
         members = self.get_members()
