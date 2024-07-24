@@ -82,6 +82,12 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
         )
         return value
 
+    @classmethod
+    def create_with_owner(cls, user, **kwargs):
+        organization = cls.objects.create(**kwargs)
+        organization.add_owner(user)
+        return organization
+
     ##
     # URLs
 
@@ -94,12 +100,25 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
     ##
     # Accessors
 
-    def get_members(self):
+    def get_members(self, roles=None):
+        """Returns all active members of this organization
+        If `roles` is specified, only returns members with those roles
+        """
         sort_order = htk_setting('HTK_ORGANIZATION_MEMBERS_SORT_ORDER')
-        members = self.members.filter(
-            active=True, user__is_active=True
-        ).order_by(*sort_order)
+        filter_kwargs = {
+            'active': True,
+            'user__is_active': True,
+        }
+        if roles:
+            filter_kwargs['role__in'] = [role.value for role in roles]
+
+        members = self.members.filter(**filter_kwargs).order_by(*sort_order)
         return members
+
+    def get_owners(self):
+        """Returns all active owners of this organization"""
+        owners = self.get_members(roles=(OrganizationMemberRoles.OWNER,))
+        return owners
 
     def get_distinct_members(self):
         members = self.get_members()
@@ -180,15 +199,14 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
 
         return member
 
-    def add_owner(self, user):
+    def add_owner(self, user, require_existing_member=False):
         OrganizationMember = get_model_organization_member()
 
-        # Owner should be an existing member
-        new_owner = (
-            self.add_member(user, OrganizationMemberRoles.OWNER)
-            if OrganizationMember.objects.filter(user=user)
-            else None
-        )
+        if not require_existing_member or self.has_member(user):
+            new_owner = self.add_member(user, OrganizationMemberRoles.OWNER)
+        else:
+            new_owner = None
+
         return new_owner
 
     def modify_member_role(self, user, role):
@@ -298,9 +316,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
         status = (
             'Invited'
             if self.accepted is None
-            else 'Accepted'
-            if self.accepted
-            else 'Declined'
+            else 'Accepted' if self.accepted else 'Declined'
         )
 
         return status
