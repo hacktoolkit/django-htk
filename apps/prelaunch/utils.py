@@ -101,6 +101,8 @@ def get_early_access_code(request):
         request.GET.get(key)
         or request.COOKIES.get(key)
         or request.session.get(key)
+        # `early_access_code` key is not being recognized in the headers
+        or request.headers.get('Early-Access-Code')
     )
     return early_access_code
 
