@@ -97,10 +97,12 @@ def is_prelaunch_exception_view(path):
 
 def get_early_access_code(request):
     key = 'early_access_code'
+    header = 'X-HTK-Early-Access-Code'
     early_access_code = (
         request.GET.get(key)
         or request.COOKIES.get(key)
         or request.session.get(key)
+        or request.headers.get(header)
     )
     return early_access_code
 
