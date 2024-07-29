@@ -3,6 +3,7 @@ from django.contrib.auth import (
     authenticate,
     logout,
 )
+from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
 # Django Extensions Imports
@@ -59,9 +60,8 @@ class BaseHtkAuthMiddleware(MiddlewareMixin):
                 )
             ):
                 request.user = None
-                logout(request)
                 # TODO: redirect user or display error?
-                pass
+                logout(request)
             else:
                 # no security violations
                 pass
@@ -76,6 +76,10 @@ class BaseHtkAuthMiddleware(MiddlewareMixin):
             # `self.process_response` will determine whether request should be
             # processed regularly, or denied
             pass
+
+    def process_request(self, request):
+        # re-initialize `is_explicit_auth` as `False` for each request
+        self.is_explicit_auth = False
 
     def process_response(self, request, response):
         """Checks whether in an explicit authorization flow
@@ -98,6 +102,7 @@ class HtkBasicAuthMiddleware(BaseHtkAuthMiddleware):
     """
 
     def process_request(self, request):
+        super().process_request(request)
         auth_user = None
 
         if 'HTTP_AUTHORIZATION' in request.META:
@@ -145,6 +150,8 @@ class HtkUserTokenAuthMiddleware(BaseHtkAuthMiddleware):
     """
 
     def process_request(self, request):
+        super().process_request(request)
+
         if 'HTTP_AUTHORIZATION' in request.META:
             self.is_explicit_auth = True
             auth_header = request.META['HTTP_AUTHORIZATION']
