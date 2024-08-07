@@ -99,6 +99,31 @@ class BaseConversation(models.Model):
         for user in users:
             self.add_participant(user)
 
+    def remove_participant(self, user, return_deleted_id=True, id_field='id'):
+        """Removes a participant from this conversation"""
+        participant = self.participants.filter(user=user).first()
+        result = getattr(participant, id_field) if return_deleted_id else None
+
+        participant.delete()
+        self.save()
+
+        return result
+
+    def remove_participants(
+        self, users, return_deleted_ids=True, id_field='id'
+    ):
+        """Removes several participants from this conversation"""
+        results = []
+        for user in users:
+            result = self.remove_participant(
+                return_deleted_id=return_deleted_ids,
+                id_field=id_field,
+            )
+            if return_deleted_ids:
+                results.append(result)
+
+        return results
+
 
 class BaseConversationParticipant(models.Model):
     """A participant in a conversation
