@@ -1,6 +1,5 @@
 # Python Standard Library Imports
 import datetime
-import random
 
 # Django Imports
 from django.urls import reverse
@@ -137,7 +136,7 @@ def password_changed_email(user):
     }
     subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_CHANGED') % context
     send_email(
-        template='accounts/password_changed',
+        template=htk_setting('HTK_ACCOUNT_EMAIL_PASSWORD_CHANGED_TEMPLATE'),
         subject=subject,
         to=[user.profile.confirmed_email or user.email],
         context=context
