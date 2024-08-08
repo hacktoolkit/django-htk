@@ -63,7 +63,14 @@ class UpdatePasswordForm(SetPasswordForm):
         set_input_placeholder_labels(self)
         set_input_attrs(self)
 
-    def save(self, commit=True, email_template=None):
+    def save(
+        self,
+        request=None,
+        email_template=None,
+        email_subject=None,
+        email_sender=None,
+        commit=True,
+    ):
         user = super(UpdatePasswordForm, self).save(commit=commit)
         from htk.apps.accounts.emails import password_changed_email
 
