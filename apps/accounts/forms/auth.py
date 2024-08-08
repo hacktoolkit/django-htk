@@ -75,7 +75,7 @@ class UpdatePasswordForm(SetPasswordForm):
         from htk.apps.accounts.emails import password_changed_email
 
         try:
-            password_changed_email(user)
+            password_changed_email(user, template=email_template)
         except Exception:
             request = get_current_request()
             rollbar.report_exc_info(request=request)
