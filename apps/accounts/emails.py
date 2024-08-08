@@ -1,6 +1,5 @@
 # Python Standard Library Imports
 import datetime
-import random
 
 # Django Imports
 from django.urls import reverse
@@ -110,7 +109,9 @@ def password_reset_email(user, token_generator, use_https=False, domain=None, te
         'protocol': use_https and 'https' or 'http',
         'domain': domain,
         'site_name': htk_setting('HTK_SITE_NAME'),
-        'reset_path': reverse(htk_setting('HTK_ACCOUNTS_RESET_PASSWORD_URL_NAME')),
+        'reset_path': reverse(
+            htk_setting('HTK_ACCOUNT_RESET_PASSWORD_URL_NAME')
+        ),
         'uid': int_to_base36(user.id),
         'token': token_generator.make_token(user),
     }
@@ -128,7 +129,10 @@ def password_reset_email(user, token_generator, use_https=False, domain=None, te
     )
 
 
-def password_changed_email(user):
+def password_changed_email(
+    user,
+    template=None,
+):
     context = {
         'user': user,
         'email': user.profile.confirmed_email or user.email,
@@ -137,7 +141,7 @@ def password_changed_email(user):
     }
     subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_CHANGED') % context
     send_email(
-        template='accounts/password_changed',
+        template=template or 'accounts/password_changed',
         subject=subject,
         to=[user.profile.confirmed_email or user.email],
         context=context
