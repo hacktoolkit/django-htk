@@ -67,8 +67,6 @@ class UpdatePasswordForm(SetPasswordForm):
         self,
         request=None,
         email_template=None,
-        email_subject=None,
-        email_sender=None,
         commit=True,
     ):
         user = super(UpdatePasswordForm, self).save(commit=commit)
