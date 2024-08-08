@@ -127,7 +127,10 @@ def password_reset_email(user, token_generator, use_https=False, domain=None, te
     )
 
 
-def password_changed_email(user):
+def password_changed_email(
+    user,
+    template=None,
+):
     context = {
         'user': user,
         'email': user.profile.confirmed_email or user.email,
@@ -136,7 +139,7 @@ def password_changed_email(user):
     }
     subject = htk_setting('HTK_ACCOUNT_EMAIL_SUBJECT_PASSWORD_CHANGED') % context
     send_email(
-        template=htk_setting('HTK_ACCOUNT_EMAIL_PASSWORD_CHANGED_TEMPLATE'),
+        template=template or 'accounts/password_changed',
         subject=subject,
         to=[user.profile.confirmed_email or user.email],
         context=context

@@ -56,15 +56,17 @@ class UpdatePasswordForm(SetPasswordForm):
     """A subclass of Django's SetPasswordForm
     Sends out a password_changed_email
     """
+
     def __init__(self, *args, **kwargs):
         super(UpdatePasswordForm, self).__init__(*args, **kwargs)
         self.label_suffix = ''
         set_input_placeholder_labels(self)
         set_input_attrs(self)
 
-    def save(self, commit=True):
+    def save(self, commit=True, email_template=None):
         user = super(UpdatePasswordForm, self).save(commit=commit)
         from htk.apps.accounts.emails import password_changed_email
+
         try:
             password_changed_email(user)
         except Exception:

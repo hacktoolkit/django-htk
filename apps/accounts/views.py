@@ -479,7 +479,10 @@ def reset_password(
     data=None,
     redirect_url_name='account_password_reset_success',
     template='account/reset_password.html',
-    renderer=_r
+    email_template=None,
+    email_subject=None,
+    email_sender=None,
+    renderer=_r,
 ):
     """
     View that checks the hash in a password reset link and presents a
@@ -508,8 +511,15 @@ def reset_password(
             if request.method == 'POST':
                 form = UpdatePasswordForm(user, request.POST)
                 if form.is_valid():
-                    user = form.save()
-                    if htk_setting('HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'):
+                    user = form.save(
+                        email_template=email_template,
+                        email_subject=email_subject,
+                        email_sender=email_sender,
+                        **opts,
+                    )
+                    if htk_setting(
+                        'HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'
+                    ):
                         from django.contrib.auth import update_session_auth_hash
                         update_session_auth_hash(request, user)
                     success = True
