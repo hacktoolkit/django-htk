@@ -480,8 +480,6 @@ def reset_password(
     redirect_url_name='account_password_reset_success',
     template='account/reset_password.html',
     email_template=None,
-    email_subject=None,
-    email_sender=None,
     renderer=_r,
 ):
     """
@@ -516,14 +514,13 @@ def reset_password(
                     }
                     user = form.save(
                         email_template=email_template,
-                        email_subject=email_subject,
-                        email_sender=email_sender,
                         **opts,
                     )
                     if htk_setting(
                         'HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'
                     ):
                         from django.contrib.auth import update_session_auth_hash
+
                         update_session_auth_hash(request, user)
                     success = True
             else:

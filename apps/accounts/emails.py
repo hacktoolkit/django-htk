@@ -109,7 +109,9 @@ def password_reset_email(user, token_generator, use_https=False, domain=None, te
         'protocol': use_https and 'https' or 'http',
         'domain': domain,
         'site_name': htk_setting('HTK_SITE_NAME'),
-        'reset_path': reverse(htk_setting('HTK_ACCOUNTS_RESET_PASSWORD_URL_NAME')),
+        'reset_path': reverse(
+            htk_setting('HTK_ACCOUNT_RESET_PASSWORD_URL_NAME')
+        ),
         'uid': int_to_base36(user.id),
         'token': token_generator.make_token(user),
     }
