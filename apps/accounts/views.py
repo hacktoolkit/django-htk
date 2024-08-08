@@ -509,12 +509,8 @@ def reset_password(
             if request.method == 'POST':
                 form = UpdatePasswordForm(user, request.POST)
                 if form.is_valid():
-                    opts = {
-                        'request': request,
-                    }
                     user = form.save(
                         email_template=email_template,
-                        **opts,
                     )
                     if htk_setting(
                         'HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'

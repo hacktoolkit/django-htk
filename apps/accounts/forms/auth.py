@@ -65,7 +65,6 @@ class UpdatePasswordForm(SetPasswordForm):
 
     def save(
         self,
-        request=None,
         email_template=None,
         commit=True,
     ):
