@@ -3,6 +3,8 @@ import subprocess
 
 # Django Imports
 from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import redirect
 
 # HTK Imports
 from htk.admintools.utils import retrieve_migrations
@@ -12,6 +14,9 @@ from htk.utils import (
     resolve_model_dynamically,
 )
 from htk.view_helpers import render_custom as _r
+
+
+# isort: off
 
 
 def migrations_view(
@@ -29,6 +34,72 @@ def migrations_view(
     data['migrations'] = retrieve_migrations()
 
     response = _r(request, template, data=data)
+    return response
+
+
+def migration_plan_view(
+    request,
+    template='admintools/migration_plan.html',
+    data=None,
+    renderer=_r,
+):
+    if request.method == 'POST':
+        # Run the 'migrate' command
+        result = subprocess.run(
+            ['venv/bin/python', 'manage.py', 'migrate'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        # Get the output from the command
+        migration_output = result.stdout
+        error_message = result.stderr
+
+        messages.info(request, migration_output)
+        if error_message:
+            messages.error(request, error_message)
+
+        response = redirect(request.path)
+    else:
+        try:
+            # Run the 'showmigrations --plan' command
+            result = subprocess.run(
+                ['venv/bin/python', 'manage.py', 'showmigrations', '--plan'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
+
+            # Get the output from the command
+            migration_plan = result.stdout
+            migrations = migration_plan.split('\n')
+            num_migrations_run = len(
+                [
+                    migration
+                    for migration in migrations
+                    if migration.startswith('[X]')
+                ]
+            )
+            num_migrations_to_apply = len(
+                [
+                    migration
+                    for migration in migrations
+                    if migration.startswith('[ ]')
+                ]
+            )
+
+            data['migration_plan'] = migration_plan
+            data['num_migrations_run'] = num_migrations_run
+            data['num_migrations_to_apply'] = num_migrations_to_apply
+        except subprocess.CalledProcessError as e:
+            # Handle the error case
+            error_message = f"An error occurred while fetching the migration plan: {e.stderr}"
+            data['error_message'] = error_messagea
+
+        response = _r(request, template, data=data)
+
     return response
 
 

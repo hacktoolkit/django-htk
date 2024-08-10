@@ -1,0 +1,17 @@
+{% load htk_tags %}
+
+<p>
+  <b>Number of Migrations Run:</b> {{ num_migrations_run }}<br/>
+  <b>Number of Migrations to Apply:</b> {{ num_migrations_to_apply }}<br/>
+</p>
+
+{% if num_migrations_to_apply > 0 %}
+<p>
+  <form id="apply_migrations_form" method="POST">
+    {% csrf_token %}
+    <button type="submit" id="apply_migrations" class="btn btn-danger">Apply Migrations</button>
+  </form>
+</p>
+{% endif %}
+
+<pre>{{ migration_plan }}</pre>
