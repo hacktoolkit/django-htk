@@ -378,6 +378,16 @@ def is_feature_enabled(feature_name):
 
 
 @register.simple_tag(takes_context=True)
+def is_viewable_by_context_user(context, obj):
+    user = context.get('user', None)
+    if user:
+        is_viewable = obj.is_viewable_by(user)
+    else:
+        is_viewable = False
+    return is_viewable
+
+
+@register.simple_tag(takes_context=True)
 def is_editable_by_context_user(context, obj):
     user = context.get('user', None)
     if user:
