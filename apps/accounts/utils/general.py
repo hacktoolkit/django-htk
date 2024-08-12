@@ -133,12 +133,14 @@ def email_to_username_pretty_unique(email):
     return username
 
 
-def get_user_by_username(username):
+def get_user_by_username(username, UserModel=None):
     """Gets a user by `username`
 
     Returns None if not found
     """
-    UserModel = get_user_model()
+    if UserModel is None:
+        UserModel = get_user_model()
+
     try:
         user = UserModel.objects.get(username=username)
     except UserModel.DoesNotExist:
