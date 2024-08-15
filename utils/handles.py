@@ -82,7 +82,7 @@ def generate_unique_handle(
 ) -> T.Optional[str]:
     """Generates a unique handle based on a name.
 
-    If the inital handle is unique, it is returned.
+    If the initial handle is unique, it is returned.
     If a handle is not unique, a random suffix is appended to the handle.
     """
     base_handle = seo_tokenize(name).replace('-', '_')
