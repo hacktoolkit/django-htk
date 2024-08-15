@@ -28,6 +28,8 @@ HTK_TEMPLATE_RENDERER = 'htk.view_helpers.render_custom'
 HTK_TEMPLATE_CONTEXT_GENERATOR = 'htk.view_helpers.wrap_data'
 HTK_CSS_EXTENSION = 'css'
 
+HTK_HANDLE_MAX_LENGTH = 64
+
 ##
 # JSON Serialization Settings
 HTK_JSON_DECIMAL_SHOULD_QUANTIZE = True

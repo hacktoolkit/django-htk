@@ -30,6 +30,10 @@ from htk.models import (
 )
 from htk.models.fk_fields import fk_user
 from htk.utils import htk_setting
+from htk.utils.handles import (
+    _default_unique_across,
+    generate_unique_handle,
+)
 
 
 # isort: off
@@ -62,7 +66,9 @@ OrganizationAttributeHolder = AbstractAttributeHolderClassFactory(
 
 class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
     name = models.CharField(max_length=128)
-    handle = models.CharField(max_length=64, unique=True)
+    handle = models.CharField(
+        max_length=htk_setting('HTK_HANDLE_MAX_LENGTH'), unique=True
+    )
 
     class Meta:
         abstract = True
@@ -83,7 +89,20 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
         return value
 
     @classmethod
+    def generate_unique_handle(cls, name):
+        unique_across = [(cls, 'handle')] + _default_unique_across()
+
+        handle = generate_unique_handle(
+            name,
+            unique_across=unique_across,
+        )
+        return handle
+
+    @classmethod
     def create_with_owner(cls, user, **kwargs):
+        if 'handle' not in kwargs:
+            kwargs['handle'] = cls.generate_unique_handle(kwargs['name'])
+
         organization = cls.objects.create(**kwargs)
         organization.add_owner(user)
         return organization
