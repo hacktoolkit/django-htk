@@ -26,6 +26,7 @@ from htk.apps.accounts.forms.auth import (
     UpdatePasswordForm,
     UsernameEmailAuthenticationForm,
     UserRegistrationForm,
+    SocialRegistrationAuthenticationForm,
 )
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
@@ -177,13 +178,13 @@ def register_social_email(
 def register_social_login(
     request,
     data=None,
+    auth_form_model=SocialRegistrationAuthenticationForm,
     resend_confirmation_url_name='account_resend_confirmation',
     template='account/register_social_login.html',
     renderer=_r
 ):
     """For when a user is already associated with this email and has a usable password set
     """
-    from htk.apps.accounts.forms.auth import SocialRegistrationAuthenticationForm
 
     if data is None:
         data = wrap_data(request)
@@ -194,7 +195,7 @@ def register_social_login(
 
     success = False
     if request.method == 'POST':
-        auth_form = SocialRegistrationAuthenticationForm(email, request.POST)
+        auth_form = auth_form_model(email, request.POST)
         if auth_form.is_valid():
             user = auth_form.get_user()
             login_authenticated_user(request, user)
@@ -207,7 +208,7 @@ def register_social_login(
                 msg = get_resend_confirmation_help_message(resend_confirmation_url_name, email=auth_user.email)
                 data['errors'].append(msg)
     else:
-        auth_form = SocialRegistrationAuthenticationForm(email)
+        auth_form = auth_form_model(email)
 
     if success:
         response = redirect_to_social_auth_complete(request)
