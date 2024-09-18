@@ -14,6 +14,8 @@ class TodosConfig:
 
     name: str
     directory: str
+    exclude_dirs: T.Optional[list[str]] = None
+    exclude_patterns: T.Optional[list[str]] = None
 
     @property
     def key(self):

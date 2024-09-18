@@ -113,18 +113,24 @@ def todos_view(
     data = wrap_data(request)
 
     def _build_todos_section(todos_config):
-        result = subprocess.run(
-            [
-                'grep',
-                '-n',  # display line numbers
-                '-R',  # recursive
-                '-C 5',  # show context, 5 lines before/after
-                f'--group-separator={"~" * 10}',  # a unique string that won't occur in code
-                'TODO',
-                todos_config.directory,
-            ],
-            capture_output=True,
-        )
+        commands = [
+            'grep',
+            '-n',  # display line numbers
+            '-R',  # recursive
+            '-C 5',  # show context, 5 lines before/after
+            f'--group-separator={"~" * 10}',  # a unique string that won't occur in code
+            'TODO',
+        ]
+        if todos_config.exclude_dirs:
+            for exclude_dir in todos_config.exclude_dirs:
+                commands.append(f'--exclude-dir={exclude_dir}')
+        if todos_config.exclude_patterns:
+            for exclude_pattern in todos_config.exclude_patterns:
+                commands.append(f'--exclude={exclude_pattern}')
+
+        commands.append(todos_config.directory)
+
+        result = subprocess.run(commands, capture_output=True)
         todos_groups = (
             result.stdout.decode()
             .replace(todos_config.exclusion_pattern, '')
