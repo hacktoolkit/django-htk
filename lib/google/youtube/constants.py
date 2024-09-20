@@ -1,0 +1,2 @@
+GOOGLE_APIS_YOUTUBE_BASE_URL = 'https://www.googleapis.com/youtube/v3'
+GOOGLE_APIS_YOUTUBE_VIDEOS_URL = f'{GOOGLE_APIS_YOUTUBE_BASE_URL}/videos'

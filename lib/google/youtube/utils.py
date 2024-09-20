@@ -9,6 +9,9 @@ import rollbar
 # Django Imports
 from django.conf import settings
 
+# HTK Imports
+from htk.lib.google.youtube.constants import GOOGLE_APIS_YOUTUBE_VIDEOS_URL
+
 
 def extract_youtube_video_id(youtube_video_url):
     try:
@@ -33,7 +36,6 @@ def extract_youtube_video_id(youtube_video_url):
 
 
 def build_youtube_api_url(youtube_video_id):
-    base_url = 'https://www.googleapis.com/youtube/v3/videos?'
     query = urllib.parse.urlencode(
         {
             'id': youtube_video_id,
@@ -41,9 +43,9 @@ def build_youtube_api_url(youtube_video_id):
             'key': settings.HTK_GOOGLE_SERVER_API_KEY[0],
         }
     )
+    url = f'{GOOGLE_APIS_YOUTUBE_VIDEOS_URL}?{query}'
 
-    api_url = base_url + query
-    return api_url
+    return url
 
 
 def get_youtube_video_duration(youtube_video_url):
