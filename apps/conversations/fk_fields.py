@@ -31,6 +31,7 @@ def fk_conversation_message(
     )
     return field
 
+
 def fk_conversation_participant(
     related_name: str,
     required: bool = False,
