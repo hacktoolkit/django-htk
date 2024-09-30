@@ -30,3 +30,15 @@ def fk_conversation_message(
         **build_kwargs(required=required, **kwargs),
     )
     return field
+
+def fk_conversation_participant(
+    related_name: str,
+    required: bool = False,
+    **kwargs,
+) -> models.ForeignKey:
+    field = models.ForeignKey(
+        htk_setting('HTK_CONVERSATION_PARTICIPANT_MODEL'),
+        related_name=related_name,
+        **build_kwargs(required=required, **kwargs),
+    )
+    return field
