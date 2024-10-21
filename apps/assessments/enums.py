@@ -7,3 +7,11 @@ class QuestionType(Enum):
     FREE_RESPONSE = 1
     MULTIPLE_CHOICE = 2
     YES_OR_NO = 3
+
+    MULTISELECT = 10
+
+    TIME = 20
+    DATE = 21
+    DATETIME = 22
+
+    FILE = 30
