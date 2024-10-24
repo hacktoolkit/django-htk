@@ -55,6 +55,9 @@ class AbstractAssessmentQuestion(models.Model):
     # Optional "Exit message" to display when an incorrect answer is provided,
     # overrides `AbstractAssessment.knockout_message`
     knockout_message = models.TextField(blank=True, null=True, max_length=512)
+    # Must be `True` for a new question
+    # Set it to `False` when disabling the question or the question is answered and then subsequently modified
+    is_enabled = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
