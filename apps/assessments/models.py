@@ -154,7 +154,7 @@ class AbstractAssessmentAnswer(models.Model):
 
     def __str__(self):
         if self.question.question_type == QuestionType.FREE_RESPONSE.value:
-            result = self.user_text
+            result = self.free_response_text
         else:  # MC or Y/N
             result = str(self.option) if self.option else 'No answer'
 
