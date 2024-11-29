@@ -17,7 +17,7 @@ def extract_youtube_video_id(youtube_video_url):
     try:
         # Ref to build regex: https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486
         re_match = re.search(
-            r'(?:v=|youtu\.be\/|\/v\/|\/e\/|\/watch\?v=|\/watch\?si=|\/watch\?)([0-9A-Za-z_-]+)',
+            r'(?:v=|youtu\.be\/|\/v\/|\/e\/|\/watch\?v=|\/watch\?si=|\/watch\?|\/shorts\/)([0-9A-Za-z_-]+)',
             youtube_video_url,
         )
     except Exception as e:
