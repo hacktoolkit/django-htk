@@ -1,6 +1,3 @@
-# Third Party / PIP Imports
-# Third Party (PyPI) Imports
-# Django Extensions Imports
 # Third Party (PyPI) Imports
 from social_core.pipeline.partial import partial
 from social_core.pipeline.social_auth import associate_user
@@ -102,8 +99,12 @@ def check_email(strategy, details, backend, uid, user=None, *args, **kwargs):
                     # The backend is one of the auto-associate backends, so we need to
                     # associate the Django user with the social auth account
                     # This is a job for `associate_user` pipeline but the association
-                    # must happen in here.
-                    associate_user(backend, uid, user=user)
+                    # must happen in here because we don't know the order of the
+                    # pipeline. At the time of `associate_user` pipeline runs, there
+                    # should be no social object and the user object must be defined.
+                    # If we return a dict like `{'user': user}`, the pipeline will
+                    # continue and create a new user with the same email.
+                    associate_user(backend, uid, user=user, social=None)
                 else:
                     # TODO: There is an error with linking accounts...
                     strategy.request.session[
