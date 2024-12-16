@@ -7,7 +7,9 @@ HTK_API_USERS_UNFOLLOW_URL_NAME = 'api_users_unfollow'
 HTK_DEFAULT_LOGGED_IN_ACCOUNT_HOME = 'account_index'
 
 HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH = True
-
+# The list of backends that will automatically link user accounts with social
+# auth accounts.
+HTK_ACCOUNTS_SOCIAL_AUTO_ASSOCIATE_BACKENDS = []
 HTK_ACCOUNTS_REGISTER_SET_PRETTY_USERNAME_FROM_EMAIL = False
 HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME = 'account_register_social_login'
 HTK_ACCOUNTS_REGISTER_SOCIAL_EMAIL_URL_NAME = 'account_register_social_email'
