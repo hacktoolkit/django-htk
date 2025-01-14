@@ -7,9 +7,15 @@ import json
 import rollbar
 
 # Django Imports
-from django.contrib.auth import login
+from django.contrib.auth import (
+    get_user_model,
+    login,
+)
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import base36_to_int
 
 # HTK Imports
+from htk.apps.accounts.forms.auth import UpdatePasswordForm
 from htk.apps.accounts.utils import (
     encrypt_uid,
     resolve_encrypted_uid,
@@ -148,3 +154,74 @@ def validate_user_token_auth_token(token):
         user,
         is_valid,
     )
+
+
+def validate_reset_password_token(uid_base36, token):
+    """Determines whether a valid reset password token exists
+    for a user given their `uid_base36` and `token`
+
+    Returns a `User` object if the token is valid, otherwise `None`
+    """
+    token_generator = default_token_generator
+    UserModel = get_user_model()
+
+    try:
+        uid_int = base36_to_int(uid_base36)
+        user = UserModel.objects.get(id=uid_int)
+    except (ValueError, UserModel.DoesNotExist):
+        user = None
+
+    is_valid = user is not None and token_generator.check_token(user, token)
+
+    result = user if is_valid else None
+    return result
+
+
+def reset_user_password(
+    request,
+    user,
+    new_password1,
+    new_password2=None,
+    email_template=None,
+):
+    """Resets the password for a user
+
+    Returns a 3-tuple of `(success, updated_user, form)`
+    where:
+    - `success` is a boolean indicating whether the password was successfully reset
+    - `updated_user` is the updated `User` object
+    - `form` is the `UpdatePasswordForm` object used to reset the password
+    """
+    success = False
+
+    if user:
+        form = UpdatePasswordForm(
+            user,
+            {
+                'new_password1': new_password1,
+                'new_password2': new_password2 or new_password1,
+            },
+        )
+        if form.is_valid():
+            updated_user = form.save(
+                email_template=email_template,
+            )
+            if htk_setting(
+                'HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'
+            ):
+                from django.contrib.auth import update_session_auth_hash
+
+                update_session_auth_hash(request, updated_user)
+            else:
+                pass
+
+            success = True
+        else:
+            # form is invalid
+            pass
+    else:
+        # user not found
+        updated_user = None
+        form = None
+
+    return success, updated_user, form

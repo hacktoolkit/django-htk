@@ -23,15 +23,19 @@ from htk.apps.accounts.decorators import logout_required
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.apps.accounts.forms.auth import (
     ResendConfirmationForm,
+    SocialRegistrationAuthenticationForm,
     UpdatePasswordForm,
     UsernameEmailAuthenticationForm,
     UserRegistrationForm,
-    SocialRegistrationAuthenticationForm,
 )
 from htk.apps.accounts.models import UserEmail
 from htk.apps.accounts.session_keys import *
 from htk.apps.accounts.utils import get_user_by_email
-from htk.apps.accounts.utils.auth import login_authenticated_user
+from htk.apps.accounts.utils.auth import (
+    login_authenticated_user,
+    reset_user_password,
+    validate_reset_password_token,
+)
 from htk.apps.accounts.view_helpers import (
     get_resend_confirmation_help_message,
     redirect_to_social_auth_complete,
@@ -43,8 +47,10 @@ from htk.utils import (
 )
 from htk.utils.general import clear_messages
 from htk.utils.request import extract_request_ip
-from htk.view_helpers import render_custom as _r
-from htk.view_helpers import wrap_data
+from htk.view_helpers import (
+    render_custom as _r,
+    wrap_data,
+)
 
 
 # isort: off
@@ -61,12 +67,11 @@ def login_view(
     auth_form_model=UsernameEmailAuthenticationForm,
     default_next_url_name='account_login_redirect',
     template='account/login.html',
-    renderer=_r
+    renderer=_r,
 ):
     if data is None:
         data = wrap_data(request)
     data.update(csrf(request))
-
 
     default_next_uri = reverse(default_next_url_name)
     next_uri = request.GET.get('next', default_next_uri)
@@ -79,9 +84,14 @@ def login_view(
 
         google_recaptcha_response_token = request.POST.get('recaptcha', None)
         if google_recaptcha_response_token:
-            from htk.lib.google.recaptcha.utils import google_recaptcha_site_verification
+            from htk.lib.google.recaptcha.utils import (
+                google_recaptcha_site_verification,
+            )
+
             request_ip = extract_request_ip(request)
-            recaptcha_data = google_recaptcha_site_verification(google_recaptcha_response_token, request_ip)
+            recaptcha_data = google_recaptcha_site_verification(
+                google_recaptcha_response_token, request_ip
+            )
             recaptcha_success = recaptcha_data.get('success', False)
 
         auth_form = auth_form_model(None, request.POST)
@@ -89,6 +99,7 @@ def login_view(
             user = auth_form.get_user()
             if not recaptcha_success:
                 from htk.apps.accounts.events import failed_recaptcha_on_login
+
                 failed_recaptcha_on_login(user, request=request)
             else:
                 pass
@@ -100,9 +111,13 @@ def login_view(
                 data['errors'].append(error)
             auth_user = auth_form.get_user()
             if auth_user and not auth_user.is_active:
-                msg = get_resend_confirmation_help_message(resend_confirmation_url_name, email=auth_user.email)
+                msg = get_resend_confirmation_help_message(
+                    resend_confirmation_url_name, email=auth_user.email
+                )
                 data['errors'].append(msg)
-                resend_confirmation_form = ResendConfirmationForm({'email': auth_user.email})
+                resend_confirmation_form = ResendConfirmationForm(
+                    {'email': auth_user.email}
+                )
                 data['resend_confirmation_form'] = resend_confirmation_form
             else:
                 pass
@@ -118,12 +133,7 @@ def login_view(
     return response
 
 
-def logout_view(
-    request,
-    redirect_url_name='home',
-    *args,
-    **kwargs
-):
+def logout_view(request, redirect_url_name='home', *args, **kwargs):
     logout(request)
     response = redirect(redirect_url_name, *args)
     return response
@@ -137,7 +147,7 @@ def register_social_email(
     request,
     data=None,
     template='account/register_social_email.html',
-    renderer=_r
+    renderer=_r,
 ):
     from htk.apps.accounts.forms.auth import SocialRegistrationEmailForm
 
@@ -162,10 +172,14 @@ def register_social_email(
             # a user is already associated with this email
             if user.has_usable_password():
                 # user should log into the existing account with a password
-                url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME')
+                url_name = htk_setting(
+                    'HTK_ACCOUNTS_REGISTER_SOCIAL_LOGIN_URL_NAME'
+                )
             else:
                 # no password was set, so user must log in with another social auth account
-                url_name = htk_setting('HTK_ACCOUNTS_REGISTER_SOCIAL_ALREADY_LINKED_URL_NAME')
+                url_name = htk_setting(
+                    'HTK_ACCOUNTS_REGISTER_SOCIAL_ALREADY_LINKED_URL_NAME'
+                )
             response = redirect(url_name)
         else:
             response = redirect_to_social_auth_complete(request)
@@ -181,10 +195,9 @@ def register_social_login(
     auth_form_model=SocialRegistrationAuthenticationForm,
     resend_confirmation_url_name='account_resend_confirmation',
     template='account/register_social_login.html',
-    renderer=_r
+    renderer=_r,
 ):
-    """For when a user is already associated with this email and has a usable password set
-    """
+    """For when a user is already associated with this email and has a usable password set"""
 
     if data is None:
         data = wrap_data(request)
@@ -205,7 +218,9 @@ def register_social_login(
                 data['errors'].append(error)
             auth_user = auth_form.get_user()
             if auth_user and not auth_user.is_active:
-                msg = get_resend_confirmation_help_message(resend_confirmation_url_name, email=auth_user.email)
+                msg = get_resend_confirmation_help_message(
+                    resend_confirmation_url_name, email=auth_user.email
+                )
                 data['errors'].append(msg)
     else:
         auth_form = auth_form_model(email)
@@ -222,10 +237,9 @@ def register_social_already_linked(
     request,
     data=None,
     template='account/register_social_login.html',
-    renderer=_r
+    renderer=_r,
 ):
-    """For when a user is already associated with this email only through social auth and no password set
-    """
+    """For when a user is already associated with this email only through social auth and no password set"""
     if data is None:
         data = wrap_data(request)
 
@@ -248,7 +262,7 @@ def register(
     email_template=None,
     email_subject=None,
     email_sender=None,
-    renderer=_r
+    renderer=_r,
 ):
     if data is None:
         data = wrap_data(request)
@@ -260,27 +274,41 @@ def register(
 
         google_recaptcha_response_token = request.POST.get('recaptcha', None)
         if google_recaptcha_response_token:
-            from htk.lib.google.recaptcha.utils import google_recaptcha_site_verification
+            from htk.lib.google.recaptcha.utils import (
+                google_recaptcha_site_verification,
+            )
+
             request_ip = extract_request_ip(request)
-            recaptcha_data = google_recaptcha_site_verification(google_recaptcha_response_token, request_ip)
+            recaptcha_data = google_recaptcha_site_verification(
+                google_recaptcha_response_token, request_ip
+            )
             recaptcha_success = recaptcha_data.get('success', False)
 
         if reg_form_kwargs is None:
             reg_form_kwargs = {}
         reg_form = reg_form_model(request.POST, **reg_form_kwargs)
 
-
         if not recaptcha_success:
-            from htk.apps.accounts.events import failed_recaptcha_on_account_register
+            from htk.apps.accounts.events import (
+                failed_recaptcha_on_account_register,
+            )
+
             failed_recaptcha_on_account_register(request=request)
 
             data['errors'].append('Suspicious registration detected.')
         elif reg_form.is_valid():
             domain = request.get_host()
-            new_user = reg_form.save(domain=domain, email_template=email_template, email_subject=email_subject, email_sender=email_sender)
+            new_user = reg_form.save(
+                domain=domain,
+                email_template=email_template,
+                email_subject=email_subject,
+                email_sender=email_sender,
+            )
             if login_if_success:
                 username = new_user.username
-                password = reg_form.cleaned_data.get('password1') # new_user.password is a hashed value
+                password = reg_form.cleaned_data.get(
+                    'password1'
+                )  # new_user.password is a hashed value
                 auth_user = authenticate(username=username, password=password)
                 login_authenticated_user(request, auth_user)
             else:
@@ -291,8 +319,8 @@ def register(
                 data['errors'].append(error)
             # might be tempted to do this, but it might display too many errors/multiple errors per field
             # so we will just handle it in the form's clean() method
-            #for error in reg_form._errors.values():
-                #data['errors'].append(error)
+            # for error in reg_form._errors.values():
+            # data['errors'].append(error)
     else:
         reg_form = reg_form_model(None)
 
@@ -311,10 +339,7 @@ def register(
 
 
 def register_done(
-    request,
-    data=None,
-    template='account/register_done.html',
-    renderer=_r
+    request, data=None, template='account/register_done.html', renderer=_r
 ):
     if data is None:
         data = wrap_data(request)
@@ -330,7 +355,7 @@ def resend_confirmation(
     email_template=None,
     email_subject=None,
     email_sender=None,
-    renderer=_r
+    renderer=_r,
 ):
     if data is None:
         data = wrap_data(request)
@@ -341,7 +366,9 @@ def resend_confirmation(
         if resend_confirmation_form.is_valid():
             email = resend_confirmation_form.cleaned_data.get('email')
             user_emails = UserEmail.objects.filter(email=email)
-            num_confirmed_user_emails = user_emails.filter(is_confirmed=True).count()
+            num_confirmed_user_emails = user_emails.filter(
+                is_confirmed=True
+            ).count()
             if num_confirmed_user_emails == 1:
                 data['already_active'] = True
             elif num_confirmed_user_emails > 1:
@@ -349,7 +376,13 @@ def resend_confirmation(
             else:
                 unconfirmed_user_emails = user_emails.filter(is_confirmed=False)
                 for unconfirmed in unconfirmed_user_emails:
-                    unconfirmed.send_activation_email(domain=request.get_host(), template=email_template, subject=email_subject, sender=email_sender, resend=True)
+                    unconfirmed.send_activation_email(
+                        domain=request.get_host(),
+                        template=email_template,
+                        subject=email_subject,
+                        sender=email_sender,
+                        resend=True,
+                    )
                 data['success'] = True
         else:
             for error in resend_confirmation_form.non_field_errors():
@@ -357,7 +390,7 @@ def resend_confirmation(
     else:
         email = request.GET.get('email')
         initial_data = {
-            'email' : email,
+            'email': email,
         }
         resend_confirmation_form = ResendConfirmationForm(initial=initial_data)
     if 'input_attrs' in data:
@@ -379,16 +412,13 @@ def confirm_email(
     email_sender=None,
     success_url_name=None,
     success_message=None,
-    renderer=_r
+    renderer=_r,
 ):
     if data is None:
         data = wrap_data(request)
 
     user = request.user
-    user_email = get_object_or_404(
-        UserEmail,
-        activation_key=activation_key
-    )
+    user_email = get_object_or_404(UserEmail, activation_key=activation_key)
     data['email'] = user_email.email
 
     if user and user != user_email.user:
@@ -402,7 +432,11 @@ def confirm_email(
         data['expired'] = True
         data['resend_confirmation_uri'] = reverse(resend_confirmation_url_name)
     else:
-        was_activated = user_email.confirm_and_activate_account(email_template=email_template, email_subject=email_subject, email_sender=email_sender)
+        was_activated = user_email.confirm_and_activate_account(
+            email_template=email_template,
+            email_subject=email_subject,
+            email_sender=email_sender,
+        )
         data['was_activated'] = was_activated
         data['success'] = True
 
@@ -429,10 +463,9 @@ def forgot_password(
     email_template=None,
     email_subject=None,
     email_sender=None,
-    renderer=_r
+    renderer=_r,
 ):
-    """Modeled after django.contrib.auth.views.password_reset
-    """
+    """Modeled after django.contrib.auth.views.password_reset"""
     from htk.apps.accounts.forms.auth import PasswordResetFormHtmlEmail
 
     if data is None:
@@ -445,7 +478,12 @@ def forgot_password(
             opts = {
                 'request': request,
             }
-            form.save(email_template=email_template, email_subject=email_subject, email_sender=email_sender, **opts)
+            form.save(
+                email_template=email_template,
+                email_subject=email_subject,
+                email_sender=email_sender,
+                **opts,
+            )
             response = redirect(redirect_url_name)
         else:
             for error in form.non_field_errors():
@@ -460,10 +498,7 @@ def forgot_password(
 
 
 def password_reset_done(
-    request,
-    data=None,
-    template='account/password_reset_done.html',
-    renderer=_r
+    request, data=None, template='account/password_reset_done.html', renderer=_r
 ):
     if data is None:
         data = wrap_data(request)
@@ -497,44 +532,40 @@ def reset_password(
     token_generator = default_token_generator
     success = False
     response = None
-    if uidb36 and token:
-        UserModel = get_user_model()
-        try:
-            uid_int = base36_to_int(uidb36)
-            user = UserModel.objects.get(id=uid_int)
-        except (ValueError, UserModel.DoesNotExist):
-            user = None
 
-        if user is not None and token_generator.check_token(user, token):
+    if uidb36 and token:
+        user = validate_reset_password_token(uidb36, token)
+
+        if user:
             validlink = True
             if request.method == 'POST':
-                form = UpdatePasswordForm(user, request.POST)
-                if form.is_valid():
-                    user = form.save(
-                        email_template=email_template,
-                    )
-                    if htk_setting(
-                        'HTK_ACCOUNTS_CHANGE_PASSWORD_UPDATE_SESSION_AUTH_HASH'
-                    ):
-                        from django.contrib.auth import update_session_auth_hash
-
-                        update_session_auth_hash(request, user)
-                    success = True
+                success, updated_user, form = reset_user_password(
+                    request,
+                    user,
+                    request.POST.get('new_password1'),
+                    request.POST.get('new_password2'),
+                    email_template=email_template,
+                )
             else:
                 form = UpdatePasswordForm(None)
+
             if 'input_attrs' in data:
                 set_input_attrs(form, attrs=data['input_attrs'])
         else:
             validlink = False
             form = None
+
         data['form'] = form
         data['validlink'] = validlink
     else:
         data['validlink'] = False
+
     if success:
+        # perform P/R/G
         response = redirect(reverse(redirect_url_name))
     else:
         response = renderer(request, template, data=data)
+
     return response
 
 
@@ -542,7 +573,7 @@ def password_reset_success(
     request,
     data=None,
     template='account/password_reset_success.html',
-    renderer=_r
+    renderer=_r,
 ):
     if data is None:
         data = wrap_data(request)
