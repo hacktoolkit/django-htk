@@ -1,0 +1,1 @@
+HTK_APPSTORE_URL = None

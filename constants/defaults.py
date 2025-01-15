@@ -102,6 +102,7 @@ from htk.apps.geolocations.constants.defaults import *
 from htk.apps.i18n.constants.defaults import *
 from htk.apps.invitations.constants.defaults import *
 from htk.apps.maintenance_mode.constants.defaults import *
+from htk.apps.mobile.constants.defaults import *
 from htk.apps.notifications.constants.defaults import *
 from htk.apps.organizations.constants.defaults import *
 from htk.apps.prelaunch.constants.defaults import *
@@ -119,3 +120,4 @@ from htk.lib.stripe_lib.constants.defaults import *
 from htk.lib.yelp.constants.defaults import *
 from htk.lib.zuora.constants.defaults import *
 from htk.test_scaffold.constants.defaults import *
+
