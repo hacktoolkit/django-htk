@@ -540,11 +540,12 @@ def reset_password(
         if user:
             validlink = True
 
-            # Add mobile deep link URL if on mobile and format provided
-            if (request.user_agent.is_mobile or request.user_agent.is_tablet) and mobile_reset_url_format:
+            if (
+                request.user_agent.is_mobile or request.user_agent.is_tablet
+            ) and mobile_reset_url_format:
+                # Add mobile deep link URL if on mobile and format provided
                 data['mobile_reset_url'] = mobile_reset_url_format.format(
-                    uid_base36=uidb36,
-                    token=token
+                    uid_base36=uidb36, token=token
                 )
                 data['appstore_url'] = htk_setting('HTK_APPSTORE_URL')
 
