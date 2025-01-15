@@ -516,6 +516,7 @@ def reset_password(
     redirect_url_name='account_password_reset_success',
     template='account/reset_password.html',
     email_template=None,
+    mobile_reset_url_format=None,
     renderer=_r,
 ):
     """
@@ -538,6 +539,15 @@ def reset_password(
 
         if user:
             validlink = True
+
+            # Add mobile deep link URL if on mobile and format provided
+            if (request.user_agent.is_mobile or request.user_agent.is_tablet) and mobile_reset_url_format:
+                data['mobile_reset_url'] = mobile_reset_url_format.format(
+                    uid_base36=uidb36,
+                    token=token
+                )
+                data['appstore_url'] = htk_setting('HTK_APPSTORE_URL')
+
             if request.method == 'POST':
                 success, updated_user, form = reset_user_password(
                     request,
