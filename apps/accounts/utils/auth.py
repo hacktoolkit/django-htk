@@ -193,6 +193,8 @@ def reset_user_password(
     - `form` is the `UpdatePasswordForm` object used to reset the password
     """
     success = False
+    updated_user = None
+    form = None
 
     if user:
         form = UpdatePasswordForm(
@@ -221,7 +223,6 @@ def reset_user_password(
             pass
     else:
         # user not found
-        updated_user = None
-        form = None
+        pass
 
     return success, updated_user, form
