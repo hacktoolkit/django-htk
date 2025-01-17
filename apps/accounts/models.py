@@ -506,7 +506,7 @@ class BaseAbstractUserProfile(
         return organizations
 
     def is_organization_member(self, organization):
-        is_member = organization.has_member(user)
+        is_member = organization.has_member(self.user)
         return is_member
 
     ##
