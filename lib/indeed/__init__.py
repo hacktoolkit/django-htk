@@ -2,4 +2,6 @@
 from htk.lib.indeed.api import IndeedDispositionSyncAPI
 
 
-__all__ = [IndeedDispositionSyncAPI]
+__all__ = [
+    'IndeedDispositionSyncAPI'
+]

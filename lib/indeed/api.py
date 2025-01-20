@@ -12,7 +12,6 @@ from htk.lib.indeed.constants import (
     INDEED_DISPOSITION_AUTH_TOKEN_URL,
     INDEED_DISPOSITION_GRAPHQL_API_URL,
 )
-from htk.utils import chunks
 
 
 class IndeedDispositionSyncAPI(object):
@@ -55,7 +54,7 @@ class IndeedDispositionSyncAPI(object):
             INDEED_DISPOSITION_AUTH_TOKEN_URL,
             auth=auth,
             headers=headers,
-            data=data
+            data=data,
         )
 
         if status_code == 200:
@@ -86,19 +85,23 @@ class IndeedDispositionSyncAPI(object):
         return self.access_token
 
     def handle_response(self, response_json, status_code):
+        total_good_dispositions = 0
+        failed_disposition_ids = []
+
         if status_code == 200:
             if 'data' in response_json:
                 partner_disposition = response_json.get('data').get(
                     'partnerDisposition'
                 )
                 partner_disposition_sent = partner_disposition.get('send')
+                total_good_dispositions = partner_disposition_sent.get(
+                    'numberGoodDispositions'
+                )
                 rollbar.report_message(
                     'Indeed disposition status update succeeded',
                     level='info',
                     extra_data={
-                        'total_dispositions_succeeded': partner_disposition_sent.get(
-                            'numberGoodDispositions'
-                        ),
+                        'total_dispositions_succeeded': total_good_dispositions,
                         'response_json': response_json,
                     },
                 )
@@ -107,6 +110,10 @@ class IndeedDispositionSyncAPI(object):
                     'failedDispositions'
                 )
                 if failed_dispositions:
+                    failed_disposition_ids = [
+                        item['identifiedBy']['indeedApplyID']
+                        for item in failed_dispositions
+                    ]
                     rollbar.report_message(
                         'Indeed disposition status update failed',
                         extra_data={
@@ -131,34 +138,38 @@ class IndeedDispositionSyncAPI(object):
                 },
             )
 
+        return total_good_dispositions, failed_disposition_ids
+
     def sync(self):
-        for chunk in chunks(self.dispositions, 25):
-            mutation = """
-            mutation Send($chunk: SendPartnerDispositionInput!) {
-                partnerDisposition {
-                    send(input: $chunk) {
-                        numberGoodDispositions
-                        failedDispositions {
-                            identifiedBy {
-                                indeedApplyID
-                            }
-                            rationale
+        mutation = """mutation Send($input: SendPartnerDispositionInput!) {
+            partnerDisposition {
+                send(input: $input) {
+                    numberGoodDispositions
+                    failedDispositions {
+                        identifiedBy {
+                            indeedApplyID
                         }
+                        rationale
                     }
                 }
             }
-            """
-            variables = {
-                'chunk': {
-                    "dispositions": chunk,
-                }
+        }
+        """
+        variables = {
+            'input': {
+                "dispositions": self.dispositions,
             }
-            access_token = self.get_access_token()
-            auth = HTTPBearerAuth(access_token)
+        }
+        access_token = self.get_access_token()
+        auth = HTTPBearerAuth(access_token)
 
-            response_json, status_code = self.request_post(
-                INDEED_DISPOSITION_GRAPHQL_API_URL,
-                auth=auth,
-                json={'query': mutation, 'variables': variables},
-            )
-            self.handle_response(response_json, status_code)
+        response_json, status_code = self.request_post(
+            INDEED_DISPOSITION_GRAPHQL_API_URL,
+            auth=auth,
+            json={'query': mutation, 'variables': variables},
+        )
+        total_good_dispositions, failed_dispositions = self.handle_response(
+            response_json, status_code
+        )
+
+        return total_good_dispositions, failed_dispositions
