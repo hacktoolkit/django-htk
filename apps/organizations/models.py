@@ -10,6 +10,7 @@ from six.moves import collections_abc
 
 # Django Imports
 from django.db import models
+from django.utils import timezone
 
 # HTK Imports
 from htk.apps.organizations.enums import (
@@ -34,6 +35,7 @@ from htk.utils.handles import (
     _default_unique_across,
     generate_unique_handle,
 )
+from htk.utils.request import get_current_request
 
 
 # isort: off
@@ -219,8 +221,6 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
         return member
 
     def add_owner(self, user, require_existing_member=False):
-        OrganizationMember = get_model_organization_member()
-
         if not require_existing_member or self.has_member(user):
             new_owner = self.add_member(user, OrganizationMemberRoles.OWNER)
         else:
@@ -339,6 +339,24 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
         )
 
         return status
+
+    ##
+    # Invitation Response methods
+
+    def accept(self):
+        """Accept the organization invitation"""
+        self.accepted = True
+        self.responded_at = timezone.now()
+        self.save()
+
+        # Add the invited user as a member of the organization
+        self.organization.add_member(self.user, OrganizationMemberRoles.MEMBER)
+
+    def decline(self):
+        """Decline the organization invitation"""
+        self.accepted = False
+        self.responded_at = timezone.now()
+        self.save()
 
     ##
     # Notifications
