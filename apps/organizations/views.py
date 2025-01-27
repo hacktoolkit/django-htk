@@ -87,11 +87,11 @@ class OrganizationInvitationResponseView(View):
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         invitation_response = request.POST.get('response', None)
-        (
+        if invitation_response == 'accept':
             self.invitation.accept()
-            if invitation_response == 'accept'
-            else self.invitation.decline()
-        )
+        else:
+            self.invitation.decline()
+
         self.data['invitation_accepted'] = self.invitation.accepted
 
         response = self.render_method(request, self.template_name, self.data)

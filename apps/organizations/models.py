@@ -31,11 +31,11 @@ from htk.models import (
 )
 from htk.models.fk_fields import fk_user
 from htk.utils import htk_setting
+from htk.utils.datetime_utils import utcnow
 from htk.utils.handles import (
     _default_unique_across,
     generate_unique_handle,
 )
-from htk.utils.request import get_current_request
 
 
 # isort: off
@@ -346,7 +346,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     def accept(self):
         """Accept the organization invitation"""
         self.accepted = True
-        self.responded_at = timezone.now()
+        self.responded_at = utcnow()
         self.save()
 
         # Add the invited user as a member of the organization
@@ -355,7 +355,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
     def decline(self):
         """Decline the organization invitation"""
         self.accepted = False
-        self.responded_at = timezone.now()
+        self.responded_at = utcnow()
         self.save()
 
     ##
