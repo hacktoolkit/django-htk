@@ -1,3 +1,6 @@
+# Third Party (PyPI) Imports
+from user_agents import parse
+
 # Python Standard Library Imports
 import re
 import sys
@@ -11,6 +14,7 @@ from django.utils.deprecation import MiddlewareMixin
 from htk.utils import htk_setting
 from htk.utils.http.errors import HttpErrorResponseError
 from htk.utils.request import is_allowed_host
+from htk.constants.features import FEATURE_EARLY_ACCESS
 
 
 is_py2 = sys.version[0] == '2'
@@ -148,5 +152,54 @@ class HttpErrorResponseMiddleware:
             response = exception.response
         else:
             response = None
+
+        return response
+
+
+class MobileDetectMiddleware:
+    """Mobile Detect Middleware
+
+    Redirects mobile devices to `/mobile` path if `early_access_code` is in the
+    URL. The Deep Linking will catch the URL and it will be opened in the app.
+
+    If the user does not have the app on their device, the `/mobile` path
+    should have a QR code and link to the app store.
+    """
+
+    def __init__(self, get_response=None):
+        if get_response is not None:
+            self.get_response = get_response
+
+    def __call__(self, request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+        request = self.process_request(request)
+        response = self.get_response(request)
+
+        if FEATURE_EARLY_ACCESS.is_enabled:
+            response = self.redirect_mobile_early_access(request, response)
+        else:
+            pass
+
+        return response
+
+    def process_request(self, request):
+        user_agent = parse(request.META.get('HTTP_USER_AGENT', ''))
+        request.user_agent = user_agent
+        return request
+
+    def redirect_mobile_early_access(self, request, response):
+        is_mobile_path = request.path.startswith('/mobile')
+        early_access_code = request.GET.get('early_access_code', None)
+
+        if (
+            not is_mobile_path
+            and early_access_code is not None
+            and request.user_agent.is_mobile
+            or request.user_agent.is_tablet
+        ):
+            response = redirect(f'/mobile?early_access_code={early_access_code}')
+        else:
+            pass
 
         return response
