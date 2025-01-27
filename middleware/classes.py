@@ -1,3 +1,6 @@
+# Third Party (PyPI) Imports
+from user_agents import parse as parse_user_agent
+
 # Python Standard Library Imports
 import re
 import sys
@@ -150,3 +153,22 @@ class HttpErrorResponseMiddleware:
             response = None
 
         return response
+
+
+class UserAgentMiddleware:
+    """Middleware to parse the user agent and add it to the request object."""
+    def __init__(self, get_response=None):
+        if get_response is not None:
+            self.get_response = get_response
+
+    def __call__(self, request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+        request = self.process_request(request)
+        response = self.get_response(request)
+        return response
+
+    def process_request(self, request):
+        user_agent = parse_user_agent(request.META.get('HTTP_USER_AGENT', ''))
+        request.user_agent = user_agent
+        return request
