@@ -2,12 +2,10 @@
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 
 # HTK Imports
-from htk.apps.organizations.enums import OrganizationMemberRoles
 from htk.utils import (
     htk_setting,
     resolve_method_dynamically,
@@ -67,24 +65,32 @@ class OrganizationInvitationResponseView(View):
         self.data['invitation'] = self.invitation
 
     def get(self, request, *args, **kwargs):
+        is_mobile = request.user_agent.is_mobile or request.user_agent.is_tablet
+        mobile_invitation_response_url_format = htk_setting(
+            'HTK_ORGANIZATION_MOBILE_INVITATION_RESPONSE_URL_FORMAT'
+        )
+        if is_mobile and mobile_invitation_response_url_format:
+            token = self.invitation.token
+            self.data['mobile_invitation_response_url'] = (
+                mobile_invitation_response_url_format.format(
+                    token_hex=token.hex
+                )
+            )
+            self.data['appstore_url'] = htk_setting('HTK_APPSTORE_URL')
+        else:
+            # Is not on mobile, render on the web
+            pass
+
         response = self.render_method(request, self.template_name, self.data)
         return response
 
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         invitation_response = request.POST.get('response', None)
-
-        self.invitation.accepted = invitation_response == 'accept'
-        self.invitation.responded_at = timezone.datetime.now()
-
-        self.invitation.user = request.user
-        if self.invitation.accepted:
-            # TODO: adding as member but maybe this should be a setting?
-            self.invitation.organization.add_member(
-                self.invitation.user, OrganizationMemberRoles.MEMBER
-            )
-
-        self.invitation.save()
+        if invitation_response == 'accept':
+            self.invitation.accept()
+        else:
+            self.invitation.decline()
 
         self.data['invitation_accepted'] = self.invitation.accepted
 
