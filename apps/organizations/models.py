@@ -10,7 +10,6 @@ from six.moves import collections_abc
 
 # Django Imports
 from django.db import models
-from django.utils import timezone
 
 # HTK Imports
 from htk.apps.organizations.enums import (
