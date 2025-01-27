@@ -1,5 +1,5 @@
 # Third Party (PyPI) Imports
-from user_agents import parse
+from user_agents import parse as parse_user_agent
 
 # Python Standard Library Imports
 import re
@@ -168,6 +168,6 @@ class UserAgentMiddleware:
         return response
 
     def process_request(self, request):
-        user_agent = parse(request.META.get('HTTP_USER_AGENT', ''))
+        user_agent = parse_user_agent(request.META.get('HTTP_USER_AGENT', ''))
         request.user_agent = user_agent
         return request
