@@ -14,7 +14,6 @@ from django.utils.deprecation import MiddlewareMixin
 from htk.utils import htk_setting
 from htk.utils.http.errors import HttpErrorResponseError
 from htk.utils.request import is_allowed_host
-from htk.constants.features import FEATURE_EARLY_ACCESS
 
 
 is_py2 = sys.version[0] == '2'
