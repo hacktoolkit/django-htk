@@ -154,6 +154,7 @@ class HttpErrorResponseMiddleware:
 
         return response
 
+
 class UserAgentMiddleware:
     """Middleware to parse the user agent and add it to the request object."""
     def __init__(self, get_response=None):
