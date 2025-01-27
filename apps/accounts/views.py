@@ -541,13 +541,18 @@ def reset_password(
             validlink = True
 
             if (
-                request.user_agent.is_mobile or request.user_agent.is_tablet
+                hasattr(request, 'user_agent')
+                and request.user_agent.is_mobile
+                or request.user_agent.is_tablet
             ) and mobile_reset_url_format:
                 # Add mobile deep link URL if on mobile and format provided
                 data['mobile_reset_url'] = mobile_reset_url_format.format(
                     uid_base36=uidb36, token=token
                 )
                 data['appstore_url'] = htk_setting('HTK_APPSTORE_URL')
+            else:
+                # did not detect a mobile device
+                pass
 
             if request.method == 'POST':
                 success, updated_user, form = reset_user_password(
