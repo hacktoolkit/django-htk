@@ -190,13 +190,6 @@ class AbstractBiblePassage(models.Model):
             and self.chapter_end != self.chapter_start
         )
 
-        # Get last verse number if ff was used
-        if self.verse_start and self.verse_end is None and self.chapter_end == self.chapter_start:
-            last_verse = self.chapter_start.bibleverses.order_by('-verse').first()
-            last_verse_num = last_verse.verse if last_verse else None
-        else:
-            last_verse_num = self.verse_end
-
         value = (
             '%(book)s %(chapter_start)s%(verse_start_separator)s%(verse_start)s%(separator)s%(chapter_end)s%(verse_end_separator)s%(verse_end)s'
             % {
@@ -209,9 +202,9 @@ class AbstractBiblePassage(models.Model):
                 if ends_in_different_chapter
                 else '',
                 'verse_end_separator': ':'
-                if ends_in_different_chapter and last_verse_num
+                if ends_in_different_chapter and self.verse_end
                 else '',
-                'verse_end': last_verse_num if last_verse_num else '',
+                'verse_end': self.verse_end if self.verse_end else '',
             }
         )
 
@@ -253,10 +246,6 @@ class AbstractBiblePassage(models.Model):
                 verse_end = None
 
             if verse_end is None and not has_ff:
-                # verse_end is missing
-                # determine if another part was captured as verse_end
-                # If ff is present, we want all verses from verse_start to end of chapter
-
                 if chapter_end:
                     if verse_start:
                         # chapter_end is actually verse_end for same passage that starts and ends in the same chapter
@@ -288,6 +277,12 @@ class AbstractBiblePassage(models.Model):
                     chapter_end_obj = chapter_start_obj
                 else:
                     chapter_end_obj = None
+
+                # Get the last verse number if ff is used
+                if has_ff and verse_start:
+                    last_verse = chapter_start_obj.bibleverses.order_by('-verse').first()
+                    if last_verse:
+                        verse_end = last_verse.verse
 
                 passage_kwargs = {
                     'book': book,
