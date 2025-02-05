@@ -190,6 +190,13 @@ class AbstractBiblePassage(models.Model):
             and self.chapter_end != self.chapter_start
         )
 
+        # Get last verse number if ff was used
+        if self.verse_start and self.verse_end is None and self.chapter_end == self.chapter_start:
+            last_verse = self.chapter_start.bibleverses.order_by('-verse').first()
+            last_verse_num = last_verse.verse if last_verse else None
+        else:
+            last_verse_num = self.verse_end
+
         value = (
             '%(book)s %(chapter_start)s%(verse_start_separator)s%(verse_start)s%(separator)s%(chapter_end)s%(verse_end_separator)s%(verse_end)s'
             % {
@@ -202,9 +209,9 @@ class AbstractBiblePassage(models.Model):
                 if ends_in_different_chapter
                 else '',
                 'verse_end_separator': ':'
-                if ends_in_different_chapter and self.verse_end
+                if ends_in_different_chapter and last_verse_num
                 else '',
-                'verse_end': self.verse_end if self.verse_end else '',
+                'verse_end': last_verse_num if last_verse_num else '',
             }
         )
 
