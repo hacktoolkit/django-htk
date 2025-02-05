@@ -2,6 +2,7 @@
 from htk.middleware.classes import (
     AllowedHostsMiddleware,
     GlobalRequestMiddleware,
+    RequestDataTooBigMiddleware,
     RequestTimerMiddleware,
     RewriteJsonResponseContentTypeMiddleware,
     TimezoneMiddleware,
@@ -12,6 +13,7 @@ from htk.middleware.classes import (
 __all__ = [
     'AllowedHostsMiddleware',
     'GlobalRequestMiddleware',
+    'RequestDataTooBigMiddleware',
     'RequestTimerMiddleware',
     'RewriteJsonResponseContentTypeMiddleware',
     'TimezoneMiddleware',
