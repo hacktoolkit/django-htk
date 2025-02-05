@@ -223,7 +223,7 @@ class AbstractBiblePassage(models.Model):
 
     @classmethod
     def from_reference(cls, reference, persist=False):
-        pattern = r'^(?P<book_name>.+) (?P<chapter_start>\d+)(?P<verse_start_separator>:?)(?P<verse_start>\d*)(?P<separator>-?)(?P<chapter_end>\d*)(?P<verse_end_separator>:?)(?P<verse_end>\d*)$'
+        pattern = r'^(?P<book_name>.+) (?P<chapter_start>\d+)(?P<verse_start_separator>:?)(?P<verse_start>\d*)(?P<separator>-?)(?P<chapter_end>\d*)(?P<verse_end_separator>:?)(?P<verse_end>\d*)(?P<ff>ff)?$'
 
         match = re.match(pattern, reference)
         if match:
@@ -238,10 +238,17 @@ class AbstractBiblePassage(models.Model):
             verse_end_separator = match.group('verse_end_separator')
             verse_end = match.group('verse_end')
             verse_end = int(verse_end) if verse_end else None
+            has_ff = bool(match.group('ff'))
 
-            if verse_end is None:
+            if has_ff and verse_start:
+                # If ff is present, we want all verses from verse_start to end of chapter
+                chapter_end = chapter_start
+                verse_end = None
+
+            if verse_end is None and not has_ff:
                 # verse_end is missing
                 # determine if another part was captured as verse_end
+                # If ff is present, we want all verses from verse_start to end of chapter
 
                 if chapter_end:
                     if verse_start:
@@ -270,7 +277,7 @@ class AbstractBiblePassage(models.Model):
                     chapter_end_obj = BibleChapter.objects.get(
                         book=book, chapter=chapter_end
                     )
-                elif verse_end:
+                elif verse_end or has_ff:
                     chapter_end_obj = chapter_start_obj
                 else:
                     chapter_end_obj = None
@@ -306,11 +313,12 @@ class AbstractBiblePassage(models.Model):
                 verses = verses.filter(verse=self.verse_start)
         elif self.chapter_end == self.chapter_start:
             verses = self.chapter_start.bibleverses.filter(
-                verse__gte=self.verse_start, verse__lte=self.verse_end
+                verse__gte=self.verse_start,
+                **({"verse__lte": self.verse_end} if self.verse_end is not None else {})
             )
         elif self.chapter_end != self.chapter_start:
             if self.chapter_end.chapter < self.chapter_start.chapter:
-                raise Except('Bad passage reference')
+                raise Exception('Bad passage reference')
 
             verses = []
 
