@@ -239,16 +239,13 @@ class AbstractBiblePassage(models.Model):
             verse_end = match.group('verse_end')
             verse_end = int(verse_end) if verse_end else None
             has_ff = bool(match.group('ff'))
-            
+
             if has_ff:
                 # resolve the passage recursively
                 non_abbreviated_passage = cls.from_reference(reference.removesuffix('ff'), persist=False)
-                if non_abbreviated_passage.chapter_end:
-                    chapter_end = non_abbreviated_passage.chapter_end.chapter
-                    verse_end = non_abbreviated_passage.chapter_end.bibleverses.last().verse
-                else:
-                    chapter_end = non_abbreviated_passage.chapter_start.chapter
-                    verse_end = non_abbreviated_passage.chapter_start.bibleverses.last().verse
+                chapter_end_obj = non_abbreviated_passage.chapter_end or non_abbreviated_passage.chapter_start
+                chapter_end = chapter_end_obj.chapter
+                verse_end = chapter_end_obj.bibleverses.last().verse
             else:
                 # NOOP: reference does not contain the "following" (`ff`) abbreviation
                 pass
