@@ -241,9 +241,14 @@ class AbstractBiblePassage(models.Model):
             has_ff = bool(match.group('ff'))
 
             if has_ff and verse_start:
-                # If ff is present, we want all verses from verse_start to end of chapter
-                chapter_end = chapter_start
-                verse_end = None
+                # Modified to handle ff notation across chapters
+                if chapter_end:
+                    # If chapter_end exists and ff is present, we want all verses until end of chapter_end
+                    verse_end = None
+                else:
+                    # Original behavior for single chapter
+                    chapter_end = chapter_start
+                    verse_end = None
 
             if verse_end is None and not has_ff:
                 if chapter_end:
