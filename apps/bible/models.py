@@ -239,18 +239,24 @@ class AbstractBiblePassage(models.Model):
             verse_end = match.group('verse_end')
             verse_end = int(verse_end) if verse_end else None
             has_ff = bool(match.group('ff'))
-
-            if has_ff and verse_start:
-                # Modified to handle ff notation across chapters
-                if chapter_end:
-                    # If chapter_end exists and ff is present, we want all verses until end of chapter_end
-                    verse_end = None
+            
+            if has_ff:
+                # resolve the passage recursively
+                non_abbreviated_passage = cls.from_reference(reference.removesuffix('ff'), persist=False)
+                if non_abbreviated_passage.chapter_end:
+                    chapter_end = non_abbreviated_passage.chapter_end.chapter
+                    verse_end = non_abbreviated_passage.chapter_end.bibleverses.last().verse
                 else:
-                    # Original behavior for single chapter
-                    chapter_end = chapter_start
-                    verse_end = None
+                    chapter_end = non_abbreviated_passage.chapter_start.chapter
+                    verse_end = non_abbreviated_passage.chapter_start.bibleverses.last().verse
+            else:
+                # NOOP: reference does not contain the "following" (`ff`) abbreviation
+                pass
 
-            if verse_end is None and not has_ff:
+            if verse_end is None:
+                # verse_end is missing
+                # determine if another part was captured as verse_end
+
                 if chapter_end:
                     if verse_start:
                         # chapter_end is actually verse_end for same passage that starts and ends in the same chapter
@@ -278,16 +284,10 @@ class AbstractBiblePassage(models.Model):
                     chapter_end_obj = BibleChapter.objects.get(
                         book=book, chapter=chapter_end
                     )
-                elif verse_end or has_ff:
+                elif verse_end:
                     chapter_end_obj = chapter_start_obj
                 else:
                     chapter_end_obj = None
-
-                # Get the last verse number if ff is used
-                if has_ff and verse_start:
-                    last_verse = chapter_start_obj.bibleverses.order_by('-verse').first()
-                    if last_verse:
-                        verse_end = last_verse.verse
 
                 passage_kwargs = {
                     'book': book,
