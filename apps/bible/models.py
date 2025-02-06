@@ -223,7 +223,7 @@ class AbstractBiblePassage(models.Model):
 
     @classmethod
     def from_reference(cls, reference, persist=False):
-        pattern = r'^(?P<book_name>.+) (?P<chapter_start>\d+)(?P<verse_start_separator>:?)(?P<verse_start>\d*)(?P<separator>-?)(?P<chapter_end>\d*)(?P<verse_end_separator>:?)(?P<verse_end>\d*)$'
+        pattern = r'^(?P<book_name>.+) (?P<chapter_start>\d+)(?P<verse_start_separator>:?)(?P<verse_start>\d*)(?P<separator>-?)(?P<chapter_end>\d*)(?P<verse_end_separator>:?)(?P<verse_end>\d*)(?P<ff>ff)?$'
 
         match = re.match(pattern, reference)
         if match:
@@ -238,6 +238,17 @@ class AbstractBiblePassage(models.Model):
             verse_end_separator = match.group('verse_end_separator')
             verse_end = match.group('verse_end')
             verse_end = int(verse_end) if verse_end else None
+            has_ff = bool(match.group('ff'))
+
+            if has_ff:
+                # resolve the passage recursively
+                non_abbreviated_passage = cls.from_reference(reference.removesuffix('ff'), persist=False)
+                chapter_end_obj = non_abbreviated_passage.chapter_end or non_abbreviated_passage.chapter_start
+                chapter_end = chapter_end_obj.chapter
+                verse_end = chapter_end_obj.bibleverses.last().verse
+            else:
+                # NOOP: reference does not contain the "following" (`ff`) abbreviation
+                pass
 
             if verse_end is None:
                 # verse_end is missing
@@ -306,11 +317,12 @@ class AbstractBiblePassage(models.Model):
                 verses = verses.filter(verse=self.verse_start)
         elif self.chapter_end == self.chapter_start:
             verses = self.chapter_start.bibleverses.filter(
-                verse__gte=self.verse_start, verse__lte=self.verse_end
+                verse__gte=self.verse_start,
+                **({"verse__lte": self.verse_end} if self.verse_end is not None else {})
             )
         elif self.chapter_end != self.chapter_start:
             if self.chapter_end.chapter < self.chapter_start.chapter:
-                raise Except('Bad passage reference')
+                raise Exception('Bad passage reference')
 
             verses = []
 
