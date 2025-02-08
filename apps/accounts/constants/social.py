@@ -1,4 +1,4 @@
-# Python Standard Library Imports
+# Third Party (PyPI) Imports
 from dataclasses import dataclass
 
 
@@ -24,6 +24,7 @@ class SocialAuth:
 
 # ordered lists of social auths
 SOCIAL_AUTHS = [
+    SocialAuth(provider='apple-id', name='Apple', bg_color='#000000'),
     SocialAuth(provider='discord', name='Discord', bg_color='#7289da'),
     SocialAuth(provider='facebook', name='Facebook', bg_color='#3b5998'),
     SocialAuth(provider='fitbit', name='Fitbit', bg_color='#4cc2c4'),
