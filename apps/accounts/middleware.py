@@ -1,3 +1,6 @@
+# Third Party (PyPI) Imports
+from social_django.middleware import SocialAuthExceptionMiddleware
+
 # Django Imports
 from django.contrib.auth import (
     authenticate,
@@ -6,13 +9,13 @@ from django.contrib.auth import (
 from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
-# Django Extensions Imports
-from social_django.middleware import SocialAuthExceptionMiddleware
-
 # HTK Imports
 from htk.api.utils import json_response_forbidden
 from htk.apps.accounts.utils.auth import login_authenticated_user
-from htk.apps.accounts.utils.general import authenticate_user_by_basic_auth_credentials
+from htk.apps.accounts.utils.general import (
+    authenticate_user_by_basic_auth_credentials,
+    parse_authorization_header,
+)
 from htk.utils import htk_setting
 
 
@@ -103,42 +106,26 @@ class HtkBasicAuthMiddleware(BaseHtkAuthMiddleware):
 
     def process_request(self, request):
         super().process_request(request)
-        auth_user = None
 
-        if 'HTTP_AUTHORIZATION' in request.META:
+        token_type, credentials = parse_authorization_header(request)
+
+        if token_type == 'Basic':
             self.is_explicit_auth = True
-            auth_header = request.META['HTTP_AUTHORIZATION']
-            parts = auth_header.split()
-            if len(parts) == 2:
-                token_type, credentials = parts
-                if token_type == 'Basic':
-                    # only Basic auth can continue
-
-                    auth_user = authenticate_user_by_basic_auth_credentials(
-                        request, credentials
-                    )
-
-                elif token_type == 'Bearer':
-                    # Do not count Bearer auth as explicit auth,
-                    # to give a chance for `HttpUserTokenAuthMiddleware` to work
-
-                    self.is_explicit_auth = False
-
-                else:
-                    # unsupported `token_type`
-                    pass
-
-            else:
-                # unexpected authorization value
-                pass
+            auth_user = authenticate_user_by_basic_auth_credentials(
+                request, credentials
+            )
         else:
-            pass
+            # Not Basic auth.
+            # Give a chance for other auth middlewares to work.
+            self.is_explicit_auth = False
+            auth_user = None
 
         self._handle_auth_flow(request, auth_user)
 
 
 class HtkUserTokenAuthMiddleware(BaseHtkAuthMiddleware):
-    """Custom Authentication Middleware to attempt logging in with a securely generated token
+    """Custom Authentication Middleware to attempt logging in with a securely generated
+    token
 
     Tokens are checked in the following order:
     - HTTP `Authorization` header
@@ -152,48 +139,35 @@ class HtkUserTokenAuthMiddleware(BaseHtkAuthMiddleware):
     def process_request(self, request):
         super().process_request(request)
 
-        if 'HTTP_AUTHORIZATION' in request.META:
-            self.is_explicit_auth = True
-            auth_header = request.META['HTTP_AUTHORIZATION']
-            parts = auth_header.split()
-            if len(parts) == 2:
-                token_type, token = parts
-                if token_type == 'Bearer':
-                    # Only Bearer token can continue
-                    pass
-                else:
-                    # unset token
-                    token = None
+        token_type, token = self._parse_authorization_header(request)
 
-                    if token_type == 'Basic':
-                        # Do not count Basic auth as explicit auth,
-                        # to give a chance for `HtkBasicAuthMiddleware` to work
-                        self.is_explicit_auth = False
-                    else:
-                        pass
-            else:
-                # unexpected authorization value
-                token = None
+        if token_type == 'Bearer':
+            # The token is in the `Authorization` header
+            self.is_explicit_auth = True
+            auth_user = authenticate(request=request, token=token)
+
         elif 'token' in request.GET:
             # implicit authenication token using URL params
+            self.is_explicit_auth = True
             token = request.GET['token']
-        else:
-            # No authentication token provided via available methods
-            token = None
+            auth_user = authenticate(request=request, token=token)
 
-        auth_user = (
-            authenticate(request=request, token=token) if token else None
-        )
+        else:
+            # and give a chance for other auth middlewares to work
+            self.is_explicit_auth = False
+            auth_user = None
+
         self._handle_auth_flow(request, auth_user)
 
 
 class HtkSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
     def get_redirect_uri(self, request, exception):
         """Redirect to LOGIN_ERROR_URL by default
-        Otherwise, go to the SOCIAL_AUTH_<STRATEGY>_LOGIN_ERROR_URL for that backend provider if specified
+        Otherwise, go to the SOCIAL_AUTH_<STRATEGY>_LOGIN_ERROR_URL for that backend
+        provider if specified
 
-        However, if user is logged in when the exception occurred, it is a connection failure
-        Therefore, always go to account settings page or equivalent
+        However, if user is logged in when the exception occurred, it is a connection
+        failure. Therefore, always go to account settings page or equivalent
         """
         default_url = super(
             HtkSocialAuthExceptionMiddleware, self
