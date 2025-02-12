@@ -1,3 +1,6 @@
+# Python Standard Library Imports
+import datetime
+
 # Third Party (PyPI) Imports
 import requests
 import rollbar
@@ -208,18 +211,36 @@ class FitbitAPI(object):
     # Activity
     # https://dev.fitbit.com/build/reference/web-api/activity/
 
-    def get_activity_steps_past_month(self):
-        """Get Steps for past month
+    def get_activity_steps_for_period(
+        self, end_date: datetime.date, period: str = '1y'
+    ):
+        """Get Steps for a given period
 
         Requires the 'activity' permission'
-        https://dev.fitbit.com/docs/activity/
+
+        References:
+        - https://dev.fitbit.com/docs/activity/
+        - https://dev.fitbit.com/build/reference/web-api/activity-timeseries/get-activity-timeseries-by-date/
         """
-        response = self.get('activity-steps-monthly')
+        resource_args = (end_date.strftime('%Y-%m-%d'), period)
+        response = self.get('activity-steps', resource_args=resource_args)
         if response.status_code == 200:
             activity = response.json()['activities-steps']
             activity = activity[::-1]
         else:
             activity = None
+        return activity
+
+    def get_activity_steps_past_month(self):
+        """Get Steps for past month"""
+        today = self.user.profile.localized_date
+        activity = self.get_activity_steps_for_period(today, '1m')
+        return activity
+
+    def get_activity_steps_past_year(self):
+        """Get Steps for past year"""
+        today = self.user.profile.localized_date
+        activity = self.get_activity_steps_for_period(today, '1y')
         return activity
 
     ##

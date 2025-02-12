@@ -5,7 +5,10 @@ FITBIT_API_RESOURCES = {
     'refresh': '/oauth2/token',
     'revoke': '/oauth2/revoke',
     # activity
-    'activity-steps-monthly': '/1/user/-/activities/steps/date/today/1m.json',
+    'activity-steps': lambda date, period: '/1/user/-/activities/steps/date/{}/{}.json'.format(
+        date,
+        period,
+    ),
     # body & weight
     'fat': lambda date: '/1/user/-/body/log/fat/date/{}.json'.format(date),
     'weight': lambda date: '/1/user/-/body/log/weight/date/{}.json'.format(
