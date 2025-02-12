@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import time
+import typing as T
 
 # Third Party (PyPI) Imports
 import rollbar
@@ -11,13 +12,17 @@ from django.contrib.auth import (
     authenticate,
     get_user_model,
 )
+from django.http import HttpRequest
 from django.utils.http import (
     base36_to_int,
     int_to_base36,
 )
 
 # HTK Imports
-from htk.apps.accounts.constants import *
+from htk.apps.accounts.constants import (
+    EMAIL_TO_USERNAME_HASH_LENGTH,
+    USERNAME_MAX_LENGTH,
+)
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.compat import (
     b64encode,
@@ -95,10 +100,10 @@ def set_random_password(user, password_length=16):
 
 def email_to_username_hash(email):
     """Convert emails to hashed versions where we store them in the username field
-    We can't just store them directly, or we'd be limited to Django's username <= 30 chars limit,
-    which is really too small for arbitrary emails
+    We can't just store them directly, or we'd be limited to Django's username <= 30
+    chars limit, which is really too small for arbitrary emails
 
-    From: https://github.com/dabapps/django-email-as-username/blob/master/emailusernames/utils.py
+    From: https://github.com/dabapps/django-email-as-username/blob/master/emailusernames/utils.py  # noqa: E501
     """
     # Emails should be case-insensitive unique
     email = email.lower()
@@ -175,7 +180,7 @@ def get_user_by_email(email):
                 )
             except UserModel.MultipleObjectsReturned:
                 user = None
-                request = get_current_request()
+                request = get_current_request()  # noqa: F841
                 rollbar.report_exc_info()
                 raise NonUniqueEmail(email)
             except UserModel.DoesNotExist:
@@ -282,7 +287,7 @@ def authenticate_user_by_basic_auth_credentials(request, credentials):
         else:
             pass
 
-    except:
+    except Exception:
         pass
 
     return auth_user
@@ -304,7 +309,7 @@ def get_user_email(user, email, is_confirmed=True):
     return user_email
 
 
-def associate_user_email(
+def associate_user_email(  # noqa: C901
     user,
     email,
     replacing=None,
@@ -382,8 +387,8 @@ def associate_user_email(
                         subject=email_subject,
                         sender=email_sender,
                     )
-                except:
-                    request = get_current_request()
+                except Exception:
+                    request = get_current_request()  # noqa: F841
                     rollbar.report_exc_info()
             else:
                 pass
@@ -498,3 +503,34 @@ def resolve_encrypted_uid(encrypted_uid):
     except UserModel.DoesNotExist:
         user = None
     return user
+
+
+def parse_authorization_header(
+    request: HttpRequest,
+) -> tuple[T.Optional[str], T.Optional[str]]:
+    """Parse the authorization header from the request
+
+    Expected format: `<token_type> <token>`
+
+    Examples:
+    - `Authorization: Bearer <token>`
+    - `Authorization: Basic <credentials>`
+
+    Returns:
+    - `token_type`: The type of token, e.g. `Bearer` or `Basic`
+    - `token`: The token
+    """
+    token = None
+    token_type = None
+
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth_header = request.META['HTTP_AUTHORIZATION']
+        parts = auth_header.split()
+        if len(parts) == 2:
+            token_type, token = parts
+        else:
+            pass
+    else:
+        pass
+
+    return token_type, token
