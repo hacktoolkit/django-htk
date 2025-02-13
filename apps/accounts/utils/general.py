@@ -100,8 +100,8 @@ def set_random_password(user, password_length=16):
 
 def email_to_username_hash(email):
     """Convert emails to hashed versions where we store them in the username field
-    We can't just store them directly, or we'd be limited to Django's username <= 30
-    chars limit, which is really too small for arbitrary emails
+    We can't just store them directly, or we'd be limited to Django's username <= 30 chars limit,
+    which is really too small for arbitrary emails.
 
     From: https://github.com/dabapps/django-email-as-username/blob/master/emailusernames/utils.py  # noqa: E501
     """
@@ -180,8 +180,8 @@ def get_user_by_email(email):
                 )
             except UserModel.MultipleObjectsReturned:
                 user = None
-                request = get_current_request()  # noqa: F841
-                rollbar.report_exc_info()
+                request = get_current_request()
+                rollbar.report_exc_info(request=request)
                 raise NonUniqueEmail(email)
             except UserModel.DoesNotExist:
                 # also check newly registered accounts
@@ -388,8 +388,8 @@ def associate_user_email(  # noqa: C901
                         sender=email_sender,
                     )
                 except Exception:
-                    request = get_current_request()  # noqa: F841
-                    rollbar.report_exc_info()
+                    request = get_current_request()
+                    rollbar.report_exc_info(request=request)
             else:
                 pass
         else:

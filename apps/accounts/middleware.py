@@ -124,8 +124,8 @@ class HtkBasicAuthMiddleware(BaseHtkAuthMiddleware):
 
 
 class HtkUserTokenAuthMiddleware(BaseHtkAuthMiddleware):
-    """Custom Authentication Middleware to attempt logging in with a securely generated
-    token
+    """Custom Authentication Middleware to attempt logging in with
+    a securely generated token.
 
     Tokens are checked in the following order:
     - HTTP `Authorization` header
@@ -139,7 +139,7 @@ class HtkUserTokenAuthMiddleware(BaseHtkAuthMiddleware):
     def process_request(self, request):
         super().process_request(request)
 
-        token_type, token = self._parse_authorization_header(request)
+        token_type, token = parse_authorization_header(request)
 
         if token_type == 'Bearer':
             # The token is in the `Authorization` header
@@ -147,13 +147,13 @@ class HtkUserTokenAuthMiddleware(BaseHtkAuthMiddleware):
             auth_user = authenticate(request=request, token=token)
 
         elif 'token' in request.GET:
-            # implicit authenication token using URL params
+            # Implicit authentication using URL params
             self.is_explicit_auth = True
             token = request.GET['token']
             auth_user = authenticate(request=request, token=token)
 
         else:
-            # and give a chance for other auth middlewares to work
+            # Give a chance for other auth middlewares to work
             self.is_explicit_auth = False
             auth_user = None
 
@@ -164,10 +164,11 @@ class HtkSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
     def get_redirect_uri(self, request, exception):
         """Redirect to LOGIN_ERROR_URL by default
         Otherwise, go to the SOCIAL_AUTH_<STRATEGY>_LOGIN_ERROR_URL for that backend
-        provider if specified
+        provider if specified.
 
-        However, if user is logged in when the exception occurred, it is a connection
-        failure. Therefore, always go to account settings page or equivalent
+        However, if user is logged in when the exception occurred,
+        it is a connection failure.
+        Therefore, always go to account settings page or equivalent.
         """
         default_url = super(
             HtkSocialAuthExceptionMiddleware, self
