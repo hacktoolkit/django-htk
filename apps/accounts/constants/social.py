@@ -1,5 +1,9 @@
-# Third Party (PyPI) Imports
-from dataclasses import dataclass
+# Python Standard Library Imports
+import typing as T
+from dataclasses import (
+    dataclass,
+    fields,
+)
 
 
 @dataclass
@@ -7,19 +11,25 @@ class SocialAuth:
     provider: str
     name: str
     bg_color: str = '#000000'
+    fa_icon: str = ''
     connected: bool = False
 
     @property
+    def default_icon(self):
+        icon = f'fa-brands fa-{self.provider.split("-")[0]}'
+        return icon
+
+    @property
     def icon(self):
-        return f'fa-{self.provider.split("-")[0]}'
+        icon = self.fa_icon or self.default_icon
+        return icon
 
     def with_status(self, connected):
-        return SocialAuth(
-            provider=self.provider,
-            name=self.name,
-            bg_color=self.bg_color,
-            connected=connected,
-        )
+        values = {
+            field.name: getattr(self, field.name) for field in fields(self)
+        }
+        values['connected'] = connected
+        return SocialAuth(**values)
 
 
 # ordered lists of social auths
@@ -33,4 +43,11 @@ SOCIAL_AUTHS = [
     SocialAuth(provider='linkedin-oauth2', name='LinkedIn', bg_color='#0077b5'),
     SocialAuth(provider='strava', name='Strava', bg_color='#fc4c02'),
     SocialAuth(provider='twitter', name='Twitter', bg_color='#1da1f2'),
+    # https://www.withings.com/us/en/press
+    SocialAuth(
+        provider='withings',
+        name='Withings',
+        bg_color='#0f0f0f',
+        fa_icon='fa-solid fa-clock-three',
+    ),
 ]
