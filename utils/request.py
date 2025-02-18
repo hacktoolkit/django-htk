@@ -1,5 +1,9 @@
 # Python Standard Library Imports
 import re
+import typing as T
+
+# Django Imports
+from django.http import HttpRequest
 
 # HTK Imports
 from htk.utils import htk_setting
@@ -193,3 +197,34 @@ def is_allowed_host(host):
             if allowed:
                 break
     return allowed
+
+
+def parse_authorization_header(
+    request: HttpRequest,
+) -> tuple[T.Optional[str], T.Optional[str]]:
+    """Parse the authorization header from the request
+
+    Expected format: `<token_type> <token>`
+
+    Examples:
+    - `Authorization: Bearer <token>`
+    - `Authorization: Basic <credentials>`
+
+    Returns:
+    - `token_type`: The type of token, e.g. `Bearer` or `Basic`
+    - `token`: The token
+    """
+    token = None
+    token_type = None
+
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth_header = request.META['HTTP_AUTHORIZATION']
+        parts = auth_header.split()
+        if len(parts) == 2:
+            token_type, token = parts
+        else:
+            pass
+    else:
+        pass
+
+    return token_type, token

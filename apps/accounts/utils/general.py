@@ -17,7 +17,10 @@ from django.utils.http import (
 )
 
 # HTK Imports
-from htk.apps.accounts.constants import *
+from htk.apps.accounts.constants import (
+    EMAIL_TO_USERNAME_HASH_LENGTH,
+    USERNAME_MAX_LENGTH,
+)
 from htk.apps.accounts.exceptions import NonUniqueEmail
 from htk.compat import (
     b64encode,
@@ -96,9 +99,9 @@ def set_random_password(user, password_length=16):
 def email_to_username_hash(email):
     """Convert emails to hashed versions where we store them in the username field
     We can't just store them directly, or we'd be limited to Django's username <= 30 chars limit,
-    which is really too small for arbitrary emails
+    which is really too small for arbitrary emails.
 
-    From: https://github.com/dabapps/django-email-as-username/blob/master/emailusernames/utils.py
+    From: https://github.com/dabapps/django-email-as-username/blob/master/emailusernames/utils.py  # noqa: E501
     """
     # Emails should be case-insensitive unique
     email = email.lower()
@@ -176,7 +179,7 @@ def get_user_by_email(email):
             except UserModel.MultipleObjectsReturned:
                 user = None
                 request = get_current_request()
-                rollbar.report_exc_info()
+                rollbar.report_exc_info(request=request)
                 raise NonUniqueEmail(email)
             except UserModel.DoesNotExist:
                 # also check newly registered accounts
@@ -282,7 +285,7 @@ def authenticate_user_by_basic_auth_credentials(request, credentials):
         else:
             pass
 
-    except:
+    except Exception:
         pass
 
     return auth_user
@@ -304,7 +307,7 @@ def get_user_email(user, email, is_confirmed=True):
     return user_email
 
 
-def associate_user_email(
+def associate_user_email(  # noqa: C901
     user,
     email,
     replacing=None,
@@ -382,9 +385,9 @@ def associate_user_email(
                         subject=email_subject,
                         sender=email_sender,
                     )
-                except:
+                except Exception:
                     request = get_current_request()
-                    rollbar.report_exc_info()
+                    rollbar.report_exc_info(request=request)
             else:
                 pass
         else:
