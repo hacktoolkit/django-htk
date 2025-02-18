@@ -2,7 +2,6 @@
 import base64
 import hashlib
 import time
-import typing as T
 
 # Third Party (PyPI) Imports
 import rollbar
@@ -12,7 +11,6 @@ from django.contrib.auth import (
     authenticate,
     get_user_model,
 )
-from django.http import HttpRequest
 from django.utils.http import (
     base36_to_int,
     int_to_base36,
@@ -503,34 +501,3 @@ def resolve_encrypted_uid(encrypted_uid):
     except UserModel.DoesNotExist:
         user = None
     return user
-
-
-def parse_authorization_header(
-    request: HttpRequest,
-) -> tuple[T.Optional[str], T.Optional[str]]:
-    """Parse the authorization header from the request
-
-    Expected format: `<token_type> <token>`
-
-    Examples:
-    - `Authorization: Bearer <token>`
-    - `Authorization: Basic <credentials>`
-
-    Returns:
-    - `token_type`: The type of token, e.g. `Bearer` or `Basic`
-    - `token`: The token
-    """
-    token = None
-    token_type = None
-
-    if 'HTTP_AUTHORIZATION' in request.META:
-        auth_header = request.META['HTTP_AUTHORIZATION']
-        parts = auth_header.split()
-        if len(parts) == 2:
-            token_type, token = parts
-        else:
-            pass
-    else:
-        pass
-
-    return token_type, token

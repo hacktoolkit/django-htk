@@ -1,6 +1,3 @@
-# Third Party (PyPI) Imports
-from social_django.middleware import SocialAuthExceptionMiddleware
-
 # Django Imports
 from django.contrib.auth import (
     authenticate,
@@ -9,14 +6,17 @@ from django.contrib.auth import (
 from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 
+# Django Extensions Imports
+from social_django.middleware import SocialAuthExceptionMiddleware
+
 # HTK Imports
 from htk.api.utils import json_response_forbidden
 from htk.apps.accounts.utils.auth import login_authenticated_user
 from htk.apps.accounts.utils.general import (
     authenticate_user_by_basic_auth_credentials,
-    parse_authorization_header,
 )
 from htk.utils import htk_setting
+from htk.utils.request import parse_authorization_header
 
 
 # isort: off
