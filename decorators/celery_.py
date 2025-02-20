@@ -29,7 +29,8 @@ class safe_timed_task(object):
             class _CeleryTaskCooldown(TaskCooldown):
                 COOLDOWN_DURATION_SECONDS = self.cooldown_secs
 
-            obj = _CeleryTaskCooldown(prekey=self.task_name)
+            prekey = self.task_name.lower().replace(' ', '_')
+            obj = _CeleryTaskCooldown(prekey=prekey)
         else:
             obj = None
 
