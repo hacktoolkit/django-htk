@@ -1,5 +1,5 @@
-#from abc import ABCMeta
-#from abc import abstractmethod
+# from abc import ABCMeta
+# from abc import abstractmethod
 
 # Django Imports
 from django.core.cache import cache
@@ -59,7 +59,11 @@ class CacheableObject(object):
             suffix = self.get_cache_key_suffix()
         else:
             pass
-        key = '%s:%s:%s' % (cache_key_prefix, self.__class__.__name__, suffix,)
+        key = '%s:%s:%s' % (
+            cache_key_prefix,
+            self.__class__.__name__,
+            suffix,
+        )
         return key
 
     def invalidate_cache(self):
@@ -72,8 +76,7 @@ class CacheableObject(object):
         cache.delete(cache_key)
 
     def cache_store(self, refresh=False):
-        """Default cache store method
-        """
+        """Default cache store method"""
         cache_key = self.get_cache_key()
         cache_payload = self.get_cache_payload()
         cache_duration = self.get_cache_duration()
@@ -98,6 +101,7 @@ class LockableObject(object):
 
     By subclassing object instead of django.db.models, we are taking a more robust approach such that DB subclasses can extend it if we move away from django.db.models (custom Riak models, etc)
     """
+
     def get_lock_duration(self):
         """Default lock duration in seconds
 
@@ -130,7 +134,11 @@ class LockableObject(object):
             suffix = self.get_lock_key_suffix()
         else:
             pass
-        key = '%s:lock:%s:%s' % (cache_key_prefix, self.__class__.__name__, suffix,)
+        key = '%s:lock:%s:%s' % (
+            cache_key_prefix,
+            self.__class__.__name__,
+            suffix,
+        )
         return key
 
     def is_locked(self):
@@ -140,18 +148,15 @@ class LockableObject(object):
         return locked
 
     def acquire(self):
-        """Alias for lock()
-        """
+        """Alias for lock()"""
         return self.lock()
 
     def release(self):
-        """Alias for unlock()
-        """
+        """Alias for unlock()"""
         self.unlock()
 
     def lock(self):
-        """Lock an object, blocking concurrent access
-        """
+        """Lock an object, blocking concurrent access"""
         lock_key = self.get_lock_key()
         lock_duration = self.get_lock_duration()
         # use cache.add() instead of cache.set() by default,
@@ -160,8 +165,7 @@ class LockableObject(object):
         return was_locked
 
     def unlock(self):
-        """Unlock the object for concurrent access
-        """
+        """Unlock the object for concurrent access"""
         lock_key = self.get_lock_key()
         cache.delete(lock_key)
 
@@ -172,15 +176,20 @@ class CustomCacheScheme(object):
     `prekey` A list of values used to compute the eventual cache key.
              Similar to a prehash -> hash
     """
+
     def __init__(self, prekey=None):
         if prekey is not None:
-            if hasattr(prekey, '__iter__'):
+            if hasattr(prekey, '__iter__') and not isinstance(prekey, str):
                 # a list or tuple
                 self.prekey = prekey
             else:
-                self.prekey = [prekey,]
+                self.prekey = [
+                    prekey,
+                ]
         else:
-            self.prekey = ['default',]
+            self.prekey = [
+                'default',
+            ]
         self._cache_key = None
 
     def get_cache_key_suffix(self):
@@ -201,7 +210,11 @@ class CustomCacheScheme(object):
         if self._cache_key is None:
             cache_key_prefix = get_cache_key_prefix()
             suffix = self.get_cache_key_suffix()
-            self._cache_key = '%s:%s:%s' % (cache_key_prefix, self.__class__.__name__, suffix,)
+            self._cache_key = '%s:%s:%s' % (
+                cache_key_prefix,
+                self.__class__.__name__,
+                suffix,
+            )
         return self._cache_key
 
     def get_cache_payload(self):

@@ -4,6 +4,7 @@ from socket import gethostname
 
 # Third Party (PyPI) Imports
 import rollbar
+from celery import shared_task
 
 # HTK Imports
 from htk.cachekeys import TaskCooldown
@@ -11,11 +12,11 @@ from htk.utils import htk_setting
 from htk.utils.notifications import slack_notify
 from htk.utils.timer import HtkTimer
 
-from celery import shared_task
-
 
 class safe_timed_task(object):
-    def __init__(self, task_name, notify=False, cooldown_secs=None, force_cooldown=False):
+    def __init__(
+        self, task_name, notify=False, cooldown_secs=None, force_cooldown=False
+    ):
         self.task_name = task_name
         self.notify = notify
         self.cooldown_secs = cooldown_secs
@@ -24,6 +25,7 @@ class safe_timed_task(object):
     @property
     def cooldown_obj(self):
         if self.cooldown_secs is not None:
+
             class _CeleryTaskCooldown(TaskCooldown):
                 COOLDOWN_DURATION_SECONDS = self.cooldown_secs
 
@@ -35,12 +37,16 @@ class safe_timed_task(object):
 
     @property
     def has_cooldown(self):
-        has_cooldown = self.cooldown_obj is not None and self.cooldown_obj.has_cooldown()
+        has_cooldown = (
+            self.cooldown_obj is not None and self.cooldown_obj.has_cooldown()
+        )
         return has_cooldown
 
     def reset_cooldown(self):
         if self.cooldown_obj:
-            was_reset = self.cooldown_obj.reset_cooldown(force=self.force_cooldown)
+            was_reset = self.cooldown_obj.reset_cooldown(
+                force=self.force_cooldown
+            )
         else:
             was_reset = False
 
@@ -51,9 +57,15 @@ class safe_timed_task(object):
         @wraps(task_fn)
         def wrapped(*args, **kwargs):
             try:
-                slack_notifications_enabled = self.notify and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
+                slack_notifications_enabled = self.notify and htk_setting(
+                    'HTK_SLACK_NOTIFICATIONS_ENABLED'
+                )
                 if slack_notifications_enabled:
-                    slack_notify('Processing *{}*... (`{}`)'.format(self.task_name, gethostname()))
+                    slack_notify(
+                        'Processing *{}*... (`{}`)'.format(
+                            self.task_name, gethostname()
+                        )
+                    )
 
                 timer = HtkTimer()
                 timer.start()
@@ -80,18 +92,16 @@ class safe_timed_task(object):
                     duration = timer.duration()
                     skipped_msg = '(SKIPPED) ' if was_skipped else ''
                     msg = '{}Finished processing *{}* in *{}* seconds (`{}`)'.format(
-                        skipped_msg,
-                        self.task_name,
-                        duration,
-                        gethostname()
+                        skipped_msg, self.task_name, duration, gethostname()
                     )
                     slack_notify(msg)
             except Exception:
                 result = None
                 extra_data = {
-                    'task_name' : self.task_name,
+                    'task_name': self.task_name,
                 }
                 rollbar.report_exc_info(extra_data=extra_data)
             finally:
                 return result
+
         return wrapped
