@@ -30,3 +30,16 @@ def fk_forum_thread(
         **build_kwargs(required=required, **kwargs),
     )
     return field
+
+
+def fk_forum_message(
+    related_name: str,
+    required: bool = False,
+    **kwargs,
+) -> models.ForeignKey:
+    field = models.ForeignKey(
+        htk_setting('HTK_FORUM_MESSAGE_MODEL'),
+        related_name=related_name,
+        **build_kwargs(required=required, **kwargs),
+    )
+    return field
