@@ -236,7 +236,7 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
 
 class BaseAbstractOrganizationMember(HtkBaseModel):
     organization = fk_organization(related_name='members', required=True)
-    user = fk_user(related_name='organizations', required=True)
+    user = fk_user(related_name='members', required=True)
     role = models.PositiveIntegerField(
         default=OrganizationMemberRoles.MEMBER.value,
         choices=get_organization_member_role_choices(),
