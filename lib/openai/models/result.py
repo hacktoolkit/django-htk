@@ -5,11 +5,19 @@ from functools import cached_property
 # Django Imports
 from django.db import models
 
+# Local Imports
+from .fk_fields import fk_openai_system_prompt
+from .system_prompt import BaseOpenAISystemPrompt
+
 
 class OpenAIResult(models.Model):
     """Model to store the results of OpenAI API calls"""
 
     ai_model = models.CharField(max_length=255)
+    system_prompt = fk_openai_system_prompt(
+        related_name='openai_results',
+        required=False,
+    )
     prompt_content = models.TextField()
     response_content = models.TextField()
     is_json = models.BooleanField(default=False)
@@ -18,20 +26,24 @@ class OpenAIResult(models.Model):
 
     class Meta:
         abstract = True
+        verbose_name = 'OpenAI Result'
 
     @cached_property
     def prompt_messages(self):
         return json.loads(self.prompt_content)
 
     @cached_property
-    def system_prompt(self):
-        system_prompt_lines = [
-            message['content']
-            for message in self.prompt_messages
-            if message['role'] == 'system'
-        ]
-        system_prompt = "\n".join(system_prompt_lines)
-        return system_prompt
+    def system_prompt_content(self):
+        if self.system_prompt:
+            content = self.system_prompt.content
+        else:
+            system_prompt_lines = [
+                message['content']
+                for message in self.prompt_messages
+                if message['role'] == 'system'
+            ]
+            content = "\n".join(system_prompt_lines)
+        return content
 
     @cached_property
     def user_prompt(self):
