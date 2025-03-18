@@ -45,37 +45,37 @@ class DistanceType(Decimal):
     #
 
     @property
-    def m(self) -> Decimal:
-        return self
+    def m(self) -> 'DistanceType':
+        return self.from_meters(self)
 
     @property
-    def km(self) -> Decimal:
-        return convert_unit(self, C.M_TO_KM)
+    def km(self) -> 'DistanceType':
+        return self.__class__(convert_unit(self, C.M_TO_KM))
 
     @property
-    def cm(self) -> Decimal:
-        return convert_unit(self, C.M_TO_CM)
+    def cm(self) -> 'DistanceType':
+        return self.__class__(convert_unit(self, C.M_TO_CM))
 
     @property
-    def mm(self) -> Decimal:
-        return convert_unit(self, C.M_TO_MM)
+    def mm(self) -> 'DistanceType':
+        return self.__class__(convert_unit(self, C.M_TO_MM))
 
     @property
-    def in_(self) -> Decimal:
+    def in_(self) -> 'DistanceType':
         return self.inch
 
     @property
-    def inch(self) -> Decimal:
-        return convert_unit(self, C.M_TO_IN)
+    def inch(self) -> 'DistanceType':
+        return self.__class__(convert_unit(self, C.M_TO_IN))
 
     @property
-    def ft(self) -> Decimal:
-        return convert_unit(self, C.M_TO_FT)
+    def ft(self) -> 'DistanceType':
+        return self.__class__(convert_unit(self, C.M_TO_FT))
 
     @property
-    def yd(self) -> Decimal:
-        return convert_unit(self, C.M_TO_YD)
+    def yd(self) -> 'DistanceType':
+        return self.__class__(convert_unit(self, C.M_TO_YD))
 
     @property
-    def mi(self) -> Decimal:
-        return convert_unit(self, C.M_TO_MI)
+    def mi(self) -> 'DistanceType':
+        return self.__class__(convert_unit(self, C.M_TO_MI))
