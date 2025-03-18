@@ -53,6 +53,14 @@ class DistanceType(Decimal):
         return convert_unit(self, C.M_TO_KM)
 
     @property
+    def cm(self) -> Decimal:
+        return convert_unit(self, C.M_TO_CM)
+
+    @property
+    def mm(self) -> Decimal:
+        return convert_unit(self, C.M_TO_MM)
+
+    @property
     def in_(self) -> Decimal:
         return self.inch
 
