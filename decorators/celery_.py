@@ -95,7 +95,8 @@ class safe_timed_task(object):
                     msg = '{}Finished processing *{}* in *{}* seconds (`{}`)'.format(
                         skipped_msg, self.task_name, duration, gethostname()
                     )
-                    slack_notify(msg)
+                    custom_channel = htk_setting('HTK_SLACK_CELERY_NOTIFICATIONS_CHANNEL')
+                    slack_notify(msg, custom_channel=custom_channel)
             except Exception:
                 result = None
                 extra_data = {
