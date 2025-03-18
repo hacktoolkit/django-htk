@@ -61,12 +61,15 @@ class safe_timed_task(object):
                 slack_notifications_enabled = self.notify and htk_setting(
                     'HTK_SLACK_NOTIFICATIONS_ENABLED'
                 )
+                custom_channel = htk_setting(
+                    'HTK_SLACK_CELERY_NOTIFICATIONS_CHANNEL'
+                )
+
                 if slack_notifications_enabled:
-                    slack_notify(
-                        'Processing *{}*... (`{}`)'.format(
-                            self.task_name, gethostname()
-                        )
+                    msg = 'Processing *{}*... (`{}`)'.format(
+                        self.task_name, gethostname()
                     )
+                    slack_notify(msg, custom_channel=custom_channel)
 
                 timer = HtkTimer()
                 timer.start()
@@ -95,7 +98,6 @@ class safe_timed_task(object):
                     msg = '{}Finished processing *{}* in *{}* seconds (`{}`)'.format(
                         skipped_msg, self.task_name, duration, gethostname()
                     )
-                    custom_channel = htk_setting('HTK_SLACK_CELERY_NOTIFICATIONS_CHANNEL')
                     slack_notify(msg, custom_channel=custom_channel)
             except Exception:
                 result = None
