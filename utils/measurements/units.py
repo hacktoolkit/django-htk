@@ -6,6 +6,18 @@ from decimal import Decimal
 DecimalTypes = T.Union[str, int, float, Decimal]
 
 
+class AbstractMeasurement(Decimal):
+    """Abstract base class for measurements."""
+
+    def as_unit(self, unit_code: str) -> 'AbstractMeasurement':
+        if hasattr(self, unit_code):
+            value = getattr(self, unit_code)
+        else:
+            raise ValueError(f'Invalid `unit_code` specified: {unit_code}')
+
+        return value
+
+
 class ConversionConstants:
     """Constants for converting between different units of measurement.
 
@@ -74,5 +86,16 @@ class ConversionConstants:
         KG_TO_G = Decimal('1000')
 
 
-def convert_unit(value: DecimalTypes, conversion_constant: DecimalTypes) -> Decimal:
-    return Decimal(value) * Decimal(conversion_constant)
+def convert_unit(
+    value: DecimalTypes,
+    conversion_constant: DecimalTypes,
+    dest_type: T.Optional[T.Type[AbstractMeasurement]] = None,
+) -> T.Union[Decimal, AbstractMeasurement]:
+    converted_value = Decimal(value) * Decimal(conversion_constant)
+
+    if dest_type is not None:
+        result = dest_type(converted_value)
+    else:
+        result = converted_value
+
+    return result

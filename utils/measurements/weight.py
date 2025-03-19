@@ -3,6 +3,7 @@ from decimal import Decimal
 
 # Local Imports
 from .units import (
+    AbstractMeasurement,
     ConversionConstants,
     convert_unit,
 )
@@ -11,7 +12,7 @@ from .units import (
 C = ConversionConstants.Weight
 
 
-class WeightType(Decimal):
+class WeightType(AbstractMeasurement):
     """Class that represents weight.
 
     Canonical unit is in grams.
@@ -23,11 +24,11 @@ class WeightType(Decimal):
 
     @classmethod
     def from_kilograms(cls, value: Decimal) -> 'WeightType':
-        return cls(convert_unit(value, C.KG_TO_G))
+        return convert_unit(value, C.KG_TO_G, cls)
 
     @classmethod
     def from_pounds(cls, value: Decimal) -> 'WeightType':
-        return cls(convert_unit(value, C.LB_TO_G))
+        return convert_unit(value, C.LB_TO_G, cls)
 
     ##
     # NOTE: Lots of helper function follow, sorting rules:
@@ -37,17 +38,17 @@ class WeightType(Decimal):
     #
 
     @property
-    def g(self) -> Decimal:
+    def g(self) -> 'WeightType':
         return self
 
     @property
-    def kg(self) -> Decimal:
-        return convert_unit(self, C.G_TO_KG)
+    def kg(self) -> 'WeightType':
+        return convert_unit(self, C.G_TO_KG, self.__class__)
 
     @property
-    def oz(self) -> Decimal:
-        return convert_unit(self, C.G_TO_OZ)
+    def oz(self) -> 'WeightType':
+        return convert_unit(self, C.G_TO_OZ, self.__class__)
 
     @property
-    def lb(self) -> Decimal:
-        return convert_unit(self, C.G_TO_LB)
+    def lb(self) -> 'WeightType':
+        return convert_unit(self, C.G_TO_LB, self.__class__)
