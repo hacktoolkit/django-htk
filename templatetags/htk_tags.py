@@ -77,6 +77,11 @@ def get_item(dictionary, key):
 # String Utilities
 
 
+@register.filter()
+def split(value, key):
+    return value.split(key)
+
+
 @register.filter(is_safe=True)
 def concat(value, arg):
     result = str(value) + str(arg)
