@@ -69,7 +69,6 @@ def sync_release(
         "draft": release.draft,
         "prerelease": release.prerelease,
         "published_at": release.published_at,
-        "html_url": release.html_url or "",
     }
 
     if existing_release:
