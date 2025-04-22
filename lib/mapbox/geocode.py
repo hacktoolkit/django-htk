@@ -172,6 +172,45 @@ def get_latlng(address, min_relevance_threshold=1):
 
 
 def fetch_mapbox_geocode_result(latitude, longitude):
+    """
+    Fetch the first mapbox geocode result for a given latitude and longitude
+
+    Example return value:
+        >>> fetch_mapbox_geocode_result(37.7749, -122.4194)
+        {'id': 'address.8939856834013852',
+         'type': 'Feature',
+         'place_type': ['address'],
+         'relevance': 1,
+         'properties': {'accuracy': 'point',
+         'mapbox_id': 'dXJuOm1ieGFkcjplNzRmN2U5MC1jODQzLTQxMWQtYTcyMi1mYTQwYTYwMzJjZGI'},
+         'text': 'Noriega St',
+         'place_name': '1818 Noriega St, San Francisco, California 94102, United States',
+         'center': [-122.41942, 37.774929],
+         'geometry': {'type': 'Point', 'coordinates': [-122.41942, 37.774929]},
+         'address': '1818',
+         'context': [{'id': 'neighborhood.601435372',
+         'mapbox_id': 'dXJuOm1ieHBsYzpJOWtzN0E',
+         'text': 'South of Market'},
+         {'id': 'postcode.8939856834013852', 'text': '94102'},
+         {'id': 'place.292358380',
+         'mapbox_id': 'dXJuOm1ieHBsYzpFVzBJN0E',
+         'wikidata': 'Q62',
+         'text': 'San Francisco'},
+         {'id': 'district.20547308',
+         'mapbox_id': 'dXJuOm1ieHBsYzpBVG1HN0E',
+         'wikidata': 'Q62',
+         'text': 'San Francisco County'},
+         {'id': 'region.419052',
+         'mapbox_id': 'dXJuOm1ieHBsYzpCbVRz',
+         'wikidata': 'Q99',
+         'short_code': 'US-CA',
+         'text': 'California'},
+         {'id': 'country.8940',
+         'mapbox_id': 'dXJuOm1ieHBsYzpJdXc',
+         'wikidata': 'Q30',
+         'short_code': 'us',
+         'text': 'United States'}]}
+    """
     extra_data = {
         'latitude': latitude,
         'longitude': longitude,
@@ -213,6 +252,13 @@ def fetch_mapbox_geocode_result(latitude, longitude):
 
 
 def reverse_geocode(latitude, longitude):
+    """
+    Reverse geocode a given latitude and longitude and return the address
+
+    Example return value:
+        >>> reverse_geocode(37.7749, -122.4194)
+        '1818 Noriega St, San Francisco, California 94102, United States'
+    """
     result = fetch_mapbox_geocode_result(latitude, longitude)
     if result:
         address = result.get('place_name')
