@@ -171,12 +171,11 @@ def get_latlng(address, min_relevance_threshold=1):
     return latlng
 
 
-def reverse_geocode(latitude, longitude):
+def fetch_mapbox_geocode_result(latitude, longitude):
     extra_data = {
         'latitude': latitude,
         'longitude': longitude,
     }
-
     resource = '{longitude},{latitude}.json'.format(
         longitude=longitude, latitude=latitude
     )
@@ -187,21 +186,38 @@ def reverse_geocode(latitude, longitude):
         'access_token': access_token,
     }
 
-    response = requests.get(url, params=params)
     try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+
         extra_data['response_data'] = response.text
         response_json = response.json()
-
         results = response_json.get('features', [])
+
         if len(results) > 0:
             result = results[0]
-            address = result['place_name']
         else:
-            # did not find any results
-            address = None
-    except KeyError as e:
-        address = None
+            result = None
+
+    except requests.exceptions.RequestException as e:
+        extra_data['error'] = f'Request failed: {str(e)}'
         _report_exc_info(extra_data=extra_data)
+    except json.JSONDecodeError as e:
+        extra_data['error'] = f'Invalid JSON response: {str(e)}'
+        _report_exc_info(extra_data=extra_data)
+    except Exception as e:
+        extra_data['error'] = f'Unexpected error: {str(e)}'
+        _report_exc_info(extra_data=extra_data)
+
+    return result
+
+
+def reverse_geocode(latitude, longitude):
+    result = fetch_mapbox_geocode_result(latitude, longitude)
+    if result:
+        address = result.get('place_name')
+    else:
+        address = None
     return address
 
 
