@@ -173,7 +173,7 @@ def get_latlng(address, min_relevance_threshold=1):
 
 def fetch_mapbox_reverse_geocode_result(latitude, longitude):
     """
-    Fetch the first mapbox geocode result for a given latitude and longitude
+    Fetch the first Mapbox reverse geocode result for a given latitude and longitude
 
     Example return value:
         >>> fetch_mapbox_geocode_result(37.7749, -122.4194)
