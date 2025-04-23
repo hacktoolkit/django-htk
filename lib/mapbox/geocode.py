@@ -296,7 +296,7 @@ def reverse_geocode_with_context(latitude, longitude):
 
         if 'short_code' in field:
             key = f'{key}_short'
-            value = field['short_code']
+            value = field['short_code'].upper()
             data[key] = value
 
     return data
