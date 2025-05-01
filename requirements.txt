@@ -14,4 +14,4 @@ requests>=2.31.0
 rollbar>=0.8.2
 stripe==1.19.0
 user-agents==2.2.0
-xhtml2pdf==0.0.6
+xhtml2pdf==0.2.17
