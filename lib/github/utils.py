@@ -6,9 +6,6 @@ from github import Github
 from github.GitRelease import GitRelease
 from github.Repository import Repository
 
-# Django Imports
-from django.conf import settings
-
 # HTK Imports
 from htk.utils import (
     htk_setting,
@@ -106,9 +103,6 @@ def sync_repository_releases(
             repository=repo_name,
         )
     }
-    from htk.utils.debug import slack_debug
-
-    # slack_debug(f'Syncing {len(releases)} releases from {repo_name}')
 
     for github_release in releases:
         existing_release = existing_releases.get(github_release.tag_name)
