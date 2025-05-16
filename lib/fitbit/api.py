@@ -32,6 +32,8 @@ class FitbitAPI(object):
         `client_id` OAuth2 Client Id from Fitbit App settings
         `client_secret` OAuth2 Client Secret from Fitbit App settings
         """
+        if social_auth_user is None:
+            raise ValueError("social_auth_user must be provided")
         self.user = social_auth_user.user
         self.social_auth_user = social_auth_user
         self.client_id = client_id
