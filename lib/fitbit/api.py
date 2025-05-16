@@ -32,7 +32,9 @@ class FitbitAPI(object):
         `client_id` OAuth2 Client Id from Fitbit App settings
         `client_secret` OAuth2 Client Secret from Fitbit App settings
         """
-        self.user = social_auth_user.user if social_auth_user else None
+        if social_auth_user is None:
+            raise ValueError("social_auth_user must be provided")
+        self.user = social_auth_user.user
         self.social_auth_user = social_auth_user
         self.client_id = client_id
         self.client_secret = client_secret
@@ -55,10 +57,6 @@ class FitbitAPI(object):
 
         https://dev.fitbit.com/docs/basics/#language
         """
-
-        if not self.social_auth_user:
-            return None
-
         # refreshes token if necessary
         if self.social_auth_user.access_token_expired():
             from social_django.utils import load_strategy
@@ -170,8 +168,6 @@ class FitbitAPI(object):
 
     def refresh_oauth2_token(self):
         # TODO: deprecate
-        if not self.social_auth_user:
-            return None
         params = {
             'grant_type': 'refresh_token',
             'refresh_token': self.social_auth_user.extra_data['refresh_token'],
@@ -239,16 +235,12 @@ class FitbitAPI(object):
 
     def get_activity_steps_past_month(self):
         """Get Steps for past month"""
-        if not self.user:
-            return None
         today = self.user.profile.localized_date
         activity = self.get_activity_steps_for_period(today, '1m')
         return activity
 
     def get_activity_steps_past_year(self):
         """Get Steps for past year"""
-        if not self.user:
-            return None
         today = self.user.profile.localized_date
         activity = self.get_activity_steps_for_period(today, '1y')
         return activity
