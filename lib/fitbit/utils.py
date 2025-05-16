@@ -20,7 +20,12 @@ def get_fitbit_api(
 
         social_auth_user = get_social_auth_for_user(user, 'fitbit')
 
-    api = FitbitAPI(social_auth_user, client_id, client_secret)
+    api = (
+        FitbitAPI(social_auth_user, client_id, client_secret)
+        if social_auth_user
+        else None
+    )
+
     return api
 
 
