@@ -1,7 +1,6 @@
 """This module requires Python major version >= 3
 """
 
-
 # Python Standard Library Imports
 import typing as T
 
