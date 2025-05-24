@@ -3,6 +3,7 @@ from htk.compat import has_min_python_version
 
 from .integer_range import IntegerRangeField
 from .star_rating import StarRatingField
+from .ulid import ULIDField
 
 
 # isort: off
@@ -16,4 +17,5 @@ __all__ = [
     'CrossDBForeignKey',
     'StarRatingField',
     'IntegerRangeField',
+    'ULIDField',
 ]
