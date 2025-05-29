@@ -7,8 +7,8 @@ from openai import OpenAI
 
 # HTK Imports
 from htk.lib.openai.constants.prompts import (
-    OPENAI_PROMPT_JSON_RESPONSE_INSTRUCTION,
-    OPENAI_PROMPT_TARGET_READING_GRADE_LEVEL_INSTRUCTION_FORMAT,
+    OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE,
+    OPENAI_PROMPT_INSTRUCTION_FORMAT__TARGET_READING_GRADE_LEVEL,
 )
 from htk.utils import (
     htk_setting,
@@ -60,14 +60,14 @@ class OpenAIAdapter:
 
             if target_reading_grade_level:
                 all_system_prompt_lines.append(
-                    OPENAI_PROMPT_TARGET_READING_GRADE_LEVEL_INSTRUCTION_FORMAT.format(
+                    OPENAI_PROMPT_INSTRUCTION_FORMAT__TARGET_READING_GRADE_LEVEL.format(
                         target_reading_grade_level=target_reading_grade_level
                     )
                 )
 
             if as_json:
                 all_system_prompt_lines.append(
-                    OPENAI_PROMPT_JSON_RESPONSE_INSTRUCTION
+                    OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE
                 )
 
         _system_prompt = "\n".join(all_system_prompt_lines)
