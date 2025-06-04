@@ -291,18 +291,19 @@ def _build_meta_content(data):
     meta = data.get('meta', {})
     if meta and type(meta) == dict:
         for meta_type, config in meta.items():
-            _add_static_meta_content(meta_type, data)
-            try:
-                inverted_content = config.get('inverted', [])
-                config['content'] = config.get('join_value', '').join(
-                    inverted_content[::-1]
-                )
-                config['value'] = (
-                    inverted_content[-1] if len(inverted_content) else ''
-                )
-            except:
-                request = data.get('request', {}).get('request')
-                rollbar.report_exc_info(request=request)
+            if type(config) == dict:
+                _add_static_meta_content(meta_type, data)
+                try:
+                    inverted_content = config.get('inverted', [])
+                    config['content'] = config.get('join_value', '').join(
+                        inverted_content[::-1]
+                    )
+                    config['value'] = (
+                        inverted_content[-1] if len(inverted_content) else ''
+                    )
+                except:
+                    request = data.get('request', {}).get('request')
+                    rollbar.report_exc_info(request=request)
 
 
 def _build_breadcrumbs(data):
