@@ -160,6 +160,8 @@ def wrap_data(request, data=None):
             'join_value': ',',
             'static_values': {},
         },
+        'image': '',
+        'canonical_url': '',
         'site_verifications': {},
     }
 
@@ -333,22 +335,23 @@ def _update_meta_content(meta_type, value, update_type='set', data=None):
         data = {}
     meta = data.get('meta', {}).get(meta_type)
     if meta:
-        if type(value) in (
-            list,
-            tuple,
-        ):
-            values_list = value
+        # Check if this meta type is list-based by looking for 'inverted' key
+        if 'inverted' in meta:
+            # Handle list-based meta types (e.g. title, description, keywords)
+            if type(value) in (list, tuple):
+                values_list = value
+            else:
+                values_list = [value]
+            if update_type == 'set':
+                meta['inverted'] = values_list
+            elif update_type == 'add':
+                meta['inverted'] += values_list
+            else:
+                # unknown update_type
+                pass
         else:
-            values_list = [
-                value,
-            ]
-        if update_type == 'set':
-            meta['inverted'] = values_list
-        elif update_type == 'add':
-            meta['inverted'] += values_list
-        else:
-            # unknown update_type
-            pass
+            # Handle string-based meta types (e.g. canonical_url, image)
+            data['meta'][meta_type] = value
     else:
         pass
 
@@ -434,6 +437,16 @@ def add_meta_keywords(keywords, data=None):
     `keywords` must be a list in order of least significant to most significant terms
     """
     _update_meta_content('keywords', keywords, update_type='add', data=data)
+
+
+def set_meta_image(image_url, data=None):
+    """Sets the META image"""
+    _update_meta_content('image', image_url, update_type='set', data=data)
+
+
+def set_meta_canonical_url(canonical_url, data=None):
+    """Sets the META canonical URL"""
+    _update_meta_content('canonical_url', canonical_url, update_type='set', data=data)
 
 
 def add_breadcrumb_mapping(url_name, title, data):
