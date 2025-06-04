@@ -335,25 +335,26 @@ def _update_meta_content(meta_type, value, update_type='set', data=None):
     if data is None:
         data = {}
     meta = data.get('meta', {}).get(meta_type)
-    if meta:
-        # Check if this meta type is list-based by looking for 'inverted' key
-        if 'inverted' in meta:
-            # Handle list-based meta types (e.g. title, description, keywords)
-            if type(value) in (list, tuple):
-                values_list = value
-            else:
-                values_list = [value]
-            if update_type == 'set':
-                meta['inverted'] = values_list
-            elif update_type == 'add':
-                meta['inverted'] += values_list
-            else:
-                # unknown update_type
-                pass
+    if type(meta) == dict:
+        # Handle list-based meta types (e.g. title, description, keywords)
+        if type(value) in (list, tuple):
+            values_list = value
         else:
-            # Handle string-based meta types (e.g. canonical_url, image)
-            data['meta'][meta_type] = value
+            values_list = [value]
+        if update_type == 'set':
+            meta['inverted'] = values_list
+        elif update_type == 'add':
+            meta['inverted'] += values_list
+        else:
+            # unknown update_type
+            pass
+    elif type(meta) == str:
+        # Handle string-based meta types (e.g. canonical_url, image).
+        # This assumes that the meta value was initialized with a default string,
+        # including an empty string.
+        data['meta'][meta_type] = value
     else:
+        # unknown meta value type
         pass
 
 
