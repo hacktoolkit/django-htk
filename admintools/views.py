@@ -96,7 +96,7 @@ def migration_plan_view(
         except subprocess.CalledProcessError as e:
             # Handle the error case
             error_message = f"An error occurred while fetching the migration plan: {e.stderr}"
-            data['error_message'] = error_messagea
+            data['error_message'] = error_message
 
         response = _r(request, template, data=data)
 
