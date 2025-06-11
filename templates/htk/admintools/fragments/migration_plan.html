@@ -1,5 +1,11 @@
 {% load htk_tags %}
 
+{% if error_message %}
+<div class="alert alert-danger" role="alert">
+  {{ error_message }}
+</div>
+{% endif %}
+
 <p>
   <b>Number of Migrations Run:</b> {{ num_migrations_run }}<br/>
   <b>Number of Migrations to Apply:</b> {{ num_migrations_to_apply }}<br/>
