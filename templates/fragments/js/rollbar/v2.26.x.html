@@ -1,6 +1,12 @@
 <script>
 // rollbar_js_version: {{ rollbar_js_version }} (expected: 2.26.x)
 
+var _rollbarJsVersion = '{{ rollbar_js_version }}';
+// Ensure version has patch number, fallback to 2.26.0 if not
+if (!_rollbarJsVersion.match(/^\d+\.\d+\.\d+$/)) {
+  _rollbarJsVersion = '2.26.0';
+}
+
 var _rollbarIgnoredUncaughtExceptionClasses = {% if rollbar.ignored_uncaught_exception_classes %}{{ rollbar.ignored_uncaught_exception_classes|safe }}{% else %}[]{% endif %};
 
 var _rollbarIgnoredMessagesRegexes = [
@@ -10,6 +16,7 @@ var _rollbarIgnoredMessagesRegexes = [
 ];
 
 var _rollbarConfig = {
+  rollbarJsUrl: 'https://cdn.rollbar.com/rollbarjs/refs/tags/v' + _rollbarJsVersion + '/rollbar.min.js',
   accessToken: '{{ rollbar.tokens.post_client_item }}',
   // verbose: log to console.log, as well as Rollbar
   verbose: {% if rollbar.environment == 'production' %}false{% else %}true{% endif %},
