@@ -12,3 +12,10 @@ class HtkBaseService(object):
         assert model is not None
 
         self.model = model
+
+    def init_models(self, module_strs):
+        self.models = {}
+        for module_str in module_strs:
+            model = resolve_model_dynamically(module_str)
+            assert model is not None
+            self.models[module_str] = model
