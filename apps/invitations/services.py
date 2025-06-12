@@ -9,13 +9,8 @@ from htk.utils import htk_setting
 class InvitationsService(HtkBaseService):
     def __init__(self, *args, **kwargs):
         super(InvitationsService, self).__init__(*args, **kwargs)
-        model = htk_setting('HTK_INVITATION_MODEL')
-        models = htk_setting('HTK_INVITATION_MODELS')
-        if len(models) > 0:
-            self.init_models(models)
-        elif model:
-            self.init_models([model])
-
+        models = htk_setting('HTK_INVITATION_MODELS') or [htk_setting('HTK_INVITATION_MODEL')]
+        self.init_models(models)
 
     def process_user_created(self, user):
         """Invoked when `user` is created
@@ -24,7 +19,7 @@ class InvitationsService(HtkBaseService):
         """
         email = user.email
         if email:
-            for model in self.models.values():
+            for model in self.models:
                 q = model.objects.filter(email=email)
                 if q.exists():
                     invitation = q.first()
@@ -54,7 +49,7 @@ class InvitationsService(HtkBaseService):
         user = user_email.user
         email = user_email.email
 
-        for model in self.models.values():
+        for model in self.models:
             q = model.objects.filter(email=email)
             if q.exists():
                 invitation = q.first()
@@ -67,7 +62,7 @@ class InvitationsService(HtkBaseService):
         """
         email = user.email
         if email:
-            for model in self.models.values():
+            for model in self.models:
                 q = model.objects.filter(email=email)
                 if q.exists():
                     invitation = q.first()
