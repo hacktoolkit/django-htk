@@ -12,9 +12,15 @@ from htk.utils import htk_setting
 def fk_openai_system_prompt(
     related_name: str, required: bool = False
 ) -> models.ForeignKey:
-    field = models.ForeignKey(
-        htk_setting('HTK_OPENAI_SYSTEM_PROMPT_MODEL'),
-        related_name=related_name,
-        **build_kwargs(required=required),
-    )
+    fk_model = htk_setting('HTK_OPENAI_SYSTEM_PROMPT_MODEL')
+
+    if fk_model is None:
+        field = None
+    else:
+        field = models.ForeignKey(
+            fk_model,
+            related_name=related_name,
+            **build_kwargs(required=required),
+        )
+
     return field
