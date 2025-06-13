@@ -52,8 +52,8 @@ class BaseRelease(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ["-version"]
-        get_latest_by = "version"
+        ordering = ["-published_at"]
+        get_latest_by = "published_at"
         verbose_name = _("release")
 
     def __str__(self):
