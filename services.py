@@ -7,8 +7,12 @@ class HtkBaseService(object):
         pass
 
     def init_model(self, module_str):
-        model = resolve_model_dynamically(module_str)
+        self.init_models([module_str])
 
-        assert model is not None
+    def init_models(self, module_strs):
+        self.models = [resolve_model_dynamically(module_str) for module_str in module_strs]
+        assert all(self.models)
 
-        self.model = model
+        # Backwards compatibility for single model implementations
+        if len(self.models) == 1:
+            self.model = self.models[0]
