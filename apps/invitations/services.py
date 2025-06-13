@@ -10,7 +10,10 @@ class InvitationsService(HtkBaseService):
     def __init__(self, *args, **kwargs):
         super(InvitationsService, self).__init__(*args, **kwargs)
         models = htk_setting('HTK_INVITATION_MODELS') or [htk_setting('HTK_INVITATION_MODEL')]
-        self.init_models(models)
+        if isinstance(models, (list, tuple)):
+            self.init_models(models)
+        else:
+            raise TypeError('Improperly configured `HTK_INVITATION_MODELS`')
 
     def process_user_created(self, user):
         """Invoked when `user` is created
