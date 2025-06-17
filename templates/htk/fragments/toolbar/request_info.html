@@ -1,0 +1,14 @@
+{% load htk_tags %}
+<li class="htk-toolbar-list-item request-info">
+  <h6 class="text-xl font-bold">Request Info</h6>
+  <div>
+    <ul>
+      <li><b>URL Name</b>: {{ request.request.resolver_match|full_url_name }}</li>
+      <li><b>Referrer</b>: {{ request.request.META.HTTP_REFERER }}</li>
+      <li><b>Request URL</b>: {{ request.request.META.SCRIPT_URI }}</li>
+      <li><b>Request Method</b>: {{ request.request.META.REQUEST_METHOD }}</li>
+      <li><b>Remote IP</b>: {{ request.request.META.HTTP_X_FORWARDED_FOR }}</li>
+      <li><b>User Agent</b>: {{ request.request.META.HTTP_USER_AGENT }}</li>
+    </ul>
+  </div>
+</li>

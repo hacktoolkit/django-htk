@@ -3,9 +3,11 @@ from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
 
 
+# isort: off
+
+
 class HtkCompanyUserMixin(object):
-    """Mixin for htk.apps.accounts.BaseAbstractUserProfile
-    """
+    """Mixin for htk.apps.accounts.BaseAbstractUserProfile"""
 
     @CachedAttribute
     def is_company_officer(self):
@@ -19,6 +21,7 @@ class HtkCompanyUserMixin(object):
             is_officer = True
         else:
             from htk.admintools.utils import get_company_officers_id_email_map
+
             officers_map = get_company_officers_id_email_map()
             officer_email = officers_map.get(self.user.id)
             if officer_email:
@@ -33,10 +36,13 @@ class HtkCompanyUserMixin(object):
         User.is_staff=True is also considered a company employee
         """
         is_employee = False
-        if (self.user.is_staff and self.user.is_superuser) or self.is_company_officer:
+        if (
+            self.user.is_staff and self.user.is_superuser
+        ) or self.is_company_officer:
             is_employee = True
         else:
             from htk.admintools.utils import get_company_employees_id_email_map
+
             employees_map = get_company_employees_id_email_map()
             employee_email = employees_map.get(self.user.id)
             if employee_email:
@@ -45,16 +51,32 @@ class HtkCompanyUserMixin(object):
 
     @CachedAttribute
     def has_company_email_domain(self):
-        """Determines whether this User has email with company domain
-        """
+        """Determines whether this User has email with company domain"""
         company_email_domains = htk_setting('HTK_COMPANY_EMAIL_DOMAINS')
-        company_email_domains_re = '|'.join([domain.replace(r'\.', r'\.') for domain in company_email_domains])
+        company_email_domains_re = '|'.join(
+            [domain.replace(r'\.', r'\.') for domain in company_email_domains]
+        )
 
-        value = bool(re.match(r'^[A-Za-z0-9\.\+_-]+@(%s)' % company_email_domains_re, self.confirmed_email))
+        value = bool(
+            re.match(
+                r'^[A-Za-z0-9\.\+_-]+@(%s)' % company_email_domains_re,
+                self.confirmed_email,
+            )
+        )
         return value
 
-    def can_emulate_user(self):
+    @property
+    def should_display_htk_toolbar(self):
         from htk.utils.request import get_current_request
+
         request = get_current_request()
-        can_emulate = self.user.profile.is_company_employee or request.original_user.profile.is_company_employee
-        return can_emulate
+        result = (
+            self.user.profile.is_company_employee
+            or request.original_user.profile.is_company_employee
+        )
+        return result
+
+    @property
+    def can_emulate_user(self):
+        result = self.should_display_htk_toolbar
+        return result

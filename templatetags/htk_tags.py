@@ -261,6 +261,14 @@ def http_header(value):
     return formatted
 
 
+@register.filter()
+def full_url_name(resolver_match):
+    from htk.utils.request import get_full_url_name
+
+    result = get_full_url_name(resolver_match)
+    return result
+
+
 ##################################################
 # Tags
 

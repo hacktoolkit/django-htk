@@ -120,14 +120,14 @@ def wrap_data(request, data=None):
     data.update(csrf(request))
 
     ##
-    # login/authentication flow "next"
+    # Login/authentication flow "next"
 
     next_uri = request.GET.get('next')
     if next_uri:
         data['next_uri'] = next_uri
 
     ##
-    # meta, server, request info
+    # Meta, Server, Request info
 
     from htk.utils.request import get_request_metadata
 
@@ -218,7 +218,7 @@ def wrap_data(request, data=None):
     _javascript_reloader(request, data)
 
     ##
-    # user
+    # User
     if request.user.is_authenticated:
         user = request.user
         if not hasattr(user, 'profile'):
@@ -234,8 +234,12 @@ def wrap_data(request, data=None):
     data['user'] = user
 
     ##
-    # errors
+    # Errors
     data['errors'] = []
+
+    ##
+    # HTK Toolbar
+    data['htk_toolbar_fragments'] = []
 
     return data
 
@@ -448,7 +452,9 @@ def set_meta_image(image_url, data=None):
 
 def set_meta_canonical_url(canonical_url, data=None):
     """Sets the META canonical URL"""
-    _update_meta_content('canonical_url', canonical_url, update_type='set', data=data)
+    _update_meta_content(
+        'canonical_url', canonical_url, update_type='set', data=data
+    )
 
 
 def add_breadcrumb_mapping(url_name, title, data):
@@ -458,6 +464,18 @@ def add_breadcrumb_mapping(url_name, title, data):
         .get('url_names_to_breadcrumbs', {})
     )
     url_names_to_breadcrumbs[url_name] = title
+
+
+def add_htk_toolbar_fragment(template, data):
+    """Adds a fragment to the HTK Toolbar
+
+    `template` is the path to the template file
+    """
+    if data is None:
+        data = {}
+    if 'htk_toolbar_fragments' not in data:
+        data['htk_toolbar_fragments'] = []
+    data['htk_toolbar_fragments'].append(template)
 
 
 def get_resolver_matches_chain(request, data=None):
