@@ -10,6 +10,10 @@ from htk.utils import htk_setting
 
 
 class HtkEnum(Enum):
+    @property
+    def display(self):
+        return get_enum_symbolic_name(self)
+
     def json_encode(self):
         """json_encode Generate a valid dict for JSON
 
