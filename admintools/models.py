@@ -70,9 +70,9 @@ class HtkCompanyUserMixin(object):
         from htk.utils.request import get_current_request
 
         request = get_current_request()
-        result = (
-            self.user.profile.is_company_employee
-            or request.original_user.profile.is_company_employee
+        result = self.user.profile.is_company_employee or (
+            hasattr(request, 'original_user')
+            and request.original_user.profile.is_company_employee
         )
         return result
 
