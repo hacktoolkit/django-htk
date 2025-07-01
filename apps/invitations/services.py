@@ -29,7 +29,7 @@ class InvitationsService(HtkBaseService):
 
                     # The email is not confirmed yet, just send a notification, but do not associate yet.
 
-                    if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+                    if not settings.TESTING and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
                         from htk.utils.notifications import slack_notify
 
                         msg = '*%s* has signed up for %s as a result of an invitation from *%s <%s>* (Campaign: `%s` - sent %s).' % (
