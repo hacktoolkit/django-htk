@@ -68,7 +68,7 @@ class HtkInvitation(HtkBaseModel):
         self.status = InvitationStatus.ACCEPTED.value
         self.save()
 
-        if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+        if not settings.TESTING and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
             from htk.utils.notifications import slack_notify
 
             msg = '*%s <%s>* has accepted an invitation from *%s <%s>* (Campaign: `%s` - sent %s).' % (
@@ -100,7 +100,7 @@ class HtkInvitation(HtkBaseModel):
         self.status = InvitationStatus.COMPLETED.value
         self.save()
 
-        if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+        if not settings.TESTING and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
             from htk.utils.notifications import slack_notify
 
             msg = '*%s <%s>* has completed their invitation onboarding from *%s <%s>* (Campaign: `%s` - sent %s).' % (
