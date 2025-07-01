@@ -10,7 +10,7 @@ from htk.utils.notifications import slack_notify
 
 def failed_recaptcha_on_login(user, request=None):
     extra_data = {
-        'user' : {
+        'user': {
             'id': user.id,
             'username': user.username,
             'email': user.email,
@@ -19,19 +19,14 @@ def failed_recaptcha_on_login(user, request=None):
 
     message = 'Failed reCAPTCHA. Suspicious login detected.'
 
-    rollbar.report_message(
-        message,
-        request=request,
-        extra_data=extra_data
-    )
+    rollbar.report_message(message, request=request, extra_data=extra_data)
 
-    if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-        slack_message = '%s User: %s <%s>' % (
-            message,
-            user.username,
-            user.email,
-        )
-        slack_notify(slack_message, level='warning')
+    slack_message = '%s User: %s <%s>' % (
+        message,
+        user.username,
+        user.email,
+    )
+    slack_notify(slack_message, level='warning')
 
 
 def failed_recaptcha_on_account_register(request=None):
@@ -39,5 +34,4 @@ def failed_recaptcha_on_account_register(request=None):
 
     rollbar.report_message(message, request=request)
 
-    if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-        slack_notify(message, level='warning')
+    slack_notify(message, level='warning')

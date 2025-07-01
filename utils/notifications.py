@@ -54,6 +54,10 @@ def slack_notify(message, level=None, custom_channel=None):
     `level` is one of ['critical', 'severe', 'danger', 'warning', 'info', 'debug',]
     `custom_channel` is a string of a custom Slack channel name
     """
+    if not htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+        # NOOP: Slack notifications are disabled
+        return
+
     from htk.lib.slack.utils import webhook_call as slack_webhook_call
 
     try:
@@ -62,7 +66,9 @@ def slack_notify(message, level=None, custom_channel=None):
             'debug' if (settings.ENV_DEV or settings.TEST) else 'info'
         )
         level = level if level in channels else default_level
-        channel = custom_channel or channels.get(level, htk_setting('HTK_SLACK_DEBUG_CHANNEL'))
+        channel = custom_channel or channels.get(
+            level, htk_setting('HTK_SLACK_DEBUG_CHANNEL')
+        )
         slack_webhook_call(text=message, channel=channel)
     except:
         request = get_current_request()

@@ -15,7 +15,10 @@ from htk.apps.prelaunch.emails import (
     prelaunch_email,
 )
 from htk.utils import htk_setting
-from htk.utils.notifications import notify
+from htk.utils.notifications import (
+    notify,
+    slack_notify,
+)
 from htk.utils.request import get_current_request
 
 
@@ -138,16 +141,7 @@ class BasePrelaunchSignup(models.Model):
         return message
 
     def send_notifications(self):
-        if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            from htk.utils.notifications import slack_notify
-
-            try:
-                slack_notify(self.notification_message)
-            except:
-                request = get_current_request()
-                rollbar.report_exc_info(request=request)
-        else:
-            pass
+        slack_notify(self.notification_message)
 
         try:
             prelaunch_email(self)

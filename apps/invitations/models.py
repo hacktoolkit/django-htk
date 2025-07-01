@@ -12,17 +12,35 @@ from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.datetime_utils import relative_time
 from htk.utils.enums import get_enum_symbolic_name
+from htk.utils.notifications import slack_notify
+
+
+# isort: off
 
 
 class HtkInvitation(HtkBaseModel):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
-    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations_sent', on_delete=models.CASCADE)
+    invited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='invitations_sent',
+        on_delete=models.CASCADE,
+    )
     campaign = models.CharField(max_length=127, blank=True)
     notes = models.CharField(max_length=127, blank=True)
-    status = models.PositiveIntegerField(default=InvitationStatus.INITIAL.value, choices=get_invitation_status_choices())
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations_accepted', blank=True, null=True, default=None, on_delete=models.CASCADE)
+    status = models.PositiveIntegerField(
+        default=InvitationStatus.INITIAL.value,
+        choices=get_invitation_status_choices(),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='invitations_accepted',
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.CASCADE,
+    )
     # meta
     created_at = models.DateTimeField(auto_now_add=True)
     timestamp = models.DateTimeField(auto_now=True)
@@ -44,8 +62,7 @@ class HtkInvitation(HtkBaseModel):
         return value
 
     def get_relative_time(self):
-        """Returns a string representing the relative duration of time between now and when the invitation was created
-        """
+        """Returns a string representing the relative duration of time between now and when the invitation was created"""
         result = relative_time(self.created_at)
         return result
 
@@ -68,10 +85,9 @@ class HtkInvitation(HtkBaseModel):
         self.status = InvitationStatus.ACCEPTED.value
         self.save()
 
-        if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            from htk.utils.notifications import slack_notify
-
-            msg = '*%s <%s>* has accepted an invitation from *%s <%s>* (Campaign: `%s` - sent %s).' % (
+        msg = (
+            '*%s <%s>* has accepted an invitation from *%s <%s>* (Campaign: `%s` - sent %s).'
+            % (
                 user.profile.display_name,
                 user.email,
                 self.invited_by.profile.display_name,
@@ -79,8 +95,8 @@ class HtkInvitation(HtkBaseModel):
                 self.campaign or 'None',
                 self.get_relative_time(),
             )
-
-            slack_notify(msg)
+        )
+        slack_notify(msg)
 
     def complete(self, user=None):
         """Completes the invitation lifecycle
@@ -100,10 +116,9 @@ class HtkInvitation(HtkBaseModel):
         self.status = InvitationStatus.COMPLETED.value
         self.save()
 
-        if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            from htk.utils.notifications import slack_notify
-
-            msg = '*%s <%s>* has completed their invitation onboarding from *%s <%s>* (Campaign: `%s` - sent %s).' % (
+        msg = (
+            '*%s <%s>* has completed their invitation onboarding from *%s <%s>* (Campaign: `%s` - sent %s).'
+            % (
                 self.user.profile.display_name,
                 self.user.email,
                 self.invited_by.profile.display_name,
@@ -111,5 +126,5 @@ class HtkInvitation(HtkBaseModel):
                 self.campaign or 'None',
                 self.get_relative_time(),
             )
-
-            slack_notify(msg)
+        )
+        slack_notify(msg)

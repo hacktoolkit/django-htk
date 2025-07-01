@@ -13,17 +13,19 @@ from htk.utils import (
     htk_setting,
     resolve_model_dynamically,
 )
+from htk.utils.notifications import slack_notify
 
 
 # isort: off
 
 
 @disable_for_loaddata
-def organization_invitation_created_or_updated(sender, instance, created, **kwargs):
+def organization_invitation_created_or_updated(
+    sender, instance, created, **kwargs
+):
     """Signal handler for when a new OrganizationInvitation object is created or updated"""
     invitation = instance
     if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-        from htk.utils.notifications import slack_notify
 
         INVITATION_ACCEPTANCE_MESSAGE_BUILDERS = {
             'created': invitation.build_notification_message__created,
@@ -35,11 +37,9 @@ def organization_invitation_created_or_updated(sender, instance, created, **kwar
         msg_builder_key = 'created' if created else invitation.accepted
         msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS[msg_builder_key]
         msg = msg_builder()
-        
-        try:
-            slack_notify(msg)
-        except Exception:
-            rollbar.report_exc_info()
+
+        slack_notify(msg)
+
 
 class HtkOrganizationAppConfig(HtkAppConfig):
     name = 'htk.apps.organizations'

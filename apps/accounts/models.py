@@ -557,19 +557,13 @@ class BaseAbstractUserProfile(
                     sender=email_sender,
                 )
 
-            if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-                try:
-                    from htk.utils.notifications import slack_notify
-
-                    slack_notify(
-                        '*%s* has activated their account on %s'
-                        % (
-                            user.email,
-                            htk_setting('HTK_SITE_NAME'),
-                        )
-                    )
-                except:
-                    rollbar.report_exc_info()
+            slack_notify(
+                '*%s* has activated their account on %s'
+                % (
+                    user.email,
+                    htk_setting('HTK_SITE_NAME'),
+                )
+            )
 
         return was_activated
 

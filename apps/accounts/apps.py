@@ -14,6 +14,7 @@ from htk.app_config import HtkAppConfig
 from htk.apps.sites.utils import get_site_name
 from htk.decorators.classes import disable_for_loaddata
 from htk.utils import htk_setting
+from htk.utils.notifications import slack_notify
 
 
 # isort: off
@@ -34,21 +35,16 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile = UserProfileModel.objects.create(user=user)
         profile.save()
         if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            try:
-                from htk.utils.notifications import slack_notify
-
-                slack_notify(
-                    'A new user has registered on the site %s: *%s <%s>*'
-                    % (
-                        get_site_name(),
-                        user.profile.get_display_name(),
-                        user.email,
-                    )
+            slack_notify(
+                'A new user has registered on the site %s: *%s <%s>*'
+                % (
+                    get_site_name(),
+                    user.profile.get_display_name(),
+                    user.email,
                 )
-                if htk_setting('HTK_SLACK_BOT_ENABLED'):
-                    slack_notify('htk: emaildig %s' % user.email)
-            except:
-                rollbar.report_exc_info()
+            )
+            if htk_setting('HTK_SLACK_BOT_ENABLED'):
+                slack_notify('htk: emaildig %s' % user.email)
 
         if not settings.TEST and htk_setting('HTK_ITERABLE_ENABLED'):
             try:

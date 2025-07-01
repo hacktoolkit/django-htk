@@ -4,12 +4,18 @@
 from htk.apps.sites.utils import get_site_name
 from htk.services import HtkBaseService
 from htk.utils import htk_setting
+from htk.utils.notifications import slack_notify
+
+
+# isort: off
 
 
 class InvitationsService(HtkBaseService):
     def __init__(self, *args, **kwargs):
         super(InvitationsService, self).__init__(*args, **kwargs)
-        models = htk_setting('HTK_INVITATION_MODELS') or [htk_setting('HTK_INVITATION_MODEL')]
+        models = htk_setting('HTK_INVITATION_MODELS') or [
+            htk_setting('HTK_INVITATION_MODEL')
+        ]
         if isinstance(models, (list, tuple)):
             self.init_models(models)
         else:
@@ -29,10 +35,9 @@ class InvitationsService(HtkBaseService):
 
                     # The email is not confirmed yet, just send a notification, but do not associate yet.
 
-                    if htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-                        from htk.utils.notifications import slack_notify
-
-                        msg = '*%s* has signed up for %s as a result of an invitation from *%s <%s>* (Campaign: `%s` - sent %s).' % (
+                    msg = (
+                        '*%s* has signed up for %s as a result of an invitation from *%s <%s>* (Campaign: `%s` - sent %s).'
+                        % (
                             email,
                             get_site_name(),
                             invitation.invited_by.profile.display_name,
@@ -40,7 +45,8 @@ class InvitationsService(HtkBaseService):
                             invitation.campaign or 'None',
                             invitation.get_relative_time(),
                         )
-                        slack_notify(msg)
+                    )
+                    slack_notify(msg)
 
     def process_user_email_confirmation(self, user_email):
         """Invoked when `user_email` is confirmed
