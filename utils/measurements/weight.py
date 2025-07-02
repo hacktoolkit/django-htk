@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import typing as T
 from decimal import Decimal
 
 # Local Imports
@@ -19,15 +20,17 @@ class WeightType(AbstractMeasurement):
     """
 
     @classmethod
-    def from_grams(cls, value: Decimal) -> 'WeightType':
+    def from_grams(cls, value: T.Union[Decimal, int, float]) -> 'WeightType':
         return cls(value)
 
     @classmethod
-    def from_kilograms(cls, value: Decimal) -> 'WeightType':
+    def from_kilograms(
+        cls, value: T.Union[Decimal, int, float]
+    ) -> 'WeightType':
         return convert_unit(value, C.KG_TO_G, cls)
 
     @classmethod
-    def from_pounds(cls, value: Decimal) -> 'WeightType':
+    def from_pounds(cls, value: T.Union[Decimal, int, float]) -> 'WeightType':
         return convert_unit(value, C.LB_TO_G, cls)
 
     ##

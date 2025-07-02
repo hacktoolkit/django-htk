@@ -18,11 +18,11 @@ from htk.forms.utils import (
 class PrelaunchSignupForm(forms.ModelForm):
     class Meta:
         model = PrelaunchSignup
-        fields = (
+        fields = [
             'first_name',
             'last_name',
             'email',
-        )
+        ]
 
         labels = {
             'full_name': 'Full Name',

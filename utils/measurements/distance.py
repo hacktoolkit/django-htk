@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import typing as T
 from decimal import Decimal
 
 # Local Imports
@@ -19,23 +20,25 @@ class DistanceType(AbstractMeasurement):
     """
 
     @classmethod
-    def from_meters(cls, value: Decimal) -> 'DistanceType':
+    def from_meters(cls, value: T.Union[Decimal, int, float]) -> 'DistanceType':
         return cls(value)
 
     @classmethod
-    def from_kilometers(cls, value: Decimal) -> 'DistanceType':
+    def from_kilometers(
+        cls, value: T.Union[Decimal, int, float]
+    ) -> 'DistanceType':
         return convert_unit(value, C.KM_TO_M, cls)
 
     @classmethod
-    def from_feet(cls, value: Decimal) -> 'DistanceType':
+    def from_feet(cls, value: T.Union[Decimal, int, float]) -> 'DistanceType':
         return convert_unit(value, C.FT_TO_M, cls)
 
     @classmethod
-    def from_yards(cls, value: Decimal) -> 'DistanceType':
+    def from_yards(cls, value: T.Union[Decimal, int, float]) -> 'DistanceType':
         return convert_unit(value, C.YD_TO_M, cls)
 
     @classmethod
-    def from_miles(cls, value: Decimal) -> 'DistanceType':
+    def from_miles(cls, value: T.Union[Decimal, int, float]) -> 'DistanceType':
         return convert_unit(value, C.MI_TO_M, cls)
 
     ##
