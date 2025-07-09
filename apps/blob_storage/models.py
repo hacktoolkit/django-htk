@@ -14,8 +14,7 @@ class AbstractBlobStorage(models.Model):
     content_type = models.CharField(max_length=64, blank=True)
     size_bytes = models.PositiveIntegerField(default=0)
     contents = CompressedBinaryField(
-        max_length=htk_setting('HTK_BLOB_CONTENT_MAX_LENGTH'),
-        editable=True
+        max_length=htk_setting('HTK_BLOB_CONTENT_MAX_LENGTH'), editable=True
     )
 
     class Meta:
@@ -48,6 +47,21 @@ class AbstractBlobStorage(models.Model):
             self.contents,
             content_type=self.content_type,
         )
+
+        # Add CORS headers for images to allow social media platforms to access them
+        if self.content_type.startswith('image/'):
+            response['Access-Control-Allow-Origin'] = '*'
+            response['Access-Control-Allow-Methods'] = 'GET, HEAD, OPTIONS'
+            response['Access-Control-Allow-Headers'] = (
+                'Accept, Accept-Language, Content-Language, Content-Type'
+            )
+            response['Access-Control-Max-Age'] = '86400'  # 24 hours
+            # Add cache headers for better performance
+            response['Cache-Control'] = (
+                'public, max-age=86400, immutable'  # 24 hours
+            )
+            response['Vary'] = 'Accept-Encoding'
+
         # response = FileResponse(
         #     self.contents,
         #     as_attachment=True,
