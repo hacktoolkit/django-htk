@@ -1,3 +1,9 @@
+# Python Standard Library Imports
+from datetime import (
+    datetime,
+    timedelta,
+)
+
 # Django Imports
 from django.http import HttpResponse
 
@@ -15,17 +21,7 @@ def set_cache_headers(
     vary: str = 'Accept-Encoding',
     cache_control: str = None,
 ):
-    """
-    Set cache headers on a Django HttpResponse.
-
-    Args:
-        response (HttpResponse): The response object to modify.
-        etag (str, optional): Value for the ETag header.
-        expires (int, optional): Seconds until expiration (default 24 hours).
-        immutable (bool, optional): Whether to add 'immutable' to Cache-Control.
-        vary (str, optional): Value for the Vary header.
-        cache_control (str, optional): Override Cache-Control header entirely.
-    """
+    """Set cache headers on a Django HttpResponse."""
     if cache_control is None:
         cache_control = f"public, max-age={expires}"
         if immutable:
@@ -35,12 +31,6 @@ def set_cache_headers(
         response['Vary'] = vary
     if etag:
         response['ETag'] = etag
-    # Expires header (RFC 7234)
-    # Python Standard Library Imports
-    from datetime import (
-        datetime,
-        timedelta,
-    )
 
     expires_date = datetime.utcnow() + timedelta(seconds=expires)
     response['Expires'] = expires_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
@@ -48,9 +38,7 @@ def set_cache_headers(
 
 
 def set_cors_headers_for_image(response):
-    """
-    Set CORS headers on a Django HttpResponse for image responses.
-    """
+    """Set CORS headers on a Django HttpResponse."""
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'GET, HEAD, OPTIONS'
     response['Access-Control-Allow-Headers'] = (
