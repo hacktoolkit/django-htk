@@ -32,7 +32,7 @@ def set_cache_headers(
     if etag:
         response['ETag'] = etag
 
-    expires_date = utcnow() + timedelta(seconds=expires)
+    expires_date = utcnow() + datetime.timedelta(seconds=expires)
     response['Expires'] = expires_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
     return response
 
