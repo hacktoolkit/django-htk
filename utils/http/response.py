@@ -1,11 +1,11 @@
 # Python Standard Library Imports
-from datetime import (
-    datetime,
-    timedelta,
-)
+import datetime
 
 # Django Imports
 from django.http import HttpResponse
+
+# HTK Imports
+from htk.utils import utcnow
 
 
 class HttpResponseAccepted(HttpResponse):
@@ -32,7 +32,7 @@ def set_cache_headers(
     if etag:
         response['ETag'] = etag
 
-    expires_date = datetime.utcnow() + timedelta(seconds=expires)
+    expires_date = utcnow() + timedelta(seconds=expires)
     response['Expires'] = expires_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
     return response
 
