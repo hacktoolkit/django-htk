@@ -8,6 +8,10 @@ from django.http import (
 # HTK Imports
 from htk.fields import CompressedBinaryField
 from htk.utils import htk_setting
+from htk.utils.http.response import (
+    set_cache_headers,
+    set_cors_headers_for_image,
+)
 
 
 class AbstractBlobStorage(models.Model):
@@ -51,16 +55,8 @@ class AbstractBlobStorage(models.Model):
 
         # Add CORS headers for images to allow social media platforms to access them
         if self.content_type.startswith('image/'):
-            response['Access-Control-Allow-Origin'] = '*'
-            response['Access-Control-Allow-Methods'] = 'GET, HEAD, OPTIONS'
-            response['Access-Control-Allow-Headers'] = (
-                'Accept, Accept-Language, Content-Language, Content-Type'
-            )
-            response['Access-Control-Max-Age'] = '86400'  # 24 hours
-            # Add cache headers for better performance
-            response['Cache-Control'] = (
-                'public, max-age=86400, immutable'  # 24 hours
-            )
+            set_cors_headers_for_image(response)
+            set_cache_headers(response)
             response['Vary'] = 'Accept-Encoding'
 
         # response = FileResponse(
