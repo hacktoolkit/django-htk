@@ -1,9 +1,6 @@
 # Python Standard Library Imports
+import typing as T
 import uuid
-from typing import (
-    Any,
-    Dict,
-)
 
 # Third Party (PyPI) Imports
 from six.moves import collections_abc
@@ -38,6 +35,12 @@ from htk.utils.handles import (
 
 
 # isort: off
+
+
+if T.TYPE_CHECKING:
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
 
 
 class OrganizationAttribute(AbstractAttribute):
@@ -139,6 +142,11 @@ class BaseAbstractOrganization(HtkBaseModel, GoogleOrganizationMixin):
         """Returns all active owners of this organization"""
         owners = self.get_members(roles=(OrganizationMemberRoles.OWNER,))
         return owners
+
+    @property
+    def owners(self) -> list['User']:
+        users = [owner.user for owner in self.get_owners()]
+        return users
 
     def get_distinct_members(self):
         members = self.get_members()
@@ -259,7 +267,7 @@ class BaseAbstractOrganizationMember(HtkBaseModel):
         )
         return value
 
-    def json_encode(self) -> Dict[str, Any]:
+    def json_encode(self) -> dict[str, T.Any]:
         """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object"""
         value = {
             'id': self.id,
@@ -312,7 +320,7 @@ class BaseAbstractOrganizationInvitation(HtkBaseModel):
         )
         return value
 
-    def json_encode(self) -> Dict[str, Any]:
+    def json_encode(self) -> dict[str, T.Any]:
         """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object"""
         value = {
             'id': self.id,
@@ -410,7 +418,7 @@ class BaseAbstractOrganizationJoinRequest(HtkBaseModel):
         )
         return value
 
-    def json_encode(self) -> Dict[str, Any]:
+    def json_encode(self) -> dict[str, T.Any]:
         """Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object"""
         value = {
             'id': self.id,

@@ -145,9 +145,13 @@ class BaseAbstractUserProfile(
     ##
     # URLs
 
-    def get_admin_url(self):
+    def get_admin_url(self) -> str:
         url = reverse('admin:auth_user_change', args=(self.user.id,))
         return url
+
+    @property
+    def admin_url(self) -> str:
+        return self.get_admin_url()
 
     ##
     # Auth
