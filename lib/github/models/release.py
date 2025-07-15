@@ -36,8 +36,17 @@ class BaseRelease(models.Model):
         default=False,
         help_text=_("Whether this is a prerelease"),
     )
+    released_at = models.DateTimeField(
+        help_text=_(
+            "The date and time when the release was available to the public (e.g. in the App Store)"
+        ),
+        null=True,
+        blank=True,
+    )
     published_at = models.DateTimeField(
-        help_text=_("The date and time when the release was published"),
+        help_text=_(
+            "The date and time when the release was published on GitHub"
+        ),
         null=True,
         blank=True,
     )
@@ -54,7 +63,7 @@ class BaseRelease(models.Model):
         abstract = True
         ordering = ["-published_at"]
         get_latest_by = "published_at"
-        verbose_name = _("release")
+        verbose_name = _("Release")
 
     def __str__(self):
         """Return a string representation of the release."""
