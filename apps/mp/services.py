@@ -1,5 +1,8 @@
 # Future Imports
-from __future__ import absolute_import, print_function
+from __future__ import (
+    absolute_import,
+    print_function,
+)
 
 # Python Standard Library Imports
 import time
@@ -21,6 +24,9 @@ from django.db.models import signals
 # HTK Imports
 from htk.apps.mp.signals import priority_connect
 from htk.apps.mp.utils import format_model_name
+
+
+# isort: off
 
 
 EXTRA_VERBOSITY = False
@@ -63,6 +69,17 @@ def materialized_property(
         )
 
     return wrap
+
+
+def get_model_instance_cls(instance_or_cls):
+    if isinstance(instance_or_cls, models.Model):
+        cls = instance_or_cls.__class__
+    else:
+        cls = instance_or_cls
+
+    if cls._meta.proxy:
+        return cls._meta.proxy_for_model
+    return cls
 
 
 prepare_handlers = []
@@ -320,7 +337,15 @@ class MaterializedPropertySubstitution(object):
         if not save or not instance.pk:
             return
 
-        if not self.cls.objects.filter(pk=instance.pk, **more_q).update(**upd):
+        if (
+            not (
+                self.cls
+                if hasattr(self.cls, 'objects')
+                else get_model_instance_cls(instance)
+            )
+            .objects.filter(pk=instance.pk, **more_q)
+            .update(**upd)
+        ):
             if not more_q:
                 rollbar.report_message(
                     'Update failed when saving value of %s for %s with %s'
@@ -575,7 +600,9 @@ def parse_dependency(model, dependency):
                     # for ReverseSingleRelatedObjectDescriptor
                     is_reverse = relation_class_name.startswith('Reverse')
                     field = field.field
-                    model = field.rel.related_model if is_reverse else field.rel.to
+                    model = (
+                        field.rel.related_model if is_reverse else field.rel.to
+                    )
                     related_name = (
                         field.name if is_reverse else field.rel.related_name
                     )
@@ -604,9 +631,11 @@ def parse_dependency(model, dependency):
                         model = field.field.model
                         related_name = field.field.name
                 else:
-                    raise TypeError('Unknown relation Descriptor: `{}`'.format(
-                        relation_class_name
-                    ))
+                    raise TypeError(
+                        'Unknown relation Descriptor: `{}`'.format(
+                            relation_class_name
+                        )
+                    )
 
             if not related_name or related_name == '+':
                 raise Exception(
