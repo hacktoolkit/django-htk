@@ -7,7 +7,6 @@ from django.db import models
 
 # Local Imports
 from .fk_fields import fk_openai_system_prompt
-from .system_prompt import BaseOpenAISystemPrompt
 
 
 class OpenAIResult(models.Model):
@@ -15,7 +14,7 @@ class OpenAIResult(models.Model):
 
     ai_model = models.CharField(max_length=255)
     system_prompt = fk_openai_system_prompt(
-        related_name='openai_results',
+        related_name='+',  # disable reverse relation
         required=False,
     )
     prompt_content = models.TextField()
