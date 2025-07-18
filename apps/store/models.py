@@ -78,7 +78,7 @@ class AbstractProduct(HtkBaseModel):
     @property
     def amazon_url(self):
         base_url = build_amazon_product_url(self.amazon_product_id)
-        url = f'{base_url}?&tag={self.amazon_tracking_id}'
+        url = f'{base_url}?tag={self.amazon_tracking_id}'
         return url
 
     @property
