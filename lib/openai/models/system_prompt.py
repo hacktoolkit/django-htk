@@ -89,8 +89,6 @@ class BaseOpenAISystemPrompt(models.Model):
                     target_reading_grade_level=self.target_reading_grade_level
                 )
             )
-        if self.as_json:
-            content_lines.append(OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE)
 
         if self.expected_response_format:
             content_lines.append(
@@ -101,6 +99,10 @@ class BaseOpenAISystemPrompt(models.Model):
                 + self.expected_response_format
                 + '```'
             )
+
+        if self.as_json:
+            content_lines.append(OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE)
+
         return content_lines
 
     @property
