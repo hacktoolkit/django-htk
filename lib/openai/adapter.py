@@ -139,6 +139,13 @@ class OpenAIAdapter:
         is_json = False
 
         if as_json or system_prompt and system_prompt.as_json:
+            # For some reason, the response content may be wrapped in ```json and ```
+            # Remove the ```json and ``` from the response content
+            if response_content.startswith('```json'):
+                response_content = response_content.removeprefix('```json')
+            if response_content.endswith('```'):
+                response_content = response_content.removesuffix('```')
+
             try:
                 response_data = json.loads(response_content)
                 is_json = True
