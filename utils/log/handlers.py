@@ -9,7 +9,9 @@ import rollbar
 from django.views.debug import ExceptionReporter
 
 # HTK Imports
-from htk.utils.debug import slack_debug
+from apps.accounts.forms import settings
+from utils.debug import slack_debug
+from utils.general import htk_setting
 
 
 class RollbarHandler(logging.Handler):
@@ -27,6 +29,10 @@ class RollbarHandler(logging.Handler):
 
 class SlackDebugHandler(logging.Handler):
     """An exception log handler that emits log entries to Slack
+
+    This handler routes error notifications to different Slack channels based on the environment:
+    - Production: Sends to a configurable channel level (default: 'danger')
+    - Development: Sends to the debug channel
     """
 
     def __init__(self):
@@ -53,4 +59,17 @@ class SlackDebugHandler(logging.Handler):
             ''.join(exc[:-1]),
         )
 
-        slack_debug(message)
+        # Route to appropriate channel based on environment
+        if settings.ENV_PROD:
+            # Production: send to configurable channel level
+            from utils.notifications import slack_notify
+
+            # Get the production channel level from settings, default to 'danger' if not specified
+            production_channel_level = htk_setting(
+                'HTK_SLACK_PRODUCTION_ERROR_CHANNEL_LEVEL', 'danger'
+            )
+
+            slack_notify(message, level=production_channel_level)
+        else:
+            # Development: use debug channel
+            slack_debug(message)
