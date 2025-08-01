@@ -15,6 +15,14 @@
 {% if meta.image %}
 <meta property="og:image" content="{{ meta.image }}" />
 <meta name="twitter:image" content="{{ meta.image }}" />
+{# Facebook: 1.91:1 ratio (1200x628px) #}
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="628" />
+{# Twitter: 16:9 ratio (1200x675px) #}
+<meta name="twitter:image:width" content="1200" />
+<meta name="twitter:image:height" content="675" />
+{# Instagram: 1:1 ratio (square) - using 1200x1200 #}
+<meta property="og:image:type" content="image/jpeg" />
 {% endif %}
 <meta name="twitter:card" content="summary{% if meta.image %}_large_image{% endif %}" />
 
