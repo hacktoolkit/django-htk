@@ -46,6 +46,12 @@ class AbstractAssessmentQuestion(models.Model):
         default=QuestionType.UNSPECIFIED.value,
         choices=build_question_type_choices(),
     )
+    # If `min_choices` is 0, then none of the answer options are required
+    # If `min_choices` > 0, then at least that many answer options must be selected
+    min_choices = models.PositiveSmallIntegerField(default=0)
+    # If `max_choices` is 0, then all answer options can be selected
+    # If `max_choices` > 0, then at most that many answer options can be selected
+    max_choices = models.PositiveSmallIntegerField(default=0)
     # Specifies the order of questions within an assessment
     order = models.IntegerField(default=0)
     # Must be `True` to allow empty text responses or "No Entry" for multiple choice
