@@ -88,6 +88,7 @@ class AbstractAssessmentQuestionAnswerOption(models.Model):
         on_delete=models.CASCADE,
     )
     text = models.CharField(max_length=255)
+    allow_free_response = models.BooleanField(default=False)
     # Indicates if this choice is the correct answer
     is_correct = models.BooleanField(default=False)
     # Optional color for controlling the UI
