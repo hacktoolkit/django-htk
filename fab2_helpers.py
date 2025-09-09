@@ -6,10 +6,16 @@ Used by fabfile.py
 
 # Python Standard Library Imports
 import datetime
+import shlex
 
 # Third Party (PyPI) Imports
 import requests
+from fabric import Connection
 from fabric.util import get_local_user
+
+
+def exists(c: Connection, path: str) -> bool:
+    return c.run(f"test -e {shlex.quote(path)}", warn=True, hide=True).ok
 
 
 def tag_deploy(conn):
