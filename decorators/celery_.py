@@ -59,18 +59,23 @@ class safe_timed_task(object):
         @wraps(task_fn)
         def wrapped(*args, **kwargs):
             try:
-                slack_notifications_enabled = self.notify and htk_setting(
-                    'HTK_SLACK_NOTIFICATIONS_ENABLED'
-                )
-                custom_channel = htk_setting(
+                custom_slack_channel = htk_setting(
                     'HTK_SLACK_CELERY_NOTIFICATIONS_CHANNEL'
                 )
+                custom_google_channel = htk_setting(
+                    'HTK_GOOGLE_CHAT_CELERY_NOTIFICATIONS_SPACE'
+                )
 
-                if slack_notifications_enabled:
+                if self.notify:
                     msg = 'Processing *{}*... (`{}`)'.format(
                         self.task_name, gethostname()
                     )
-                    notify(msg, custom_channel=custom_channel)
+                    notify(
+                        msg,
+                        use_messages=False,
+                        custom_slack_channel=custom_slack_channel,
+                        custom_google_channel=custom_google_channel,
+                    )
 
                 timer = HtkTimer()
                 timer.start()
@@ -93,13 +98,18 @@ class safe_timed_task(object):
 
                 timer.stop()
 
-                if slack_notifications_enabled:
+                if self.notify:
                     duration = timer.duration()
                     skipped_msg = '(SKIPPED) ' if was_skipped else ''
                     msg = '{}Finished processing *{}* in *{}* seconds (`{}`)'.format(
                         skipped_msg, self.task_name, duration, gethostname()
                     )
-                    notify(msg, custom_channel=custom_channel)
+                    notify(
+                        msg,
+                        use_messages=False,
+                        custom_slack_channel=custom_slack_channel,
+                        custom_google_channel=custom_google_channel,
+                    )
             except Exception:
                 result = None
                 extra_data = {
