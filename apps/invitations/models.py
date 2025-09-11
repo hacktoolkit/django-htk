@@ -12,7 +12,7 @@ from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
 from htk.utils.datetime_utils import relative_time
 from htk.utils.enums import get_enum_symbolic_name
-from htk.utils.notifications import slack_notify
+from htk.utils.notifications import notify
 
 
 # isort: off
@@ -96,7 +96,7 @@ class HtkInvitation(HtkBaseModel):
                 self.get_relative_time(),
             )
         )
-        slack_notify(msg)
+        notify(msg, use_messages=False)
 
     def complete(self, user=None):
         """Completes the invitation lifecycle
@@ -127,4 +127,4 @@ class HtkInvitation(HtkBaseModel):
                 self.get_relative_time(),
             )
         )
-        slack_notify(msg)
+        notify(msg, use_messages=False)

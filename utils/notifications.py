@@ -18,6 +18,7 @@ def notify(
     use_messages=True,
     use_slack=None,
     use_google=None,
+    custom_channel=None,
 ):
     """Wrapper for simultaneously sending a message via:
 
@@ -52,13 +53,13 @@ def notify(
         use_slack = htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED')
 
     if use_slack:
-        slack_notify(message, level=level)
+        slack_notify(message, level=level, custom_channel=custom_channel)
 
     if use_google is None:
         use_google = htk_setting('HTK_GOOGLE_CHAT_NOTIFICATIONS_ENABLED')
 
     if use_google:
-        google_chat_notify(message, level=level)
+        google_chat_notify(message, level=level, custom_channel=custom_channel)
 
 
 def slack_notify(message, level=None, custom_channel=None):

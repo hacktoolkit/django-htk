@@ -13,7 +13,7 @@ from htk.utils import (
     htk_setting,
     resolve_model_dynamically,
 )
-from htk.utils.notifications import slack_notify
+from htk.utils.notifications import notify
 
 
 # isort: off
@@ -38,7 +38,7 @@ def organization_invitation_created_or_updated(
         msg_builder = INVITATION_ACCEPTANCE_MESSAGE_BUILDERS[msg_builder_key]
         msg = msg_builder()
 
-        slack_notify(msg)
+        notify(msg, use_messages=False)
 
 
 class HtkOrganizationAppConfig(HtkAppConfig):

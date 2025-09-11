@@ -4,7 +4,7 @@
 from htk.apps.sites.utils import get_site_name
 from htk.services import HtkBaseService
 from htk.utils import htk_setting
-from htk.utils.notifications import slack_notify
+from htk.utils.notifications import notify
 
 
 # isort: off
@@ -46,7 +46,7 @@ class InvitationsService(HtkBaseService):
                             invitation.get_relative_time(),
                         )
                     )
-                    slack_notify(msg)
+                    notify(msg, use_messages=False)
 
     def process_user_email_confirmation(self, user_email):
         """Invoked when `user_email` is confirmed

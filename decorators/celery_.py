@@ -4,13 +4,14 @@ from socket import gethostname
 
 # Third Party (PyPI) Imports
 import rollbar
-from celery import shared_task
 
 # HTK Imports
 from htk.cachekeys import TaskCooldown
 from htk.utils import htk_setting
-from htk.utils.notifications import slack_notify
+from htk.utils.notifications import notify
 from htk.utils.timer import HtkTimer
+
+from celery import shared_task
 
 
 class safe_timed_task(object):
@@ -69,7 +70,7 @@ class safe_timed_task(object):
                     msg = 'Processing *{}*... (`{}`)'.format(
                         self.task_name, gethostname()
                     )
-                    slack_notify(msg, custom_channel=custom_channel)
+                    notify(msg, custom_channel=custom_channel)
 
                 timer = HtkTimer()
                 timer.start()
@@ -98,7 +99,7 @@ class safe_timed_task(object):
                     msg = '{}Finished processing *{}* in *{}* seconds (`{}`)'.format(
                         skipped_msg, self.task_name, duration, gethostname()
                     )
-                    slack_notify(msg, custom_channel=custom_channel)
+                    notify(msg, custom_channel=custom_channel)
             except Exception:
                 result = None
                 extra_data = {

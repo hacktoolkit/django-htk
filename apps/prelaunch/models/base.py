@@ -3,7 +3,6 @@ import uuid
 
 # Third Party (PyPI) Imports
 import rollbar
-from baws.utils.urls import get_full_url
 
 # Django Imports
 from django.contrib.sites.models import Site
@@ -15,11 +14,9 @@ from htk.apps.prelaunch.emails import (
     prelaunch_email,
 )
 from htk.utils import htk_setting
-from htk.utils.notifications import (
-    notify,
-    slack_notify,
-)
+from htk.utils.notifications import notify
 from htk.utils.request import get_current_request
+from htk.utils.urls import build_full_url
 
 
 # isort: off
@@ -141,7 +138,7 @@ class BasePrelaunchSignup(models.Model):
         return message
 
     def send_notifications(self):
-        slack_notify(self.notification_message)
+        notify(self.notification_message, use_messages=False)
 
         try:
             prelaunch_email(self)
@@ -162,7 +159,8 @@ class BasePrelaunchSignup(models.Model):
         notify(
             'Early access has been enabled for {} <{}>'.format(
                 self.full_name, self.email
-            )
+            ),
+            use_messages=False,
         )
         try:
             early_access_email(self)
@@ -179,7 +177,7 @@ class BasePrelaunchSignup(models.Model):
     def early_access_url(self):
         if self.early_access:
             early_access_url = '{}?early_access_code={}'.format(
-                get_full_url('/'),
+                build_full_url('/'),
                 self.early_access_code,
             )
         else:

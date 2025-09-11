@@ -561,7 +561,7 @@ class BaseAbstractUserProfile(
                     sender=email_sender,
                 )
 
-            slack_notify(
+            notify(
                 '*%s* has activated their account on %s'
                 % (
                     user.email,

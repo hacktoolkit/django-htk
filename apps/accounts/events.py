@@ -5,7 +5,7 @@ import rollbar
 
 # HTK Imports
 from htk.utils import htk_setting
-from htk.utils.notifications import slack_notify
+from htk.utils.notifications import notify
 
 
 def failed_recaptcha_on_login(user, request=None):
@@ -26,7 +26,7 @@ def failed_recaptcha_on_login(user, request=None):
         user.username,
         user.email,
     )
-    slack_notify(slack_message, level='warning')
+    notify(slack_message, level='warning', use_messages=False)
 
 
 def failed_recaptcha_on_account_register(request=None):
@@ -34,4 +34,4 @@ def failed_recaptcha_on_account_register(request=None):
 
     rollbar.report_message(message, request=request)
 
-    slack_notify(message, level='warning')
+    notify(message, level='warning', use_messages=False)

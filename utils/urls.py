@@ -5,10 +5,15 @@ import urllib
 import requests
 
 # Django Imports
+from django.conf import settings
 from django.urls import reverse
 
 # HTK Imports
 from htk.utils import htk_setting
+from htk.utils.request import get_current_request
+
+
+# isort: off
 
 
 def reverse_with_query_params(
@@ -92,6 +97,9 @@ def build_updated_url_with_query_params(raw_url, query_params):
 
 
 def build_full_url(partial_url, request=None, use_secure=True):
+    if request is None:
+        request = get_current_request()
+
     protocol = 'https' if use_secure else 'http'
     request_domain = request.get_host() if request else None
     domain = request_domain or htk_setting('HTK_DEFAULT_DOMAIN')

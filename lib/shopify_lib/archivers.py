@@ -9,7 +9,7 @@ import rollbar
 # HTK Imports
 from htk.utils import htk_setting
 from htk.utils.cache_descriptors import CachedAttribute
-from htk.utils.notifications import slack_notify
+from htk.utils.notifications import notify
 
 
 # isort: off
@@ -133,7 +133,7 @@ class HtkShopifyArchiver(object):
         msg = 'Archiving %ss...' % item_type
         print(msg)
 
-        slack_notify(msg)
+        notify(msg, use_messages=False)
 
         num_archived = 0
         iterator = self._get_iterator_for_item_type(item_type)
@@ -154,7 +154,7 @@ class HtkShopifyArchiver(object):
             item_type,
             duration,
         )
-        slack_notify(msg)
+        notify(msg, use_messages=False)
 
     def archive_item(self, item_type, item):
         """Archives a single Shopify.Resource `item` into some database using `archiver`"""
