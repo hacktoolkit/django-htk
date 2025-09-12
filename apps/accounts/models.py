@@ -38,6 +38,7 @@ from htk.utils import (
     utcnow,
 )
 from htk.utils.cache_descriptors import CachedAttribute
+from htk.utils.notifications import notify
 from htk.utils.request import get_current_request
 
 
@@ -566,7 +567,8 @@ class BaseAbstractUserProfile(
                 % (
                     user.email,
                     htk_setting('HTK_SITE_NAME'),
-                )
+                ),
+                use_messages=False,
             )
 
         return was_activated
