@@ -7,10 +7,12 @@ from django.utils.safestring import mark_safe
 # HTK Imports
 from htk.apps.geolocations.constants.general import *
 from htk.apps.geolocations.enums import DistanceUnit
-from htk.apps.geolocations.utils import convert_meters
-from htk.apps.geolocations.utils import get_bounding_box
-from htk.apps.geolocations.utils import get_latlng
-from htk.apps.geolocations.utils import haversine
+from htk.apps.geolocations.utils import (
+    convert_meters,
+    get_bounding_box,
+    get_latlng,
+    haversine,
+)
 from htk.models.classes import HtkBaseModel
 
 
@@ -38,11 +40,13 @@ class AbstractGeolocation(HtkBaseModel):
         return result
 
     def geocode(self, refresh=False):
-        """Geocodes the address
-        """
+        """Geocodes the address"""
         address = self.get_address_string()
         if not address:
-            latitude, longitude = (None, None,)
+            latitude, longitude = (
+                None,
+                None,
+            )
         else:
             latitude, longitude = get_latlng(address, refresh=refresh)
             if latitude and longitude:
@@ -57,7 +61,10 @@ class AbstractGeolocation(HtkBaseModel):
                     self.save(update_fields=update_fields)
             else:
                 pass
-        return (latitude, longitude,)
+        return (
+            latitude,
+            longitude,
+        )
 
     def get_latitude(self):
         """Retrieve the latitude of this object
@@ -81,16 +88,17 @@ class AbstractGeolocation(HtkBaseModel):
     # Maps
 
     def map_url(self):
-        """Get the Google Maps URL for this geolocation
-        """
+        """Get the Google Maps URL for this geolocation"""
         url = LOCATION_MAP_URL_FORMAT % self.get_address_string()
         return url
 
     def geocoordinates_map_url(self):
-        """Get the Google Maps URL for this geolocation, using coordinates
-        """
+        """Get the Google Maps URL for this geolocation, using coordinates"""
         if self.has_latlng():
-            lat_lng_str = '%s,%s' % (self.latitude, self.longitude,)
+            lat_lng_str = '%s,%s' % (
+                self.latitude,
+                self.longitude,
+            )
             url = LOCATION_MAP_URL_FORMAT % lat_lng_str
         else:
             url = None
@@ -101,12 +109,34 @@ class AbstractGeolocation(HtkBaseModel):
 
     def embedded_geocoordinates_map_html(self):
         if self.has_latlng():
+            # HTK Imports
             from htk.lib.google.utils import get_browser_api_key
-            html = """<iframe width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?key=%(api_key)s&q=%(q)s" allowfullscreen></iframe>""" % {
-                'api_key' : get_browser_api_key(),
-                'q' : '%s,%s' % (self.latitude, self.longitude,),
-            }
-            html = mark_safe(html)
+
+            raw_html = (
+                """<iframe width="600" height="450" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?key=%(api_key)s&q=%(q)s" allowfullscreen></iframe>"""
+                % {
+                    'api_key': get_browser_api_key(),
+                    'q': '%s,%s'
+                    % (
+                        self.latitude,
+                        self.longitude,
+                    ),
+                }
+            )
+            html = mark_safe(raw_html)
+        else:
+            html = None
+        return html
+
+    def embedded_mapbox_iframe_html(self):
+        if self.has_latlng():
+            # HTK Imports
+            from htk.lib.mapbox.utils import get_access_token_frontend
+
+            access_token = get_access_token_frontend()
+
+            raw_html = f"""<iframe src="https://api.mapbox.com/styles/v1/mapbox/streets-v12.html?title={self.name}&access_token={access_token}#14/{self.latitude}/{self.longitude}" width="600" height="400" style="border:0;" allowfullscreen></iframe>"""
+            html = mark_safe(raw_html)
         else:
             html = None
         return html
@@ -115,7 +145,16 @@ class AbstractGeolocation(HtkBaseModel):
     # Calculations
 
     @classmethod
-    def find_near_latlng(cls, latitude, longitude, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, extra_filters=None, offset=0, limit=0):
+    def find_near_latlng(
+        cls,
+        latitude,
+        longitude,
+        distance=DEFAULT_SEARCH_RADIUS,
+        distance_unit=DEFAULT_DISTANCE_UNIT,
+        extra_filters=None,
+        offset=0,
+        limit=0,
+    ):
         """Given the geopoint pair `latitude` and `longitude`, find nearby AbstractGeolocation objects of type `cls`
 
         `distance` a float value
@@ -131,12 +170,19 @@ class AbstractGeolocation(HtkBaseModel):
         - Figure out the bounding box or search radius given the distance from this AbstractGeolocation
         - Find objects within that zone
         """
-        (latitude_min, latitude_max, longitude_min, longitude_max,) = get_bounding_box(latitude, longitude, distance=distance, distance_unit=distance_unit)
+        (
+            latitude_min,
+            latitude_max,
+            longitude_min,
+            longitude_max,
+        ) = get_bounding_box(
+            latitude, longitude, distance=distance, distance_unit=distance_unit
+        )
         nearby_objects = cls.objects.filter(
             latitude__gte=latitude_min,
             latitude__lte=latitude_max,
             longitude__gte=longitude_min,
-            longitude__lte=longitude_max
+            longitude__lte=longitude_max,
         )
         if extra_filters is not None:
             nearby_objects = nearby_objects.filter(**extra_filters)
@@ -145,7 +191,15 @@ class AbstractGeolocation(HtkBaseModel):
         return nearby_objects
 
     @classmethod
-    def find_near_location(cls, location_name, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, extra_filters=None, offset=0, limit=0):
+    def find_near_location(
+        cls,
+        location_name,
+        distance=DEFAULT_SEARCH_RADIUS,
+        distance_unit=DEFAULT_DISTANCE_UNIT,
+        extra_filters=None,
+        offset=0,
+        limit=0,
+    ):
         """Given the geocode-able string `location_name`, find nearby AbstractGeolocation objects of type `cls`
 
         `distance` a float value
@@ -161,11 +215,19 @@ class AbstractGeolocation(HtkBaseModel):
             distance_unit=distance_unit,
             extra_filters=extra_filters,
             offset=offset,
-            limit=limit
+            limit=limit,
         )
         return nearby_objects
 
-    def find_nearby(self, distance=DEFAULT_SEARCH_RADIUS, distance_unit=DEFAULT_DISTANCE_UNIT, cls=None, extra_filters=None, offset=0, limit=0):
+    def find_nearby(
+        self,
+        distance=DEFAULT_SEARCH_RADIUS,
+        distance_unit=DEFAULT_DISTANCE_UNIT,
+        cls=None,
+        extra_filters=None,
+        offset=0,
+        limit=0,
+    ):
         """Finds nearby AbstractGeolocation objects to this one
 
         If `cls` is specified, looks for AbstractGeolocation objects of type `cls`, otherwise this class
@@ -194,10 +256,7 @@ class AbstractGeolocation(HtkBaseModel):
         Returns the distance in `distance_unit`
         """
         distance_meters = haversine(
-            lat,
-            lng,
-            self.get_latitude(),
-            self.get_longitude()
+            lat, lng, self.get_latitude(), self.get_longitude()
         )
 
         distance = convert_meters(distance_meters, distance_unit)
@@ -215,11 +274,11 @@ class BaseUSZipCode(AbstractGeolocation):
 
     def json_encode(self):
         value = {
-            'zip_code' : self.zip_code,
-            'state' : self.state,
-            'city' : self.city,
-            'latitude' : self.latitude,
-            'longitude' : self.longitude,
+            'zip_code': self.zip_code,
+            'state': self.state,
+            'city': self.city,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
         }
         return value
 
