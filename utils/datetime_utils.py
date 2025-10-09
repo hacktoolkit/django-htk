@@ -22,7 +22,8 @@ from htk.constants.time import *
 
 
 def utcnow():
-    now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+    # Use datetime.now(datetime.UTC) instead of deprecated utcnow()
+    now = datetime.datetime.now(datetime.UTC)
     if settings.TEST:
         from htk.test_scaffold.models import TestScaffold
 
