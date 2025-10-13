@@ -49,9 +49,7 @@ def create_user_profile(sender, instance, created, **kwargs):
                 pass
 
             # Format platform for display
-            platform_display = (
-                platform.title() if platform != 'unknown' else 'Unknown'
-            )
+            platform_display = platform.title()
 
             slack_notify(
                 'A new user has registered on the site %s (%s): *%s <%s>*'
