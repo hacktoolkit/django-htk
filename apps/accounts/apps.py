@@ -35,10 +35,29 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile = UserProfileModel.objects.create(user=user)
         profile.save()
         if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
+            # Detect platform from current request
+            platform = 'unknown'
+            try:
+                from htk.utils.request import get_current_request
+                from baws.lib.mobile.utils import detect_signup_platform
+
+                request = get_current_request()
+                if request:
+                    platform = detect_signup_platform(request)
+            except Exception:
+                # If platform detection fails, continue with 'unknown'
+                pass
+
+            # Format platform for display
+            platform_display = (
+                platform.title() if platform != 'unknown' else 'Unknown'
+            )
+
             slack_notify(
-                'A new user has registered on the site %s: *%s <%s>*'
+                'A new user has registered on the site %s (%s): *%s <%s>*'
                 % (
                     get_site_name(),
+                    platform_display,
                     user.profile.get_display_name(),
                     user.email,
                 )
