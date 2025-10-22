@@ -95,6 +95,30 @@ def build_enum_data(enum_class):
     return enum_data
 
 
+def get_enum_display_value(value, enum_class):
+    """Get display string for an enum value with null checking
+
+    Args:
+        value: The raw value (int) from a model field or any source
+        enum_class: The enum class (HtkEnum or HtkIntFlag) to use for conversion
+
+    Returns:
+        str: The display string, or empty string if value is None/0/falsy
+
+    Example:
+        >>> get_enum_display_value(1, Sport)
+        'General Training'
+        >>> get_enum_display_value(0, Sport)
+        ''
+        >>> get_enum_display_value(None, Sport)
+        ''
+    """
+    result = ""
+    if value:
+        result = enum_class(value).display
+    return result
+
+
 if has_min_python_version(3, 6):
     from enum import IntFlag
 
@@ -107,6 +131,11 @@ if has_min_python_version(3, 6):
         Requires: Python 3.6 or greater
         Reference: https://docs.python.org/3.6/library/enum.html#enum.IntFlag
         """
+
+        @property
+        def display(self):
+            return get_enum_symbolic_name(self)
+
         @classmethod
         def list_flags(cls, int_value):
             """List Flags
