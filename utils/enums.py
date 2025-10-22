@@ -123,7 +123,7 @@ if has_min_python_version(3, 6):
     from enum import IntFlag
 
     class HtkIntFlag(IntFlag):
-        """ HTK IntFlag
+        """HTK IntFlag
 
         Wrapper around Python's built-in `enum.IntFlag` to provide extra
         functionalities.
@@ -131,10 +131,6 @@ if has_min_python_version(3, 6):
         Requires: Python 3.6 or greater
         Reference: https://docs.python.org/3.6/library/enum.html#enum.IntFlag
         """
-
-        @property
-        def display(self):
-            return get_enum_symbolic_name(self)
 
         @classmethod
         def list_flags(cls, int_value):
