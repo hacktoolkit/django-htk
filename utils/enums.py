@@ -99,7 +99,7 @@ if has_min_python_version(3, 6):
     from enum import IntFlag
 
     class HtkIntFlag(IntFlag):
-        """ HTK IntFlag
+        """HTK IntFlag
 
         Wrapper around Python's built-in `enum.IntFlag` to provide extra
         functionalities.
@@ -107,6 +107,30 @@ if has_min_python_version(3, 6):
         Requires: Python 3.6 or greater
         Reference: https://docs.python.org/3.6/library/enum.html#enum.IntFlag
         """
+
+        @classmethod
+        def display(cls, int_value):
+            """Get human-readable display names for combined flag values.
+
+            Decomposes combined flag values using list_flags(), then uses
+            get_enum_symbolic_name() to format each flag.
+
+            Args:
+                int_value: Combined flag value (e.g., 3 = BICEPS_BRACHII | BRACHIALIS)
+
+            Returns:
+                List of human-readable flag names
+
+            Example:
+                Muscle.display(3)  # ['Biceps Brachii', 'Brachialis']
+                Muscle.display(1)  # ['Biceps Brachii']
+            """
+            result = [
+                get_enum_symbolic_name(flag)
+                for flag in cls.list_flags(int_value)
+            ]
+            return result
+
         @classmethod
         def list_flags(cls, int_value):
             """List Flags
