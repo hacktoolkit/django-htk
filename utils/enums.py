@@ -109,7 +109,7 @@ if has_min_python_version(3, 6):
         """
 
         @classmethod
-        def display(cls, int_value):
+        def display(cls, int_value) -> list[str]:
             """Get human-readable display names for combined flag values.
 
             Decomposes combined flag values using list_flags(), then uses
@@ -122,6 +122,13 @@ if has_min_python_version(3, 6):
                 List of human-readable flag names
 
             Example:
+                class Muscle(HtkIntFlag):
+                    UNSPECIFIED = 0
+                    BICEPS_BRACHII = 1
+                    BRACHIALIS = 2
+                    BRACHIORADIALIS = 4
+                    TRICEPS_BRACHII = 8
+
                 Muscle.display(3)  # ['Biceps Brachii', 'Brachialis']
                 Muscle.display(1)  # ['Biceps Brachii']
             """
