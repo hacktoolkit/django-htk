@@ -139,7 +139,7 @@ if has_min_python_version(3, 6):
             return result
 
         @classmethod
-        def list_flags(cls, int_value) -> list[HtkIntFlag]:
+        def list_flags(cls, int_value) -> list['HtkIntFlag']:
             """List Flags
 
             Returns the list of flags that value contains, running bitwise
