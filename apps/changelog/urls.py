@@ -1,10 +1,10 @@
 # Django Imports
-from django.conf.urls import url
+from django.urls import re_path
 
 # HTK Imports
 import htk.apps.changelog.views as views
 
 
 urlpatterns = [
-    # url(r'^$', views.changelog_view, name='htk_apps_changelog'),
+    # re_path(r'^$', views.changelog_view, name='htk_apps_changelog'),
 ]

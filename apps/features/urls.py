@@ -1,10 +1,10 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 import htk.apps.features.views as views
 
 urlpatterns = [
-    # url(r'^$', views.features_view, name='htk_apps_features'),
-    # url(
+    # re_path(r'^$', views.features_view, name='htk_apps_features'),
+    # re_path(
     #     r'^(?P<feature_id>[0-9]+)/toggle$',
     #     views.features_toggle_view,
     #     name='htk_apps_features_toggle',

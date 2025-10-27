@@ -1,10 +1,10 @@
 # Django Imports
-from django.conf.urls import url
+from django.urls import re_path
 
 # HTK Imports
 import htk.apps.maintenance_mode.views as views
 
 
 urlpatterns = (
-    url(r'^maintenance$', views.maintenance_mode, name='maintenance_mode'),
+    re_path(r'^maintenance$', views.maintenance_mode, name='maintenance_mode'),
 )

@@ -1,6 +1,6 @@
 # Django Imports
-from django.conf.urls import include
-from django.conf.urls import url
+from django.urls import include
+from django.urls import re_path
 
 # HTK Imports
 import htk.apps.url_shortener.views as views
@@ -11,7 +11,7 @@ from htk.utils import htk_setting
 URL_SHORTENER_PREFIX = htk_setting('HTK_URL_SHORTENER_PREFIX', '')
 
 urlpatterns = (
-    url(r'^%s(?P<code>[A-Za-z0-9]{%d,%d})$' % (
+    re_path(r'^%s(?P<code>[A-Za-z0-9]{%d,%d})$' % (
         URL_SHORTENER_PREFIX,
         HTK_URL_SHORTENER_MIN_CHARS,
         HTK_URL_SHORTENER_MAX_CHARS,
