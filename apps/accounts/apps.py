@@ -54,21 +54,15 @@ def create_user_profile(sender, instance, created, **kwargs):
                     detector_fn(request) if (request and detector_fn) else None
                 )
                 device_type = (
-                    ' (mobile)'
+                    'mobile'
                     if platform in ['ios', 'android', 'mobile']
-                    else ' (web)' if platform else ''
+                    else 'web' if platform else 'unknown'
                 )
             except Exception:
                 pass
 
             slack_notify(
-                'A new user has registered on the site %s%s: *%s <%s>*'
-                % (
-                    get_site_name(),
-                    device_type,
-                    user.profile.get_display_name(),
-                    user.email,
-                )
+                f'A new user has registered on the site {get_site_name()} ({device_type}): *{user.profile.get_display_name()} <{user.email}>*'  # noqa: E501
             )
             if htk_setting('HTK_SLACK_BOT_ENABLED'):
                 slack_notify('htk: emaildig %s' % user.email)
