@@ -14,7 +14,9 @@ from htk.app_config import HtkAppConfig
 from htk.apps.sites.utils import get_site_name
 from htk.decorators.classes import disable_for_loaddata
 from htk.utils import htk_setting
+from htk.utils.general import resolve_method_dynamically
 from htk.utils.notifications import slack_notify
+from htk.utils.request import get_current_request
 
 
 # isort: off
@@ -35,27 +37,35 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile = UserProfileModel.objects.create(user=user)
         profile.save()
         if not settings.TEST and htk_setting('HTK_SLACK_NOTIFICATIONS_ENABLED'):
-            # Detect platform from current request
-            platform = 'unknown'
+            # Detect signup platform (mobile or web) using configurable function
+            device_type = ''
             try:
-                from htk.utils.request import get_current_request
-                from baws.lib.mobile.utils import detect_signup_platform
-
                 request = get_current_request()
-                if request:
-                    platform = detect_signup_platform(request)
+                detector_method = htk_setting(
+                    'HTK_ACCOUNTS_SIGNUP_PLATFORM_DETECTOR'
+                )
+                detector_fn = (
+                    resolve_method_dynamically(detector_method)
+                    if detector_method
+                    else None
+                )
+
+                platform = (
+                    detector_fn(request) if (request and detector_fn) else None
+                )
+                device_type = (
+                    ' (mobile)'
+                    if platform in ['ios', 'android', 'mobile']
+                    else ' (web)' if platform else ''
+                )
             except Exception:
-                # If platform detection fails, continue with 'unknown'
                 pass
 
-            # Format platform for display
-            platform_display = platform.title()
-
             slack_notify(
-                'A new user has registered on the site %s (%s): *%s <%s>*'
+                'A new user has registered on the site %s%s: *%s <%s>*'
                 % (
                     get_site_name(),
-                    platform_display,
+                    device_type,
                     user.profile.get_display_name(),
                     user.email,
                 )
