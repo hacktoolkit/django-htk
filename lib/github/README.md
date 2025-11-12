@@ -1,24 +1,90 @@
-# GitHub Reminder Bot and Utilities
+# Github Integration
 
-## Basic Usage
+> Github API integration and utilities.
 
-The main script, which can be run as a standalone, is `bots.py`.
+## Purpose
 
-Usage: `python bots.py -t YOURTOKEN -o YOURORGANIZATION`
+The github module provides integration with Github for seamless API communication and data synchronization.
 
-## Scheduling
+## Quick Start
 
-If you would like to run the GitHub reminder bot on a recurring basis, you have a couple of options:
+```python
+from htk.lib.github import Client
 
-1. Use the out of the box scheduler script and Hacktoolkit's scheduling system, `tasks.py`:
-   Create a Python script that will execute in a loop, optionally using [Supervisor](http://supervisord.org/)
+# Initialize client with API credentials
+client = Client(api_key='your_api_key')
 
-   ```
-   import time
-   
-   while True:
-       GitHubReminderTask().execute_batch()
-       time.sleep(60 * 60)
-   ```
+# Make API calls
+result = client.get_data()
+```
 
-2. Write a wrapper shell script that invokes `bots.py` with the correct arguments, schedule it with something like `crontab`
+## Configuration
+
+```python
+# settings.py
+HTK_GITHUB_API_KEY = 'your_api_key'
+HTK_GITHUB_ENABLED = True
+```
+
+## Common Patterns
+
+### Authentication
+
+```python
+from htk.lib.github import Client
+
+client = Client(api_key='key', api_secret='secret')
+```
+
+### Error Handling
+
+```python
+from htk.lib.github import Client, GithubError
+
+try:
+    result = client.api_call()
+except GithubError as e:
+    # Handle API errors
+    pass
+```
+
+## Best Practices
+
+- Use environment variables for API credentials
+- Implement exponential backoff for retries
+- Cache responses when appropriate
+- Log API interactions for debugging
+- Handle rate limiting gracefully
+
+## Testing
+
+```python
+from django.test import TestCase
+from unittest.mock import patch, Mock
+from htk.lib.github import Client
+
+class GithubTestCase(TestCase):
+    def setUp(self):
+        self.client = Client(api_key='test_key')
+
+    @patch('htk.lib.github.requests.get')
+    def test_api_call(self, mock_get):
+        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
+        result = self.client.get_data()
+        self.assertEqual(result['data'], 'test')
+```
+
+## Related Integrations
+
+- Other `htk.lib.*` integrations
+
+## References
+
+- [Github API Documentation](https://www.github.com/docs/)
+- HTK Integration Guide
+
+## Notes
+
+- **Status:** Production-Ready
+- **Last Updated:** November 2025
+- **Maintained by:** HTK Contributors

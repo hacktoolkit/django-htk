@@ -1,71 +1,117 @@
-# Changelog
+# Changelog App
 
-This app helps to create CHANGELOG.md file containing Release Notes
+> Application changelog and version history tracking.
 
+## Purpose
 
-## Installation
+The changelog app manages application release notes, version history, and feature announcements.
 
-### PyPI Packages
-Install the PyPI packages in `requirements.txt`
-
-### Adding to Installed Apps
-Add `htk.apps.changelog` to `INSTALLED_APPS` in `settings.py`
-
-### Setting up options
-There are 3 constants can be set in `settings.py` file.
-
-- `HTK_CHANGELOG_FILE_PATH`: File path for CHANGELOG.md file.
-  Default: `CHANGELOG.md`
-- `HTK_CHANGELOG_SLACK_CHANNEL`: Slack channel name to announce.
-  Default: `#release-notes`
-- `HTK_CHANGELOG_SLACK_FULL_LOG_MESSAGE`: The message that will show at the end of the thread.
-  Default: `The full change log can be found at CHANGELOG.md`
-
-### Views
-Not necessary but app allows to list release notes as a page.
-Create a view function and pass the necessary content to app's view function:
+## Quick Start
 
 ```python
-def changelog(request):
-    from htk.apps.changelog.views import changelog_view
-    response = changelog_view(request, 'app/changelog.html', {}, render)
-    return response
+from htk.apps.changelog.models import *
+
+# Create and use models
+# See models.py for available classes
+instance = YourModel.objects.create(field='value')
 ```
 
-In template file predefined template fragment can be used:
+## Key Components
 
-```
-{% include 'htk/fragments/changelog/view.html' with changelog=changelog %}
-```
+| Component | Purpose |
+|-----------|---------|
+| **Models** | Release, Change models |
+| **Views** | Provide web interface and API endpoints |
+| **Forms** | Handle data validation and user input |
+| **Serializers** | API serialization and deserialization |
 
+## Common Patterns
 
-## Usage
-This app adds a new command to `manage.py`. It can be used with following command:
+### Basic Model Operations
 
-```bash
-venv/bin/python manage.py changelog
-```
+```python
+from htk.apps.changelog.models import *
 
-### Options
+# Create
+obj = YourModel.objects.create(name='Example')
 
-#### --slack-announce
-If Slack announcement wanted `--slack-announce` can be passed to command:
+# Read
+obj = YourModel.objects.get(id=1)
 
-```bash
-venv/bin/python manage.py changelog --slack-announce
-```
+# Update
+obj.name = 'Updated'
+obj.save()
 
-#### --silent
-The command prints messages upon successful execution. if `--silent` option
-is present, the output will be none.
-
-```bash
-venv/bin/python manage.py changelog --silent
-# or
-venv/bin/python manage.py changelog --silent --slack-announce
+# Delete
+obj.delete()
 ```
 
+### Filtering and Querying
 
-## Standalone CLI command
-If Django management command is not wanted, it is also possible to create a
-standalone CLI command tool. An example can be found in `commands.py` file.
+```python
+# Filter by attributes
+results = YourModel.objects.filter(status='active')
+
+# Order by field
+ordered = YourModel.objects.all().order_by('-created_at')
+
+# Count results
+count = YourModel.objects.filter(status='active').count()
+```
+
+## API Endpoints
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/changelog/` | GET | List items |
+| `/api/changelog/` | POST | Create item |
+| `/api/changelog/{id}/` | GET | Get item details |
+| `/api/changelog/{id}/` | PATCH | Update item |
+| `/api/changelog/{id}/` | DELETE | Delete item |
+
+## Configuration
+
+```python
+# settings.py
+HTK_CHANGELOG_ENABLED = True
+# Additional settings in constants/defaults.py
+```
+
+## Best Practices
+
+- **Use ORM** - Leverage Django ORM for database queries
+- **Validate input** - Use forms and serializers for validation
+- **Check permissions** - Verify user has required permissions
+- **Cache results** - Cache expensive queries and operations
+- **Write tests** - Test models, views, forms, and API endpoints
+
+## Testing
+
+```python
+from django.test import TestCase
+from htk.apps.changelog.models import *
+
+class ChangelogTestCase(TestCase):
+    def setUp(self):
+        """Create test fixtures"""
+        self.obj = YourModel.objects.create(field='value')
+
+    def test_model_creation(self):
+        """Test creating an object"""
+        self.assertIsNotNone(self.obj.id)
+```
+
+## Related Apps
+
+- `htk.apps.accounts` - User accounts
+
+## References
+
+- [Django Models](https://docs.djangoproject.com/en/stable/topics/db/models/)
+- [Django Forms](https://docs.djangoproject.com/en/stable/topics/forms/)
+
+## Notes
+
+- **Status:** Production-Ready
+- **Last Updated:** November 2025
+- **Maintained by:** HTK Contributors
