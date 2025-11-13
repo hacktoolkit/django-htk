@@ -1,154 +1,124 @@
 # Constants
 
-Project-wide constants and enumerations.
+Configuration and constant values for this module.
 
 ## Overview
 
-The `constants` module provides:
+This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
 
-- HTTP status codes
-- DNS record types
-- Email constants
-- Internationalization constants
-- Common values used across the app
-
-## HTTP Status Codes
-
-Convenient access to HTTP status codes:
-
-```python
-from htk.constants.http import HTTPStatus
-
-# Use as strings or integers
-if response.status_code == HTTPStatus.OK:
-    print('Success!')
-
-assert HTTPStatus.NOT_FOUND == 404
-assert HTTPStatus.UNAUTHORIZED == 401
-```
-
-**Common Codes:**
-- `OK` (200)
-- `CREATED` (201)
-- `BAD_REQUEST` (400)
-- `UNAUTHORIZED` (401)
-- `FORBIDDEN` (403)
-- `NOT_FOUND` (404)
-- `CONFLICT` (409)
-- `INTERNAL_SERVER_ERROR` (500)
-
-## DNS Constants
-
-DNS record types for DNS lookups:
-
-```python
-from htk.constants.dns import DNSRecordType
-
-record_type = DNSRecordType.MX  # Mail exchange
-record_type = DNSRecordType.A   # Address (IPv4)
-record_type = DNSRecordType.TXT # Text records
-```
-
-## Email Constants
-
-Email-related constants:
-
-```python
-from htk.constants.emails import EmailStatus, EmailType
-
-status = EmailStatus.SENT
-email_type = EmailType.NOTIFICATION
-```
-
-## Internationalization
-
-Language and locale constants:
-
-```python
-from htk.constants.i18n import COMMON_LANGUAGES, SUPPORTED_LANGUAGES
-
-language = COMMON_LANGUAGES.ENGLISH
-language_code = 'en-US'
-```
-
-## Usage Patterns
-
-### Status Code Responses
-
-```python
-from django.http import JsonResponse
-from htk.constants.http import HTTPStatus
-
-def api_endpoint(request):
-    if not request.user:
-        return JsonResponse(
-            {'error': 'Not authenticated'},
-            status=HTTPStatus.UNAUTHORIZED
-        )
-    return JsonResponse({'data': []}, status=HTTPStatus.OK)
-```
-
-### Conditional Logic
-
-```python
-from htk.constants.http import HTTPStatus
-
-response = requests.get('https://api.example.com/data')
-
-if response.status_code == HTTPStatus.OK:
-    data = response.json()
-elif response.status_code == HTTPStatus.NOT_FOUND:
-    log.warning('Resource not found')
-elif response.status_code >= 500:
-    log.error(f'Server error: {response.status_code}')
-```
-
-## Organizing Your Own Constants
-
-Follow this pattern for application-specific constants:
-
-```python
-# myapp/constants.py
-from enum import Enum
-
-class UserRole(Enum):
-    ADMIN = 'admin'
-    MODERATOR = 'moderator'
-    USER = 'user'
-
-class PaymentStatus(Enum):
-    PENDING = 'pending'
-    COMPLETED = 'completed'
-    FAILED = 'failed'
-    REFUNDED = 'refunded'
-
-# Usage
-if user.role == UserRole.ADMIN:
-    can_delete = True
-```
-
-## Best Practices
-
-1. **Use constants instead of magic strings** - `HTTPStatus.OK` not `200`
-2. **Group related constants** - Organize by feature or domain
-3. **Use enums for sets** - `PaymentStatus` with fixed options
-4. **Document meanings** - Add docstrings to clarify intent
-5. **Version with migrations** - Be careful changing constants in production
-
-## File Organization
+## Module Structure
 
 ```
 constants/
-├── __init__.py
-├── http.py          # HTTP status codes
-├── dns.py           # DNS record types
-├── emails.py        # Email constants
-├── i18n.py          # Internationalization
-└── README.md
+├── __init__.py          # Re-exports all constants
+├── general.py           # General purpose constants
+├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
+└── domain_specific.py          # Domain-specific constants
+```
+
+## Types of Constants
+
+### Configuration Settings (HTK_ Prefix)
+
+Settings that can be overridden in Django settings:
+
+```python
+from htk.constants.README.md.constants import HTK_SETTING_NAME
+
+# Configure in settings.py
+HTK_SETTING_NAME = 'custom_value'
+```
+
+### Enumerations
+
+Enum classes for status values, roles, and choices:
+
+```python
+from htk.constants.README.md.constants import SomeEnum
+
+status = SomeEnum.ACTIVE
+value = status.value
+name = status.name
+```
+
+### Lookup Tables
+
+Dictionaries and data collections for reference:
+
+```python
+from htk.constants.README.md.constants import LOOKUP_TABLE
+
+data = LOOKUP_TABLE['key']
+for key, value in LOOKUP_TABLE.items():
+    # Process each entry
+```
+
+### Conversion Factors
+
+Numeric constants for unit conversions and calculations:
+
+```python
+from htk.constants import TIME_1_HOUR_SECONDS
+
+delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+```
+
+## Usage Examples
+
+### Import Constants
+
+```python
+# Import from constants module
+from htk.constants.README.md.constants import CONSTANT_NAME
+
+# Or import directly from sub-module
+from htk.constants.README.md.constants.general import CONSTANT_NAME
+```
+
+### Access Enum Values
+
+```python
+from htk.constants.README.md.constants import StatusEnum
+
+if status == StatusEnum.ACTIVE:
+    print(f"Status is {status.name}")
+```
+
+### Use Lookup Tables
+
+```python
+from htk.constants.README.md.constants import LOOKUP_DATA
+
+# Get value by key
+value = LOOKUP_DATA.get('key')
+
+# Iterate over entries
+for key, value in LOOKUP_DATA.items():
+    process(key, value)
+```
+
+## Configuration
+
+Settings can be overridden in Django settings.py:
+
+```python
+# settings.py
+HTK_SETTING_NAME = 'custom_value'
+HTK_TIMEOUT_SECONDS = 300
+HTK_ENABLED = True
 ```
 
 ## Related Modules
 
-- `django.http` - Django HTTP status codes
-- `htk.utils` - Utility functions
-- `htk.validators` - Validation functions
+- Parent module documentation
+- `htk.constants` - Global constants
+- `django.conf.settings` - Django configuration
+
+## Best Practices
+
+1. **Use constants instead of magic numbers** - Prevents duplicate values and aids maintainability
+2. **Organize by category** - Group related constants in separate modules
+3. **Document purposes** - Add comments explaining what constants are used for
+4. **Provide defaults** - Use HTK_ prefixed settings for overridable configuration
+5. **Use Enums** - For finite, well-defined sets of values instead of strings
+6. **Name consistently** - Use UPPER_CASE for constants, snake_case for functions

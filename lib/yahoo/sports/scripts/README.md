@@ -1,89 +1,74 @@
-# Scripts
+# API Integration
 
-> HTK Scripts module
-
-## Purpose
-
-The `scripts` directory contains scripts-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-scripts/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
+Third-party API integration and utilities.
 
 ## Overview
 
-This module provides functionality for:
-- TODO: Add feature list from code analysis
+This module provides integration with an external service API, including:
+- Authentication and credential management
+- API client utilities and helpers
+- Data serialization and transformation
+- Error handling and retries
 
-## Key Components
+## Quick Start
 
-- TODO: Document key classes and functions
-
-## Usage Examples
-
-### Basic Usage
+### Authentication
 
 ```python
-from htk.lib/yahoo/sports import scripts
+from htk.lib.[service] import Client
 
-# Example usage
-# TODO: Add actual examples
+# Initialize client with credentials
+client = Client(api_key='your_api_key')
+
+# Or use settings
+client = Client()  # Uses HTK_[SERVICE]_API_KEY from settings
+```
+
+### Basic Operations
+
+```python
+# Example operation
+result = client.method(param='value')
+```
+
+### Error Handling
+
+```python
+from htk.lib.[service] import APIError
+
+try:
+    result = client.method()
+except APIError as e:
+    print(f"API Error: {e}")
 ```
 
 ## Configuration
 
+Configure API credentials in Django settings:
+
 ```python
 # settings.py
-HTK_SCRIPTS_ENABLED = True
+HTK_[SERVICE]_API_KEY = 'your_key'
+HTK_[SERVICE]_API_URL = 'https://api.example.com'
+HTK_[SERVICE]_TIMEOUT = 30
+HTK_[SERVICE]_ENABLED = True
 ```
 
-## Related Modules
+## API Methods
 
-- Parent: `htk.lib.yahoo.sports` if depth > 1
-- Related: Other HTK modules
+Refer to the service's official documentation for complete API reference.
 
 ## Best Practices
 
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
+1. **Store credentials in settings** - Never hardcode API keys
+2. **Handle rate limits** - Implement backoff/retry logic
+3. **Cache responses** - When appropriate, cache API responses
+4. **Log API calls** - For debugging and monitoring
+5. **Set timeouts** - Prevent hanging requests
+6. **Validate input** - Check data before sending to API
+7. **Handle errors** - Implement proper error handling
 
-## Testing
+## Related Modules
 
-```python
-from django.test import TestCase
-
-class ScriptsTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+- Service documentation
+- `htk.lib` - Other library integrations

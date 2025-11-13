@@ -1,89 +1,93 @@
-# South Migrations
+# Migrations
 
-> HTK South Migrations module
-
-## Purpose
-
-The `south_migrations` directory contains south migrations-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-south_migrations/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
+Database schema migrations and version control.
 
 ## Overview
 
-This module provides functionality for:
-- TODO: Add feature list from code analysis
+This directory contains database migration files that track schema changes over time. Migrations are executed in order to evolve the database structure while preserving data.
 
-## Key Components
+## Migration Files
 
-- TODO: Document key classes and functions
+Each migration file represents a specific change to the database schema:
 
-## Usage Examples
-
-### Basic Usage
-
-```python
-from htk. import south_migrations
-
-# Example usage
-# TODO: Add actual examples
+```
+migrations/
+├── 0001_initial.py        # Initial schema creation
+├── 0002_add_field.py      # Add new field
+├── 0003_remove_field.py   # Remove deprecated field
+└── ...
 ```
 
-## Configuration
+## Running Migrations
 
-```python
-# settings.py
-HTK_SOUTH_MIGRATIONS_ENABLED = True
+### Apply All Migrations
+
+```bash
+python manage.py migrate
 ```
 
-## Related Modules
+### Apply Specific App
 
-- Parent: `htk.` if depth > 1
-- Related: Other HTK modules
+```bash
+python manage.py migrate [app_name]
+```
+
+### Create New Migration
+
+```bash
+python manage.py makemigrations [app_name]
+```
+
+### Show Migration Status
+
+```bash
+python manage.py showmigrations
+```
+
+### Rollback Migrations
+
+```bash
+# Rollback to specific migration
+python manage.py migrate [app_name] [migration_number]
+
+# Rollback all migrations for an app
+python manage.py migrate [app_name] zero
+```
+
+## Creating Migrations
+
+### From Model Changes
+
+```bash
+# After modifying models.py, create a migration
+python manage.py makemigrations
+
+# Review the generated migration before applying
+python manage.py showmigrations
+
+# Apply the migration
+python manage.py migrate
+```
+
+### Manual Migrations
+
+For complex operations, create data migrations:
+
+```bash
+python manage.py makemigrations --empty [app_name] --name [description]
+```
 
 ## Best Practices
 
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
+1. **Create descriptive names** - Use meaningful migration names
+2. **Review before applying** - Always check migrations before running
+3. **Keep migrations small** - Easier to debug and reverse if needed
+4. **Test in development** - Always test migrations locally first
+5. **Back up production** - Before applying migrations to production
+6. **Use data migrations** - For complex data transformations
+7. **Document changes** - Add comments explaining why changes were made
 
-## Testing
+## Related Modules
 
-```python
-from django.test import TestCase
-
-class SouthMigrationsTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+- Django migrations documentation
+- Database schema documentation

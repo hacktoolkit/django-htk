@@ -1,70 +1,124 @@
-# Forms Constants
+# Constants
 
-> Django form styling and widget configuration for Bootstrap and PureCSS frameworks
+Configuration and constant values for this module.
 
-## Purpose
-This module provides constants for styling Django forms with CSS frameworks, defining input widget types, CSS class mappings, and default styling configurations for both Bootstrap and PureCSS.
+## Overview
 
-## Key Files
-- `__init__.py` - Exports text-style input widget types
-- `defaults.py` - Default form style settings and widget-to-CSS-class mappings
+This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
 
-## Key Components / Features
+## Module Structure
 
-### Input Widget Types (`__init__.py`)
-- `TEXT_STYLE_INPUTS` - Tuple of Django widget names that should receive text input styling:
-  - EmailInput, NumberInput, PasswordInput, TextInput, Textarea, URLInput
+```
+constants/
+├── __init__.py          # Re-exports all constants
+├── general.py           # General purpose constants
+├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
+└── domain_specific.py          # Domain-specific constants
+```
 
-### Form Styling Configuration (`defaults.py`)
-- `HTK_FORM_STYLE` - Global form style setting (default: 'bootstrap', options: 'bootstrap', 'pure')
-- `HTK_DEFAULT_FORM_INPUT_CLASS` - Default CSS class for form inputs (default: 'pure-input-1' for PureCSS)
-- `HTK_FORM_WIDGET_CLASSES` - Comprehensive widget-to-CSS-class mapping dictionary
+## Types of Constants
 
-#### Widget Class Mappings
-Supports both Bootstrap and PureCSS with mappings for:
-- **Checkboxes**: CheckboxInput
-- **Text Inputs**: EmailInput, NumberInput, PasswordInput, TextInput, Textarea, URLInput, DateInput, DateTimeInput, ClearableFileInput
-- **Selects**: Select, SelectMultiple, NullBooleanSelect
+### Configuration Settings (HTK_ Prefix)
 
-Bootstrap classes use `form-control` and `form-check-input`, while PureCSS uses `pure-input-1` for all widgets.
-
-## Usage
+Settings that can be overridden in Django settings:
 
 ```python
-from htk.forms.constants import TEXT_STYLE_INPUTS, HTK_FORM_STYLE
-from htk.forms.constants.defaults import HTK_FORM_WIDGET_CLASSES
+from htk.forms.constants import HTK_SETTING_NAME
 
-# Apply CSS classes to form widgets
-class MyForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        widget_classes = HTK_FORM_WIDGET_CLASSES[HTK_FORM_STYLE]
+# Configure in settings.py
+HTK_SETTING_NAME = 'custom_value'
+```
 
-        for field_name, field in self.fields.items():
-            widget_name = field.widget.__class__.__name__
-            css_class = widget_classes.get(widget_name, widget_classes['default'])
-            field.widget.attrs['class'] = css_class
+### Enumerations
 
-# Check if widget should have text styling
-widget_type = 'EmailInput'
-if widget_type in TEXT_STYLE_INPUTS:
-    # Apply text-specific styling
-    pass
+Enum classes for status values, roles, and choices:
 
-# Switch form framework in settings
-HTK_FORM_STYLE = 'bootstrap'  # or 'pure'
+```python
+from htk.forms.constants import SomeEnum
+
+status = SomeEnum.ACTIVE
+value = status.value
+name = status.name
+```
+
+### Lookup Tables
+
+Dictionaries and data collections for reference:
+
+```python
+from htk.forms.constants import LOOKUP_TABLE
+
+data = LOOKUP_TABLE['key']
+for key, value in LOOKUP_TABLE.items():
+    # Process each entry
+```
+
+### Conversion Factors
+
+Numeric constants for unit conversions and calculations:
+
+```python
+from htk.constants import TIME_1_HOUR_SECONDS
+
+delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+```
+
+## Usage Examples
+
+### Import Constants
+
+```python
+# Import from constants module
+from htk.forms.constants import CONSTANT_NAME
+
+# Or import directly from sub-module
+from htk.forms.constants.general import CONSTANT_NAME
+```
+
+### Access Enum Values
+
+```python
+from htk.forms.constants import StatusEnum
+
+if status == StatusEnum.ACTIVE:
+    print(f"Status is {status.name}")
+```
+
+### Use Lookup Tables
+
+```python
+from htk.forms.constants import LOOKUP_DATA
+
+# Get value by key
+value = LOOKUP_DATA.get('key')
+
+# Iterate over entries
+for key, value in LOOKUP_DATA.items():
+    process(key, value)
+```
+
+## Configuration
+
+Settings can be overridden in Django settings.py:
+
+```python
+# settings.py
+HTK_SETTING_NAME = 'custom_value'
+HTK_TIMEOUT_SECONDS = 300
+HTK_ENABLED = True
 ```
 
 ## Related Modules
-- Parent: `htk/forms/`
-- Related:
-  - `htk.forms.utils` - Form utility functions using these constants
-  - `htk.forms.widgets` - Custom widget implementations
-  - `htk.forms.classes` - Form base classes with automatic styling
 
-## Notes
-- Confidence: HIGH (>98%)
-- Last Updated: November 2025
-- Supports Bootstrap (form-control) and PureCSS (pure-input-1) styling
-- Can be overridden in Django settings to customize form styling globally
-- Simplifies consistent form styling across entire application
+- Parent module documentation
+- `htk.constants` - Global constants
+- `django.conf.settings` - Django configuration
+
+## Best Practices
+
+1. **Use constants instead of magic numbers** - Prevents duplicate values and aids maintainability
+2. **Organize by category** - Group related constants in separate modules
+3. **Document purposes** - Add comments explaining what constants are used for
+4. **Provide defaults** - Use HTK_ prefixed settings for overridable configuration
+5. **Use Enums** - For finite, well-defined sets of values instead of strings
+6. **Name consistently** - Use UPPER_CASE for constants, snake_case for functions

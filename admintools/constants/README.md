@@ -1,63 +1,124 @@
-# Admin Tools Constants
+# Constants
 
-> Configuration constants for HTK admin tools including pulse dashboard, user emulation, and todo management
+Configuration and constant values for this module.
 
-## Purpose
-This module provides configuration constants for HTK's administrative tools, including company email settings, user emulation cookies, pulse dashboard limits, and admin-specific pagination settings.
+## Overview
 
-## Key Files
-- `__init__.py` - Exports general admin tool constants
-- `defaults.py` - Default configuration values for company settings, emulation, and todos
-- `general.py` - Pulse dashboard and admin interface constants
+This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
 
-## Key Components / Features
+## Module Structure
 
-### Default Settings (`defaults.py`)
-- `HTK_COMPANY_EMAIL_DOMAINS` - Tuple of authorized company email domains (empty by default)
-- `HTK_COMPANY_OFFICER_EMAILS` - Tuple of company officer email addresses (empty by default)
-- `HTK_COMPANY_EMPLOYEE_EMAILS` - Tuple of company employee email addresses (empty by default)
-- `HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES` - Cookie lifetime for user emulation (default: 15 minutes)
-- `HTK_ADMINTOOLS_TODOS_CONFIGS` - List of todo configuration dataclasses (see `htk.admintools.dataclasses.TodosConfig`)
+```
+constants/
+├── __init__.py          # Re-exports all constants
+├── general.py           # General purpose constants
+├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
+└── domain_specific.py          # Domain-specific constants
+```
 
-### General Admin Settings (`general.py`)
-- `PULSE_RECENTLY_EDITED_PROFILES_LIMIT` - Number of recent profile edits to show (50)
-- `PULSE_RECENTLY_JOINED_USERS_LIMIT` - Number of new users to display (50)
-- `PULSE_RECENT_LOGINS_LIMIT` - Number of recent logins to show (50)
-- `PULSE_STATS_PRECISION` - Decimal precision for statistics (4)
-- `ADMINTOOLS_USER_PAGE_SIZE` - Pagination size for user listings (25)
+## Types of Constants
 
-## Usage
+### Configuration Settings (HTK_ Prefix)
+
+Settings that can be overridden in Django settings:
 
 ```python
-from htk.admintools.constants import (
-    HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES,
-    PULSE_RECENTLY_JOINED_USERS_LIMIT,
-    ADMINTOOLS_USER_PAGE_SIZE
-)
+from htk.admintools.constants import HTK_SETTING_NAME
 
-# Set user emulation cookie
-response.set_cookie(
-    'emulated_user_id',
-    user.id,
-    max_age=HTK_EMULATE_USER_COOKIE_EXPIRATION_MINUTES * 60
-)
+# Configure in settings.py
+HTK_SETTING_NAME = 'custom_value'
+```
 
-# Query recent users for pulse dashboard
-recent_users = User.objects.order_by('-date_joined')[:PULSE_RECENTLY_JOINED_USERS_LIMIT]
+### Enumerations
 
-# Paginate user list in admin
-paginator = Paginator(users, ADMINTOOLS_USER_PAGE_SIZE)
+Enum classes for status values, roles, and choices:
+
+```python
+from htk.admintools.constants import SomeEnum
+
+status = SomeEnum.ACTIVE
+value = status.value
+name = status.name
+```
+
+### Lookup Tables
+
+Dictionaries and data collections for reference:
+
+```python
+from htk.admintools.constants import LOOKUP_TABLE
+
+data = LOOKUP_TABLE['key']
+for key, value in LOOKUP_TABLE.items():
+    # Process each entry
+```
+
+### Conversion Factors
+
+Numeric constants for unit conversions and calculations:
+
+```python
+from htk.constants import TIME_1_HOUR_SECONDS
+
+delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+```
+
+## Usage Examples
+
+### Import Constants
+
+```python
+# Import from constants module
+from htk.admintools.constants import CONSTANT_NAME
+
+# Or import directly from sub-module
+from htk.admintools.constants.general import CONSTANT_NAME
+```
+
+### Access Enum Values
+
+```python
+from htk.admintools.constants import StatusEnum
+
+if status == StatusEnum.ACTIVE:
+    print(f"Status is {status.name}")
+```
+
+### Use Lookup Tables
+
+```python
+from htk.admintools.constants import LOOKUP_DATA
+
+# Get value by key
+value = LOOKUP_DATA.get('key')
+
+# Iterate over entries
+for key, value in LOOKUP_DATA.items():
+    process(key, value)
+```
+
+## Configuration
+
+Settings can be overridden in Django settings.py:
+
+```python
+# settings.py
+HTK_SETTING_NAME = 'custom_value'
+HTK_TIMEOUT_SECONDS = 300
+HTK_ENABLED = True
 ```
 
 ## Related Modules
-- Parent: `htk/admintools/`
-- Related:
-  - `htk.admintools.views` - Admin tool views using these constants
-  - `htk.admintools.dataclasses` - TodosConfig dataclass definition
-  - `htk.admintools.pulse` - Pulse dashboard functionality
 
-## Notes
-- Confidence: HIGH (>98%)
-- Last Updated: November 2025
-- Company email settings should be overridden in project settings
-- User emulation feature allows admins to impersonate users for debugging
+- Parent module documentation
+- `htk.constants` - Global constants
+- `django.conf.settings` - Django configuration
+
+## Best Practices
+
+1. **Use constants instead of magic numbers** - Prevents duplicate values and aids maintainability
+2. **Organize by category** - Group related constants in separate modules
+3. **Document purposes** - Add comments explaining what constants are used for
+4. **Provide defaults** - Use HTK_ prefixed settings for overridable configuration
+5. **Use Enums** - For finite, well-defined sets of values instead of strings
+6. **Name consistently** - Use UPPER_CASE for constants, snake_case for functions
