@@ -1,107 +1,57 @@
-# Constants
+# Discord Constants
 
-## Overview
+Constants for Discord webhook integration and message relay.
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
-
-## Module Structure
-
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+## Webhook Constants
 
 ```python
-from htk.lib.discord.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+from htk.lib.discord.constants import (
+    DISCORD_WEBHOOK_URL,
+    DISCORD_WEBHOOK_RELAY_PARAMS,
+)
 ```
 
-### Enumerations
+**DISCORD_WEBHOOK_URL**
+- Template URL format for Discord webhook endpoints
+- Format: `'https://discord.com/api/webhooks/{webhook_id}/{webhook_token}'`
+- Replace `{webhook_id}` and `{webhook_token}` with your webhook credentials
 
-Enum classes for status values, roles, and choices:
+**DISCORD_WEBHOOK_RELAY_PARAMS**
+- List of parameters required for relaying webhook messages
+- Parameters:
+  - `'webhook_id'`: Discord webhook ID
+  - `'webhook_token'`: Discord webhook token
+  - `'content'`: Message content to send
+- Used for webhook message relay and routing
+
+## Example Usage
 
 ```python
-from htk.lib.discord.constants import SomeEnum
+from htk.lib.discord.constants import (
+    DISCORD_WEBHOOK_URL,
+    DISCORD_WEBHOOK_RELAY_PARAMS,
+)
 
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+# Build webhook URL
+webhook_id = 'your_webhook_id'
+webhook_token = 'your_webhook_token'
+url = DISCORD_WEBHOOK_URL.format(
+    webhook_id=webhook_id,
+    webhook_token=webhook_token
+)
+
+# Send message using params
+payload = {
+    'webhook_id': webhook_id,
+    'webhook_token': webhook_token,
+    'content': 'Hello from HTK!'
+}
 ```
 
-### Lookup Tables
+## Getting Discord Webhook Credentials
 
-Dictionaries and data collections for reference:
-
-```python
-from htk.lib.discord.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
-
-## Usage Examples
-
-### Import Constants
-
-```python
-# Import from constants module
-from htk.lib.discord.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.lib.discord.constants.general import CONSTANT_NAME
-```
-
-### Access Enum Values
-
-```python
-from htk.lib.discord.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.lib.discord.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
-```
+1. Go to your Discord server settings
+2. Navigate to "Webhooks" section
+3. Create or select a webhook
+4. Copy the Webhook URL which contains both ID and token
+5. Store webhook_id and webhook_token in settings

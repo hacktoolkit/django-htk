@@ -1,107 +1,127 @@
-# Constants
+# Iterable Constants
 
-## Overview
+Configuration settings for Iterable email and marketing automation integration.
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
-
-## Module Structure
-
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+## API Configuration
 
 ```python
-from htk.lib.iterable.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+from htk.lib.iterable.constants import (
+    HTK_ITERABLE_API_KEY,
+    HTK_ITERABLE_ENABLED,
+)
 ```
 
-### Enumerations
+**HTK_ITERABLE_API_KEY**
+- API key for Iterable authentication
+- Default: `None` (must be configured in settings)
+- Required to enable Iterable integration
 
-Enum classes for status values, roles, and choices:
+**HTK_ITERABLE_ENABLED**
+- Boolean flag to enable/disable Iterable integration
+- Default: `False`
+- Set to `True` to activate email campaigns and workflows
+
+## Campaign Configuration
 
 ```python
-from htk.lib.iterable.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+from htk.lib.iterable.constants import HTK_ITERABLE_CAMPAIGN_IDS
 ```
 
-### Lookup Tables
+**HTK_ITERABLE_CAMPAIGN_IDS**
+- Nested dictionary mapping campaign categories to campaign IDs
+- Structure:
+  - `'triggered'`: Triggered campaigns
+    - `'transactional'`: Transactional emails
+      - `'account'`: Account-related campaigns
+        - `'sign_up_confirm_email'`: Sign-up confirmation campaign ID
+        - `'confirm_email_resend'`: Email confirmation resend campaign ID
+    - `'notifications'`: Notification campaigns
+      - `'account'`: Account notifications
+    - `'recurring'`: Recurring campaigns
+- Default: Campaign IDs are `None` (must be configured)
 
-Dictionaries and data collections for reference:
+## List and Workflow Configuration
 
 ```python
-from htk.lib.iterable.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
+from htk.lib.iterable.constants import (
+    HTK_ITERABLE_LIST_IDS,
+    HTK_ITERABLE_WORKFLOW_IDS,
+)
 ```
 
-### Conversion Factors
+**HTK_ITERABLE_LIST_IDS**
+- Dictionary mapping list names to Iterable list IDs
+- Default: `{}` (empty, add your lists here)
+- Used for subscribing/managing users on specific lists
 
-Numeric constants for unit conversions and calculations:
+**HTK_ITERABLE_WORKFLOW_IDS**
+- Dictionary mapping workflow names to workflow IDs
+- Workflows:
+  - `'account.sign_up'`: New account signup workflow
+  - `'account.activation'`: Account activation workflow
+  - `'account.login'`: User login workflow
+- Default: Workflow IDs are `None` (must be configured)
+
+## Options
 
 ```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+from htk.lib.iterable.constants import HTK_ITERABLE_OPTIONS
 ```
 
-## Usage Examples
+**HTK_ITERABLE_OPTIONS**
+- Configuration options for Iterable behavior
+- Options:
+  - `'override_welcome_email'`: Boolean to override default welcome email (default: `False`)
 
-### Import Constants
+## Example Usage
 
 ```python
-# Import from constants module
-from htk.lib.iterable.constants import CONSTANT_NAME
+from htk.lib.iterable.constants import (
+    HTK_ITERABLE_API_KEY,
+    HTK_ITERABLE_CAMPAIGN_IDS,
+    HTK_ITERABLE_WORKFLOW_IDS,
+)
 
-# Or import directly from sub-module
-from htk.lib.iterable.constants.general import CONSTANT_NAME
+# Get campaign ID for sign-up confirmation
+campaign_id = HTK_ITERABLE_CAMPAIGN_IDS['triggered']['transactional']['account']['sign_up_confirm_email']
+
+# Get workflow ID for account signup
+workflow_id = HTK_ITERABLE_WORKFLOW_IDS['account.sign_up']
 ```
 
-### Access Enum Values
+## Configuration in settings.py
 
 ```python
-from htk.lib.iterable.constants import StatusEnum
+HTK_ITERABLE_API_KEY = 'your_iterable_api_key'
+HTK_ITERABLE_ENABLED = True
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
+HTK_ITERABLE_CAMPAIGN_IDS = {
+    'triggered': {
+        'transactional': {
+            'account': {
+                'sign_up_confirm_email': 12345,
+                'confirm_email_resend': 12346,
+            },
+        },
+        'notifications': {
+            'account': {},
+        },
+        'recurring': {},
+    },
+}
 
-### Use Lookup Tables
+HTK_ITERABLE_LIST_IDS = {
+    'newsletter': 98765,
+    'customers': 98766,
+}
 
-```python
-from htk.lib.iterable.constants import LOOKUP_DATA
+HTK_ITERABLE_WORKFLOW_IDS = {
+    'account.sign_up': 54321,
+    'account.activation': 54322,
+    'account.login': 54323,
+}
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+HTK_ITERABLE_OPTIONS = {
+    'override_welcome_email': False,
+}
 ```

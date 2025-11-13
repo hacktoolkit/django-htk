@@ -1,107 +1,68 @@
-# Constants
+# OpenAI Constants
 
-## Overview
+Configuration settings and prompt instructions for OpenAI integration.
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
-
-## Module Structure
-
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+## Configuration Settings
 
 ```python
-from htk.lib.openai.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+from htk.lib.openai.constants import HTK_OPENAI_SYSTEM_PROMPT_MODEL
 ```
 
-### Enumerations
+**HTK_OPENAI_SYSTEM_PROMPT_MODEL**
+- Model identifier for system prompt generation
+- Default: `None` (must be configured in settings)
+- Examples: `'gpt-4'`, `'gpt-3.5-turbo'`, etc.
 
-Enum classes for status values, roles, and choices:
+## Prompt Instructions
 
 ```python
-from htk.lib.openai.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+from htk.lib.openai.constants import (
+    OPENAI_PROMPT_INSTRUCTION_FORMAT__TARGET_READING_GRADE_LEVEL,
+    OPENAI_PROMPT_INSTRUCTION__EXPECTED_RESPONSE_FORMAT,
+    OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE,
+)
 ```
 
-### Lookup Tables
+### Reading Level Instruction
 
-Dictionaries and data collections for reference:
+**OPENAI_PROMPT_INSTRUCTION_FORMAT__TARGET_READING_GRADE_LEVEL**
+- Template for specifying target reading grade level in prompts
+- Format: `'Target reading grade level: {target_reading_grade_level}'`
+- Use: Fill in the placeholder with desired grade level (e.g., 8, 10, 12)
+
+### Response Format Instructions
+
+**OPENAI_PROMPT_INSTRUCTION__EXPECTED_RESPONSE_FORMAT**
+- Instruction text indicating response format section
+- Text: `'Expected response format:'`
+- Precedes format specifications in system prompts
+
+**OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE**
+- Strict instruction for JSON-only responses
+- Ensures response is valid JSON that can be parsed with `json.loads()`
+- Useful for structured data extraction and API responses
+
+## Example Usage
 
 ```python
-from htk.lib.openai.constants import LOOKUP_TABLE
+from htk.lib.openai.constants import (
+    OPENAI_PROMPT_INSTRUCTION_FORMAT__TARGET_READING_GRADE_LEVEL,
+    OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE,
+)
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
+# Build prompt with reading level
+reading_level_instruction = OPENAI_PROMPT_INSTRUCTION_FORMAT__TARGET_READING_GRADE_LEVEL.format(
+    target_reading_grade_level=8
+)
+
+# Create system prompt with JSON requirement
+system_prompt = f"""You are a helpful assistant.
+{OPENAI_PROMPT_INSTRUCTION__JSON_RESPONSE}
+"""
 ```
 
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
+## Configuration in settings.py
 
 ```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
-
-## Usage Examples
-
-### Import Constants
-
-```python
-# Import from constants module
-from htk.lib.openai.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.lib.openai.constants.general import CONSTANT_NAME
-```
-
-### Access Enum Values
-
-```python
-from htk.lib.openai.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.lib.openai.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+HTK_OPENAI_SYSTEM_PROMPT_MODEL = 'gpt-4'
 ```
