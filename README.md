@@ -6,14 +6,14 @@ A comprehensive Django framework providing reusable apps, utilities, and third-p
 
 HTK includes:
 
-- **[Reusable Django Apps](./apps/)** - Pre-built apps for accounts, organizations, payments, messaging, and more
-- **[Third-Party Integrations](./lib/)** - Ready-to-use connectors for 45+ external services (Stripe, Google, AWS, Slack, etc.)
-- **[Utility Modules](./utils/)** - Common patterns for caching, text processing, APIs, and data handling
-- **[API Helpers](./api/)** - Tools for building REST APIs with DataTables support
-- **[Form Utilities](./forms/)** - Base form classes and validators
-- **[Decorators](./decorators/)** - Django and function decorators for common tasks
-- **[Models & Fields](./models/)** - Abstract models and custom Django fields
-- **[Middleware](./middleware/)** - Request/response processing utilities
+- **[Reusable Django Apps](./apps/README.md)** - Pre-built apps for accounts, organizations, payments, messaging, and more
+- **[Third-Party Integrations](./lib/README.md)** - Ready-to-use connectors for 45+ external services (Stripe, Google, AWS, Slack, etc.)
+- **[Utility Modules](./utils/README.md)** - Common patterns for caching, text processing, APIs, and data handling
+- **[API Helpers](./api/README.md)** - Tools for building REST APIs with DataTables support
+- **[Form Utilities](./forms/README.md)** - Base form classes and validators
+- **[Decorators](./decorators/README.md)** - Django and function decorators for common tasks
+- **[Models & Fields](./models/README.md)** - Abstract models and custom Django fields
+- **[Middleware](./middleware/README.md)** - Request/response processing utilities
 
 ## Quick Start
 
@@ -85,7 +85,7 @@ from htk.api.utils import json_response_form_error, get_object_or_json_error
 - Timezone handling
 
 ### Third-Party Services
-See [lib/README.md](./lib/) for details on 45+ integrations including:
+See [lib/README.md](./lib/README.md) for details on 45+ integrations including:
 - Cloud: AWS S3, Google Cloud
 - Communication: Slack, Discord, Gmail, Twilio
 - Data: Airtable, Stripe, Shopify, Zuora
