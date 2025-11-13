@@ -1,69 +1,51 @@
-# API Integration
+# Yahoo Sports Player Data Scripts
 
-Third-party API integration and utilities.
+Scripts and utilities for downloading and parsing Yahoo Sports player data.
 
-## Overview
+## Classes
 
-This integration provides integration with an external service API, including:
-- Authentication and credential management
-- API client utilities and helpers
-- Data serialization and transformation
-- Error handling and retries
+**YahooSportsPlayer**
+- Represents a Yahoo Sports player with career information
+- Attributes: `player_id`, `player_name`, `position`, `team_abbrev`, `team_name`
+- Factory method: `player_from_table_row(tr)` - Creates player from HTML table row
 
-## Quick Start
+## Functions
 
-### Authentication
+**download_players(sport, letter)**
+- Downloads Yahoo Sports players for a specific sport and starting letter
+- Supports sports: `nfl`, `mlb`, `nba`, `nhl`
+- Returns list of YahooSportsPlayer objects
+- Uses BeautifulSoup to parse HTML response
+- Filters rows by CSS class `ysprow1` and `ysprow2`
 
-```python
-from htk.lib.[service] import Client
-
-# Initialize client with credentials
-client = Client(api_key='your_api_key')
-
-# Or use settings
-client = Client()  # Uses HTK_[SERVICE]_API_KEY from settings
-```
-
-### Basic Operations
+## Example Usage
 
 ```python
-# Example operation
-result = client.method(param='value')
+from htk.lib.yahoo.sports.scripts.download_player_ids import (
+    download_players,
+    YahooSportsPlayer,
+)
+
+# Download all NFL players starting with 'A'
+players = download_players('nfl', 'A')
+
+for player in players:
+    print(f"{player.player_name} - {player.position} ({player.team_abbrev})")
+    # Example: "Aaron Rodgers - QB (GB)"
 ```
 
-### Error Handling
+## Script Execution
 
-```python
-from htk.lib.[service] import APIError
+The script includes a main execution block that downloads all players for all sports:
 
-try:
-    result = client.method()
-except APIError as e:
-    print(f"API Error: {e}")
+```bash
+python download_player_ids.py
 ```
 
-## Configuration
+This will download and print player data for:
+- NFL (National Football League)
+- MLB (Major League Baseball)
+- NBA (National Basketball Association)
+- NHL (National Hockey League)
 
-Configure API credentials in Django settings:
-
-```python
-# settings.py
-HTK_[SERVICE]_API_KEY = 'your_key'
-HTK_[SERVICE]_API_URL = 'https://api.example.com'
-HTK_[SERVICE]_TIMEOUT = 30
-HTK_[SERVICE]_ENABLED = True
-```
-
-## API Methods
-
-Refer to the service's official documentation for complete API reference.
-
-## Best Practices
-
-1. **Store credentials in settings** - Never hardcode API keys
-2. **Handle rate limits** - Implement backoff/retry logic
-3. **Cache responses** - When appropriate, cache API responses
-4. **Log API calls** - For debugging and monitoring
-5. **Set timeouts** - Prevent hanging requests
-6. **Validate input** - Check data before sending to API
-7. **Handle errors** - Implement proper error handling
+Players are fetched in alphabetical order with a 0.2 second delay between sport requests to avoid rate limiting.

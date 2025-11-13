@@ -1,69 +1,53 @@
-# API Integration
+# Google Chat Utilities
 
-Third-party API integration and utilities.
+Utilities for sending messages to Google Chat using webhooks.
 
-## Overview
+## Functions
 
-This integration provides integration with an external service API, including:
-- Authentication and credential management
-- API client utilities and helpers
-- Data serialization and transformation
-- Error handling and retries
+**google_chat_webhook_call(webhook_url, payload)**
+- Sends a message to Google Chat via webhook
+- Makes HTTP POST request with JSON payload
+- Supports all Google Chat message formats (text, cards, etc.)
+- Returns requests.Response object
+- Raises exception on network/API errors
 
-## Quick Start
-
-### Authentication
-
-```python
-from htk.lib.[service] import Client
-
-# Initialize client with credentials
-client = Client(api_key='your_api_key')
-
-# Or use settings
-client = Client()  # Uses HTK_[SERVICE]_API_KEY from settings
-```
-
-### Basic Operations
+## Example Usage
 
 ```python
-# Example operation
-result = client.method(param='value')
-```
+from htk.lib.google.chat.utils import google_chat_webhook_call
 
-### Error Handling
+# Send simple text message
+webhook_url = 'https://chat.googleapis.com/v1/spaces/SPACE_ID/messages?key=KEY&token=TOKEN'
+payload = {
+    'text': 'Hello from HTK!'
+}
+response = google_chat_webhook_call(webhook_url, payload)
 
-```python
-from htk.lib.[service] import APIError
-
-try:
-    result = client.method()
-except APIError as e:
-    print(f"API Error: {e}")
+# Send formatted card message
+payload = {
+    'cards': [{
+        'header': {'title': 'Notification'},
+        'sections': [{
+            'widgets': [{
+                'textParagraph': {'text': 'This is a card message'}
+            }]
+        }]
+    }]
+}
+response = google_chat_webhook_call(webhook_url, payload)
 ```
 
 ## Configuration
 
-Configure API credentials in Django settings:
+Google Chat webhooks are configured per space in Google Chat:
 
-```python
-# settings.py
-HTK_[SERVICE]_API_KEY = 'your_key'
-HTK_[SERVICE]_API_URL = 'https://api.example.com'
-HTK_[SERVICE]_TIMEOUT = 30
-HTK_[SERVICE]_ENABLED = True
+1. Open a Google Chat space
+2. Go to "Apps & integrations"
+3. Create a new webhook
+4. Copy the webhook URL to your settings
+
+## Webhook URL Format
+
 ```
-
-## API Methods
-
-Refer to the service's official documentation for complete API reference.
-
-## Best Practices
-
-1. **Store credentials in settings** - Never hardcode API keys
-2. **Handle rate limits** - Implement backoff/retry logic
-3. **Cache responses** - When appropriate, cache API responses
-4. **Log API calls** - For debugging and monitoring
-5. **Set timeouts** - Prevent hanging requests
-6. **Validate input** - Check data before sending to API
-7. **Handle errors** - Implement proper error handling
+https://chat.googleapis.com/v1/spaces/{SPACE_ID}/messages?key={API_KEY}&token={WEBHOOK_TOKEN}
+```
