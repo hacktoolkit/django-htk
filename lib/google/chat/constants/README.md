@@ -1,89 +1,124 @@
 # Constants
 
-> HTK Constants module
-
-## Purpose
-
-The `constants` directory contains constants-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-constants/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
+Configuration and constant values for this module.
 
 ## Overview
 
-This module provides functionality for:
-- TODO: Add feature list from code analysis
+This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
 
-## Key Components
+## Module Structure
 
-- TODO: Document key classes and functions
+```
+constants/
+├── __init__.py          # Re-exports all constants
+├── general.py           # General purpose constants
+├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
+└── domain_specific.py          # Domain-specific constants
+```
+
+## Types of Constants
+
+### Configuration Settings (HTK_ Prefix)
+
+Settings that can be overridden in Django settings:
+
+```python
+from htk.lib.google.chat.constants import HTK_SETTING_NAME
+
+# Configure in settings.py
+HTK_SETTING_NAME = 'custom_value'
+```
+
+### Enumerations
+
+Enum classes for status values, roles, and choices:
+
+```python
+from htk.lib.google.chat.constants import SomeEnum
+
+status = SomeEnum.ACTIVE
+value = status.value
+name = status.name
+```
+
+### Lookup Tables
+
+Dictionaries and data collections for reference:
+
+```python
+from htk.lib.google.chat.constants import LOOKUP_TABLE
+
+data = LOOKUP_TABLE['key']
+for key, value in LOOKUP_TABLE.items():
+    # Process each entry
+```
+
+### Conversion Factors
+
+Numeric constants for unit conversions and calculations:
+
+```python
+from htk.constants import TIME_1_HOUR_SECONDS
+
+delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+```
 
 ## Usage Examples
 
-### Basic Usage
+### Import Constants
 
 ```python
-from htk.lib/google/chat import constants
+# Import from constants module
+from htk.lib.google.chat.constants import CONSTANT_NAME
 
-# Example usage
-# TODO: Add actual examples
+# Or import directly from sub-module
+from htk.lib.google.chat.constants.general import CONSTANT_NAME
+```
+
+### Access Enum Values
+
+```python
+from htk.lib.google.chat.constants import StatusEnum
+
+if status == StatusEnum.ACTIVE:
+    print(f"Status is {status.name}")
+```
+
+### Use Lookup Tables
+
+```python
+from htk.lib.google.chat.constants import LOOKUP_DATA
+
+# Get value by key
+value = LOOKUP_DATA.get('key')
+
+# Iterate over entries
+for key, value in LOOKUP_DATA.items():
+    process(key, value)
 ```
 
 ## Configuration
 
+Settings can be overridden in Django settings.py:
+
 ```python
 # settings.py
-HTK_CONSTANTS_ENABLED = True
+HTK_SETTING_NAME = 'custom_value'
+HTK_TIMEOUT_SECONDS = 300
+HTK_ENABLED = True
 ```
 
 ## Related Modules
 
-- Parent: `htk.lib.google.chat` if depth > 1
-- Related: Other HTK modules
+- Parent module documentation
+- `htk.constants` - Global constants
+- `django.conf.settings` - Django configuration
 
 ## Best Practices
 
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-
-class ConstantsTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+1. **Use constants instead of magic numbers** - Prevents duplicate values and aids maintainability
+2. **Organize by category** - Group related constants in separate modules
+3. **Document purposes** - Add comments explaining what constants are used for
+4. **Provide defaults** - Use HTK_ prefixed settings for overridable configuration
+5. **Use Enums** - For finite, well-defined sets of values instead of strings
+6. **Name consistently** - Use UPPER_CASE for constants, snake_case for functions
