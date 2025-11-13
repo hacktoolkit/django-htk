@@ -1,107 +1,62 @@
-# Constants
+# Shopify Library Constants
 
-## Overview
+Configuration constants for Shopify API integration.
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
-
-## Module Structure
-
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+## Configuration Settings
 
 ```python
-from htk.lib.shopify_lib.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+from htk.lib.shopify_lib.constants import (
+    HTK_SHOPIFY_SHOP_NAME,
+    HTK_SHOPIFY_API_KEY,
+    HTK_SHOPIFY_API_SECRET,
+    HTK_SHOPIFY_SHARED_SECRET,
+    HTK_SHOPIFY_MONGODB_COLLECTIONS,
+    HTK_SHOPIFY_MONGODB_ITEM_PK,
+    HTK_SHOPIFY_SQL_MODELS,
+)
 ```
 
-### Enumerations
+## API Authentication
 
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.lib.shopify_lib.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.lib.shopify_lib.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
-
-## Usage Examples
-
-### Import Constants
-
-```python
-# Import from constants module
-from htk.lib.shopify_lib.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.lib.shopify_lib.constants.general import CONSTANT_NAME
-```
-
-### Access Enum Values
-
-```python
-from htk.lib.shopify_lib.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.lib.shopify_lib.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
+Configure Shopify API credentials in Django settings:
 
 ```python
 # settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+HTK_SHOPIFY_SHOP_NAME = 'your-shop-name'
+HTK_SHOPIFY_API_KEY = 'your-api-key'
+HTK_SHOPIFY_API_SECRET = 'your-api-secret'
+HTK_SHOPIFY_SHARED_SECRET = 'your-shared-secret'
+```
+
+## MongoDB Collections
+
+Map Shopify object types to MongoDB collections:
+
+```python
+HTK_SHOPIFY_MONGODB_COLLECTIONS = {
+    'product': 'product',
+    'product_tag': 'product_tag',
+    'product_image': 'product_image',
+    'product_variant': 'product_variant',
+    'customer': 'customer',
+    'customer_address': 'customer_address',
+    'order': 'order',
+    'order_line_item': 'order_line_item',
+    'fulfillment': 'fulfillment',
+    'refund': 'refund',
+    'transaction': 'transaction',
+}
+```
+
+## SQL Models
+
+Map Shopify object types to Django model paths:
+
+```python
+HTK_SHOPIFY_SQL_MODELS = {
+    'product': 'shopify.ShopifyProduct',
+    'product_variant': 'shopify.ShopifyProductVariant',
+    'customer': 'shopify.ShopifyCustomer',
+    'order': 'shopify.ShopifyOrder',
+}
 ```

@@ -2,106 +2,91 @@
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides comprehensive constants for global configuration, time/date calculations, geographic data, HTTP utilities, and more.
 
-## Module Structure
+## Key Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+### Geographic Data
 
 ```python
-from htk.constants.README.md.constants import HTK_SETTING_NAME
+from htk.constants import (
+    US_STATES, US_STATE_CODES_LOOKUP, US_STATES_LOOKUP,
+    ALL_US_STATES_AND_TERRITORIES
+)
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+# Get state abbreviation
+state_code = US_STATE_CODES_LOOKUP['California']  # 'CA'
+
+# Get state name from code
+state_name = US_STATES_LOOKUP['NY']  # 'New York'
+
+# List of all states (dicts with name/code pairs)
+all_states = US_STATES
 ```
 
-### Enumerations
-
-Enum classes for status values, roles, and choices:
+### Time Constants
 
 ```python
-from htk.constants.README.md.constants import SomeEnum
+from htk.constants import (
+    TIME_1_MINUTE_SECONDS, TIME_1_HOUR_SECONDS, TIME_1_DAY_SECONDS,
+    ISOWEEKDAY_MONDAY, ISOWEEKDAY_WEEKDAYS, ISOWEEKDAY_WEEKENDS
+)
 
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+# Use for delays and timeouts
+timeout = 2 * TIME_1_HOUR_SECONDS  # 7200 seconds
+
+# Check if weekday
+if isoweekday in ISOWEEKDAY_WEEKDAYS:
+    print("Weekday")
 ```
 
-### Lookup Tables
-
-Dictionaries and data collections for reference:
+### HTTP Status Codes
 
 ```python
-from htk.constants.README.md.constants import LOOKUP_TABLE
+from htk.constants import HTTPStatus
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
+# Access HTTP status codes
+if response.status == HTTPStatus.OK:
+    # response is 200
+    pass
 ```
 
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
+### Character and Text Constants
 
 ```python
-from htk.constants import TIME_1_HOUR_SECONDS
+from htk.constants import ALPHABET_CAPS
 
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+# Get list of capital letters
+letters = ALPHABET_CAPS  # ['A', 'B', 'C', ..., 'Z']
 ```
 
-## Usage Examples
-
-### Import Constants
+### Configuration Settings
 
 ```python
-# Import from constants module
-from htk.constants.README.md.constants import CONSTANT_NAME
+from htk.constants import (
+    HTK_DEFAULT_DOMAIN, HTK_SITE_NAME, HTK_DEFAULT_TIMEZONE,
+    HTK_DEFAULT_COUNTRY, HTK_HANDLE_MAX_LENGTH
+)
 
-# Or import directly from sub-module
-from htk.constants.README.md.constants.general import CONSTANT_NAME
+HTK_DEFAULT_DOMAIN = 'hacktoolkit.com'
+HTK_SITE_NAME = 'Hacktoolkit'
+HTK_DEFAULT_TIMEZONE = 'America/Los_Angeles'
+HTK_DEFAULT_COUNTRY = 'US'
+HTK_HANDLE_MAX_LENGTH = 64
 ```
 
-### Access Enum Values
+## Subdirectories
+
+- **dns/**: DNS and TLD constants
+- **emails/**: Email validation patterns and common handles
+- **i18n/**: International constants (countries, currencies, languages, timezones)
+
+## Customization
+
+Override defaults in `settings.py`:
 
 ```python
-from htk.constants.README.md.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.constants.README.md.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+HTK_SITE_NAME = 'My Site'
+HTK_DEFAULT_TIMEZONE = 'UTC'
+HTK_DEFAULT_DOMAIN = 'example.com'
 ```

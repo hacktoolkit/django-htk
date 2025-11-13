@@ -1,107 +1,96 @@
-# Constants
+# Stripe Library Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides configuration and reference constants for Stripe payment API integration.
 
-## Module Structure
-
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+## Configuration Settings
 
 ```python
-from htk.lib.stripe_lib.constants import HTK_SETTING_NAME
+from htk.lib.stripe_lib.constants import (
+    HTK_STRIPE_LIVE_MODE,
+    HTK_STRIPE_EVENT_HANDLERS,
+    HTK_STRIPE_LOG_UNHANDLED_EVENTS,
+    HTK_STRIPE_LOG_TEST_MODE_EVENTS,
+    HTK_STRIPE_EVENT_LOGGER,
+    HTK_STRIPE_CUSTOMER_HOLDER_RELATED_NAME
+)
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+# Use production or test Stripe keys
+HTK_STRIPE_LIVE_MODE = True
+
+# Maps Stripe event types to handler function paths
+HTK_STRIPE_EVENT_HANDLERS = {}
+
+# Log Stripe events that don't have handlers
+HTK_STRIPE_LOG_UNHANDLED_EVENTS = True
+
+# Log test mode events in production
+HTK_STRIPE_LOG_TEST_MODE_EVENTS = True
+
+# Where to log events ('rollbar', etc.)
+HTK_STRIPE_EVENT_LOGGER = 'rollbar'
+
+# Django model relationship name for customer owner
+HTK_STRIPE_CUSTOMER_HOLDER_RELATED_NAME = 'customer'
 ```
 
-### Enumerations
-
-Enum classes for status values, roles, and choices:
+## Stripe ID Prefixes
 
 ```python
-from htk.lib.stripe_lib.constants import SomeEnum
+from htk.lib.stripe_lib.constants import (
+    STRIPE_ID_PREFIX_CARD,
+    STRIPE_ID_PREFIX_CHARGE,
+    STRIPE_ID_PREFIX_CUSTOMER,
+    STRIPE_ID_PREFIX_TOKEN
+)
 
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+# Stripe object ID prefixes
+STRIPE_ID_PREFIX_CARD = 'card_'
+STRIPE_ID_PREFIX_CHARGE = 'ch_'
+STRIPE_ID_PREFIX_CUSTOMER = 'cus_'
+STRIPE_ID_PREFIX_TOKEN = 'tok_'
 ```
 
-### Lookup Tables
-
-Dictionaries and data collections for reference:
+## Test Cards
 
 ```python
-from htk.lib.stripe_lib.constants import LOOKUP_TABLE
+from htk.lib.stripe_lib.constants import STRIPE_TEST_CARDS, DEFAULT_STRIPE_CURRENCY
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
+# Test card numbers for different card types
+test_cards = STRIPE_TEST_CARDS
+# {
+#     'visa': '4242424242424242',
+#     'visa_debit': '4000056655665556',
+#     'mc': '5555555555554444',
+#     'amex': '378282246310005',
+#     ...
+# }
+
+# Default currency for Stripe charges
+DEFAULT_STRIPE_CURRENCY = 'usd'
 ```
 
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
+## Usage
 
 ```python
-from htk.constants import TIME_1_HOUR_SECONDS
+from htk.lib.stripe_lib.constants import STRIPE_TEST_CARDS, DEFAULT_STRIPE_CURRENCY
 
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+# Use test card in development
+test_card = STRIPE_TEST_CARDS.get('visa')
+
+# Create charge with default currency
+charge_amount_cents = 9999  # $99.99
 ```
 
-## Usage Examples
+## Customization
 
-### Import Constants
-
-```python
-# Import from constants module
-from htk.lib.stripe_lib.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.lib.stripe_lib.constants.general import CONSTANT_NAME
-```
-
-### Access Enum Values
+Override settings in `settings.py`:
 
 ```python
-from htk.lib.stripe_lib.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.lib.stripe_lib.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+HTK_STRIPE_LIVE_MODE = False  # Use test mode
+HTK_STRIPE_EVENT_HANDLERS = {
+    'charge.succeeded': 'myapp.handlers.handle_charge_succeeded',
+    'charge.failed': 'myapp.handlers.handle_charge_failed',
+}
 ```

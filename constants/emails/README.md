@@ -1,107 +1,75 @@
-# Constants
+# Email Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides email validation constants, patterns for detecting invalid emails, and common email handles.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+### Bad Email Detection
 
 ```python
-from htk.constants.emails.README.md.constants import HTK_SETTING_NAME
+from htk.constants.emails import ALL_BAD_EMAILS, BAD_EMAIL_REGEXPS, LOCALHOST_EMAILS
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+# Set of email addresses known to be invalid or problematic
+bad_emails = ALL_BAD_EMAILS  # includes 'root@localhost'
+
+# Compiled regex patterns for detecting invalid email patterns
+bad_patterns = BAD_EMAIL_REGEXPS
+
+# Localhost email addresses that shouldn't be used
+localhost = LOCALHOST_EMAILS  # {'root@localhost'}
 ```
 
-### Enumerations
-
-Enum classes for status values, roles, and choices:
+### Common Email Handles
 
 ```python
-from htk.constants.emails.README.md.constants import SomeEnum
+from htk.constants.emails import COMMON_EMAIL_HANDLES
 
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+# Common generic email prefixes used by organizations
+handles = COMMON_EMAIL_HANDLES
+# ['company', 'contact', 'hello', 'hi', 'info', 'me', 'support', 'team', ...]
 ```
 
-### Lookup Tables
-
-Dictionaries and data collections for reference:
+### Email Pattern Permutations
 
 ```python
-from htk.constants.emails.README.md.constants import LOOKUP_TABLE
+from htk.constants.emails import EMAIL_PERMUTATION_PATTERNS
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+# 66 email pattern variations for generating possible email addresses
+# Patterns use template variables like {first}, {last}, {domain}
+patterns = EMAIL_PERMUTATION_PATTERNS
 ```
 
 ## Usage Examples
 
-### Import Constants
+### Validate Email
 
 ```python
-# Import from constants module
-from htk.constants.emails.README.md.constants import CONSTANT_NAME
+from htk.constants.emails import ALL_BAD_EMAILS
 
-# Or import directly from sub-module
-from htk.constants.emails.README.md.constants.general import CONSTANT_NAME
+def is_valid_email(email):
+    """Check if email is not in the bad emails list."""
+    return email not in ALL_BAD_EMAILS
 ```
 
-### Access Enum Values
+### Generate Email Permutations
 
 ```python
-from htk.constants.emails.README.md.constants import StatusEnum
+from htk.constants.emails import EMAIL_PERMUTATION_PATTERNS
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.constants.emails.README.md.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+def generate_emails(first_name, last_name, domain):
+    """Generate possible email addresses using permutation patterns."""
+    emails = []
+    for pattern in EMAIL_PERMUTATION_PATTERNS:
+        try:
+            email = pattern.format(
+                first=first_name.lower(),
+                last=last_name.lower(),
+                domain=domain.lower()
+            )
+            emails.append(email)
+        except (KeyError, AttributeError):
+            pass
+    return emails
 ```

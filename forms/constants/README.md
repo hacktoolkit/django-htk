@@ -1,107 +1,91 @@
-# Constants
+# Forms Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module contains configuration values and constants used throughout the forms system, including widget styling mappings and input type definitions.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+### Widget Class Mappings
 
 ```python
-from htk.forms.constants import HTK_SETTING_NAME
+from htk.forms.constants import HTK_FORM_WIDGET_CLASSES
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+# Maps form style names to widget-specific CSS classes
+# Supports 'bootstrap' and 'pure' CSS frameworks
+HTK_FORM_WIDGET_CLASSES = {
+    'bootstrap': {
+        'default': 'form-control',
+        'TextInput': 'form-control',
+        'Textarea': 'form-control',
+        # ... other widget types
+    },
+    'pure': {
+        'default': 'pure-input-1',
+        'TextInput': 'pure-input-1',
+        'Textarea': 'pure-input-1',
+        # ... other widget types
+    }
+}
 ```
 
-### Enumerations
-
-Enum classes for status values, roles, and choices:
+### Configuration Settings
 
 ```python
-from htk.forms.constants import SomeEnum
+from htk.forms.constants import HTK_FORM_STYLE, HTK_DEFAULT_FORM_INPUT_CLASS
 
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+# Global form styling framework ('bootstrap' or 'pure')
+HTK_FORM_STYLE = 'bootstrap'
+
+# Default CSS class for form inputs (used when explicit class not specified)
+HTK_DEFAULT_FORM_INPUT_CLASS = 'pure-input-1'
 ```
 
-### Lookup Tables
-
-Dictionaries and data collections for reference:
+### Text Input Types
 
 ```python
-from htk.forms.constants import LOOKUP_TABLE
+from htk.forms.constants import TEXT_STYLE_INPUTS
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+# Tuple of Django form widget types that render as text-style inputs
+TEXT_STYLE_INPUTS = ('EmailInput', 'NumberInput', 'PasswordInput', 'TextInput', 'Textarea', 'URLInput')
 ```
 
 ## Usage Examples
 
-### Import Constants
+### Get CSS Class for Widget Type
 
 ```python
-# Import from constants module
-from htk.forms.constants import CONSTANT_NAME
+from htk.forms.constants import HTK_FORM_WIDGET_CLASSES, HTK_FORM_STYLE
 
-# Or import directly from sub-module
-from htk.forms.constants.general import CONSTANT_NAME
+style = HTK_FORM_STYLE
+widget_type = 'TextInput'
+
+css_class = HTK_FORM_WIDGET_CLASSES[style].get(widget_type, HTK_FORM_WIDGET_CLASSES[style]['default'])
+# css_class = 'form-control' (if style is 'bootstrap')
 ```
 
-### Access Enum Values
+### Check if Input Type is Text-Based
 
 ```python
-from htk.forms.constants import StatusEnum
+from htk.forms.constants import TEXT_STYLE_INPUTS
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+widget_class_name = 'EmailInput'
+is_text_input = widget_class_name in TEXT_STYLE_INPUTS
 ```
 
-### Use Lookup Tables
+## Customization
+
+Override these settings in `settings.py`:
 
 ```python
-from htk.forms.constants import LOOKUP_DATA
+# Use Pure CSS instead of Bootstrap
+HTK_FORM_STYLE = 'pure'
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+# Custom widget class mappings
+HTK_FORM_WIDGET_CLASSES = {
+    'custom': {
+        'default': 'my-form-control',
+        'TextInput': 'my-text-input',
+    }
+}
 ```

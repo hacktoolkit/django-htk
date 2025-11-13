@@ -1,107 +1,49 @@
-# Constants
+# Test Scaffold Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides configuration constants for test environment setup and test data generation.
 
-## Module Structure
-
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+## Constants
 
 ```python
-from htk.test_scaffold.constants import HTK_SETTING_NAME
+from htk.test_scaffold.constants import TESTSERVER, HTK_TEST_EMAIL_DOMAIN
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
+# Django test server hostname
+TESTSERVER = 'testserver'
 
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.test_scaffold.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.test_scaffold.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+# Domain to use for test email addresses
+HTK_TEST_EMAIL_DOMAIN = 'hacktoolkit.com'
 ```
 
 ## Usage Examples
 
-### Import Constants
+### Generate Test Email
 
 ```python
-# Import from constants module
-from htk.test_scaffold.constants import CONSTANT_NAME
+from htk.test_scaffold.constants import HTK_TEST_EMAIL_DOMAIN
 
-# Or import directly from sub-module
-from htk.test_scaffold.constants.general import CONSTANT_NAME
+def create_test_user(username):
+    """Create a test user with a test domain email."""
+    email = f"{username}@{HTK_TEST_EMAIL_DOMAIN}"
+    # Create user with email
+    return email
 ```
 
-### Access Enum Values
+### Test Server Validation
 
 ```python
-from htk.test_scaffold.constants import StatusEnum
+from htk.test_scaffold.constants import TESTSERVER
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+def is_test_environment(request):
+    """Check if running on test server."""
+    return request.get_host().startswith(TESTSERVER)
 ```
 
-### Use Lookup Tables
+## Customization
+
+Override these settings in test settings.py:
 
 ```python
-from htk.test_scaffold.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+HTK_TEST_EMAIL_DOMAIN = 'test.local'
 ```

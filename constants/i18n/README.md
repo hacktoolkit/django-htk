@@ -1,107 +1,111 @@
-# Constants
+# Internationalization Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides constants for international applications including country data, currencies, languages, greetings, and timezones.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+### Countries
 
 ```python
-from htk.constants.i18n.README.md.constants import HTK_SETTING_NAME
+from htk.constants.i18n import COUNTRIES_EN_NAMES_MAP
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+# Dictionary mapping country codes to English names
+# e.g. {'US': 'United States', 'CA': 'Canada', 'GB': 'United Kingdom', ...}
+countries = COUNTRIES_EN_NAMES_MAP
 ```
 
-### Enumerations
-
-Enum classes for status values, roles, and choices:
+### Currencies
 
 ```python
-from htk.constants.i18n.README.md.constants import SomeEnum
+from htk.constants.i18n import CURRENCY_CODE_TO_SYMBOLS_MAP
 
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+# Dictionary mapping currency codes to symbols
+symbols = CURRENCY_CODE_TO_SYMBOLS_MAP
+# {'USD': '$', 'EUR': '€', 'GBP': '£', ...}
 ```
 
-### Lookup Tables
-
-Dictionaries and data collections for reference:
+### Languages
 
 ```python
-from htk.constants.i18n.README.md.constants import LOOKUP_TABLE
+from htk.constants.i18n import LANGUAGE_EN_NAMES_MAP, LANGUAGE_NAMES_MAP
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
+# Language codes to English names
+english_names = LANGUAGE_EN_NAMES_MAP
+# {'de': 'German', 'en': 'English', 'es': 'Spanish', ...}
+
+# Language codes to native language names
+native_names = LANGUAGE_NAMES_MAP
+# {'de': 'Deutsch', 'en': 'English', 'es': 'Español', ...}
 ```
 
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
+### Greetings
 
 ```python
-from htk.constants import TIME_1_HOUR_SECONDS
+from htk.constants.i18n import I18N_GREETINGS
 
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
+# Greetings in multiple languages
+# {'am': 'ሰላም', 'ar': 'مرحبا', 'en': 'Hello', 'es': 'Hola', ...}
+greetings = I18N_GREETINGS
+```
+
+### Timezones
+
+```python
+from htk.constants.i18n import US_TIMEZONE_CHOICES
+
+# Tuple of (IANA timezone, legacy US timezone) tuples
+# Used for Django form choice fields
+timezone_choices = US_TIMEZONE_CHOICES
+# (('America/New_York', 'Eastern Time (US & Canada)'), ...)
+```
+
+### English Language Helpers
+
+```python
+from htk.constants.i18n import SPECIAL_NOUN_PLURAL_FORMS
+
+# Dictionary mapping nouns to their plural forms (irregular plurals)
+plurals = SPECIAL_NOUN_PLURAL_FORMS
+# {'child': 'children', 'person': 'people', ...}
 ```
 
 ## Usage Examples
 
-### Import Constants
+### Get Country Name
 
 ```python
-# Import from constants module
-from htk.constants.i18n.README.md.constants import CONSTANT_NAME
+from htk.constants.i18n import COUNTRIES_EN_NAMES_MAP
 
-# Or import directly from sub-module
-from htk.constants.i18n.README.md.constants.general import CONSTANT_NAME
+country_code = 'US'
+country_name = COUNTRIES_EN_NAMES_MAP.get(country_code)
+# 'United States'
 ```
 
-### Access Enum Values
+### Format Currency
 
 ```python
-from htk.constants.i18n.README.md.constants import StatusEnum
+from htk.constants.i18n import CURRENCY_CODE_TO_SYMBOLS_MAP
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+def format_price(amount, currency_code):
+    """Format price with currency symbol."""
+    symbol = CURRENCY_CODE_TO_SYMBOLS_MAP.get(currency_code, '')
+    return f"{symbol}{amount:.2f}"
+
+formatted = format_price(99.99, 'USD')
+# '$99.99'
 ```
 
-### Use Lookup Tables
+### Get Plural Form
 
 ```python
-from htk.constants.i18n.README.md.constants import LOOKUP_DATA
+from htk.constants.i18n import SPECIAL_NOUN_PLURAL_FORMS
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
+def pluralize(noun):
+    """Get plural form of noun."""
+    return SPECIAL_NOUN_PLURAL_FORMS.get(noun, f"{noun}s")
 
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+plural = pluralize('child')
+# 'children'
 ```

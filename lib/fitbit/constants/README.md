@@ -1,107 +1,49 @@
-# Constants
+# Fitbit API Constants
 
-## Overview
+API endpoints and resources for Fitbit API integration.
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
-
-## Module Structure
-
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
-
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
+## Constants
 
 ```python
-from htk.lib.fitbit.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
+from htk.lib.fitbit.constants import FITBIT_API_BASE_URL, FITBIT_API_RESOURCES
 ```
 
-### Enumerations
-
-Enum classes for status values, roles, and choices:
+## API Base URL
 
 ```python
-from htk.lib.fitbit.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
+FITBIT_API_BASE_URL = 'https://api.fitbit.com'
 ```
 
-### Lookup Tables
+## API Resources
 
-Dictionaries and data collections for reference:
+Dictionary mapping resource types to endpoint paths:
 
 ```python
-from htk.lib.fitbit.constants import LOOKUP_TABLE
+FITBIT_API_RESOURCES = {
+    # OAuth
+    'refresh': '/oauth2/token',
+    'revoke': '/oauth2/revoke',
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
+    # Activity
+    'activity-steps': lambda date, period: f'/1/user/-/activities/steps/date/{date}/{period}.json',
+
+    # Body & Weight
+    'fat': lambda date: f'/1/user/-/body/log/fat/date/{date}.json',
+    'weight': lambda date: f'/1/user/-/body/log/weight/date/{date}.json',
+
+    # Settings
+    'devices': '/1/user/-/devices.json',
+}
 ```
 
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
+## Usage Example
 
 ```python
-from htk.constants import TIME_1_HOUR_SECONDS
+from htk.lib.fitbit.constants import FITBIT_API_BASE_URL, FITBIT_API_RESOURCES
 
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
-
-## Usage Examples
-
-### Import Constants
-
-```python
-# Import from constants module
-from htk.lib.fitbit.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.lib.fitbit.constants.general import CONSTANT_NAME
-```
-
-### Access Enum Values
-
-```python
-from htk.lib.fitbit.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.lib.fitbit.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+# Build activity steps URL
+date = '2023-10-15'
+period = '1w'
+endpoint = FITBIT_API_RESOURCES['activity-steps'](date, period)
+url = f'{FITBIT_API_BASE_URL}{endpoint}'
 ```

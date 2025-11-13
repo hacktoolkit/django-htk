@@ -1,112 +1,78 @@
-# Utils
+# Internationalization Utils
 
 ## Overview
 
-This utils module provides utility functions for common operations including lookups, transformations, validation, and calculations.
+This module provides utility functions for working with international data including countries, languages, currencies, and timezones.
 
-## Quick Start
-
-### Import Utilities
+## Functions
 
 ```python
-from htk.utils.i18n.utils import function_name
+from htk.utils.i18n import (
+    get_country_choices,
+    get_language_name,
+    get_currency_symbol,
+    get_random_greeting
+)
 
-result = function_name(arg1, arg2)
+# Get country choices for form select fields
+choices = get_country_choices(ordering=('US', 'CA'))
+
+# Get language name from code
+lang_name = get_language_name('en')  # 'English'
+
+# Get currency symbol
+symbol = get_currency_symbol('USD')  # '$'
+
+# Get random greeting in random language
+greeting = get_random_greeting()  # e.g. 'Hola'
 ```
 
-### Common Patterns
+## Usage Examples
+
+### Form Select Choices
 
 ```python
-# Lookup by identifier
-item = get_item_by_id(id)
+from htk.utils.i18n import get_country_choices
 
-# Get or None
-item = get_item_by_email(email)  # Returns None if not found
-
-# Create with defaults
-item = create_item(name='test')
-
-# Query collection
-items = get_active_items()
-
-# Transform/convert
-converted = convert_format(data)
+class LocationForm(forms.Form):
+    country = forms.ChoiceField(
+        choices=get_country_choices(ordering=('US', 'CA', 'MX')),
+        help_text="Select your country"
+    )
 ```
 
-## Utility Functions
-
-### Lookup Functions
-
-Functions that retrieve objects from the database:
-
-- `get_*_by_id()` - Get by primary key
-- `get_*_by_field()` - Get by specific field
-- `get_*_with_retries()` - With retry logic
-- `get_all_*()` - Get all objects
-- `get_inactive_*()` - Get filtered subset
-
-**Behavior:**
-- Return `None` if object not found (not exception)
-- Raise exception on database errors
-- Support optional filtering parameters
-
-### Creation Functions
-
-Functions that create new objects:
-
-- `create_*()` - Create new object
-- `set_*()` - Update single field
-
-**Behavior:**
-- Return created object
-- May have side effects (logging, signals)
-- Validate input before creation
-
-### Validation Functions
-
-Functions that validate data:
-
-- `validate_*()` - Validate and return boolean
-- `is_*()` - Check condition
-
-**Behavior:**
-- Return `True`/`False` for simple checks
-- Return object or tuple for complex validation
-- May raise exception on invalid data
-
-### Transformation Functions
-
-Functions that convert or transform data:
-
-- `convert_*()` - Convert between formats
-- `extract_*()` - Extract data from object
-- `generate_*()` - Generate new data
-
-## Function Conventions
-
-- **Return values:** `None` when object not found, exception on error
-- **Naming:** `get_*()` for retrieval, `create_*()` for creation
-- **Parameters:** Use keyword arguments for optional parameters
-- **Side effects:** Document any side effects in docstring
-- **Retry logic:** Use `*_with_retries()` variant for reliability
-
-## Configuration
-
-Configure behavior in Django settings:
+### Display Language Names
 
 ```python
-# settings.py
-HTK_SETTING_NAME = 'value'
-HTK_TIMEOUT = 30
-HTK_MAX_RETRIES = 3
+from htk.utils.i18n import get_language_name
+
+supported_languages = ['en', 'es', 'fr', 'de']
+for lang_code in supported_languages:
+    print(f"{lang_code}: {get_language_name(lang_code)}")
+    # en: English
+    # es: Spanish
+    # fr: French
+    # de: German
 ```
 
-## Best Practices
+### Format Prices with Currency Symbols
 
-1. **Check for None** - Always check return values for None
-2. **Handle exceptions** - Catch and handle domain exceptions
-3. **Use appropriate function** - Choose most specific function available
-4. **Understand side effects** - Read docstrings for side effects
-5. **Batch operations** - Use bulk_* variants when processing multiple items
-6. **Cache results** - Cache expensive lookups when appropriate
-7. **Test edge cases** - Test with missing data, invalid input, etc.
+```python
+from htk.utils.i18n import get_currency_symbol
+
+def format_price(amount, currency_code):
+    symbol = get_currency_symbol(currency_code)
+    return f"{symbol}{amount:.2f}"
+
+print(format_price(99.99, 'USD'))   # $99.99
+print(format_price(99.99, 'EUR'))   # €99.99
+```
+
+### Randomized Greetings
+
+```python
+from htk.utils.i18n import get_random_greeting
+
+# Use for welcome banners or dashboard headers
+greeting = get_random_greeting()
+```
