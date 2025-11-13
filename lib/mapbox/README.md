@@ -1,7 +1,5 @@
 # Integration
 
-Third-party service integration and utilities.
-
 ## Overview
 
 This integration integrates with an external service, providing a Python client and utilities for common operations.

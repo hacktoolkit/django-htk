@@ -1,7 +1,5 @@
 # Utils
 
-Utility functions and helpers for this module.
-
 ## Overview
 
 This utils module provides utility functions for common operations including lookups, transformations, validation, and calculations.

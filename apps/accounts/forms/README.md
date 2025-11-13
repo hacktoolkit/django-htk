@@ -1,7 +1,5 @@
 # Forms
 
-Django forms for user input validation and rendering.
-
 ## Overview
 
 This forms module provides Django forms for handling user input, validation, and rendering form fields.

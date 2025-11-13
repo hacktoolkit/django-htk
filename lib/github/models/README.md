@@ -1,7 +1,5 @@
 # Models
 
-Django ORM models for database schema and queries.
-
 ## Overview
 
 This models module defines Django models that represent the database schema. Models define fields, relationships, methods, and metadata for objects persisted to the database.

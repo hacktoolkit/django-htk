@@ -1,7 +1,5 @@
 # Management
 
-Django management commands for this module.
-
 ## Overview
 
 This management module provides Django management commands for administrative tasks, background jobs, data maintenance, and system operations.

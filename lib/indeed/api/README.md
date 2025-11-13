@@ -1,7 +1,5 @@
 # API
 
-REST API endpoints and views for this module.
-
 ## Overview
 
 This API module provides REST API endpoints for programmatic access to the service. Endpoints support standard HTTP methods and return JSON responses.
