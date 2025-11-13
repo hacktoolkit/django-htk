@@ -129,7 +129,7 @@ HTK_AWESOMEBIBLE_RETRIES = 3
 ## Best Practices
 
 1. **Handle errors** - Always handle API errors gracefully
-2. **Respect rate limits** - Dont exceed API rate limits
+2. **Respect rate limits** - Don't exceed API rate limits
 3. **Cache responses** - Cache data when appropriate
 4. **Use retries** - Implement exponential backoff
 5. **Validate input** - Validate data before sending to API
