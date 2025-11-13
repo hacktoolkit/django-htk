@@ -4,7 +4,7 @@ Helper classes and class-based utilities for this module.
 
 ## Overview
 
-This module provides utility classes that encapsulate related functionality. Classes provide structure and state management for complex operations.
+This classes module provides utility classes that encapsulate related functionality. Classes provide structure and state management for complex operations.
 
 ## Quick Start
 

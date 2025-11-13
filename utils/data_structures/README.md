@@ -4,7 +4,7 @@ Utility functions and helpers for this module.
 
 ## Overview
 
-This module provides utility functions for common operations including lookups, transformations, validation, and calculations.
+This utils module provides utility functions for common operations including lookups, transformations, validation, and calculations.
 
 ## Quick Start
 
