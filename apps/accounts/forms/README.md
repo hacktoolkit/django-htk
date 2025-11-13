@@ -117,9 +117,3 @@ form = ItemForm(instance=item)
 5. **Test validation** - Test all validation rules
 6. **Sanitize input** - Use Django built-in cleaning
 7. **Help text** - Provide guidance for complex fields
-
-## Related Modules
-
-- `django.forms` - Django forms framework
-- `django.forms.models` - ModelForm
-- Parent module documentation

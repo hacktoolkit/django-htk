@@ -62,9 +62,3 @@ radius = WGS84EarthRadius(lat=37.7749)
 GEOLOCATIONS_CACHE_TTL = 86400  # 1 day
 GEOLOCATIONS_DEFAULT_DISTANCE_UNIT = 'miles'
 ```
-
-## Related Modules
-
-- `htk.apps.addresses` - Address management
-- `htk.lib.google.geocode` - Google Geocoding
-- `htk.lib.mapbox` - Mapbox integration

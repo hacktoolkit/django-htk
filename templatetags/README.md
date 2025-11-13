@@ -116,9 +116,3 @@ Django template filters and tags for common operations.
 ```django
 {% http_header "CONTENT_TYPE" %}
 ```
-
-## Related Modules
-
-- `htk.utils.text` - Text manipulation utilities
-- `htk.lib.qrcode` - QR code generation
-- `django.template` - Django template system

@@ -31,8 +31,3 @@ api.send_campaign(campaign_id)
 # settings.py
 MAILCHIMP_API_KEY = os.environ.get('MAILCHIMP_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.lib.iterable` - Marketing automation
-- `htk.apps.notifications` - Email notifications

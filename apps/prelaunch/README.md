@@ -288,9 +288,3 @@ PRELAUNCH_EARLY_ACCESS_PATHS = []
 4. **Track metrics** - Monitor signup conversion and engagement
 5. **Handle unsubscribes** - Respect user preferences
 6. **Provide feedback** - Show waitlist position if possible
-
-## Related Modules
-
-- `htk.apps.accounts` - User registration after launch
-- `htk.apps.notifications` - Send notifications
-- `htk.middleware` - Request filtering

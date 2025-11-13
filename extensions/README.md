@@ -152,9 +152,3 @@ all_users.update(query3)
 
 # Avoid duplicates without complex Q queries
 ```
-
-## Related Modules
-
-- `htk.utils.data_structures` - More data structure utilities
-- `htk.utils.iter_utils` - Iteration utilities
-- `collections` - Python's built-in data structures

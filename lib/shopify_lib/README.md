@@ -48,8 +48,3 @@ SHOPIFY_STORE_NAME = os.environ.get('SHOPIFY_STORE_NAME')
 SHOPIFY_API_KEY = os.environ.get('SHOPIFY_API_KEY')
 SHOPIFY_API_PASSWORD = os.environ.get('SHOPIFY_API_PASSWORD')
 ```
-
-## Related Modules
-
-- `htk.apps.store` - Store management
-- `htk.apps.customers` - Customer management

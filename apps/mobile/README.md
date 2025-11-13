@@ -223,9 +223,3 @@ MOBILE_DEVICE_RETENTION_DAYS = 180  # Keep inactive devices for 6 months
 5. **Platform-specific features** - Send appropriate payloads per platform
 6. **Track device identifiers** - Prevent duplicate registrations
 7. **Test before production** - Use development certificates for testing
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.apps.notifications` - Notification system
-- `htk.middleware` - User agent detection

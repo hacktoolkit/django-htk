@@ -26,7 +26,3 @@ reminder = bot.pull_request_reminder(org)
 # settings.py
 GITHUB_API_TOKEN = os.environ.get('GITHUB_API_TOKEN')
 ```
-
-## Related Modules
-
-- `htk.apps.changelog` - Changelog generation

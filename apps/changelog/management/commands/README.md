@@ -77,8 +77,3 @@ app.conf.beat_schedule = {
 5. **Document parameters** - Clear help text and argument descriptions
 6. **Make commands idempotent** - Safe to run multiple times
 7. **Use verbosity flags** - Support --verbosity for different output levels
-
-## Related Modules
-
-- `django.core.management` - Django management framework
-- Parent module documentation

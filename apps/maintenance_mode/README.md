@@ -141,8 +141,3 @@ schedule.every().day.at('02:00').do(maintenance_window)
 # GET /api/endpoint/
 # Returns: {'error': 'Service under maintenance'}
 ```
-
-## Related Modules
-
-- `htk.apps.notifications` - Notify users
-- `htk.middleware` - Request processing

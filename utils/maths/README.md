@@ -29,7 +29,3 @@ angle_radians = deg2rad(angle_degrees)
 # Use in calculations...
 angle_back = rad2deg(angle_radians)
 ```
-
-## Related Modules
-
-- `htk.utils.measurements` - Unit conversions

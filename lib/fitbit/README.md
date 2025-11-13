@@ -38,7 +38,3 @@ FITBIT_CLIENT_ID = os.environ.get('FITBIT_CLIENT_ID')
 FITBIT_CLIENT_SECRET = os.environ.get('FITBIT_CLIENT_SECRET')
 FITBIT_ACCESS_TOKEN = os.environ.get('FITBIT_ACCESS_TOKEN')
 ```
-
-## Related Modules
-
-- `htk.apps.accounts` - User health profile storage

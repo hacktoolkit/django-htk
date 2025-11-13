@@ -39,7 +39,3 @@ job_api.delete_job(job_id)
 INDEED_CLIENT_ID = os.environ.get('INDEED_CLIENT_ID')
 INDEED_CLIENT_SECRET = os.environ.get('INDEED_CLIENT_SECRET')
 ```
-
-## Related Modules
-
-- `htk.apps.customers` - Candidate/applicant profiles

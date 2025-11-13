@@ -67,8 +67,3 @@ Refer to the service's official documentation for complete API reference.
 5. **Set timeouts** - Prevent hanging requests
 6. **Validate input** - Check data before sending to API
 7. **Handle errors** - Implement proper error handling
-
-## Related Modules
-
-- Service documentation
-- `htk.lib` - Other library integrations

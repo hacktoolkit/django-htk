@@ -95,8 +95,3 @@ from htk.scripts.utils import job_runner
 def scheduled_sync():
     job_runner(sync_external_api)
 ```
-
-## Related Modules
-
-- `django.core.management` - Django management commands
-- `htk.apps.async_task` - Async task queue

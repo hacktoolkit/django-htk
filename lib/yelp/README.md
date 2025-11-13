@@ -35,8 +35,3 @@ photos = api.get_photos(business_id)
 # settings.py
 YELP_API_KEY = os.environ.get('YELP_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.lib.google` - Maps and location services
-- `htk.apps.geolocations` - Location-based features

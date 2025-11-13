@@ -165,9 +165,3 @@ CPQ_STRIPE_CONNECTED = True
 4. **Send email confirmations** when quote created
 5. **Track quote status** for follow-ups
 6. **Use group quotes** for related deals
-
-## Related Modules
-
-- `htk.apps.stripe_lib` - Payment processing
-- `htk.apps.customers` - Customer management
-- `htk.apps.notifications` - Send confirmations

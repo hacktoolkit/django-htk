@@ -75,7 +75,3 @@ SLACK_SIGNING_SECRET = os.environ.get('SLACK_SIGNING_SECRET')
 - Multiple event handlers
 - Webhook validation
 - Error response handling
-
-## Related Modules
-
-- `htk.apps.notifications` - Notification system

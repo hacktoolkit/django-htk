@@ -226,9 +226,3 @@ FEEDBACK_CRITICAL_THRESHOLD = 2  # Rating threshold
 5. **Follow up on bugs** - Mark as resolved when fixed
 6. **Analyze trends** - Review feedback regularly
 7. **Notify team** - Alert relevant teams of critical issues
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.apps.notifications` - Send notifications
-- `htk.apps.changelog` - Release notes based on feedback

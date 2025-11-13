@@ -57,7 +57,3 @@ raw_id = resolve_raw_id('a7f2')
 SHORT_URL_DOMAIN = 'short.example.com'
 SHORT_URL_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 ```
-
-## Related Modules
-
-- `htk.lib.bitly` - Bitly integration

@@ -32,8 +32,3 @@ try:
 except HttpErrorResponseError as e:
     return error_response(e.status_code)
 ```
-
-## Related Modules
-
-- `htk.api` - API utilities
-- `htk.middleware` - Request/response handling

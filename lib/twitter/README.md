@@ -29,8 +29,3 @@ TWITTER_API_SECRET = os.environ.get('TWITTER_API_SECRET')
 TWITTER_ACCESS_TOKEN = os.environ.get('TWITTER_ACCESS_TOKEN')
 TWITTER_ACCESS_TOKEN_SECRET = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
 ```
-
-## Related Modules
-
-- `htk.lib.facebook` - Social media APIs
-- `htk.lib.linkedin` - Professional networking

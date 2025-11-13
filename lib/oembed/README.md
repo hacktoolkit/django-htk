@@ -24,7 +24,3 @@ vimeo_html = get_oembed_html_for_service('vimeo', 'https://vimeo.com/123456')
 # settings.py
 OEMBED_ENABLED = True
 ```
-
-## Related Modules
-
-- `htk.lib.youtube` - Video content

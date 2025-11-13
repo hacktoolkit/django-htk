@@ -112,9 +112,3 @@ HTK_MAX_RETRIES = 3
 5. **Batch operations** - Use bulk_* variants when processing multiple items
 6. **Cache results** - Cache expensive lookups when appropriate
 7. **Test edge cases** - Test with missing data, invalid input, etc.
-
-## Related Modules
-
-- Parent module documentation
-- `django.db.models` - Django ORM
-- `django.conf.settings` - Django settings

@@ -30,7 +30,3 @@ def convert_measurements(value, from_unit, to_unit):
 distance_meters = DistanceType(1609.34, Distance.METERS)  # 1 mile
 distance_miles = distance_meters.to(Distance.MILES)  # Display as 1 mile
 ```
-
-## Related Modules
-
-- `htk.utils.maths` - Mathematical utilities

@@ -26,8 +26,3 @@ ssml = get_menu_ssml(meal, date)
 # settings.py
 ZESTY_API_KEY = os.environ.get('ZESTY_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.lib.ohmygreen` - Wellness benefits
-- `htk.lib.alexa` - Voice integration

@@ -54,7 +54,3 @@ from htk.apps.async_task.views import async_download_result
 ASYNC_TASK_TIMEOUT = 3600  # 1 hour
 ASYNC_TASK_MAX_RETRIES = 3
 ```
-
-## Related Modules
-
-- `celery` - For more advanced async task scheduling

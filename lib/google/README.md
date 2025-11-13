@@ -72,8 +72,3 @@ GOOGLE_SERVER_API_KEY = os.environ.get('GOOGLE_SERVER_API_KEY')
 GOOGLE_BROWSER_API_KEY = os.environ.get('GOOGLE_BROWSER_API_KEY')
 GOOGLE_SHEETS_API_KEY = os.environ.get('GOOGLE_SHEETS_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.apps.addresses` - Address geocoding
-- `htk.lib.mapbox` - Alternative maps

@@ -168,9 +168,3 @@ def render_with_language(request):
 
     return render(request, 'page.html', context)
 ```
-
-## Related Modules
-
-- `htk.apps.accounts` - User language preference
-- `htk.utils.text` - Text processing
-- `django.utils.translation` - Django i18n

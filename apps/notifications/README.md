@@ -232,10 +232,3 @@ NOTIFICATION_RETENTION_DAYS = 30
 5. **Test with staging** - Test notifications in staging before production
 6. **Batch process** - Use Celery for bulk notifications
 7. **Monitor delivery** - Track sent, failed, bounced notifications
-
-## Related Modules
-
-- `htk.apps.accounts` - User management and preferences
-- `htk.lib.slack` - Slack integration
-- `htk.lib.plivo` - SMS integration
-- `htk.utils.log` - Logging notifications

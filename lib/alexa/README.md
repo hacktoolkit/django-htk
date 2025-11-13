@@ -40,7 +40,3 @@ from htk.lib.alexa.event_handlers import default, launch
 ALEXA_SKILL_ID = os.environ.get('ALEXA_SKILL_ID')
 ALEXA_WEBHOOK_PATH = 'alexa/webhook/'
 ```
-
-## Related Modules
-
-- `htk.lib.discord` - Webhook integrations

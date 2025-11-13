@@ -43,7 +43,3 @@ people = client.get_persons(['user1@example.com', 'user2@example.com'])
 # settings.py
 ITERABLE_API_KEY = os.environ.get('ITERABLE_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.apps.notifications` - Notification system
