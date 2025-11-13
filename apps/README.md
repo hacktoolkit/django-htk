@@ -1,535 +1,270 @@
-# HTK Apps Module
-
-29 production-ready Django applications providing domain-specific functionality.
-
-## Overview
-
-Each application in HTK is:
-- **Independently functional** - Use only what you need
-- **Modular** - Reusable across multiple domains
-- **Selectively installable** - Enable based on project requirements
-- **Feature-complete** - Models, views, forms, admin, and API included
-
-## Architecture
-
-Each HTK app follows this structure:
-
-```
-appname/
-├── __init__.py           # App configuration
-├── models.py             # Data models
-├── views.py              # View logic
-├── urls.py              # URL routing
-├── forms.py             # Form classes
-├── admin.py             # Admin configuration
-├── managers.py          # Model managers
-├── utils.py             # Utility functions
-├── constants/           # App-specific constants
-│   └── __init__.py
-├── migrations/          # Database migrations
-├── api/                 # API endpoints
-│   └── __init__.py
-└── templates/           # App templates
-```
-
-## App Categories
-
-### 1. User & Account Management
-
-#### **accounts** - User authentication and profiles
-- User registration and authentication
-- Email verification
-- Password management
-- Social authentication integration (Apple, Google, Facebook)
-- User profiles
-- Session management
-
-**Key Models:** User, UserProfile, UserToken
-**Key Features:** Registration, email confirmation, password reset, OAuth
-
-#### **organizations** - Organization and team management
-- Organization creation and management
-- Team structure
-- Member invitations
-- Role-based access control
-- Organization settings
-
-**Key Models:** Organization, Team, Member, Role
-**Key Features:** Multi-tenancy support, team collaboration
-
-### 2. Communication & Messaging
-
-#### **conversations** - Direct messaging
-- User-to-user messaging
-- Group conversations
-- Message threading
-- Typing indicators
-- Message search
-
-**Key Models:** Conversation, Message, Participant
-**Key Features:** Real-time messaging, conversation history
-
-#### **notifications** - User notifications
-- In-app notifications
-- Email notifications
-- Push notifications
-- Notification channels
-- Notification preferences
-
-**Key Models:** Notification, NotificationPreference, NotificationChannel
-**Key Features:** Multi-channel delivery, preference management
-
-#### **invitations** - Invitation system
-- Send invitations
-- Track invitation status
-- Accept/decline invitations
-- Expiring invitations
-- Bulk invitations
-
-**Key Models:** Invitation, InvitationCode
-**Key Features:** Email invitations, expiration handling
-
-#### **forums** - Discussion forums
-- Forum categories
-- Discussion threads
-- Comments and replies
-- Voting/reactions
-- Moderation
-
-**Key Models:** Forum, Thread, Post, Vote
-**Key Features:** Community discussions, content moderation
-
-### 3. Content & Data Management
-
-#### **bible** - Bible data and references
-- Bible books, chapters, verses
-- Multiple translations (NASB, ESV, etc.)
-- Bible passage lookup and resolution
-- Cross-references
-- Study aids
-
-**Key Models:** Book, Chapter, Verse, Translation
-**Key Features:** Bible search, passage resolution, reference linking
-
-#### **changelog** - Release notes and version tracking
-- Version management
-- Release notes
-- Changelog generation
-- Slack announcements
-- Web changelog view
-
-**Key Models:** Release, ChangeLog
-**Key Features:** Automated changelog, version tracking
-
-#### **feedback** - User feedback and surveys
-- Feedback collection
-- Survey creation
-- Rating/review system
-- Feedback analysis
-- Response tracking
-
-**Key Models:** Feedback, Survey, Response
-**Key Features:** User feedback, survey administration
-
-#### **assessments** - Quizzes and assessments
-- Assessment creation
-- Question and answer management
-- Score tracking
-- Result generation
-- Reporting
-
-**Key Models:** Assessment, Question, Answer, Result
-**Key Features:** Quizzes, scoring, analytics
-
-### 4. Storage & File Management
-
-#### **file_storage** - File upload and management
-- File uploads
-- File versioning
-- Access control
-- Storage backend integration (S3, local)
-- File serving
-
-**Key Models:** File, FileVersion
-**Key Features:** Multi-backend support, access control
-
-#### **blob_storage** - Binary large object storage
-- BLOB storage
-- Compression
-- Streaming
-- Size management
-
-**Key Models:** Blob
-**Key Features:** Large file handling
-
-#### **kv_storage** - Key-value storage
-- Simple key-value pairs
-- TTL support
-- Type flexibility
-- Query support
-
-**Key Models:** KeyValueStore
-**Key Features:** Flexible storage, expiration
-
-### 5. Commerce & Business Logic
-
-#### **store** - E-commerce and store
-- Products
-- Shopping cart
-- Orders
-- Inventory
-- Payment integration
-
-**Key Models:** Product, Cart, Order, OrderItem
-**Key Features:** Shopping cart, order management
-
-#### **cpq** - Configure-Price-Quote
-- Product configuration
-- Dynamic pricing
-- Quote generation
-- Customer contracts
-
-**Key Models:** Quote, QuoteItem, Configuration
-**Key Features:** Complex pricing, quote workflows
-
-#### **customers** - Customer management
-- Customer profiles
-- Purchase history
-- Preferences
-- Communication history
-- Segmentation
-
-**Key Models:** Customer, CustomerProfile
-**Key Features:** CRM functionality
-
-### 6. Features & Flags
-
-#### **features** - Feature flags
-- Feature toggles
-- A/B testing
-- Gradual rollouts
-- User targeting
-- Analytics
-
-**Key Models:** Feature, FeatureFlag, FeatureUser
-**Key Features:** Feature toggle, targeting
-
-### 7. Technical Infrastructure
-
-#### **async_task** - Asynchronous tasks
-- Task queuing (Celery integration)
-- Task scheduling
-- Task status tracking
-- Error handling
-
-**Key Models:** Task, TaskResult
-**Key Features:** Async execution, task tracking
-
-#### **url_shortener** - URL shortening
-- Short URL generation
-- Tracking redirects
-- Analytics
-- Expiration
-
-**Key Models:** ShortURL, URLClick
-**Key Features:** URL tracking, analytics
-
-#### **tokens** - Token management
-- API tokens
-- Temporary tokens
-- Token validation
-- Revocation
-
-**Key Models:** Token
-**Key Features:** Session-less auth, token lifecycle
-
-#### **geolocations** - Location services
-- IP geolocation
-- Address geocoding
-- Location-based queries
-- Distance calculations
-
-**Key Models:** Location
-**Key Features:** Mapping, proximity search
-
-#### **i18n** - Internationalization
-- Multi-language support
-- Translation management
-- Locale selection
-- Language preferences
-
-**Key Features:** Multi-language support, locale detection
-
-#### **addresses** - Address management
-- Address storage
-- Address validation
-- Geocoding
-- Address formatting
-
-**Key Models:** Address
-**Key Features:** Address parsing, validation
-
-### 8. Deployment & Maintenance
-
-#### **maintenance_mode** - Site maintenance
-- Enable/disable maintenance mode
-- Custom maintenance page
-- Whitelisted IPs
-- Email notifications
-
-**Key Features:** Maintenance windows, exception handling
-
-#### **prelaunch** - Pre-launch mode
-- Coming soon pages
-- Email collection
-- Launch countdown
-- Beta access
-
-**Key Models:** PrelaunchSignup
-**Key Features:** Coming soon, email capture
-
-#### **sites** - Multi-site support
-- Multiple site management
-- Site-specific settings
-- Domain routing
-- Site switching
-
-**Key Features:** Multi-tenancy, domain routing
-
-### 9. Other Utilities
-
-#### **mobile** - Mobile app support
-- Device registration
-- Push notifications
-- App-specific settings
-- Device tracking
-
-**Key Models:** Device
-**Key Features:** Push notifications, device management
-
-#### **mp** - Marketplace (undefined purpose)
-- Likely: Seller/vendor management
-- Product listings
-- Commission tracking
-
-#### **documentation_automation** - Documentation automation
-- Automated documentation generation
-- Code documentation helpers
-- Documentation management tools
-
-## Installation
-
-### Adding an App to Your Project
-
-```python
-# settings.py
-INSTALLED_APPS = [
-    # ...
-    'htk.apps.changelog',
-    'htk.apps.accounts',
-    # Add other apps as needed
-]
-```
-
-### Database Migrations
-
-```bash
-python manage.py migrate
-```
-
-## Configuration
-
-### Per-App Settings
-
-Each app has optional settings in the form `HTK_<APP_NAME>_*`:
-
-```python
-# settings.py
-
-# Accounts app
-HTK_USER_PROFILE_MODEL = 'myapp.UserProfile'
-
-# Changelog app
-HTK_CHANGELOG_FILE_PATH = BASE_DIR / 'CHANGELOG.md'
-HTK_CHANGELOG_SLACK_CHANNEL_RELEASES = '#releases'
-
-# Maintenance mode
-HTK_MAINTENANCE_MODE = False
-HTK_MAINTENANCE_MODE_EXCEPTION_VIEWS = []
-
-# Features
-HTK_FEATURE_FLAG_MODEL = 'myapp.FeatureFlag'
-```
-
-## Usage Patterns
-
-### Pattern 1: Using the Accounts App
-
-```python
-from htk.apps.accounts.models import User
-
-# Create user
-user = User.objects.create_user(
-    username='john',
-    email='john@example.com',
-    password='password123'
-)
-
-# Get user profile
-profile = user.userprofile
-```
-
-### Pattern 2: Using Organizations App
-
-```python
-from htk.apps.organizations.models import Organization, Team
-
-# Create organization
-org = Organization.objects.create(
-    name='Acme Corp',
-    slug='acme'
-)
-
-# Create team within organization
-team = Team.objects.create(
-    organization=org,
-    name='Engineering'
-)
-```
-
-### Pattern 3: Using Notifications
-
-```python
-from htk.apps.notifications.models import Notification
-
-# Create notification
-notif = Notification.objects.create(
-    user=request.user,
-    title='New message',
-    message='You have a new message from John',
-    notification_type='message'
-)
-```
-
-### Pattern 4: Using Features
-
-```python
-from htk.apps.features.models import Feature
-
-# Check feature flag
-if Feature.is_enabled('new_dashboard', user=request.user):
-    # Use new dashboard
-    pass
-else:
-    # Use old dashboard
-    pass
-```
-
-## API Integration
-
-Most apps provide REST API endpoints:
-
-```python
-# settings.py
-INSTALLED_APPS = [
-    # ...
-    'htk.apps.accounts',
-    'htk.apps.organizations',
-    'htk.apps.notifications',
-]
-
-# urls.py
-from django.urls import path, include
-
-urlpatterns = [
-    path('api/accounts/', include('htk.apps.accounts.api.urls')),
-    path('api/organizations/', include('htk.apps.organizations.api.urls')),
-    path('api/notifications/', include('htk.apps.notifications.api.urls')),
-]
-```
-
-## Common Patterns Across Apps
-
-### 1. Time Tracking
-
-Most models include:
-```python
-created_at = models.DateTimeField(auto_now_add=True)
-updated_at = models.DateTimeField(auto_now=True)
-```
-
-### 2. Soft Deletes
-
-Many models support soft deletes:
-```python
-is_deleted = models.BooleanField(default=False)
-
-# Query active items
-Item.objects.filter(is_deleted=False)
-```
-
-### 3. Status Fields
-
-Many models use status tracking:
-```python
-STATUS_CHOICES = [
-    ('pending', 'Pending'),
-    ('active', 'Active'),
-    ('completed', 'Completed'),
-]
-status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-```
-
-### 4. User Association
-
-Most models link to User model:
-```python
-user = models.ForeignKey(User, on_delete=models.CASCADE)
-created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-```
-
-## Testing Apps
-
-```python
-from django.test import TestCase
-from htk.apps.accounts.models import User
-
-class UserTestCase(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com'
-        )
-
-    def test_user_creation(self):
-        self.assertEqual(self.user.username, 'testuser')
-```
-
-## App Dependencies
-
-```
-accounts → base user functionality
-  ↓
-organizations → uses accounts for owner/members
-  ↓
-notifications → uses accounts for recipients
-  ↓
-conversations → uses accounts for participants
-  ↓
-invitations → uses accounts for inviter/invitee
-```
-
-## Related Documentation
-
-- [HTK Models](../models/README.md) - Base model classes
-- [HTK API](../api/README.md) - API utilities
-- [HTK Forms](../forms/README.md) - Form utilities
-- [HTK Admin](../admin/README.md) - Admin customizations
-- [Django Apps Documentation](https://docs.djangoproject.com/en/stable/ref/applications/)
-- [Django Models Documentation](https://docs.djangoproject.com/en/stable/topics/db/models/)
-
-## Status
-
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
-- **Documentation Confidence:** HIGH (>95%)
+# Apps
+
+## Classes
+- **`HtkUserTokenAuthBackend`** (apps/accounts/backends.py) - Custom backend that uses a securely generated token
+- **`UserFollowingCache`** (apps/accounts/cachekeys.py) - Cache management object for user following,
+- **`UserFollowersCache`** (apps/accounts/cachekeys.py) - Cache management object for user followers,
+- **`AccountActivationReminderEmailCooldown`** (apps/accounts/cachekeys.py) - Cache management object for not sending out AccountActivationReminderEmails to the same user more than once every two days
+- **`UpdatePasswordForm`** (apps/accounts/forms/auth.py) - A subclass of Django's SetPasswordForm
+- **`PasswordResetFormHtmlEmail`** (apps/accounts/forms/auth.py) - Modeled after django.contrib.auth.forms.PasswordResetForm
+- **`UsernameEmailAuthenticationForm`** (apps/accounts/forms/auth.py) - Based on django.contrib.auth.forms.AuthenticationForm
+- **`UserEmailRegistrationLock`** (apps/accounts/locks.py) - Lock to prevent race condition of simultaneous regsitration attempts
+- **`HtkBasicAuthMiddleware`** (apps/accounts/middleware.py) - Custom Authenication Middleware to allow logging in using
+- **`HtkUserTokenAuthMiddleware`** (apps/accounts/middleware.py) - Custom Authentication Middleware to attempt logging in with
+- **`BaseAbstractUserProfile`** (apps/accounts/models.py) - django.contrib.auth.models.User does not have a unique email
+- **`UserEmail`** (apps/accounts/models.py) - A User can have multiple email addresses using this table
+- **`WithingsOAuth2`** (apps/accounts/social_backends.py) - Withings OAuth2 authentication backend
+- **`BasePostalAddress`** (apps/addresses/models.py) - Class for storing Postal Address
+- **`AbstractAssessment`** (apps/assessments/models.py) - Abstract model for Assessments app to extend from.
+- **`AbstractAssessmentQuestion`** (apps/assessments/models.py) - Represents one question in an Assessment.
+- **`AbstractAssessmentQuestionAnswerOption`** (apps/assessments/models.py) - Represents the options for a multiple-choice question.
+- **`AbstractBibleBook`** (apps/bible/models.py) - AbstractBibleBook model
+- **`AbstractBibleChapter`** (apps/bible/models.py) - AbstractBibleChapter model
+- **`AbstractBibleVerse`** (apps/bible/models.py) - AbstractBibleVerse model
+- **`AbstractBiblePassage`** (apps/bible/models.py) - AbstractBiblePassage model
+- **`BaseConversation`** (apps/conversations/models.py) - A base conversation class which is extensible
+- **`BaseConversationParticipant`** (apps/conversations/models.py) - A participant in a conversation
+- **`BaseConversationMessage`** (apps/conversations/models.py) - A message in a conversation
+- **`BaseConversationMessageReaction`** (apps/conversations/models.py) - An emoji reaction to a message in
+- **`AbstractCPQQuote`** (apps/cpq/models.py) - Abstract base class for a Quote, Invoice, or GroupQuote
+- **`BaseCPQQuote`** (apps/cpq/models.py) - Base class for a Quote
+- **`BaseCPQGroupQuote`** (apps/cpq/models.py) - Base class for a GroupQuote
+- **`BaseCPQInvoice`** (apps/cpq/models.py) - Base class for an Invoice
+- **`BaseCustomer`** (apps/customers/models.py) - Base model for a Customer in the `htk.apps.cpq` app
+- **`BaseOrganizationCustomer`** (apps/customers/models.py) - Base model for an OrganizationCustomer in the `htk.apps.cpq` app
+- **`ModuleAnalyzer`** (apps/documentation/analyzer.py) - Analyzes Python modules to extract meaningful documentation information.
+- **`ReadmeGenerator`** (apps/documentation/generator.py) - Generates clean, minimal README files for modules.
+- **`DocumentationGenerator`** (apps/documentation/generator.py) - Orchestrates README generation for entire codebase.
+- **`FeatureFlagCache`** (apps/features/cachekeys.py) - Cache management object for Feature Flags
+- **`Forum`** (apps/forums/models.py) - Forum represents a message forum
+- **`ForumTag`** (apps/forums/models.py) - ForumTag can either apply to ForumThread or ForumMessage
+- **`GeocodeCache`** (apps/geolocations/cachekeys.py) - Cache management object for geocode lookups
+- **`LocalizationUsageCheck`** (apps/i18n/dataclasses.py) - Localization Usage Check
+- **`AbstractLocalizableString`** (apps/i18n/models.py) - A localizable string is a string that can be localized to a different language.
+- **`AbstractLocalizedString`** (apps/i18n/models.py) - A localized string is one that is associated with a localizable string, and has already been translated to a local language.
+- **`KVStorageCache`** (apps/kv_storage/cachekeys.py) - Cache management object for key-value storage
+- **`AbstractKVStorage`** (apps/kv_storage/models.py) - AbstractKVStorage is a simple key-value storage on top of your Django app's default data storage (i.e. most likely MySQL)
+- **`MaintenanceModeMiddleware`** (apps/maintenance_mode/middleware.py) - Checks whether HTK_MAINTENANCE_MODE is set
+- **`require_organization_permission`** (apps/organizations/decorators.py) - Decorator for requiring current logged-in user to have required level of permission in Organization.
+- **`OrganizationInvitationResponseView`** (apps/organizations/views.py) - Organization Invitation Response Class Based View
+- **`HTKShortUrl`** (apps/url_shortener/models.py) - Short URL code is traditionally duosexagesimal (base 62)
+
+## Functions
+- **`suggest`** (apps/accounts/api/views.py) - This API endpoint supports User autocomplete
+- **`update`** (apps/accounts/api/views.py) - Updates a User or UserProfile
+- **`username`** (apps/accounts/api/views.py) - Update a User's username
+- **`password`** (apps/accounts/api/views.py) - Update a User's password
+- **`avatar`** (apps/accounts/api/views.py) - Update a User's avatar to the specified type
+- **`follow`** (apps/accounts/api/views.py) - Follow another user
+- **`unfollow`** (apps/accounts/api/views.py) - Unfollow another user
+- **`create_user_profile`** (apps/accounts/apps.py) - signal handler for User post-save
+- **`process_user_email_association`** (apps/accounts/apps.py) - signal handler for UserEmail post-save
+- **`activation_email`** (apps/accounts/emails.py) - Sends an activation/confirmation email for user to confirm email address
+- **`send_email`** (apps/accounts/emails.py) - Sends an activation reminder email to `recipient`, a Django User
+- **`users_currently_at_local_time`** (apps/accounts/filters.py) - Filters a QuerySet of `users` whose current local time is within a time range
+- **`users_logged_in_within_period`** (apps/accounts/filters.py) - Filter the queryset of users who logged in within the last `window` number of hours.
+- **`users_registered_within_period`** (apps/accounts/filters.py) - Filter the queryset of users who registered within the last `window` number of hours.
+- **`format_suggest_username`** (apps/accounts/formatters.py) - Returns only the username
+- **`clean`** (apps/accounts/forms/auth.py) - We are using cascaded_errors to bubble up any field-level errors to form-wide
+- **`save`** (apps/accounts/forms/auth.py) - Handles a possible race condition and performs save
+- **`save`** (apps/accounts/forms/auth.py) - Generates a one-use only link for resetting password and sends to the user
+- **`clean`** (apps/accounts/forms/auth.py) - Clean the form and try to get user
+- **`clean`** (apps/accounts/forms/auth.py) - We are using cascaded_errors to bubble up any field-level errors to form-wide
+- **`has_username_field`** (apps/accounts/forms/update.py) - Determines whether username is a field in this form instance
+- **`clean_username`** (apps/accounts/forms/update.py) - If username is a field in this form instance, ensure that it satisfies the regular expression
+- **`process_response`** (apps/accounts/middleware.py) - Checks whether in an explicit authorization flow
+- **`get_redirect_uri`** (apps/accounts/middleware.py) - Redirect to LOGIN_ERROR_URL by default
+- **`get_token_auth_token`** (apps/accounts/models.py) - Returns a token for token authentication.
+- **`get_nav_display_name`** (apps/accounts/models.py) - Gets the name to be displayed to the user in app navigation context
+- **`get_org_display_name`** (apps/accounts/models.py) - Gets the name to be displayed to other users in Organization context
+- **`has_completed_account_setup`** (apps/accounts/models.py) - Determines whether this User has completed the minimum account setup:
+- **`has_email`** (apps/accounts/models.py) - Determine whether this User owns `email`
+- **`set_primary_email`** (apps/accounts/models.py) - Set the primary email address for `self.user`
+- **`has_primary_email`** (apps/accounts/models.py) - Determines whether this `User` has a primary email set
+- **`get_primary_email`** (apps/accounts/models.py) - Retrieve this `User`'s primary email
+- **`get_primary_email_unverified`** (apps/accounts/models.py) - Retrieve this `User`'s primary email, even if it has not been verified
+- **`get_nonprimary_emails`** (apps/accounts/models.py) - Returns a list of UserEmail objects associated with `self.user`, besides the primary email
+- **`confirmed_email`** (apps/accounts/models.py) - Returns one confirmed email
+- **`send_welcome_email`** (apps/accounts/models.py) - Sends a welcome email to the user
+- **`get_social_auths`** (apps/accounts/models.py) - Gets all associated UserSocialAuth objects
+- **`get_fb_social_user`** (apps/accounts/models.py) - Gets a Facebook UserSocialAuth
+- **`get_fbid`** (apps/accounts/models.py) - Gets a user's Facebook id
+- **`get_tw_social_user`** (apps/accounts/models.py) - Gets a Twitter UserSocialAuth
+- **`get_twid`** (apps/accounts/models.py) - Gets a user's Twitter id
+- **`can_disconnect_social_auth`** (apps/accounts/models.py) - Returns whether the user can disconnect at least one social auth
+- **`get_user_token_auth_token`** (apps/accounts/models.py) - Returns the token to auth/log in the `user`
+- **`activate`** (apps/accounts/models.py) - Activate the User if not already activated
+- **`get_local_time`** (apps/accounts/models.py) - Gets the current local time for User
+- **`next_iso_week_date`** (apps/accounts/models.py) - The first day of the next ISO week
+- **`update_locale_info_by_ip_from_request`** (apps/accounts/models.py) - Update user info by IP Address
+- **`get_following`** (apps/accounts/models.py) - Gets User following
+- **`get_followers`** (apps/accounts/models.py) - Gets User followers
+- **`has_follower`** (apps/accounts/models.py) - Check if the currently logged-in user is following self.user
+- **`is_primary`** (apps/accounts/models.py) - Determines whether this UserEmail is the primary email address of `self.user`
+- **`set_primary_email`** (apps/accounts/models.py) - Sets the primary email address of `self.user` to `self.email`
+- **`delete`** (apps/accounts/models.py) - Deletes this associated email address
+- **`delete_replaced_email`** (apps/accounts/models.py) - Deletes an email that was replaced
+- **`send_activation_email`** (apps/accounts/models.py) - Sends an activation email
+- **`send_activation_reminder_email`** (apps/accounts/models.py) - Sends an account activation reminder email
+- **`confirm_and_activate_account`** (apps/accounts/models.py) - Confirms the email address, and activates the associated account if not already activated
+- **`combined_user_search`** (apps/accounts/search.py) - Combines result sets from multiple `search_functions` into one resultant QuerySet
+- **`search_by_username_name`** (apps/accounts/search.py) - Searchs for Users by username and name
+- **`search_by_username`** (apps/accounts/search.py) - Searches for Users by username
+- **`search_by_name`** (apps/accounts/search.py) - Search for Users by name (first name, last name)
+- **`search_by_email`** (apps/accounts/search.py) - Search for Users by email address
+- **`python_social_auth_shim`** (apps/accounts/social_auth_pipeline.py) - Shim layer decorator for django-social-auth to python-social auth migration
+- **`reset_session_keys`** (apps/accounts/social_auth_pipeline.py) - Reset a bunch of keys used as part of the social auth flow
+- **`check_email`** (apps/accounts/social_auth_pipeline.py) - Ask the user to enter the email if we don't have one yet
+- **`check_terms_agreement`** (apps/accounts/social_auth_pipeline.py) - Ask the user to agree to Privacy Policy and Terms of Service
+- **`check_incomplete_signup`** (apps/accounts/social_auth_pipeline.py) - Checks for an incomplete signup, and sets that User instead
+- **`set_username`** (apps/accounts/social_auth_pipeline.py) - This pipeline function can be used to set UserProfile.has_username_set = True
+- **`associate_email`** (apps/accounts/social_auth_pipeline.py) - Associate email with the user
+- **`handle_new_user`** (apps/accounts/social_auth_pipeline.py) - Do stuff if the account was newly created
+- **`login_authenticated_user`** (apps/accounts/utils/auth.py) - Logs in an authenticated user and performs related updates
+- **`get_user_token_auth_token`** (apps/accounts/utils/auth.py) - Returns the token to auth/log in the `user`
+- **`get_user_token_auth_hash`** (apps/accounts/utils/auth.py) - Generates the hash portion of a user token-auth token
+- **`validate_user_token_auth_token`** (apps/accounts/utils/auth.py) - Validates a user token-auth token
+- **`validate_reset_password_token`** (apps/accounts/utils/auth.py) - Determines whether a valid reset password token exists
+- **`reset_user_password`** (apps/accounts/utils/auth.py) - Resets the password for a user
+- **`get_duplicate_emails`** (apps/accounts/utils/debug.py) - Sanity check to make sure no users in database have the same email address
+- **`create_user`** (apps/accounts/utils/general.py) - Creates a new user
+- **`set_random_password`** (apps/accounts/utils/general.py) - Sets a random password for `user`
+- **`email_to_username_hash`** (apps/accounts/utils/general.py) - Convert emails to hashed versions where we store them in the username field
+- **`email_to_username_pretty_unique`** (apps/accounts/utils/general.py) - Converts `email` to a pretty and unique username based on the email
+- **`get_user_by_username`** (apps/accounts/utils/general.py) - Gets a user by `username`
+- **`get_user_by_email`** (apps/accounts/utils/general.py) - Gets a User by `email`
+- **`get_user_by_email_with_retries`** (apps/accounts/utils/general.py) - Gets a User by `email`
+- **`get_incomplete_signup_user_by_email`** (apps/accounts/utils/general.py) - Gets an incomplete signup User by `email`
+- **`associate_user_email`** (apps/accounts/utils/general.py) - Associates `email` with `user`
+- **`extract_user_email`** (apps/accounts/utils/general.py) - Gets the user for `username_email`
+- **`get_user_by_id`** (apps/accounts/utils/general.py) - Gets a User by user id
+- **`get_users_by_id`** (apps/accounts/utils/general.py) - Gets a list of Users by user ids
+- **`get_user_emails_by_id`** (apps/accounts/utils/general.py) - Gets a list of UserEmails by ids
+- **`encrypt_uid`** (apps/accounts/utils/general.py) - Encrypts the User id for transfer in plaintext
+- **`resolve_encrypted_uid`** (apps/accounts/utils/general.py) - Returns the User for this `encrypted_uid`
+- **`get_local_time`** (apps/accounts/utils/locale.py) - Converts a datetime `dt` to the local timezone of `user`
+- **`localized_time_for_user`** (apps/accounts/utils/locale.py) - Attaches a timezone for `user` to `naive_dt`
+- **`get_all_users`** (apps/accounts/utils/lookup.py) - Returns all users
+- **`get_inactive_users`** (apps/accounts/utils/lookup.py) - Returns all inactive users
+- **`get_users_currently_at_local_time`** (apps/accounts/utils/lookup.py) - Returns a Queryset of Users whose current local time is within a time range
+- **`create_missing_user_profiles`** (apps/accounts/utils/profile.py) - Create missing user profiles
+- **`get_social_auth_for_user`** (apps/accounts/utils/social_utils.py) - Get one UserSocialAuth for given `user` and `provider`
+- **`get_social_auths_for_user`** (apps/accounts/utils/social_utils.py) - Get UserSocialAuths for given `user`
+- **`get_social_auth_providers`** (apps/accounts/view_helpers.py) - Return a list of social auth providers.
+- **`get_social_auth_login_providers`** (apps/accounts/view_helpers.py) - Return a list of social auth providers.
+- **`get_social_auths_statuses`** (apps/accounts/view_helpers.py) - Get the statuses of all social auths for a user
+- **`redirect_to_social_auth_complete`** (apps/accounts/view_helpers.py) - Return an HTTP Redirect response to social:complete to continue the pipeline
+- **`register_social_login`** (apps/accounts/views.py) - For when a user is already associated with this email and has a usable password set
+- **`register_social_already_linked`** (apps/accounts/views.py) - For when a user is already associated with this email only through social auth and no password set
+- **`forgot_password`** (apps/accounts/views.py) - Modeled after django.contrib.auth.views.password_reset
+- **`reset_password`** (apps/accounts/views.py) - View that checks the hash in a password reset link and presents a
+- **`get_static_google_map_image_url`** (apps/addresses/mixins.py) - https://developers.google.com/maps/documentation/staticmaps/
+- **`build_async_task_result`** (apps/async_task/utils.py) - Builds an Async Task result from JSON
+- **`extract_async_task_result_json_values`** (apps/async_task/utils.py) - Companion function to perform the inverse of `build_async_task_result()`
+- **`async_download_result`** (apps/async_task/views.py) - View to download the result of an async task as a file
+- **`get_scripture_references_compact`** (apps/bible/utils/references.py) - Returns a nested list of scripture references
+- **`write_changelog`** (apps/changelog/classes/change_log.py) - Write Change Log to given file.
+- **`build_issue_links`** (apps/changelog/classes/log_entry.py) - Returns a list of GitHUb Issue URLs
+- **`update_changelog_command_factory`** (apps/changelog/cli.py) - Update Changelog Command Factory
+- **`fetch_origin_url`** (apps/changelog/utils.py) - Fetch origin URL from GIT
+- **`fetch_git_logs`** (apps/changelog/utils.py) - Fetch git log in a specific format
+- **`find_all_by_user`** (apps/conversations/models.py) - Finds all conversations that a user is a participant in
+- **`find_by_participants`** (apps/conversations/models.py) - Finds a conversation by participants
+- **`add_participant`** (apps/conversations/models.py) - Adds a participant to this conversation
+- **`add_participants`** (apps/conversations/models.py) - Adds several participants to this conversation
+- **`remove_participant`** (apps/conversations/models.py) - Removes a participant from this conversation
+- **`remove_participants`** (apps/conversations/models.py) - Removes several participants from this conversation
+- **`add_reaction`** (apps/conversations/models.py) - Adds a reaction by `user` to this message.
+- **`remove_reaction`** (apps/conversations/models.py) - Removes an existing reaction by `user` to this message.
+- **`save`** (apps/conversations/models.py) - Saves this message.
+- **`repair_emoji`** (apps/conversations/models.py) - Repairs the emoji shortcode to ensure that it is normalized.
+- **`sync_group_sub_quotes`** (apps/cpq/apps.py) - signal handler for GroupQuote post-save
+- **`get_url_name`** (apps/cpq/models.py) - Gets the url_name for this object
+- **`resolve_line_item_ids`** (apps/cpq/models.py) - Resolves `line_item_ids` into their respective GroupQuoteLineItems or QuoteLineItems
+- **`approve_and_pay`** (apps/cpq/models.py) - Approve `line_item_ids` and pay `amount` for them with a verified `stripe_token`
+- **`create_invoice_for_payment`** (apps/cpq/models.py) - Creates an invoice for this Quote with successful payment by `stripe_customer` for `line_items`
+- **`record_payment`** (apps/cpq/models.py) - Record an actual Stripe payment for `line_items`
+- **`get_charges`** (apps/cpq/models.py) - Get charges made on this Invoice
+- **`compute_cpq_code`** (apps/cpq/utils/crypto.py) - Computes the encoded id for a CPQ object (Quote or Invoice)
+- **`resolve_cpq_code`** (apps/cpq/utils/crypto.py) - Returns the CPQ object (Quote or Invoice) for this `cpq_code`
+- **`cpq_view`** (apps/cpq/views.py) - Renders an invoice, quote, or group quote
+- **`get_module_docstring`** (apps/documentation/analyzer.py) - Extract module/package docstring from __init__.py or module file.
+- **`get_python_files`** (apps/documentation/analyzer.py) - Get all Python files in module/package.
+- **`extract_classes`** (apps/documentation/analyzer.py) - Extract class definitions with their docstrings.
+- **`extract_functions`** (apps/documentation/analyzer.py) - Extract top-level function definitions with docstrings.
+- **`has_models`** (apps/documentation/analyzer.py) - Check if module defines Django models.
+- **`has_views`** (apps/documentation/analyzer.py) - Check if module defines views.
+- **`has_forms`** (apps/documentation/analyzer.py) - Check if module defines forms.
+- **`has_urls`** (apps/documentation/analyzer.py) - Check if module defines URL patterns.
+- **`extract_url_patterns`** (apps/documentation/analyzer.py) - Extract URL pattern names from urls.py.
+- **`extract_key_exports`** (apps/documentation/analyzer.py) - Extract explicitly exported items from __all__ in __init__.py.
+- **`get_summary`** (apps/documentation/analyzer.py) - Get comprehensive summary of module for documentation.
+- **`generate`** (apps/documentation/generator.py) - Generate README content for the module.
+- **`write`** (apps/documentation/generator.py) - Write README.md file.
+- **`find_packages`** (apps/documentation/generator.py) - Find all Python packages (directories with __init__.py).
+- **`generate_all`** (apps/documentation/generator.py) - Generate README files for all packages.
+- **`test_basic_addition`** (apps/feedback/tests.py) - Tests that 1 + 1 always equals 2.
+- **`store_uploaded_file`** (apps/file_storage/utils.py) - Store the uploaded file
+- **`recent_thread`** (apps/forums/models.py) - Retrieves the most recent ForumThread
+- **`recent_message`** (apps/forums/models.py) - Retrieves the most recent message in ForumThread
+- **`save`** (apps/forums/models.py) - Any customizations,  like updating cache, etc
+- **`test_basic_addition`** (apps/forums/tests.py) - Tests that 1 + 1 always equals 2.
+- **`get_address_string`** (apps/geolocations/models.py) - This function needs to be overwritten by the concrete class
+- **`has_latlng`** (apps/geolocations/models.py) - Determines whether this object has a latitude and longitude
+- **`geocode`** (apps/geolocations/models.py) - Geocodes the address
+- **`get_latitude`** (apps/geolocations/models.py) - Retrieve the latitude of this object
+- **`get_longitude`** (apps/geolocations/models.py) - Retrieve the longitude of this object
+- **`map_url`** (apps/geolocations/models.py) - Get the Google Maps URL for this geolocation
+- **`geocoordinates_map_url`** (apps/geolocations/models.py) - Get the Google Maps URL for this geolocation, using coordinates
+- **`find_near_latlng`** (apps/geolocations/models.py) - Given the geopoint pair `latitude` and `longitude`, find nearby AbstractGeolocation objects of type `cls`
+- **`find_near_location`** (apps/geolocations/models.py) - Given the geocode-able string `location_name`, find nearby AbstractGeolocation objects of type `cls`
+- **`find_nearby`** (apps/geolocations/models.py) - Finds nearby AbstractGeolocation objects to this one
+- **`distance_from`** (apps/geolocations/models.py) - Calculates the distance from this AbstractGeolocation to (`lat`, `lng`)
+- **`get_latlng`** (apps/geolocations/utils.py) - Geocodes a `location_name` and caches the result
+- **`WGS84EarthRadius`** (apps/geolocations/utils.py) - Earth radius in meters at a given latitude, according to the WGS-84 ellipsoid [m]
+- **`convert_distance_to_meters`** (apps/geolocations/utils.py) - Converts `distance` in `distance_unit` to meters
+- **`convert_meters`** (apps/geolocations/utils.py) - Converts `distance_meters` in meters to `distance_unit`
+- **`get_bounding_box`** (apps/geolocations/utils.py) - Get the bounding box surrounding the point at given coordinates,
+- **`haversine`** (apps/geolocations/utils.py) - Calculate the great circle distance between two points
+- **`add_translation`** (apps/i18n/models.py) - Adds a translation for this `LocalizableString`
+- **`is_instrumented`** (apps/i18n/models.py) - Determines whether this localizable string is actually instrumented in the codebase.
+- **`look_up_supported_languages`** (apps/i18n/utils/data.py) - Looks up which have languages have translations.
+- **`retrieve_all_strings`** (apps/i18n/utils/data.py) - Returns all translated strings for every possible
+- **`load_strings`** (apps/i18n/utils/data.py) - Load strings from `data` into `LocalizableString` and `LocalizedString`
+- **`lookup_localization`** (apps/i18n/utils/general.py) - Looks up a `LocalizedString` key and
+- **`get_relative_time`** (apps/invitations/models.py) - Returns a string representing the relative duration of time between now and when the invitation was created
+- **`connect_user`** (apps/invitations/models.py) - Connects `user` to this `Invitation`
+- **`complete`** (apps/invitations/models.py) - Completes the invitation lifecycle
+- **`process_user_created`** (apps/invitations/services.py) - Invoked when `user` is created
+- **`process_user_email_confirmation`** (apps/invitations/services.py) - Invoked when `user_email` is confirmed
+- **`process_user_completed`** (apps/invitations/services.py) - Invoked when `user` completely satisfies the onboarding requirements of the invitation flow
+- **`get_kv_storage_model`** (apps/kv_storage/utils.py) - Gets the key-value storage model class
+- **`kv_put`** (apps/kv_storage/utils.py) - PUTs a key-value pair for `key` and `value`
+- **`kv_get`** (apps/kv_storage/utils.py) - GETs the value of `key` from key-value storage
+- **`kv_get_cached`** (apps/kv_storage/utils.py) - GETs the cached value of `key`
+- **`kv_delete`** (apps/kv_storage/utils.py) - DELETEs `key` from key-value storage
+- **`materialized_property`** (apps/mp/services.py) - Decorator to create a Materialized Property
+- **`to_field_name`** (apps/mp/services.py) - Get the field name for the Materialized Property named `mp_name`
+- **`invalidate_for_instance`** (apps/mp/services.py) - Invalidates the Materialized Properties `mps` for this `instance
+- **`organization_invitation_created_or_updated`** (apps/organizations/apps.py) - Signal handler for when a new OrganizationInvitation object is created or updated
+- **`send_invitation_email`** (apps/organizations/emailers.py) - Sends invitation E-mail to given person
+- **`json_encode`** (apps/organizations/models.py) - Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+- **`get_members`** (apps/organizations/models.py) - Returns all active members of this organization
+- **`get_owners`** (apps/organizations/models.py) - Returns all active owners of this organization
+- **`json_encode`** (apps/organizations/models.py) - Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+- **`json_encode`** (apps/organizations/models.py) - Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+- **`accept`** (apps/organizations/models.py) - Accept the organization invitation
+- **`decline`** (apps/organizations/models.py) - Decline the organization invitation
+- **`json_encode`** (apps/organizations/models.py) - Returns a dictionary that can be `json.dumps()`-ed as a JSON representation of this object
+- **`invite_organization_member`** (apps/organizations/utils.py) - Invite person to organization
+- **`prelaunch_toggle_view`** (apps/prelaunch/api/views.py) - Toggle the early access status of a PrelaunchSignup
+- **`get_or_create_by_email`** (apps/prelaunch/models/base.py) - Gets or creates a `PrelaunchSignup` object by `email` and `site`
+- **`notification_message`** (apps/prelaunch/models/base.py) - Returns a message for Slack notifications about platform activity
+- **`is_prelaunch_exception_view`** (apps/prelaunch/utils.py) - Determines if the path is an excepted view from prelaunch redirection
+- **`get_unique_signups`** (apps/prelaunch/utils.py) - Returns a list of PrelaunchSignup objects with unique emails,
+- **`get_current_site`** (apps/sites/utils.py) - Returns the current site if a Request object is available
+- **`get_site_name`** (apps/sites/utils.py) - Returns the current site name
+- **`pre_encode`** (apps/url_shortener/utils.py) - Compute the pre-encoded value
+- **`resolve_raw_id`** (apps/url_shortener/utils.py) - Resolve `prepared_id` into `raw_id`
+- **`generate_short_url_code`** (apps/url_shortener/utils.py) - Generate the short url code for a `raw_id`
+- **`get_recently_shortened`** (apps/url_shortener/utils.py) - Get recently shortened URLs

@@ -1,89 +1,13 @@
 # Api
 
-> HTK Api module
+## Exports
+- `IndeedDispositionSyncAPI`
+- `IndeedJobSyncAPI`
 
-## Purpose
+## Classes
+- **`IndeedDispositionSyncAPI`** (api/disposition_sync.py) - API to post the disposition status of applications received through Indeed
+- **`IndeedJobSyncAPI`** (api/job_sync.py) - API to CREATE/UPDATE/DELETE jobs in Indeed
 
-The `api` directory contains api-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-api/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
-
-## Overview
-
-This module provides functionality for:
-- TODO: Add feature list from code analysis
-
-## Key Components
-
-- TODO: Document key classes and functions
-
-## Usage Examples
-
-### Basic Usage
-
-```python
-from htk.lib/indeed import api
-
-# Example usage
-# TODO: Add actual examples
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_API_ENABLED = True
-```
-
-## Related Modules
-
-- Parent: `htk.lib.indeed` if depth > 1
-- Related: Other HTK modules
-
-## Best Practices
-
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-
-class ApiTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+## Functions
+- **`generate_access_token`** (api/base.py) - Generate access token using app credentials
+- **`get_access_token`** (api/base.py) - Returns access token

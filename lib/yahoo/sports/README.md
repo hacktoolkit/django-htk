@@ -1,89 +1,11 @@
 # Sports
 
-> HTK Sports module
-
-## Purpose
-
-The `sports` directory contains sports-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-sports/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
-
-## Overview
-
-This module provides functionality for:
-- TODO: Add feature list from code analysis
-
-## Key Components
-
-- TODO: Document key classes and functions
-
-## Usage Examples
-
-### Basic Usage
-
-```python
-from htk.lib/yahoo import sports
-
-# Example usage
-# TODO: Add actual examples
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_SPORTS_ENABLED = True
-```
-
-## Related Modules
-
-- Parent: `htk.lib.yahoo` if depth > 1
-- Related: Other HTK modules
-
-## Best Practices
-
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-
-class SportsTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+## Functions
+- **`get`** (sports/fantasy/client.py) - Extracts data from a JSON collection using path-based tree traversal
+- **`perform_api_query`** (sports/fantasy/client.py) - Wrapper for making a query to the Yahoo Fantasy Sports API
+- **`get_user`** (sports/fantasy/client.py) - Get Users collection along with any specified subresources
+- **`get_user_leagues`** (sports/fantasy/client.py) - `game_keys` - comma-separated list of game codes,
+- **`get_user_leagues_keys`** (sports/fantasy/client.py) - Get the league keys for every league this user has
+- **`get_user_leagues_players`** (sports/fantasy/client.py) - Get all of the players in all of the leagues this user has
+- **`get_user_leagues_rosters`** (sports/fantasy/client.py) - Get the rosters for every league this user has
+- **`get_yahoo_fantasy_sports_client_for_user`** (sports/fantasy/utils.py) - Gets a YahooFantasySportsAPIClient instance for `user`

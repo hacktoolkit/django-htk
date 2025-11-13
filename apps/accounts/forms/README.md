@@ -1,89 +1,15 @@
 # Forms
 
-> HTK Forms module
+## Classes
+- **`UpdatePasswordForm`** (forms/auth.py) - A subclass of Django's SetPasswordForm
+- **`PasswordResetFormHtmlEmail`** (forms/auth.py) - Modeled after django.contrib.auth.forms.PasswordResetForm
+- **`UsernameEmailAuthenticationForm`** (forms/auth.py) - Based on django.contrib.auth.forms.AuthenticationForm
 
-## Purpose
-
-The `forms` directory contains forms-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-forms/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
-
-## Overview
-
-This module provides functionality for:
-- TODO: Add feature list from code analysis
-
-## Key Components
-
-- TODO: Document key classes and functions
-
-## Usage Examples
-
-### Basic Usage
-
-```python
-from htk.apps/accounts import forms
-
-# Example usage
-# TODO: Add actual examples
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_FORMS_ENABLED = True
-```
-
-## Related Modules
-
-- Parent: `htk.apps.accounts` if depth > 1
-- Related: Other HTK modules
-
-## Best Practices
-
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-
-class FormsTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+## Functions
+- **`clean`** (forms/auth.py) - We are using cascaded_errors to bubble up any field-level errors to form-wide
+- **`save`** (forms/auth.py) - Handles a possible race condition and performs save
+- **`save`** (forms/auth.py) - Generates a one-use only link for resetting password and sends to the user
+- **`clean`** (forms/auth.py) - Clean the form and try to get user
+- **`clean`** (forms/auth.py) - We are using cascaded_errors to bubble up any field-level errors to form-wide
+- **`has_username_field`** (forms/update.py) - Determines whether username is a field in this form instance
+- **`clean_username`** (forms/update.py) - If username is a field in this form instance, ensure that it satisfies the regular expression

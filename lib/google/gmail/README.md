@@ -1,89 +1,19 @@
 # Gmail
 
-> HTK Gmail module
+## Classes
+- **`GmailAPI`** (gmail/api.py) - Interface to Gmail API
 
-## Purpose
-
-The `gmail` directory contains gmail-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-gmail/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
-
-## Overview
-
-This module provides functionality for:
-- TODO: Add feature list from code analysis
-
-## Key Components
-
-- TODO: Document key classes and functions
-
-## Usage Examples
-
-### Basic Usage
-
-```python
-from htk.lib/google import gmail
-
-# Example usage
-# TODO: Add actual examples
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_GMAIL_ENABLED = True
-```
-
-## Related Modules
-
-- Parent: `htk.lib.google` if depth > 1
-- Related: Other HTK modules
-
-## Best Practices
-
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-
-class GmailTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+## Functions
+- **`labels_list`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/labels/list
+- **`messages_list`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/list
+- **`message_get`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/get
+- **`message_modify`** (gmail/api.py) - Adds or removes labels to a message
+- **`message_trash`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/trash
+- **`message_untrash`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/untrash
+- **`threads_list`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/list
+- **`thread_get`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/get
+- **`thread_modify`** (gmail/api.py) - Adds or removes labels to a thread
+- **`thread_trash`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/trash
+- **`thread_untrash`** (gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/untrash
+- **`get_html`** (gmail/api.py) - Returns the HTML part of a message from the API
+- **`get_text`** (gmail/api.py) - Returns the text part of the message from the API

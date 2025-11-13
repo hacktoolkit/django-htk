@@ -1,90 +1,17 @@
-# Alexa Integration
+# Alexa
 
-> Alexa API integration and utilities.
+## Functions
+- **`launch`** (alexa/event_handlers.py) - Launch event handler for Alexa webhook events
+- **`default`** (alexa/event_handlers.py) - A Hacktoolkit-flavored default event handler for Alexa webhook events
+- **`zesty`** (alexa/event_handlers.py) - Zesty event handler for Alexa skill webhook events
+- **`default_event_type_resolver`** (alexa/event_resolvers.py) - The Hacktoolkit-flavored default event type resolver for Alexa webhook events
+- **`is_valid_alexa_skill_webhook_event`** (alexa/utils.py) - Determines whether the Alexa skill webhook event is valid
+- **`get_event_type`** (alexa/utils.py) - Get event type from Alexa skill webhook `event`
+- **`get_event_handlers`** (alexa/utils.py) - Gets all the event handlers available for `event`
+- **`get_event_handler_for_type`** (alexa/utils.py) - Gets the event handler for `event_type`
+- **`get_event_handler`** (alexa/utils.py) - Gets the event handler for an Amazon Alexa skill webhook event, if available
+- **`handle_event`** (alexa/utils.py) - Processes a validated skill request from Amazon Alexa
+- **`alexa_skill_webhook_view`** (alexa/views.py) - Handles an Amazon Alexa skill webhook request
 
-## Purpose
-
-The alexa module provides integration with Alexa for seamless API communication and data synchronization.
-
-## Quick Start
-
-```python
-from htk.lib.alexa import Client
-
-# Initialize client with API credentials
-client = Client(api_key='your_api_key')
-
-# Make API calls
-result = client.get_data()
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_ALEXA_API_KEY = 'your_api_key'
-HTK_ALEXA_ENABLED = True
-```
-
-## Common Patterns
-
-### Authentication
-
-```python
-from htk.lib.alexa import Client
-
-client = Client(api_key='key', api_secret='secret')
-```
-
-### Error Handling
-
-```python
-from htk.lib.alexa import Client, AlexaError
-
-try:
-    result = client.api_call()
-except AlexaError as e:
-    # Handle API errors
-    pass
-```
-
-## Best Practices
-
-- Use environment variables for API credentials
-- Implement exponential backoff for retries
-- Cache responses when appropriate
-- Log API interactions for debugging
-- Handle rate limiting gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-from unittest.mock import patch, Mock
-from htk.lib.alexa import Client
-
-class AlexaTestCase(TestCase):
-    def setUp(self):
-        self.client = Client(api_key='test_key')
-
-    @patch('htk.lib.alexa.requests.get')
-    def test_api_call(self, mock_get):
-        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
-        result = self.client.get_data()
-        self.assertEqual(result['data'], 'test')
-```
-
-## Related Integrations
-
-- Other `htk.lib.*` integrations
-
-## References
-
-- [Alexa API Documentation](https://www.alexa.com/docs/)
-- HTK Integration Guide
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+## Components
+**Views** (`views.py`)

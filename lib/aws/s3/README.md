@@ -1,89 +1,20 @@
 # S3
 
-> HTK S3 module
+## Classes
+- **`S3UrlCache`** (s3/cachekeys.py) - Cache management object for url of object stored in Amazon S3
+- **`S3Manager`** (s3/utils.py) - S3Manager is an interface/wrapper for boto to Amazon S3
 
-## Purpose
+## Functions
+- **`get_s3_key`** (s3/models.py) - Computes the S3 Key for this object
+- **`store_file`** (s3/models.py) - Stores file `f`
+- **`store_uploaded_file`** (s3/models.py) - Store the uploaded file
+- **`copy_stored_file_to`** (s3/models.py) - Copies the stored file on S3 into the `dest_obj`'s bucket/key
+- **`delete_thumbnail`** (s3/models.py) - Convenience wrapper around `self.delete_stored_file()` to delete a thumbnail, if one exists
+- **`clone`** (s3/models.py) - Makes a clone of this S3MediaAsset with a copied file on S3
+- **`put_file`** (s3/utils.py) - Stores a file
+- **`copy_file`** (s3/utils.py) - Copies a file
+- **`delete_file`** (s3/utils.py) - Deletes a file
+- **`get_url`** (s3/utils.py) - Generates the URL for a file
 
-The `s3` directory contains s3-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-s3/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
-
-## Overview
-
-This module provides functionality for:
-- TODO: Add feature list from code analysis
-
-## Key Components
-
-- TODO: Document key classes and functions
-
-## Usage Examples
-
-### Basic Usage
-
-```python
-from htk.lib/aws import s3
-
-# Example usage
-# TODO: Add actual examples
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_S3_ENABLED = True
-```
-
-## Related Modules
-
-- Parent: `htk.lib.aws` if depth > 1
-- Related: Other HTK modules
-
-## Best Practices
-
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-
-class S3TestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+## Components
+**Models** (`models.py`)

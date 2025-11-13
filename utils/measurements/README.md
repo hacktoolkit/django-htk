@@ -1,73 +1,13 @@
 # Measurements
 
-> Utils for measurements.
+## Exports
+- `DistanceType`
+- `WeightType`
 
-## Purpose
-
-The measurements utilities provide measurements functions and helpers.
-
-## Quick Start
-
-```python
-from htk.utils.measurements import *
-
-# Use utilities/constants
-# See documentation for available exports
-```
-
-## Available Exports
-
-| Name | Purpose |
-|------|---------|
-| See source code | Available functions and constants |
-
-## Common Patterns
-
-### Basic Usage
-
-```python
-from htk.utils.measurements import function_name, CONSTANT_NAME
-
-# Use the functions and constants
-result = function_name(param)
-value = CONSTANT_NAME
-```
-
-## Configuration
-
-Configuration handled in settings.py or module-level defaults.
-
-## Best Practices
-
-- Import only what you need
-- Use constants instead of magic values
-- Refer to source for complete documentation
-- Follow module conventions
-
-## Testing
-
-```python
-from django.test import TestCase
-from htk.utils.measurements import *
-
-class SubmoduleTestCase(TestCase):
-    def test_functionality(self):
-        # Add tests here
-        pass
-```
-
-## Related Modules
-
-- Parent module documentation
-- Related utilities/constants
-
-## References
-
-- Source code documentation
-- HTK Guidelines
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+## Classes
+- **`DistanceType`** (measurements/distance.py) - Class that represents a distance (e.g. length, width, height).
+- **`AbstractMeasurement`** (measurements/units.py) - Abstract base class for measurements.
+- **`ConversionConstants`** (measurements/units.py) - Constants for converting between different units of measurement.
+- **`Distance`** (measurements/units.py) - Constants for converting between different units of distance.
+- **`Weight`** (measurements/units.py) - Constants for converting between different units of weight.
+- **`WeightType`** (measurements/weight.py) - Class that represents weight.

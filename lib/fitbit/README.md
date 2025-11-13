@@ -1,90 +1,16 @@
-# Fitbit Integration
+# Fitbit
 
-> Fitbit API integration and utilities.
+## Classes
+- **`FitbitAPI`** (fitbit/api.py) - https://dev.fitbit.com/docs/
 
-## Purpose
-
-The fitbit module provides integration with Fitbit for seamless API communication and data synchronization.
-
-## Quick Start
-
-```python
-from htk.lib.fitbit import Client
-
-# Initialize client with API credentials
-client = Client(api_key='your_api_key')
-
-# Make API calls
-result = client.get_data()
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_FITBIT_API_KEY = 'your_api_key'
-HTK_FITBIT_ENABLED = True
-```
-
-## Common Patterns
-
-### Authentication
-
-```python
-from htk.lib.fitbit import Client
-
-client = Client(api_key='key', api_secret='secret')
-```
-
-### Error Handling
-
-```python
-from htk.lib.fitbit import Client, FitbitError
-
-try:
-    result = client.api_call()
-except FitbitError as e:
-    # Handle API errors
-    pass
-```
-
-## Best Practices
-
-- Use environment variables for API credentials
-- Implement exponential backoff for retries
-- Cache responses when appropriate
-- Log API interactions for debugging
-- Handle rate limiting gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-from unittest.mock import patch, Mock
-from htk.lib.fitbit import Client
-
-class FitbitTestCase(TestCase):
-    def setUp(self):
-        self.client = Client(api_key='test_key')
-
-    @patch('htk.lib.fitbit.requests.get')
-    def test_api_call(self, mock_get):
-        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
-        result = self.client.get_data()
-        self.assertEqual(result['data'], 'test')
-```
-
-## Related Integrations
-
-- Other `htk.lib.*` integrations
-
-## References
-
-- [Fitbit API Documentation](https://www.fitbit.com/docs/)
-- HTK Integration Guide
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+## Functions
+- **`get_resource_url`** (fitbit/api.py) - Returns the resource URL for `resource_type`
+- **`make_headers`** (fitbit/api.py) - Make headers for Fitbit API request
+- **`get`** (fitbit/api.py) - Performs a Fitbit API GET request
+- **`post`** (fitbit/api.py) - Performs a Fitbit API POST request
+- **`get_activity_steps_for_period`** (fitbit/api.py) - Get Steps for a given period
+- **`get_activity_steps_past_month`** (fitbit/api.py) - Get Steps for past month
+- **`get_activity_steps_past_year`** (fitbit/api.py) - Get Steps for past year
+- **`get_body_fat_logs`** (fitbit/api.py) - Get Body Fat logs for a given date
+- **`get_weight_logs`** (fitbit/api.py) - Get Weight logs for a given date
+- **`get_devices`** (fitbit/api.py) - Get a list of Devices

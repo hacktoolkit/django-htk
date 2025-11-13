@@ -1,89 +1,33 @@
 # Utils
 
-> HTK Utils module
-
-## Purpose
-
-The `utils` directory contains utils-related functionality for HTK applications.
-
-## Directory Structure
-
-```
-utils/
-├── __init__.py
-├── models.py                    # (if applicable)
-├── views.py                     # (if applicable)
-├── utils.py                     # (if applicable)
-├── tests.py                     # (if applicable)
-└── README.md                    # This file
-```
-
-## Overview
-
-This module provides functionality for:
-- TODO: Add feature list from code analysis
-
-## Key Components
-
-- TODO: Document key classes and functions
-
-## Usage Examples
-
-### Basic Usage
-
-```python
-from htk.apps/accounts import utils
-
-# Example usage
-# TODO: Add actual examples
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_UTILS_ENABLED = True
-```
-
-## Related Modules
-
-- Parent: `htk.apps.accounts` if depth > 1
-- Related: Other HTK modules
-
-## Best Practices
-
-1. Follow Django conventions
-2. Write comprehensive tests
-3. Document your code
-4. Use type hints
-5. Handle errors gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-
-class UtilsTestCase(TestCase):
-    def setUp(self):
-        # Set up test fixtures
-        pass
-
-    def test_basic_functionality(self):
-        # Add tests here
-        pass
-```
-
-## References
-
-- Django documentation
-- HTK documentation
-
-## Notes
-
-- Confidence: **MEDIUM** (Generated template - needs code review)
-- Last Updated: November 2025
-- Maintained by: HTK Contributors
-
-<!-- TODO: Review and complete with actual implementation details -->
-<!-- TODO: Add configuration options -->
-<!-- TODO: Add API reference -->
+## Functions
+- **`login_authenticated_user`** (utils/auth.py) - Logs in an authenticated user and performs related updates
+- **`get_user_token_auth_token`** (utils/auth.py) - Returns the token to auth/log in the `user`
+- **`get_user_token_auth_hash`** (utils/auth.py) - Generates the hash portion of a user token-auth token
+- **`validate_user_token_auth_token`** (utils/auth.py) - Validates a user token-auth token
+- **`validate_reset_password_token`** (utils/auth.py) - Determines whether a valid reset password token exists
+- **`reset_user_password`** (utils/auth.py) - Resets the password for a user
+- **`get_duplicate_emails`** (utils/debug.py) - Sanity check to make sure no users in database have the same email address
+- **`create_user`** (utils/general.py) - Creates a new user
+- **`set_random_password`** (utils/general.py) - Sets a random password for `user`
+- **`email_to_username_hash`** (utils/general.py) - Convert emails to hashed versions where we store them in the username field
+- **`email_to_username_pretty_unique`** (utils/general.py) - Converts `email` to a pretty and unique username based on the email
+- **`get_user_by_username`** (utils/general.py) - Gets a user by `username`
+- **`get_user_by_email`** (utils/general.py) - Gets a User by `email`
+- **`get_user_by_email_with_retries`** (utils/general.py) - Gets a User by `email`
+- **`get_incomplete_signup_user_by_email`** (utils/general.py) - Gets an incomplete signup User by `email`
+- **`associate_user_email`** (utils/general.py) - Associates `email` with `user`
+- **`extract_user_email`** (utils/general.py) - Gets the user for `username_email`
+- **`get_user_by_id`** (utils/general.py) - Gets a User by user id
+- **`get_users_by_id`** (utils/general.py) - Gets a list of Users by user ids
+- **`get_user_emails_by_id`** (utils/general.py) - Gets a list of UserEmails by ids
+- **`encrypt_uid`** (utils/general.py) - Encrypts the User id for transfer in plaintext
+- **`resolve_encrypted_uid`** (utils/general.py) - Returns the User for this `encrypted_uid`
+- **`get_local_time`** (utils/locale.py) - Converts a datetime `dt` to the local timezone of `user`
+- **`localized_time_for_user`** (utils/locale.py) - Attaches a timezone for `user` to `naive_dt`
+- **`get_all_users`** (utils/lookup.py) - Returns all users
+- **`get_inactive_users`** (utils/lookup.py) - Returns all inactive users
+- **`get_users_currently_at_local_time`** (utils/lookup.py) - Returns a Queryset of Users whose current local time is within a time range
+- **`create_missing_user_profiles`** (utils/profile.py) - Create missing user profiles
+- **`get_social_auth_for_user`** (utils/social_utils.py) - Get one UserSocialAuth for given `user` and `provider`
+- **`get_social_auths_for_user`** (utils/social_utils.py) - Get UserSocialAuths for given `user`

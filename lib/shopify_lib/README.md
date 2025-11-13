@@ -1,90 +1,22 @@
-# Shopify Integration
+# Shopify_Lib
 
-> Shopify API integration and utilities.
+## Classes
+- **`ShopifyProduct`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/product
+- **`ShopifyProductImage`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/product_image
+- **`ShopifyProductVariant`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/product_variant
+- **`ShopifyCustomer`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/customer
+- **`ShopifyCustomerAddress`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/customeraddress
+- **`ShopifyOrder`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/order
+- **`ShopifyFulFillment`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/fulfillment
+- **`ShopifyRefund`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/refund
+- **`ShopifyTransaction`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/transaction
 
-## Purpose
-
-The shopify_lib module provides integration with Shopify for seamless API communication and data synchronization.
-
-## Quick Start
-
-```python
-from htk.lib.shopify_lib import Client
-
-# Initialize client with API credentials
-client = Client(api_key='your_api_key')
-
-# Make API calls
-result = client.get_data()
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_SHOPIFY_LIB_API_KEY = 'your_api_key'
-HTK_SHOPIFY_LIB_ENABLED = True
-```
-
-## Common Patterns
-
-### Authentication
-
-```python
-from htk.lib.shopify_lib import Client
-
-client = Client(api_key='key', api_secret='secret')
-```
-
-### Error Handling
-
-```python
-from htk.lib.shopify_lib import Client, ShopifyError
-
-try:
-    result = client.api_call()
-except ShopifyError as e:
-    # Handle API errors
-    pass
-```
-
-## Best Practices
-
-- Use environment variables for API credentials
-- Implement exponential backoff for retries
-- Cache responses when appropriate
-- Log API interactions for debugging
-- Handle rate limiting gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-from unittest.mock import patch, Mock
-from htk.lib.shopify_lib import Client
-
-class ShopifyTestCase(TestCase):
-    def setUp(self):
-        self.client = Client(api_key='test_key')
-
-    @patch('htk.lib.shopify_lib.requests.get')
-    def test_api_call(self, mock_get):
-        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
-        result = self.client.get_data()
-        self.assertEqual(result['data'], 'test')
-```
-
-## Related Integrations
-
-- Other `htk.lib.*` integrations
-
-## References
-
-- [Shopify API Documentation](https://www.shopify.com/docs/)
-- HTK Integration Guide
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+## Functions
+- **`resource_iterator`** (shopify_lib/api.py) - Returns an iterator/generator over the ActiveResource `resource`
+- **`iter_products`** (shopify_lib/api.py) - Returns an iterator/generator over all Products
+- **`iter_orders`** (shopify_lib/api.py) - Returns an iterator/generator over all Orders
+- **`iter_customers`** (shopify_lib/api.py) - Returns an iterator/generator over all Customers
+- **`already_cached`** (shopify_lib/archivers.py) - Check whether an `item` of `item_type` was already cached
+- **`archive_all`** (shopify_lib/archivers.py) - Archives everything
+- **`archive_item_type`** (shopify_lib/archivers.py) - Archives a collection of Shopify.Resource of `item_type` using `iterator`
+- **`archive_item`** (shopify_lib/archivers.py) - Archives a single Shopify.Resource `item` into some database using `archiver`

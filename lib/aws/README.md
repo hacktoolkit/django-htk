@@ -1,90 +1,17 @@
-# Aws Integration
+# Aws
 
-> Aws API integration and utilities.
+## Classes
+- **`S3UrlCache`** (aws/s3/cachekeys.py) - Cache management object for url of object stored in Amazon S3
+- **`S3Manager`** (aws/s3/utils.py) - S3Manager is an interface/wrapper for boto to Amazon S3
 
-## Purpose
-
-The aws module provides integration with Aws for seamless API communication and data synchronization.
-
-## Quick Start
-
-```python
-from htk.lib.aws import Client
-
-# Initialize client with API credentials
-client = Client(api_key='your_api_key')
-
-# Make API calls
-result = client.get_data()
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_AWS_API_KEY = 'your_api_key'
-HTK_AWS_ENABLED = True
-```
-
-## Common Patterns
-
-### Authentication
-
-```python
-from htk.lib.aws import Client
-
-client = Client(api_key='key', api_secret='secret')
-```
-
-### Error Handling
-
-```python
-from htk.lib.aws import Client, AwsError
-
-try:
-    result = client.api_call()
-except AwsError as e:
-    # Handle API errors
-    pass
-```
-
-## Best Practices
-
-- Use environment variables for API credentials
-- Implement exponential backoff for retries
-- Cache responses when appropriate
-- Log API interactions for debugging
-- Handle rate limiting gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-from unittest.mock import patch, Mock
-from htk.lib.aws import Client
-
-class AwsTestCase(TestCase):
-    def setUp(self):
-        self.client = Client(api_key='test_key')
-
-    @patch('htk.lib.aws.requests.get')
-    def test_api_call(self, mock_get):
-        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
-        result = self.client.get_data()
-        self.assertEqual(result['data'], 'test')
-```
-
-## Related Integrations
-
-- Other `htk.lib.*` integrations
-
-## References
-
-- [Aws API Documentation](https://www.aws.com/docs/)
-- HTK Integration Guide
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+## Functions
+- **`get_s3_key`** (aws/s3/models.py) - Computes the S3 Key for this object
+- **`store_file`** (aws/s3/models.py) - Stores file `f`
+- **`store_uploaded_file`** (aws/s3/models.py) - Store the uploaded file
+- **`copy_stored_file_to`** (aws/s3/models.py) - Copies the stored file on S3 into the `dest_obj`'s bucket/key
+- **`delete_thumbnail`** (aws/s3/models.py) - Convenience wrapper around `self.delete_stored_file()` to delete a thumbnail, if one exists
+- **`clone`** (aws/s3/models.py) - Makes a clone of this S3MediaAsset with a copied file on S3
+- **`put_file`** (aws/s3/utils.py) - Stores a file
+- **`copy_file`** (aws/s3/utils.py) - Copies a file
+- **`delete_file`** (aws/s3/utils.py) - Deletes a file
+- **`get_url`** (aws/s3/utils.py) - Generates the URL for a file

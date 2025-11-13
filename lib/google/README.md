@@ -1,90 +1,26 @@
-# Google Integration
+# Google
 
-> Google API integration and utilities.
+## Classes
+- **`GmailAPI`** (google/gmail/api.py) - Interface to Gmail API
 
-## Purpose
-
-The google module provides integration with Google for seamless API communication and data synchronization.
-
-## Quick Start
-
-```python
-from htk.lib.google import Client
-
-# Initialize client with API credentials
-client = Client(api_key='your_api_key')
-
-# Make API calls
-result = client.get_data()
-```
-
-## Configuration
-
-```python
-# settings.py
-HTK_GOOGLE_API_KEY = 'your_api_key'
-HTK_GOOGLE_ENABLED = True
-```
-
-## Common Patterns
-
-### Authentication
-
-```python
-from htk.lib.google import Client
-
-client = Client(api_key='key', api_secret='secret')
-```
-
-### Error Handling
-
-```python
-from htk.lib.google import Client, GoogleError
-
-try:
-    result = client.api_call()
-except GoogleError as e:
-    # Handle API errors
-    pass
-```
-
-## Best Practices
-
-- Use environment variables for API credentials
-- Implement exponential backoff for retries
-- Cache responses when appropriate
-- Log API interactions for debugging
-- Handle rate limiting gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-from unittest.mock import patch, Mock
-from htk.lib.google import Client
-
-class GoogleTestCase(TestCase):
-    def setUp(self):
-        self.client = Client(api_key='test_key')
-
-    @patch('htk.lib.google.requests.get')
-    def test_api_call(self, mock_get):
-        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
-        result = self.client.get_data()
-        self.assertEqual(result['data'], 'test')
-```
-
-## Related Integrations
-
-- Other `htk.lib.*` integrations
-
-## References
-
-- [Google API Documentation](https://www.google.com/docs/)
-- HTK Integration Guide
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+## Functions
+- **`labels_list`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/labels/list
+- **`messages_list`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/list
+- **`message_get`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/get
+- **`message_modify`** (google/gmail/api.py) - Adds or removes labels to a message
+- **`message_trash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/trash
+- **`message_untrash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/untrash
+- **`threads_list`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/list
+- **`thread_get`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/get
+- **`thread_modify`** (google/gmail/api.py) - Adds or removes labels to a thread
+- **`thread_trash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/trash
+- **`thread_untrash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/untrash
+- **`get_html`** (google/gmail/api.py) - Returns the HTML part of a message from the API
+- **`get_text`** (google/gmail/api.py) - Returns the text part of the message from the API
+- **`get_map_url_for_geolocation`** (google/maps/utils.py) - Returns a Google Maps url for `latitude`, `longitude`
+- **`google_recaptcha_site_verification`** (google/recaptcha/utils.py) - Gets verification data on a Google Recaptcha response token
+- **`spreadsheets_values_append`** (google/sheets/api.py) - https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append
+- **`translate`** (google/translate/utils.py) - Translates `term` from `origin` language into `target` language
+- **`get_num_server_api_keys`** (google/utils.py) - Returns the number of Google server API keys configured
+- **`get_server_api_key`** (google/utils.py) - Retrieves the Google Server API key
+- **`get_browser_api_key`** (google/utils.py) - Retrieves the Google Browser API key
