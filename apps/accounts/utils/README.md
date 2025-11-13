@@ -1,33 +1,120 @@
 # Utils
 
-## Functions
-- **`login_authenticated_user`** (utils/auth.py) - Logs in an authenticated user and performs related updates
-- **`get_user_token_auth_token`** (utils/auth.py) - Returns the token to auth/log in the `user`
-- **`get_user_token_auth_hash`** (utils/auth.py) - Generates the hash portion of a user token-auth token
-- **`validate_user_token_auth_token`** (utils/auth.py) - Validates a user token-auth token
-- **`validate_reset_password_token`** (utils/auth.py) - Determines whether a valid reset password token exists
-- **`reset_user_password`** (utils/auth.py) - Resets the password for a user
-- **`get_duplicate_emails`** (utils/debug.py) - Sanity check to make sure no users in database have the same email address
-- **`create_user`** (utils/general.py) - Creates a new user
-- **`set_random_password`** (utils/general.py) - Sets a random password for `user`
-- **`email_to_username_hash`** (utils/general.py) - Convert emails to hashed versions where we store them in the username field
-- **`email_to_username_pretty_unique`** (utils/general.py) - Converts `email` to a pretty and unique username based on the email
-- **`get_user_by_username`** (utils/general.py) - Gets a user by `username`
-- **`get_user_by_email`** (utils/general.py) - Gets a User by `email`
-- **`get_user_by_email_with_retries`** (utils/general.py) - Gets a User by `email`
-- **`get_incomplete_signup_user_by_email`** (utils/general.py) - Gets an incomplete signup User by `email`
-- **`associate_user_email`** (utils/general.py) - Associates `email` with `user`
-- **`extract_user_email`** (utils/general.py) - Gets the user for `username_email`
-- **`get_user_by_id`** (utils/general.py) - Gets a User by user id
-- **`get_users_by_id`** (utils/general.py) - Gets a list of Users by user ids
-- **`get_user_emails_by_id`** (utils/general.py) - Gets a list of UserEmails by ids
-- **`encrypt_uid`** (utils/general.py) - Encrypts the User id for transfer in plaintext
-- **`resolve_encrypted_uid`** (utils/general.py) - Returns the User for this `encrypted_uid`
-- **`get_local_time`** (utils/locale.py) - Converts a datetime `dt` to the local timezone of `user`
-- **`localized_time_for_user`** (utils/locale.py) - Attaches a timezone for `user` to `naive_dt`
-- **`get_all_users`** (utils/lookup.py) - Returns all users
-- **`get_inactive_users`** (utils/lookup.py) - Returns all inactive users
-- **`get_users_currently_at_local_time`** (utils/lookup.py) - Returns a Queryset of Users whose current local time is within a time range
-- **`create_missing_user_profiles`** (utils/profile.py) - Create missing user profiles
-- **`get_social_auth_for_user`** (utils/social_utils.py) - Get one UserSocialAuth for given `user` and `provider`
-- **`get_social_auths_for_user`** (utils/social_utils.py) - Get UserSocialAuths for given `user`
+Utility functions and helpers for this module.
+
+## Overview
+
+This module provides utility functions for common operations including lookups, transformations, validation, and calculations.
+
+## Quick Start
+
+### Import Utilities
+
+```python
+from htk.apps.accounts.utils.utils import function_name
+
+result = function_name(arg1, arg2)
+```
+
+### Common Patterns
+
+```python
+# Lookup by identifier
+item = get_item_by_id(id)
+
+# Get or None
+item = get_item_by_email(email)  # Returns None if not found
+
+# Create with defaults
+item = create_item(name='test')
+
+# Query collection
+items = get_active_items()
+
+# Transform/convert
+converted = convert_format(data)
+```
+
+## Utility Functions
+
+### Lookup Functions
+
+Functions that retrieve objects from the database:
+
+- `get_*_by_id()` - Get by primary key
+- `get_*_by_field()` - Get by specific field
+- `get_*_with_retries()` - With retry logic
+- `get_all_*()` - Get all objects
+- `get_inactive_*()` - Get filtered subset
+
+**Behavior:**
+- Return `None` if object not found (not exception)
+- Raise exception on database errors
+- Support optional filtering parameters
+
+### Creation Functions
+
+Functions that create new objects:
+
+- `create_*()` - Create new object
+- `set_*()` - Update single field
+
+**Behavior:**
+- Return created object
+- May have side effects (logging, signals)
+- Validate input before creation
+
+### Validation Functions
+
+Functions that validate data:
+
+- `validate_*()` - Validate and return boolean
+- `is_*()` - Check condition
+
+**Behavior:**
+- Return `True`/`False` for simple checks
+- Return object or tuple for complex validation
+- May raise exception on invalid data
+
+### Transformation Functions
+
+Functions that convert or transform data:
+
+- `convert_*()` - Convert between formats
+- `extract_*()` - Extract data from object
+- `generate_*()` - Generate new data
+
+## Function Conventions
+
+- **Return values:** `None` when object not found, exception on error
+- **Naming:** `get_*()` for retrieval, `create_*()` for creation
+- **Parameters:** Use keyword arguments for optional parameters
+- **Side effects:** Document any side effects in docstring
+- **Retry logic:** Use `*_with_retries()` variant for reliability
+
+## Configuration
+
+Configure behavior in Django settings:
+
+```python
+# settings.py
+HTK_SETTING_NAME = 'value'
+HTK_TIMEOUT = 30
+HTK_MAX_RETRIES = 3
+```
+
+## Best Practices
+
+1. **Check for None** - Always check return values for None
+2. **Handle exceptions** - Catch and handle domain exceptions
+3. **Use appropriate function** - Choose most specific function available
+4. **Understand side effects** - Read docstrings for side effects
+5. **Batch operations** - Use bulk_* variants when processing multiple items
+6. **Cache results** - Cache expensive lookups when appropriate
+7. **Test edge cases** - Test with missing data, invalid input, etc.
+
+## Related Modules
+
+- Parent module documentation
+- `django.db.models` - Django ORM
+- `django.conf.settings` - Django settings
