@@ -1,7 +1,5 @@
 # Extensions
 
-Additional data structures and utilities extending Python/Django.
-
 ## Overview
 
 The `extensions` module provides:

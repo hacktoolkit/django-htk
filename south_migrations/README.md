@@ -1,7 +1,5 @@
 # Migrations
 
-Database schema migrations and version control.
-
 ## Overview
 
 This directory contains database migration files that track schema changes over time. Migrations are executed in order to evolve the database structure while preserving data.

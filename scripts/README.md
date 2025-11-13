@@ -1,7 +1,5 @@
 # Scripts
 
-Utility scripts and job runners.
-
 ## Quick Start
 
 ```python

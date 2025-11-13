@@ -1,7 +1,5 @@
 # Classes
 
-Helper classes and class-based utilities for this module.
-
 ## Overview
 
 This classes module provides utility classes that encapsulate related functionality. Classes provide structure and state management for complex operations.

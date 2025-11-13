@@ -1,7 +1,5 @@
 # Decorators
 
-Function and class decorators for common Django patterns.
-
 ## Overview
 
 The `decorators` module provides:

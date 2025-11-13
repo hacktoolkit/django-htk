@@ -1,7 +1,5 @@
 # Utilities
 
-Common helper functions and utilities for everyday tasks.
-
 ## Overview
 
 The `utils` module provides practical utilities organized by purpose:

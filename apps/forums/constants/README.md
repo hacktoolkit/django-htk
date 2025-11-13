@@ -1,7 +1,5 @@
 # Constants
 
-Configuration and constant values for this module.
-
 ## Overview
 
 This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.

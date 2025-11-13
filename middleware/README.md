@@ -1,7 +1,5 @@
 # Middleware
 
-Request/response processing utilities for Django.
-
 ## Overview
 
 The `middleware` module provides utilities for:
