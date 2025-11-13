@@ -1,22 +1,49 @@
-# Iterable
+# Iterable Integration
 
-## Classes
-- **`IterableAPIClient`** (iterable/api.py) - https://api.iterable.com/api/docs
-- **`HtkIterableAPIClient`** (iterable/api.py) - HTK-flavored Iterable API client
+Email and SMS marketing automation.
 
-## Functions
-- **`get_resource_url`** (iterable/api.py) - Returns the resource URL for `resource_type`
-- **`get`** (iterable/api.py) - Performs an Iterable API GET request
-- **`post`** (iterable/api.py) - Performs an Iterable API POST request
-- **`delete`** (iterable/api.py) - Performs an Iterable API POST request
-- **`track_event`** (iterable/api.py) - Track an event
-- **`update_user_email`** (iterable/api.py) - Updates a user's email address
-- **`delete_user`** (iterable/api.py) - Delete a user from Iterable
-- **`trigger_workflow`** (iterable/api.py) - Trigger a workflow
-- **`notify_sign_up`** (iterable/api.py) - Notify Iterable of a `user` sign up event
-- **`notify_account_activation`** (iterable/api.py) - Notify Iterable of a `user` activation event
-- **`notify_login`** (iterable/api.py) - Notify Iterable of a `user` login event
-- **`get_iterable_api_client`** (iterable/utils.py) - Returns an initialized Iterable API client
-- **`get_campaign_id`** (iterable/utils.py) - Get a campaign id by `key`
-- **`get_list_id`** (iterable/utils.py) - Get a list id by `key`
-- **`get_workflow_id`** (iterable/utils.py) - Get a workflow id by `key`
+## Quick Start
+
+```python
+from htk.lib.iterable.utils import get_iterable_api_client
+
+client = get_iterable_api_client()
+
+# Track event
+client.track_event(user_id, 'purchase', {'amount': 100})
+
+# Notify sign up
+client.notify_sign_up(user)
+
+# Trigger workflow
+client.trigger_workflow(user_id, workflow_id)
+
+# Update email
+client.update_user_email(user_id, new_email)
+```
+
+## Common Operations
+
+```python
+# Get campaign/list/workflow IDs
+campaign_id = get_campaign_id('welcome_series')
+list_id = get_list_id('active_users')
+workflow_id = get_workflow_id('onboarding')
+
+# Get person data
+person = client.get_person(email='user@example.com')
+
+# Get batch of people
+people = client.get_persons(['user1@example.com', 'user2@example.com'])
+```
+
+## Configuration
+
+```python
+# settings.py
+ITERABLE_API_KEY = os.environ.get('ITERABLE_API_KEY')
+```
+
+## Related Modules
+
+- `htk.apps.notifications` - Notification system

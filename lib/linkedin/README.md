@@ -1,20 +1,13 @@
-# Linkedin Integration
+# LinkedIn Integration
 
-> Linkedin API integration and utilities.
-
-## Purpose
-
-The linkedin module provides integration with Linkedin for seamless API communication and data synchronization.
+Professional networking and recruitment API.
 
 ## Quick Start
 
 ```python
 from htk.lib.linkedin import Client
 
-# Initialize client with API credentials
 client = Client(api_key='your_api_key')
-
-# Make API calls
 result = client.get_data()
 ```
 
@@ -22,69 +15,12 @@ result = client.get_data()
 
 ```python
 # settings.py
-HTK_LINKEDIN_API_KEY = 'your_api_key'
-HTK_LINKEDIN_ENABLED = True
+LINKEDIN_CLIENT_ID = os.environ.get('LINKEDIN_CLIENT_ID')
+LINKEDIN_CLIENT_SECRET = os.environ.get('LINKEDIN_CLIENT_SECRET')
 ```
 
-## Common Patterns
+## Related Modules
 
-### Authentication
-
-```python
-from htk.lib.linkedin import Client
-
-client = Client(api_key='key', api_secret='secret')
-```
-
-### Error Handling
-
-```python
-from htk.lib.linkedin import Client, LinkedinError
-
-try:
-    result = client.api_call()
-except LinkedinError as e:
-    # Handle API errors
-    pass
-```
-
-## Best Practices
-
-- Use environment variables for API credentials
-- Implement exponential backoff for retries
-- Cache responses when appropriate
-- Log API interactions for debugging
-- Handle rate limiting gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-from unittest.mock import patch, Mock
-from htk.lib.linkedin import Client
-
-class LinkedinTestCase(TestCase):
-    def setUp(self):
-        self.client = Client(api_key='test_key')
-
-    @patch('htk.lib.linkedin.requests.get')
-    def test_api_call(self, mock_get):
-        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
-        result = self.client.get_data()
-        self.assertEqual(result['data'], 'test')
-```
-
-## Related Integrations
-
-- Other `htk.lib.*` integrations
-
-## References
-
-- [Linkedin API Documentation](https://www.linkedin.com/docs/)
-- HTK Integration Guide
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+- `htk.apps.accounts` - Social auth
+- `htk.lib.facebook` - OAuth patterns
+- `htk.lib.glassdoor` - Recruitment

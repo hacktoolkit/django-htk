@@ -1,8 +1,39 @@
-# Http
+# HTTP Utilities
 
-## Classes
-- **`HttpErrorResponseError`** (http/errors.py) - Generic Response Error exception
+HTTP response headers and error handling.
 
-## Functions
-- **`set_cache_headers`** (http/response.py) - Set cache headers on a Django HttpResponse.
-- **`set_cors_headers_for_image`** (http/response.py) - Set CORS headers on a Django HttpResponse.
+## Quick Start
+
+```python
+from htk.utils.http.response import set_cache_headers, set_cors_headers_for_image
+from htk.utils.http.errors import HttpErrorResponseError
+
+# Set cache headers on response
+response = HttpResponse('content')
+set_cache_headers(response, max_age=3600)
+
+# Set CORS headers for images
+set_cors_headers_for_image(response)
+```
+
+## Common Patterns
+
+```python
+# Create cacheable response
+def get_cached_image(request):
+    response = serve_image()
+    set_cache_headers(response, max_age=86400)  # 1 day
+    set_cors_headers_for_image(response)
+    return response
+
+# Handle HTTP errors
+try:
+    result = api_call()
+except HttpErrorResponseError as e:
+    return error_response(e.status_code)
+```
+
+## Related Modules
+
+- `htk.api` - API utilities
+- `htk.middleware` - Request/response handling

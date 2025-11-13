@@ -1,19 +1,47 @@
-# Dynamic_Screening_Solutions
+# Dynamic Screening Solutions Integration
 
-## Classes
-- **`Htk321FormsAPI`** (dynamic_screening_solutions/api.py) - 321Forms - Dynamic Screening Solutions
+321Forms API for employee screening and onboarding.
 
-## Functions
-- **`make_request_headers`** (dynamic_screening_solutions/api.py) - Creates a header to pass in for GET/POST request
-- **`get_users_by_company`** (dynamic_screening_solutions/api.py) - Returns a list of users in a company based on `user_type` provided.
-- **`get_onboarded_employee_users_by_company`** (dynamic_screening_solutions/api.py) - Returns a list of 100% onboarded users in the provided company.
-- **`get_companies`** (dynamic_screening_solutions/api.py) - Returns a JSON response of companies that the user can access
-- **`get_divisions_by_company`** (dynamic_screening_solutions/api.py) - Returns a JSON response with two elements. The companyID provided and an array of divisions
-- **`get_forms_by_company`** (dynamic_screening_solutions/api.py) - Returns an array of the company's forms.
-- **`get_form_by_company`** (dynamic_screening_solutions/api.py) - Returns an array of form questions and an object with the basic details of the form itself
-- **`get_form_by_user`** (dynamic_screening_solutions/api.py) - Receives response information of a user's latest form of a particular status
-- **`get_responses_by_user`** (dynamic_screening_solutions/api.py) - Receives response information to questions asked of a user
-- **`validate_webhook_request`** (dynamic_screening_solutions/utils.py) - Validates a 321Forms webhook request
+## Quick Start
 
-## Components
-**Views** (`views.py`)
+```python
+from htk.lib.dynamic_screening_solutions.api import Htk321FormsAPI
+
+api = Htk321FormsAPI()
+
+# Get companies
+companies = api.get_companies()
+
+# Get employees by company
+employees = api.get_users_by_company(company_id, user_type='employee')
+
+# Get onboarded employees
+onboarded = api.get_onboarded_employee_users_by_company(company_id)
+```
+
+## Operations
+
+```python
+# Get forms and divisions
+forms = api.get_forms_by_company(company_id)
+divisions = api.get_divisions_by_company(company_id)
+
+# Get form responses
+form_data = api.get_form_by_company(company_id, form_id)
+user_responses = api.get_responses_by_user(user_id)
+
+# Validate webhook
+api.validate_webhook_request(request)
+```
+
+## Configuration
+
+```python
+# settings.py
+DSS_API_USERNAME = os.environ.get('DSS_API_USERNAME')
+DSS_API_PASSWORD = os.environ.get('DSS_API_PASSWORD')
+```
+
+## Related Modules
+
+- `htk.apps.accounts` - User management

@@ -1,117 +1,60 @@
 # Notifications App
 
-> User notification and alert system.
-
-## Purpose
-
-The notifications app provides multi-channel notifications (email, SMS, in-app) with delivery tracking.
+Send notifications across multiple channels (email, SMS, in-app).
 
 ## Quick Start
 
 ```python
-from htk.apps.notifications.models import *
+from htk.apps.notifications.utils import notify
 
-# Create and use models
-# See models.py for available classes
-instance = YourModel.objects.create(field='value')
+# Send notification
+notify(
+    user=user,
+    message='Order shipped!',
+    channel='email',
+    subject='Your order is on the way'
+)
+
+# Send to multiple users
+notify_users = [user1, user2, user3]
+for u in notify_users:
+    notify(u, 'New feature available', channel='email')
 ```
 
-## Key Components
+## Channels
 
-| Component | Purpose |
-|-----------|---------|
-| **Models** | Notification, NotificationChannel models |
-| **Views** | Provide web interface and API endpoints |
-| **Forms** | Handle data validation and user input |
-| **Serializers** | API serialization and deserialization |
+- **Email** - Django email backend
+- **SMS** - Twilio/Plivo integration
+- **In-app** - Store in database, display in UI
+- **Slack** - Send to Slack
 
 ## Common Patterns
 
-### Basic Model Operations
-
 ```python
-from htk.apps.notifications.models import *
+# Email notification
+notify(user, 'Welcome!', channel='email', subject='Welcome to MyApp')
 
-# Create
-obj = YourModel.objects.create(name='Example')
+# In-app notification (persistent)
+notify(user, 'You have a new message', channel='in_app')
 
-# Read
-obj = YourModel.objects.get(id=1)
-
-# Update
-obj.name = 'Updated'
-obj.save()
-
-# Delete
-obj.delete()
+# Multi-channel
+for channel in ['email', 'in_app']:
+    notify(user, message, channel=channel)
 ```
 
-### Filtering and Querying
+## Integration Examples
 
 ```python
-# Filter by attributes
-results = YourModel.objects.filter(status='active')
+# Notify on order creation
+from django.db.models.signals import post_save
 
-# Order by field
-ordered = YourModel.objects.all().order_by('-created_at')
-
-# Count results
-count = YourModel.objects.filter(status='active').count()
+@receiver(post_save, sender=Order)
+def notify_on_order(sender, instance, created, **kwargs):
+    if created:
+        notify(instance.user, f'Order #{instance.id} created', channel='email')
 ```
 
-## API Endpoints
+## Related Modules
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/notifications/` | GET | List items |
-| `/api/notifications/` | POST | Create item |
-| `/api/notifications/{id}/` | GET | Get item details |
-| `/api/notifications/{id}/` | PATCH | Update item |
-| `/api/notifications/{id}/` | DELETE | Delete item |
-
-## Configuration
-
-```python
-# settings.py
-HTK_NOTIFICATIONS_ENABLED = True
-# Additional settings in constants/defaults.py
-```
-
-## Best Practices
-
-- **Use ORM** - Leverage Django ORM for database queries
-- **Validate input** - Use forms and serializers for validation
-- **Check permissions** - Verify user has required permissions
-- **Cache results** - Cache expensive queries and operations
-- **Write tests** - Test models, views, forms, and API endpoints
-
-## Testing
-
-```python
-from django.test import TestCase
-from htk.apps.notifications.models import *
-
-class NotificationsTestCase(TestCase):
-    def setUp(self):
-        """Create test fixtures"""
-        self.obj = YourModel.objects.create(field='value')
-
-    def test_model_creation(self):
-        """Test creating an object"""
-        self.assertIsNotNone(self.obj.id)
-```
-
-## Related Apps
-
-- `htk.apps.accounts` - User accounts
-
-## References
-
-- [Django Models](https://docs.djangoproject.com/en/stable/topics/db/models/)
-- [Django Forms](https://docs.djangoproject.com/en/stable/topics/forms/)
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+- `htk.apps.accounts` - User management
+- `htk.lib.slack` - Slack integration

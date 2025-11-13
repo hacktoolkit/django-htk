@@ -1,117 +1,74 @@
 # Tokens App
 
-> Authentication tokens and token management.
-
-## Purpose
-
-The tokens app provides token generation, validation, expiration, and management.
+API token generation, validation, and management.
 
 ## Quick Start
 
 ```python
-from htk.apps.tokens.models import *
+from htk.apps.tokens.models import AuthToken
 
-# Create and use models
-# See models.py for available classes
-instance = YourModel.objects.create(field='value')
+# Create token for user
+token = AuthToken.objects.create(
+    user=user,
+    token_string='abcd1234efgh5678',
+    expiry_date=timezone.now() + timedelta(days=30)
+)
+
+# Validate token
+valid = AuthToken.objects.filter(
+    token_string=token_str,
+    user=user,
+    expiry_date__gt=timezone.now()
+).exists()
 ```
-
-## Key Components
-
-| Component | Purpose |
-|-----------|---------|
-| **Models** | AuthToken, TokenMetadata models |
-| **Views** | Provide web interface and API endpoints |
-| **Forms** | Handle data validation and user input |
-| **Serializers** | API serialization and deserialization |
 
 ## Common Patterns
 
-### Basic Model Operations
-
 ```python
-from htk.apps.tokens.models import *
+# Token authentication in views
+@require_http_methods(['POST'])
+def api_endpoint(request):
+    token_str = request.headers.get('Authorization', '').replace('Bearer ', '')
 
-# Create
-obj = YourModel.objects.create(name='Example')
+    try:
+        token = AuthToken.objects.get(
+            token_string=token_str,
+            expiry_date__gt=timezone.now()
+        )
+        user = token.user
+    except AuthToken.DoesNotExist:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
 
-# Read
-obj = YourModel.objects.get(id=1)
-
-# Update
-obj.name = 'Updated'
-obj.save()
-
-# Delete
-obj.delete()
+    # Process request for authenticated user
+    return JsonResponse({'user_id': user.id})
 ```
 
-### Filtering and Querying
+## Models
+
+- **`AuthToken`** - API token with expiration
+- **`TokenMetadata`** - Store token metadata
+
+## Security
 
 ```python
-# Filter by attributes
-results = YourModel.objects.filter(status='active')
+# Generate secure tokens
+import secrets
+token = secrets.token_urlsafe(32)
 
-# Order by field
-ordered = YourModel.objects.all().order_by('-created_at')
-
-# Count results
-count = YourModel.objects.filter(status='active').count()
-```
-
-## API Endpoints
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/tokens/` | GET | List items |
-| `/api/tokens/` | POST | Create item |
-| `/api/tokens/{id}/` | GET | Get item details |
-| `/api/tokens/{id}/` | PATCH | Update item |
-| `/api/tokens/{id}/` | DELETE | Delete item |
-
-## Configuration
-
-```python
-# settings.py
-HTK_TOKENS_ENABLED = True
-# Additional settings in constants/defaults.py
+# Hash before storing
+import hashlib
+token_hash = hashlib.sha256(token.encode()).hexdigest()
 ```
 
 ## Best Practices
 
-- **Use ORM** - Leverage Django ORM for database queries
-- **Validate input** - Use forms and serializers for validation
-- **Check permissions** - Verify user has required permissions
-- **Cache results** - Cache expensive queries and operations
-- **Write tests** - Test models, views, forms, and API endpoints
+1. **Hash tokens** - Never store plaintext tokens
+2. **Set expiration** - All tokens should expire
+3. **Regenerate on compromise** - Allow users to revoke
+4. **Log token usage** - Track API access
+5. **Use HTTPS** - Tokens in transit must be encrypted
 
-## Testing
+## Related Modules
 
-```python
-from django.test import TestCase
-from htk.apps.tokens.models import *
-
-class TokensTestCase(TestCase):
-    def setUp(self):
-        """Create test fixtures"""
-        self.obj = YourModel.objects.create(field='value')
-
-    def test_model_creation(self):
-        """Test creating an object"""
-        self.assertIsNotNone(self.obj.id)
-```
-
-## Related Apps
-
-- `htk.apps.accounts` - User accounts
-
-## References
-
-- [Django Models](https://docs.djangoproject.com/en/stable/topics/db/models/)
-- [Django Forms](https://docs.djangoproject.com/en/stable/topics/forms/)
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+- `htk.apps.accounts` - User management
+- `htk.middleware` - Auth middleware

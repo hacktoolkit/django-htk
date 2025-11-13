@@ -1,26 +1,79 @@
-# Google
+# Google Integration
 
-## Classes
-- **`GmailAPI`** (google/gmail/api.py) - Interface to Gmail API
+Gmail, Maps, Sheets, Translate, Cloud, and reCAPTCHA APIs.
 
-## Functions
-- **`labels_list`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/labels/list
-- **`messages_list`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/list
-- **`message_get`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/get
-- **`message_modify`** (google/gmail/api.py) - Adds or removes labels to a message
-- **`message_trash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/trash
-- **`message_untrash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/untrash
-- **`threads_list`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/list
-- **`thread_get`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/get
-- **`thread_modify`** (google/gmail/api.py) - Adds or removes labels to a thread
-- **`thread_trash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/trash
-- **`thread_untrash`** (google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/untrash
-- **`get_html`** (google/gmail/api.py) - Returns the HTML part of a message from the API
-- **`get_text`** (google/gmail/api.py) - Returns the text part of the message from the API
-- **`get_map_url_for_geolocation`** (google/maps/utils.py) - Returns a Google Maps url for `latitude`, `longitude`
-- **`google_recaptcha_site_verification`** (google/recaptcha/utils.py) - Gets verification data on a Google Recaptcha response token
-- **`spreadsheets_values_append`** (google/sheets/api.py) - https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append
-- **`translate`** (google/translate/utils.py) - Translates `term` from `origin` language into `target` language
-- **`get_num_server_api_keys`** (google/utils.py) - Returns the number of Google server API keys configured
-- **`get_server_api_key`** (google/utils.py) - Retrieves the Google Server API key
-- **`get_browser_api_key`** (google/utils.py) - Retrieves the Google Browser API key
+## Gmail API
+
+```python
+from htk.lib.google.gmail.api import GmailAPI
+
+gmail = GmailAPI()
+messages = gmail.messages_list()
+threads = gmail.threads_list()
+
+# Modify messages
+gmail.message_modify(msg_id, add_labels=['LABEL_ID'])
+gmail.message_trash(msg_id)
+```
+
+## Maps
+
+```python
+from htk.lib.google.maps.utils import get_map_url_for_geolocation
+
+# Get Google Maps URL
+map_url = get_map_url_for_geolocation(lat=37.7749, lng=-122.4194)
+```
+
+## Geocoding
+
+```python
+from htk.lib.google.geocode.api import geocode
+
+address = geocode('1600 Pennsylvania Avenue NW, Washington, DC')
+# Returns: {'lat': 38.89..., 'lng': -77.03..., ...}
+```
+
+## Sheets API
+
+```python
+from htk.lib.google.sheets.api import spreadsheets_values_append
+
+# Append to Google Sheet
+spreadsheets_values_append(
+    spreadsheet_id='sheet_id',
+    range='Sheet1!A1',
+    values=[['Name', 'Email'], ['John', 'john@example.com']]
+)
+```
+
+## Translation
+
+```python
+from htk.lib.google.translate.utils import translate
+
+result = translate('Hello', source_language='en', target_language='es')
+# Returns: 'Hola'
+```
+
+## reCAPTCHA
+
+```python
+from htk.lib.google.recaptcha.utils import google_recaptcha_site_verification
+
+is_valid = google_recaptcha_site_verification(token)
+```
+
+## Configuration
+
+```python
+# settings.py
+GOOGLE_SERVER_API_KEY = os.environ.get('GOOGLE_SERVER_API_KEY')
+GOOGLE_BROWSER_API_KEY = os.environ.get('GOOGLE_BROWSER_API_KEY')
+GOOGLE_SHEETS_API_KEY = os.environ.get('GOOGLE_SHEETS_API_KEY')
+```
+
+## Related Modules
+
+- `htk.apps.addresses` - Address geocoding
+- `htk.lib.mapbox` - Alternative maps

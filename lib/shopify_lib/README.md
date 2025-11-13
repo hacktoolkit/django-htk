@@ -1,22 +1,55 @@
-# Shopify_Lib
+# Shopify Integration
 
-## Classes
-- **`ShopifyProduct`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/product
-- **`ShopifyProductImage`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/product_image
-- **`ShopifyProductVariant`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/product_variant
-- **`ShopifyCustomer`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/customer
-- **`ShopifyCustomerAddress`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/customeraddress
-- **`ShopifyOrder`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/order
-- **`ShopifyFulFillment`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/fulfillment
-- **`ShopifyRefund`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/refund
-- **`ShopifyTransaction`** (shopify_lib/models.py) - https://help.shopify.com/api/reference/transaction
+E-commerce API for products, orders, customers, and fulfillment.
 
-## Functions
-- **`resource_iterator`** (shopify_lib/api.py) - Returns an iterator/generator over the ActiveResource `resource`
-- **`iter_products`** (shopify_lib/api.py) - Returns an iterator/generator over all Products
-- **`iter_orders`** (shopify_lib/api.py) - Returns an iterator/generator over all Orders
-- **`iter_customers`** (shopify_lib/api.py) - Returns an iterator/generator over all Customers
-- **`already_cached`** (shopify_lib/archivers.py) - Check whether an `item` of `item_type` was already cached
-- **`archive_all`** (shopify_lib/archivers.py) - Archives everything
-- **`archive_item_type`** (shopify_lib/archivers.py) - Archives a collection of Shopify.Resource of `item_type` using `iterator`
-- **`archive_item`** (shopify_lib/archivers.py) - Archives a single Shopify.Resource `item` into some database using `archiver`
+## Quick Start
+
+```python
+from htk.lib.shopify_lib.api import iter_products, iter_orders, iter_customers
+
+# Iterate products
+for product in iter_products():
+    print(product.title, product.handle)
+
+# Iterate orders
+for order in iter_orders():
+    print(order.id, order.total_price)
+
+# Iterate customers
+for customer in iter_customers():
+    print(customer.email, customer.first_name)
+```
+
+## Models
+
+- **`ShopifyProduct`** - Product with variants and images
+- **`ShopifyOrder`** - Order with fulfillments
+- **`ShopifyCustomer`** - Customer with addresses
+- **`ShopifyFulfillment`** - Order fulfillment
+- **`ShopifyTransaction`** - Payment transaction
+
+## Archiving
+
+```python
+from htk.lib.shopify_lib.archivers import archive_all, archive_item_type
+
+# Archive all data from Shopify
+archive_all()
+
+# Archive specific type
+archive_item_type('Product')
+```
+
+## Configuration
+
+```python
+# settings.py
+SHOPIFY_STORE_NAME = os.environ.get('SHOPIFY_STORE_NAME')
+SHOPIFY_API_KEY = os.environ.get('SHOPIFY_API_KEY')
+SHOPIFY_API_PASSWORD = os.environ.get('SHOPIFY_API_PASSWORD')
+```
+
+## Related Modules
+
+- `htk.apps.store` - Store management
+- `htk.apps.customers` - Customer management

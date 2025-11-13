@@ -1,22 +1,43 @@
-# Fullcontact
+# Fullcontact Integration
 
-## Classes
-- **`FullContactAPIV3`** (fullcontact/api.py) - https://www.fullcontact.com/developer/docs/
-- **`FullContactAPIV2`** (fullcontact/api.py) - https://www.fullcontact.com/developer/docs/
+Contact enrichment and identity verification.
 
-## Functions
-- **`get_resource_url`** (fullcontact/api.py) - Returns the resource URL for `resource_type`
-- **`post`** (fullcontact/api.py) - Performs a FullContact API POST request
-- **`get_person`** (fullcontact/api.py) - https://www.fullcontact.com/developer/docs/person/
-- **`get_persons`** (fullcontact/api.py) - Retrieves a batch of Person objects based on `emails`
-- **`get_resource_url`** (fullcontact/api.py) - Returns the resource URL for `resource_type`
-- **`get`** (fullcontact/api.py) - Performs a FullContact API GET request
-- **`post`** (fullcontact/api.py) - Performs a FullContact API POST request
-- **`get_person`** (fullcontact/api.py) - https://www.fullcontact.com/developer/docs/person/
-- **`get_persons`** (fullcontact/api.py) - Retrieves a batch of Person objects based on `emails`
-- **`as_slack_v3`** (fullcontact/classes.py) - Formats this person's FullContact V3 data as a Slack string
-- **`as_slack_v2`** (fullcontact/classes.py) - Formats this person's FullContact V2 data as a Slack string
-- **`get_full_contact_api_v3_key`** (fullcontact/utils.py) - Retrieves a FullContact API key
-- **`get_full_contact_api_v2_key`** (fullcontact/utils.py) - Retrieves a FullContact API key
-- **`find_person_by_email`** (fullcontact/utils.py) - Retrieve a person object by `email`
-- **`find_valid_emails`** (fullcontact/utils.py) - Returns a subset of `emails` that are valid
+## Quick Start
+
+```python
+from htk.lib.fullcontact.utils import find_person_by_email
+
+person = find_person_by_email('user@example.com')
+print(person.name, person.emails, person.phones)
+```
+
+## Operations
+
+```python
+from htk.lib.fullcontact.api import FullContactAPIV3
+
+api = FullContactAPIV3()
+
+# Get person by email
+person = api.get_person(email='user@example.com')
+
+# Get batch of people
+people = api.get_persons(emails=['user1@example.com', 'user2@example.com'])
+
+# Find valid emails
+valid_emails = api.find_valid_emails(email_list)
+
+# Format for Slack
+slack_message = person.as_slack_v3()
+```
+
+## Configuration
+
+```python
+# settings.py
+FULLCONTACT_API_KEY = os.environ.get('FULLCONTACT_API_KEY')
+```
+
+## Related Modules
+
+- `htk.apps.accounts` - User profile enrichment

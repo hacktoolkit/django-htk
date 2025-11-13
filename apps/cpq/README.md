@@ -1,37 +1,173 @@
-# Cpq
+# CPQ App (Configure, Price, Quote)
 
-## Classes
-- **`AbstractCPQQuote`** (cpq/models.py) - Abstract base class for a Quote, Invoice, or GroupQuote
-- **`BaseCPQQuote`** (cpq/models.py) - Base class for a Quote
-- **`BaseCPQGroupQuote`** (cpq/models.py) - Base class for a GroupQuote
-- **`BaseCPQInvoice`** (cpq/models.py) - Base class for an Invoice
+Quoting and invoicing system for B2B commerce.
 
-## Functions
-- **`sync_group_sub_quotes`** (cpq/apps.py) - signal handler for GroupQuote post-save
-- **`get_url_name`** (cpq/models.py) - Gets the url_name for this object
-- **`resolve_line_item_ids`** (cpq/models.py) - Resolves `line_item_ids` into their respective GroupQuoteLineItems or QuoteLineItems
-- **`approve_and_pay`** (cpq/models.py) - Approve `line_item_ids` and pay `amount` for them with a verified `stripe_token`
-- **`create_invoice_for_payment`** (cpq/models.py) - Creates an invoice for this Quote with successful payment by `stripe_customer` for `line_items`
-- **`record_payment`** (cpq/models.py) - Record an actual Stripe payment for `line_items`
-- **`get_charges`** (cpq/models.py) - Get charges made on this Invoice
-- **`compute_cpq_code`** (cpq/utils/crypto.py) - Computes the encoded id for a CPQ object (Quote or Invoice)
-- **`resolve_cpq_code`** (cpq/utils/crypto.py) - Returns the CPQ object (Quote or Invoice) for this `cpq_code`
-- **`cpq_view`** (cpq/views.py) - Renders an invoice, quote, or group quote
+## Overview
 
-## Components
-**Models** (`models.py`), **Views** (`views.py`)
+The `cpq` app provides:
 
-## URL Patterns
-- `cpq_invoices_index`
-- `cpq_invoices_invoice`
-- `cpq_groupquotes_index`
-- `cpq_groupquotes_quote`
-- `cpq_groupquotes_quote_all`
-- `cpq_quotes_index`
-- `cpq_quotes_quote`
-- `cpq_quotes_quote_pay`
-- `cpq_index`
-- `cpq_dashboard`
-- `cpq_receivables`
-- `cpq_receivables_by_year`
-- `cpq_import_customers`
+- Create quotes for customers
+- Line items with pricing and customization
+- Convert quotes to invoices
+- Payment processing with Stripe
+- Quote history and tracking
+- Group quotes for bulk orders
+
+## Quick Start
+
+### Create Quotes
+
+```python
+from htk.apps.cpq.models import BaseCPQQuote, BaseCPQQuoteLineItem
+
+# Create quote
+quote = BaseCPQQuote.objects.create(
+    customer_name='Acme Corp',
+    customer_email='procurement@acme.com',
+    expires_at=timezone.now() + timedelta(days=30)
+)
+
+# Add line items
+line_item = BaseCPQQuoteLineItem.objects.create(
+    quote=quote,
+    description='Enterprise License',
+    quantity=1,
+    unit_price=1000.00
+)
+
+quote.refresh_from_db()  # Updates total
+```
+
+### Approve & Payment
+
+```python
+# Approve and process payment
+quote.approve_and_pay(
+    line_item_ids=[line_item.id],
+    amount=1000.00,
+    stripe_token='tok_xxx'
+)
+
+# Creates invoice automatically
+```
+
+### Group Quotes
+
+```python
+from htk.apps.cpq.models import BaseCPQGroupQuote
+
+# Create group quote (for parent-child relationships)
+group_quote = BaseCPQGroupQuote.objects.create(
+    name='Q4 Regional Sales'
+)
+
+# Add sub-quotes
+quote1.group_quote = group_quote
+quote1.save()
+
+# Sync amounts
+group_quote.sync_group_sub_quotes()
+```
+
+## Models
+
+- **`BaseCPQQuote`** - Main quote model
+- **`BaseCPQGroupQuote`** - Group multiple quotes
+- **`BaseCPQInvoice`** - Invoice from approved quote
+- **`BaseCPQQuoteLineItem`** - Line items in quote
+- **`BaseCPQInvoiceLineItem`** - Line items in invoice
+
+## Workflow
+
+```
+Create Quote
+    ↓
+Add Line Items
+    ↓
+Send to Customer
+    ↓
+Customer Approves
+    ↓
+Process Payment (Stripe)
+    ↓
+Create Invoice
+    ↓
+Customer Pays
+```
+
+## Common Patterns
+
+### Sending Quotes
+
+```python
+from htk.apps.cpq.emailers import send_quote_email
+
+# Send quote to customer
+send_quote_email(
+    quote=quote,
+    recipient_email='buyer@acme.com'
+)
+```
+
+### Payment Recording
+
+```python
+# Record Stripe payment
+quote.record_payment(
+    charge_id='ch_xxx',
+    amount=1000.00,
+    line_items=[line_item]
+)
+
+# Creates invoice
+invoice = quote.create_invoice_for_payment(
+    stripe_customer=customer,
+    line_items=[line_item]
+)
+```
+
+### Quote Encoding
+
+```python
+from htk.apps.cpq.utils.crypto import compute_cpq_code, resolve_cpq_code
+
+# Encode quote/invoice for URL
+code = compute_cpq_code(quote)
+
+# Decode from URL
+obj = resolve_cpq_code(code)  # Returns Quote or Invoice
+```
+
+## Dashboard & Reporting
+
+```python
+# Built-in URL patterns
+# cpq_dashboard - Overview of all quotes
+# cpq_invoices_index - List of invoices
+# cpq_quotes_index - List of quotes
+# cpq_receivables - Payment tracking by year
+```
+
+## Configuration
+
+```python
+# settings.py
+CPQ_QUOTE_EXPIRY_DAYS = 30
+CPQ_REQUIRE_APPROVAL = True
+CPQ_STRIPE_CONNECTED = True
+```
+
+## Best Practices
+
+1. **Set expiration dates** on all quotes
+2. **Use line item descriptions** clearly
+3. **Record all payments** for audit trail
+4. **Send email confirmations** when quote created
+5. **Track quote status** for follow-ups
+6. **Use group quotes** for related deals
+
+## Related Modules
+
+- `htk.apps.stripe_lib` - Payment processing
+- `htk.apps.customers` - Customer management
+- `htk.apps.notifications` - Send confirmations

@@ -1,23 +1,70 @@
-# Geolocations
+# Geolocations App
 
-## Classes
-- **`GeocodeCache`** (geolocations/cachekeys.py) - Cache management object for geocode lookups
+Geolocation and proximity search.
 
-## Functions
-- **`get_address_string`** (geolocations/models.py) - This function needs to be overwritten by the concrete class
-- **`has_latlng`** (geolocations/models.py) - Determines whether this object has a latitude and longitude
-- **`geocode`** (geolocations/models.py) - Geocodes the address
-- **`get_latitude`** (geolocations/models.py) - Retrieve the latitude of this object
-- **`get_longitude`** (geolocations/models.py) - Retrieve the longitude of this object
-- **`map_url`** (geolocations/models.py) - Get the Google Maps URL for this geolocation
-- **`geocoordinates_map_url`** (geolocations/models.py) - Get the Google Maps URL for this geolocation, using coordinates
-- **`find_near_latlng`** (geolocations/models.py) - Given the geopoint pair `latitude` and `longitude`, find nearby AbstractGeolocation objects of type `cls`
-- **`find_near_location`** (geolocations/models.py) - Given the geocode-able string `location_name`, find nearby AbstractGeolocation objects of type `cls`
-- **`find_nearby`** (geolocations/models.py) - Finds nearby AbstractGeolocation objects to this one
-- **`distance_from`** (geolocations/models.py) - Calculates the distance from this AbstractGeolocation to (`lat`, `lng`)
-- **`get_latlng`** (geolocations/utils.py) - Geocodes a `location_name` and caches the result
-- **`WGS84EarthRadius`** (geolocations/utils.py) - Earth radius in meters at a given latitude, according to the WGS-84 ellipsoid [m]
-- **`convert_distance_to_meters`** (geolocations/utils.py) - Converts `distance` in `distance_unit` to meters
-- **`convert_meters`** (geolocations/utils.py) - Converts `distance_meters` in meters to `distance_unit`
-- **`get_bounding_box`** (geolocations/utils.py) - Get the bounding box surrounding the point at given coordinates,
-- **`haversine`** (geolocations/utils.py) - Calculate the great circle distance between two points
+## Quick Start
+
+```python
+from htk.apps.geolocations.models import AbstractGeolocation
+from htk.apps.geolocations.utils import get_latlng, haversine
+
+# Create location
+location = AbstractGeolocation.objects.create(
+    name='San Francisco HQ',
+    address='123 Market St, San Francisco, CA'
+)
+
+# Geocode (get lat/lng)
+location.geocode()  # Populates latitude, longitude
+
+# Get latlng from address
+lat, lng = get_latlng('New York, NY')
+
+# Find nearby locations
+nearby = AbstractGeolocation.find_near_latlng(
+    lat=37.7749,
+    lng=-122.4194,
+    distance=10  # miles
+)
+
+# Calculate distance
+distance = location.distance_from(37.7749, -122.4194)
+```
+
+## Models
+
+- **`AbstractGeolocation`** - Location with lat/lng
+
+## Utilities
+
+```python
+# Convert distance units
+from htk.apps.geolocations.utils import convert_distance_to_meters, convert_meters
+
+meters = convert_distance_to_meters(10, 'miles')
+km = convert_meters(1000, 'km')
+
+# Get bounding box
+from htk.apps.geolocations.utils import get_bounding_box
+
+bbox = get_bounding_box(lat=37.7749, lng=-122.4194, radius=5)
+
+# WGS84 Earth radius
+from htk.apps.geolocations.utils import WGS84EarthRadius
+
+radius = WGS84EarthRadius(lat=37.7749)
+```
+
+## Configuration
+
+```python
+# settings.py
+GEOLOCATIONS_CACHE_TTL = 86400  # 1 day
+GEOLOCATIONS_DEFAULT_DISTANCE_UNIT = 'miles'
+```
+
+## Related Modules
+
+- `htk.apps.addresses` - Address management
+- `htk.lib.google.geocode` - Google Geocoding
+- `htk.lib.mapbox` - Mapbox integration
