@@ -4,7 +4,7 @@ Utilities for user account management, authentication, email handling, encryptio
 
 ## Functions by Category
 
-### Authentication (5 functions)
+### Authentication
 
 **login_authenticated_user(request, authenticated_user, backend=None)**
 - Logs in an authenticated user and updates locale info from request
@@ -26,7 +26,7 @@ Utilities for user account management, authentication, email handling, encryptio
 - Resets user password with form validation
 - Returns tuple: `(success, updated_user, form)`
 
-### User Lookup (7 functions)
+### User Lookup
 
 **get_user_by_username(username, UserModel=None)**
 - Gets user by exact username match
@@ -56,7 +56,7 @@ Utilities for user account management, authentication, email handling, encryptio
 - Gets list of UserEmail objects by IDs
 - Returns partial list or None based on strict mode
 
-### User Creation (6 functions)
+### User Creation
 
 **create_user(first_name, last_name, email, username_prefix=None, set_password=True)**
 - Creates new user with optional custom username prefix
@@ -83,7 +83,7 @@ Utilities for user account management, authentication, email handling, encryptio
 - Authenticates user from base64-encoded "username:password"
 - Returns authenticated user or None
 
-### Email Management (4 functions)
+### Email Management
 
 **get_user_email(user, email, is_confirmed=True)**
 - Gets UserEmail object for user and email
@@ -102,7 +102,7 @@ Utilities for user account management, authentication, email handling, encryptio
 **notify_user_email_update(user, old_email, new_email)**
 - Notifies Iterable of email change if enabled
 
-### Encryption (3 functions)
+### Encryption
 
 **encrypt_uid(user)**
 - Encrypts user ID using XOR key
@@ -116,7 +116,7 @@ Utilities for user account management, authentication, email handling, encryptio
 - Gets User object from encrypted UID
 - Returns None if invalid or not found
 
-### Query/Lookup (6 functions)
+### Query/Lookup
 
 **get_all_users(active=True)**
 - Gets all users, optionally filtered by active status
@@ -142,7 +142,7 @@ Utilities for user account management, authentication, email handling, encryptio
 - Sanity check utility finding duplicate emails in database
 - Returns sorted list of duplicate email addresses
 
-### Utility (7 functions)
+### Utility
 
 **get_user_profile_model()**
 - Resolves HTK_USER_PROFILE_MODEL setting

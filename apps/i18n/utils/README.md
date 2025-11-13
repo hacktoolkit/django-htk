@@ -4,7 +4,7 @@ Utilities for internationalization including language data management, string re
 
 ## Functions by Category
 
-### Data Functions (4 functions)
+### Data Functions
 
 **look_up_supported_languages()**
 - Gets all language codes with translations (cached with lru_cache)
@@ -29,7 +29,7 @@ Utilities for internationalization including language data management, string re
 - When overwrite=True: Updates existing translations
 - Returns tuple: (num_strings, num_translations)
 
-### Utility Functions (2 functions)
+### Utility Functions
 
 **get_language_code_choices()**
 - Gets language code choices for forms

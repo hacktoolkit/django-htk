@@ -4,7 +4,7 @@ Utilities for Quote and Invoice management including URL generation, crypto enco
 
 ## Functions by Category
 
-### Admin/Reporting Functions (4 functions)
+### Admin/Reporting Functions
 
 **get_admin_urls()**
 - Generates Django admin URLs for all CPQ models
@@ -25,7 +25,7 @@ Utilities for Quote and Invoice management including URL generation, crypto enco
 - Gets payment term choices from InvoicePaymentTerm enum
 - Returns list of (value, symbolic_name) tuples for form dropdowns
 
-### Crypto Functions (4 functions)
+### Crypto Functions
 
 **compute_cpq_code(cpq)**
 - Encodes CPQ object ID into checksum-protected code
@@ -48,7 +48,7 @@ Utilities for Quote and Invoice management including URL generation, crypto enco
 - Supports INVOICE, QUOTE, and GROUP_QUOTE types
 - Returns CPQ object or None if invalid
 
-### Accounting Functions (2 functions)
+### Accounting Functions
 
 **get_invoice_years()**
 - Gets list of all years with invoices

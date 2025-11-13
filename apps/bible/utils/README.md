@@ -4,7 +4,7 @@ Utilities for Bible data management including scripture lookups, references, see
 
 ## Functions by Category
 
-### Model Getters (4 functions)
+### Model Getters
 
 **get_bible_book_model()**
 - Resolves HTK_BIBLE_BOOK_MODEL setting
@@ -22,7 +22,7 @@ Utilities for Bible data management including scripture lookups, references, see
 - Resolves HTK_BIBLE_PASSAGE_MODEL setting
 - Returns BiblePassage model class
 
-### Lookup Functions (5 functions)
+### Lookup Functions
 
 **lookup_bible_verse(book, chapter, verse)**
 - Looks up a specific verse by book name, chapter number, and verse number
@@ -47,7 +47,7 @@ Utilities for Bible data management including scripture lookups, references, see
 - Format: "BookName ChapterNumber"
 - Returns list based on BIBLE_BOOKS_DATA constant
 
-### Reference Functions (4 functions)
+### Reference Functions
 
 **get_scripture_references_list(bible_passages)**
 - Converts BiblePassage objects to string list
@@ -66,7 +66,7 @@ Utilities for Bible data management including scripture lookups, references, see
 - Joins compact scripture references (implementation in progress)
 - Returns semicolon-joined string
 
-### Seeding Functions (3 functions)
+### Seeding Functions
 
 **seed_bible()**
 - Seeds complete Bible data
@@ -82,14 +82,14 @@ Utilities for Bible data management including scripture lookups, references, see
 - Creates appropriate number of chapters per book
 - Uses BIBLE_BOOKS_DATA constant for chapter counts
 
-### Translation Functions (1 function)
+### Translation Functions
 
 **get_translation_model(translation)**
 - Looks up translation model from HTK_BIBLE_TRANSLATIONS_MAP setting
 - Translation name is uppercased for lookup
 - Returns model class or None if not found
 
-### Choice Functions (1 function)
+### Choice Functions
 
 **get_bible_book_choices()**
 - Gets enum choices from BibleTestament enum
