@@ -22,6 +22,24 @@ This module provides constants for Bible book metadata, aliases, and translation
 - **`HTK_BIBLE_NASB_VERSE_MODEL`** - Default: `'bible.NASBVerse'`
 - **`HTK_BIBLE_TRANSLATIONS_MAP`** - Dict mapping translation codes to model strings
 
+## Enums
+
+### BibleTestament
+
+Bible division (Old Testament or New Testament):
+
+```python
+from htk.apps.bible.enums import BibleTestament
+
+# Available testaments with values
+BibleTestament.OT              # value: 1 (Old Testament)
+BibleTestament.NT              # value: 2 (New Testament)
+
+# Access enum properties
+testament = BibleTestament.OT
+print(f"{testament.name}: {testament.value}")  # OT: 1
+```
+
 ## Usage Examples
 
 ### Access Book Information

@@ -72,6 +72,26 @@ from htk.apps.accounts.constants import (
 - `HTK_SOCIAL_AUTH_PROVIDERS` - List of available social auth providers
 - `HTK_SOCIAL_AUTH_LOGIN_PROVIDERS` - List of providers allowed for login
 
+## Enums
+
+### ProfileAvatarType
+
+Avatar source types for user profiles:
+
+```python
+from htk.apps.accounts.enums import ProfileAvatarType
+
+# Available avatar types with values
+ProfileAvatarType.PROFILE       # value: 1
+ProfileAvatarType.GRAVATAR      # value: 100
+ProfileAvatarType.FACEBOOK      # value: 101
+ProfileAvatarType.TWITTER       # value: 102
+
+# Access enum properties
+avatar_type = ProfileAvatarType.GRAVATAR
+print(f"{avatar_type.name}: {avatar_type.value}")  # GRAVATAR: 100
+```
+
 ## Classes
 
 ### SocialAuth

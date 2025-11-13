@@ -9,40 +9,40 @@ This models module defines Django models that represent the database schema. Mod
 ### Query Models
 
 ```python
-from htk.apps.prelaunch.models.models import Item
+from htk.apps.prelaunch.models import PrelaunchSignup
 
-# Get all objects
-items = Item.objects.all()
+# Get all signups
+signups = PrelaunchSignup.objects.all()
 
 # Filter by condition
-active = Item.objects.filter(is_active=True)
+active = PrelaunchSignup.objects.filter(is_active=True)
 
-# Get single object
-item = Item.objects.get(id=1)  # Raises DoesNotExist if not found
+# Get single signup
+signup = PrelaunchSignup.objects.get(id=1)  # Raises DoesNotExist if not found
 
 # Get or None
-item = Item.objects.filter(id=1).first()  # Returns None if not found
+signup = PrelaunchSignup.objects.filter(email='user@example.com').first()  # Returns None if not found
 ```
 
 ### Create Objects
 
 ```python
-from htk.apps.prelaunch.models.models import Item
+from htk.apps.prelaunch.models import PrelaunchSignup
 
 # Create and save
-item = Item.objects.create(
-    name='test',
-    description='...'
+signup = PrelaunchSignup.objects.create(
+    email='user@example.com',
+    ip_address='192.168.1.1'
 )
 
 # Create instance, modify, then save
-item = Item(name='test')
-item.save()
+signup = PrelaunchSignup(email='user@example.com')
+signup.save()
 
 # Bulk create
-items = Item.objects.bulk_create([
-    Item(name='item1'),
-    Item(name='item2'),
+signups = PrelaunchSignup.objects.bulk_create([
+    PrelaunchSignup(email='user1@example.com'),
+    PrelaunchSignup(email='user2@example.com'),
 ])
 ```
 
@@ -61,17 +61,19 @@ Models include various field types:
 ### Field Options
 
 ```python
-class Item(models.Model):
-    name = models.CharField(
-        max_length=100,
-        help_text='Item name',
-        unique=True
-    )
+from htk.apps.prelaunch.models import PrelaunchSignup
 
-    is_active = models.BooleanField(default=True)
+# PrelaunchSignup fields include:
+# - email: EmailField (unique, max_length=254)
+# - is_active: BooleanField (default=True)
+# - created: DateTimeField (auto_now_add=True)
+# - updated: DateTimeField (auto_now=True)
+# - ip_address: GenericIPAddressField (optional)
 
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+# Query by field options
+recently_created = PrelaunchSignup.objects.filter(
+    created__gte=timezone.now() - timedelta(days=7)
+)
 ```
 
 ## Relationships
@@ -107,16 +109,17 @@ class Article(models.Model):
 
 ### @property
 
-Computed property:
+Computed property example:
 
 ```python
-class Item(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+from htk.apps.prelaunch.models import PrelaunchSignup
 
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+signup = PrelaunchSignup.objects.first()
+
+# Use computed properties if defined on model
+# (check PrelaunchSignup.models for available @property methods)
+if hasattr(signup, 'display_name'):
+    print(signup.display_name)
 ```
 
 ## Querysets
@@ -124,27 +127,33 @@ class Item(models.Model):
 ### Filtering
 
 ```python
+from htk.apps.prelaunch.models import PrelaunchSignup
+from django.utils import timezone
+from datetime import timedelta
+
 # Exact match
-Item.objects.filter(status='active')
+PrelaunchSignup.objects.filter(is_active=True)
 
-# Greater than
-Item.objects.filter(created__gt=datetime.now())
+# Greater than - signups from last week
+PrelaunchSignup.objects.filter(created__gt=timezone.now() - timedelta(days=7))
 
-# Contains
-Item.objects.filter(name__icontains='test')
+# Contains - email domain search
+PrelaunchSignup.objects.filter(email__icontains='@example.com')
 
-# In list
-Item.objects.filter(status__in=['active', 'pending'])
+# In list - specific statuses
+PrelaunchSignup.objects.filter(is_active__in=[True, False])
 ```
 
 ### Ordering
 
 ```python
-# Ascending
-Item.objects.all().order_by('name')
+from htk.apps.prelaunch.models import PrelaunchSignup
 
-# Descending
-Item.objects.all().order_by('-created')
+# Ascending - oldest first
+PrelaunchSignup.objects.all().order_by('created')
+
+# Descending - newest first
+PrelaunchSignup.objects.all().order_by('-created')
 ```
 
 ## Best Practices

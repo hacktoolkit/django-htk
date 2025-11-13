@@ -30,6 +30,26 @@ This module provides geolocation constants for location searches, distance conve
 - **`WGS84_a`** - Major semiaxis: `6378137.0` meters
 - **`WGS84_b`** - Minor semiaxis: `6356752.3142` meters
 
+## Enums
+
+### DistanceUnit
+
+Units for distance measurements:
+
+```python
+from htk.apps.geolocations.enums import DistanceUnit
+
+# Available units with values
+DistanceUnit.MILE           # value: 1
+DistanceUnit.KILOMETER      # value: 2
+DistanceUnit.FEET           # value: 3
+DistanceUnit.METER          # value: 4
+
+# Access enum properties
+unit = DistanceUnit.MILE
+print(f"{unit.name}: {unit.value}")  # MILE: 1
+```
+
 ## Usage Examples
 
 ### Convert Distances

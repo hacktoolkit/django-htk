@@ -29,6 +29,48 @@ This module defines configuration for the CPQ system, including payment settings
 - **`CPQ_REPORTING_URL_NAMES`** - List of reporting view URL names
 - **`CPQ_TOOLS_URL_NAMES`** - List of tools/utility view URL names
 
+## Enums
+
+### CPQType
+
+Document types in the CPQ system:
+
+```python
+from htk.apps.cpq.enums import CPQType
+
+# Available CPQ types with values
+CPQType.INVOICE          # value: 1
+CPQType.QUOTE            # value: 2
+CPQType.GROUP_QUOTE      # value: 3
+
+# Access enum properties
+doc_type = CPQType.INVOICE
+print(f"{doc_type.name}: {doc_type.value}")  # INVOICE: 1
+```
+
+### InvoiceType
+
+Invoice categorization:
+
+```python
+from htk.apps.cpq.enums import InvoiceType
+
+InvoiceType.INVOICE          # value: 1
+InvoiceType.REIMBURSEMENT    # value: 10
+```
+
+### InvoicePaymentTerm
+
+Payment terms for invoices:
+
+```python
+from htk.apps.cpq.enums import InvoicePaymentTerm
+
+InvoicePaymentTerm.PAYMENT_DUE_UPON_RECEIPT    # value: 1
+InvoicePaymentTerm.PAYABLE_NET_14              # value: 14
+InvoicePaymentTerm.PAYABLE_NET_30              # value: 30
+```
+
 ## Usage Examples
 
 ### Configure Payment Settings
@@ -38,6 +80,24 @@ This module defines configuration for the CPQ system, including payment settings
 HTK_CPQ_PAY_ONLINE = True
 HTK_CPQ_XOR_KEY = 9876543210987  # Use strong random value
 HTK_CPQ_CRYPT_SECRET = 'your-secret-key-here'
+```
+
+### Create Quote with CPQType
+
+```python
+from htk.apps.cpq.enums import CPQType
+
+quote_type = CPQType.QUOTE.value
+# Store in database as integer value
+```
+
+### Set Payment Terms
+
+```python
+from htk.apps.cpq.enums import InvoicePaymentTerm
+
+invoice.payment_term = InvoicePaymentTerm.PAYABLE_NET_30.value
+invoice.save()
 ```
 
 ### Use Custom Templates

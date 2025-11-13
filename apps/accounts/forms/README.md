@@ -6,21 +6,38 @@ This forms module provides Django forms for handling user input, validation, and
 
 ## Quick Start
 
-### Use Form in View
+### User Registration Form
 
 ```python
-from htk.apps.accounts.forms.forms import ItemForm
+from htk.apps.accounts.forms.auth import UserRegistrationForm
 
-def create_item_view(request):
+def register_view(request):
     if request.method == 'POST':
-        form = ItemForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            item = form.save()
-            return redirect('item_detail', pk=item.id)
+            user = form.save()
+            return redirect('login')
     else:
-        form = ItemForm()
+        form = UserRegistrationForm()
 
-    return render(request, 'template.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form': form})
+```
+
+### Change Password Form
+
+```python
+from htk.apps.accounts.forms.update import ChangePasswordForm
+
+def change_password_view(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('account_settings')
+    else:
+        form = ChangePasswordForm(request.user)
+
+    return render(request, 'accounts/change_password.html', {'form': form})
 ```
 
 ### Form in Template
@@ -29,7 +46,7 @@ def create_item_view(request):
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Submit</button>
+    <button type="submit">Save Changes</button>
 </form>
 ```
 
@@ -46,33 +63,36 @@ Forms are defined in `forms.py` and provide:
 
 ### Field Validation
 
-Each field has built-in validation:
+Built-in validation for user registration:
 
 ```python
-class ItemForm(forms.ModelForm):
-    email = forms.EmailField()
-    age = forms.IntegerField(min_value=0, max_value=150)
+from htk.apps.accounts.forms.auth import UserRegistrationForm
 
-    class Meta:
-        model = Item
-        fields = ['name', 'email', 'age']
+# Validates:
+# - username uniqueness
+# - password strength
+# - password confirmation match
+# - email format (if email field present)
+form = UserRegistrationForm(request.POST)
+if form.is_valid():
+    # All fields passed validation
+    user = form.save()
 ```
 
 ### Custom Validation
 
 ```python
-class ItemForm(forms.ModelForm):
-    def clean_name(self):
-        name = self.cleaned_data['name']
-        if len(name) < 2:
-            raise forms.ValidationError('Name too short')
-        return name
+from htk.apps.accounts.forms.update import ChangeUsernameForm
 
-    def clean(self):
-        cleaned_data = super().clean()
-        if condition:
-            raise forms.ValidationError('Error message')
-        return cleaned_data
+class ChangeUsernameForm(UserUpdateForm):
+    username = forms.CharField(max_length=30)
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        # Custom validation: check if username available
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('Username already taken')
+        return username
 ```
 
 ## Form Usage
@@ -80,30 +100,33 @@ class ItemForm(forms.ModelForm):
 ### Validate User Input
 
 ```python
-form = ItemForm(request.POST)
+from htk.apps.accounts.forms.auth import UserRegistrationForm
+
+form = UserRegistrationForm(request.POST)
 if form.is_valid():
-    name = form.cleaned_data['name']
-    email = form.cleaned_data['email']
+    username = form.cleaned_data['username']
+    user = form.save()
 else:
-    errors = form.errors
-    field_error = form.errors['field_name']
+    errors = form.errors  # Dict of all field errors
+    username_errors = form.errors['username']  # Get specific field errors
 ```
 
 ### Create Form Instance
 
 ```python
+from htk.apps.accounts.forms.update import UserUpdateForm
+
 # Empty form
-form = ItemForm()
+form = UserUpdateForm()
 
 # With initial data
-form = ItemForm(initial={'name': 'Default'})
+form = UserUpdateForm(initial={'email': 'user@example.com'})
 
 # With POST data
-form = ItemForm(request.POST)
+form = UserUpdateForm(request.POST)
 
 # With instance (update)
-item = Item.objects.get(id=1)
-form = ItemForm(instance=item)
+form = UserUpdateForm(instance=request.user)
 ```
 
 ## Best Practices
