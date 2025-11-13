@@ -29,8 +29,3 @@ def wait_for_resource():
         retry_delay=0.1
     )
 ```
-
-## Related Modules
-
-- `htk.apps.async_task` - Asynchronous tasks
-- `htk.lib.rabbitmq` - Message queues

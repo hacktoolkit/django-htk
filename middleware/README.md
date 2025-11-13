@@ -230,9 +230,3 @@ ALLOWED_HOST_REGEXPS = [
 - **`RewriteJsonResponseContentTypeMiddleware`** - Fix JSON content type
 - **`TimezoneMiddleware`** - Auto-detect user timezone
 - **`RequestDataTooBigMiddleware`** - Enforce request size limits
-
-## Related Modules
-
-- `htk.utils.http` - HTTP utilities
-- `django.middleware` - Django's middleware
-- `htk.apps.accounts.middleware` - Auth-specific middleware

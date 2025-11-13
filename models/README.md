@@ -220,9 +220,3 @@ class Page(BaseContent):
 - **`attribute_fields`** - Get list of attribute keys
 - **`boolean_attributes_lookup`** - Find boolean-valued attributes
 - **`normalize_model_field_value`** - Normalize value for field type
-
-## Related Modules
-
-- `htk.apps.accounts.models` - User profile patterns
-- `htk.validators` - Field validation
-- `django.db.models` - Django ORM

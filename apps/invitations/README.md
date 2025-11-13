@@ -165,9 +165,3 @@ process_user_completed(user)
 4. **Track who invited whom** for analytics
 5. **Allow resending** of expired invitations
 6. **Validate email** before creating invitation
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.apps.organizations` - Org invitations
-- `htk.apps.notifications` - Send emails

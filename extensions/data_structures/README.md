@@ -178,9 +178,3 @@ result_list = list(all_users)  # No duplicates, maintains order
 2. **Avoid for large sets** - Memory overhead is 2x+ vs regular set
 3. **Set operations are powerful** - Union, intersection, difference
 4. **Don't rely on order across versions** - Implementation details may change
-
-## Related Modules
-
-- `htk.utils.data_structures` - More data structure utilities
-- `collections` - Python's built-in data structures
-- `collections.OrderedDict` - Similar for key-value pairs

@@ -135,8 +135,3 @@ class TimeBasedTestCase(BaseTestCase):
 3. **Set up in setUp()** method
 4. **Tear down in tearDown()** method
 5. **Use fake time** for time-sensitive tests
-
-## Related Modules
-
-- `django.test` - Django testing
-- `unittest` - Python unit testing

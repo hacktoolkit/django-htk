@@ -28,7 +28,3 @@ YAHOO_API_KEY = os.environ.get('YAHOO_API_KEY')
 YAHOO_OAUTH_CLIENT_ID = os.environ.get('YAHOO_OAUTH_CLIENT_ID')
 YAHOO_OAUTH_CLIENT_SECRET = os.environ.get('YAHOO_OAUTH_CLIENT_SECRET')
 ```
-
-## Related Modules
-
-- `htk.lib.twitter` - Social media APIs

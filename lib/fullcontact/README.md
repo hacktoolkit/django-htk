@@ -37,7 +37,3 @@ slack_message = person.as_slack_v3()
 # settings.py
 FULLCONTACT_API_KEY = os.environ.get('FULLCONTACT_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.apps.accounts` - User profile enrichment

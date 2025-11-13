@@ -206,9 +206,3 @@ from htk.apps.mp.services import invalidate_for_instance
 # Invalidate multiple properties at once
 invalidate_for_instance(user, ['follower_count', 'post_count', 'like_count'])
 ```
-
-## Related Modules
-
-- `htk.cache` - Alternative caching approach
-- `htk.apps.async_task` - Background job processing
-- `django.db.models` - ORM field types

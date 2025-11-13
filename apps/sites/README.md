@@ -257,9 +257,3 @@ SITE_THEMES = {
 5. **Canonical URLs** - Set for SEO with multiple domains
 6. **Email templates** - Override per site
 7. **Settings inheritance** - Provide defaults + overrides
-
-## Related Modules
-
-- `django.contrib.sites` - Django sites framework
-- `htk.apps.accounts` - User management
-- `htk.middleware` - Request processing

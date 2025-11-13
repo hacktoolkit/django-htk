@@ -263,10 +263,3 @@ distribution = Review.objects.values('rating').annotate(
     percentage=Count('id') * 100.0 / Count('*')
 ).order_by('-rating')
 ```
-
-## Related Modules
-
-- `htk.models` - Base model classes
-- `htk.validators` - Field validation
-- `django.db.models` - Django ORM fields
-- `ulid-py` - ULID implementation

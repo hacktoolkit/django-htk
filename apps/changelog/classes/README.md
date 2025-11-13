@@ -126,9 +126,3 @@ with ResourceManager() as rm:
 4. **Error handling** - Handle errors gracefully
 5. **Type hints** - Add type hints for clarity
 6. **Document behavior** - Document what the class does
-
-## Related Modules
-
-- Parent module documentation
-- `dataclasses` - Python dataclasses
-- `abc` - Abstract base classes

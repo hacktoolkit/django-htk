@@ -321,9 +321,3 @@ STORAGES = {
 5. **Cleanup old files** - Delete expired/unused files
 6. **Version files** - Track changes with versions
 7. **Test with S3** - Use cloud storage in production
-
-## Related Modules
-
-- `htk.apps.blob_storage` - Binary data storage
-- `htk.lib.aws.s3` - S3 cloud storage
-- `htk.apps.accounts` - User management

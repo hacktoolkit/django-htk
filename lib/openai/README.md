@@ -29,7 +29,3 @@ prompt = BaseOpenAISystemPrompt.objects.create(
 # settings.py
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.lib.google` - Alternative AI services

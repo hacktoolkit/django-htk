@@ -25,8 +25,3 @@ from htk.lib.discord.views import discord_webhook_relay_view
 DISCORD_WEBHOOK_URL = os.environ.get('DISCORD_WEBHOOK_URL')
 DISCORD_BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 ```
-
-## Related Modules
-
-- `htk.lib.slack` - Slack webhooks
-- `htk.lib.alexa` - Webhook patterns

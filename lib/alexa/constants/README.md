@@ -107,18 +107,3 @@ HTK_SETTING_NAME = 'custom_value'
 HTK_TIMEOUT_SECONDS = 300
 HTK_ENABLED = True
 ```
-
-## Related Modules
-
-- Parent module documentation
-- `htk.constants` - Global constants
-- `django.conf.settings` - Django configuration
-
-## Best Practices
-
-1. **Use constants instead of magic numbers** - Prevents duplicate values and aids maintainability
-2. **Organize by category** - Group related constants in separate modules
-3. **Document purposes** - Add comments explaining what constants are used for
-4. **Provide defaults** - Use HTK_ prefixed settings for overridable configuration
-5. **Use Enums** - For finite, well-defined sets of values instead of strings
-6. **Name consistently** - Use UPPER_CASE for constants, snake_case for functions

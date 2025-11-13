@@ -46,8 +46,3 @@ distance = haversine_distance(
     address.latitude, address.longitude
 )
 ```
-
-## Related Modules
-
-- `htk.lib.google.maps` - Maps integration
-- `htk.lib.mapbox` - Mapbox integration

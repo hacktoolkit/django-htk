@@ -39,8 +39,3 @@ except Exception as e:
 ROLLBAR_TOKEN = os.environ.get('ROLLBAR_TOKEN')
 SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
 ```
-
-## Related Modules
-
-- `htk.lib.slack` - Slack integration
-- `htk.apps.notifications` - Notification system

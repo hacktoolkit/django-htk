@@ -137,9 +137,3 @@ HTK_GMAIL_RETRIES = 3
 5. **Validate input** - Validate data before sending to API
 6. **Log operations** - Log API calls for debugging
 7. **Test with sandbox** - Test in sandbox before production
-
-## Related Modules
-
-- `requests` - HTTP library
-- `django.core.cache` - Django caching
-- Service API documentation

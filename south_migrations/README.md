@@ -86,8 +86,3 @@ python manage.py makemigrations --empty [app_name] --name [description]
 5. **Back up production** - Before applying migrations to production
 6. **Use data migrations** - For complex data transformations
 7. **Document changes** - Add comments explaining why changes were made
-
-## Related Modules
-
-- Django migrations documentation
-- Database schema documentation

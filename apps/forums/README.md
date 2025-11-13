@@ -55,8 +55,3 @@ Forum.objects.filter(title__icontains='django')
 - `/forum/<slug>/` - Forum detail
 - `/forum/<slug>/thread/create/` - Create thread
 - `/forum/<slug>/thread/<id>/` - Thread detail
-
-## Related Modules
-
-- `htk.apps.accounts` - User tracking
-- `htk.apps.conversations` - Similar messaging

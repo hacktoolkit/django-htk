@@ -67,8 +67,3 @@ token_hash = hashlib.sha256(token.encode()).hexdigest()
 3. **Regenerate on compromise** - Allow users to revoke
 4. **Log token usage** - Track API access
 5. **Use HTTPS** - Tokens in transit must be encrypted
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.middleware` - Auth middleware

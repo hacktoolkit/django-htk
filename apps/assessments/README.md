@@ -314,8 +314,3 @@ ASSESSMENT_SHOW_CORRECT_ANSWERS = True  # After completion
 5. **Provide feedback** - Show correct answers after completion
 6. **Track analytics** - Monitor question difficulty
 7. **Time limits** - Use for timed assessments
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.apps.notifications` - Notify on completion

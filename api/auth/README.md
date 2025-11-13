@@ -111,9 +111,3 @@ API_BASE_URL = os.environ.get('API_BASE_URL', 'https://api.example.com')
 3. **Rotate tokens regularly** - Update tokens periodically for security
 4. **Use HTTPS** - Always use HTTPS when sending Bearer tokens
 5. **Include in request headers** - Format: `Authorization: Bearer <token>`
-
-## Related Modules
-
-- `htk.api` - General API utilities
-- `htk.api.utils` - API helper functions
-- `rest_framework.authentication` - Django REST authentication

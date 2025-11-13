@@ -165,8 +165,3 @@ KVStorage = get_kv_storage_model()
 all_keys = [f'user_prefs:{u.id}' for u in users]
 prefs_dict = {k.key: k.value for k in KVStorage.objects.filter(key__in=all_keys)}
 ```
-
-## Related Modules
-
-- `htk.cache` - For more complex caching
-- `htk.utils` - General utilities

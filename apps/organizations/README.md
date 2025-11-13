@@ -184,9 +184,3 @@ ORGANIZATIONS_DEFAULT_ROLE = 'member'
 
 Automatic signal handlers:
 - `organization_invitation_created_or_updated` - Sends invitation email
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.apps.invitations` - Invite system
-- `htk.apps.conversations` - Org-level messaging

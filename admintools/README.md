@@ -81,9 +81,3 @@ employees = get_company_employees_id_email_map()
 # Enable company user features
 COMPANY_ADMIN_ENABLED = True
 ```
-
-## Related Modules
-
-- `htk.admin` - Django admin utilities
-- `htk.apps.accounts` - User management
-- `htk.apps.organizations` - Organization management

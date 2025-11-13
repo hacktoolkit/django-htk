@@ -41,7 +41,3 @@ api.validate_webhook_request(request)
 DSS_API_USERNAME = os.environ.get('DSS_API_USERNAME')
 DSS_API_PASSWORD = os.environ.get('DSS_API_PASSWORD')
 ```
-
-## Related Modules
-
-- `htk.apps.accounts` - User management

@@ -161,22 +161,3 @@ class ValidatorTestCase(TestCase):
         self.assertFalse(is_valid_phone('123'))  # Too short
         self.assertFalse(is_valid_phone('abcdefgh'))  # Non-numeric
 ```
-
-## Related Modules
-
-- `htk.validators.functions` - Validation functions
-- `htk.forms` - Form validation integration
-- `htk.models` - Model field validators
-
-## References
-
-- [Django Validators](https://docs.djangoproject.com/en/stable/ref/validators/)
-- [Django Form Validation](https://docs.djangoproject.com/en/stable/ref/forms/validation/)
-- [Email Validation RFC 5322](https://tools.ietf.org/html/rfc5322)
-- [URL Validation RFC 3986](https://tools.ietf.org/html/rfc3986)
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors

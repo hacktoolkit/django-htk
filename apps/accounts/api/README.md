@@ -136,9 +136,3 @@ HTK_API_RATE_LIMIT = 1000
 5. **Validate input** - Validate request parameters before sending
 6. **Log requests** - Log all API calls for debugging and monitoring
 7. **Set timeouts** - Always set request timeouts to prevent hanging
-
-## Related Modules
-
-- `django.http` - HTTP response handling
-- `django.views` - Django class-based views
-- `rest_framework` - Django REST Framework

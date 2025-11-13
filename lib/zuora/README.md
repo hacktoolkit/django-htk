@@ -42,8 +42,3 @@ ZUORA_API_ENDPOINT = os.environ.get('ZUORA_API_ENDPOINT')
 ZUORA_CLIENT_ID = os.environ.get('ZUORA_CLIENT_ID')
 ZUORA_CLIENT_SECRET = os.environ.get('ZUORA_CLIENT_SECRET')
 ```
-
-## Related Modules
-
-- `htk.apps.cpq` - Quoting and contracts
-- `htk.apps.stripe_lib` - Payment processing

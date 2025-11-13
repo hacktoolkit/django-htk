@@ -41,8 +41,3 @@ class ProductAdmin(admin.ModelAdmin):
 # settings.py
 ADMIN_SITE_HEADER = 'My Admin'
 ```
-
-## Related Modules
-
-- `htk.admintools` - Advanced admin tools
-- `django.contrib.admin` - Django admin

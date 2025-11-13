@@ -43,7 +43,3 @@ python manage.py update_changelog
 CHANGELOG_FILE = 'CHANGELOG.md'
 CHANGELOG_INCLUDE_TAGS = True
 ```
-
-## Related Modules
-
-- `htk.lib.github` - GitHub integration

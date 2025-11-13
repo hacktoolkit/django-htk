@@ -62,8 +62,3 @@ from htk.lib.aws.s3.cachekeys import S3UrlCache
 cache = S3UrlCache('bucket', 'key')
 url = cache.cache_get()
 ```
-
-## Related Modules
-
-- `htk.apps.file_storage` - File management
-- `htk.apps.blob_storage` - Binary storage

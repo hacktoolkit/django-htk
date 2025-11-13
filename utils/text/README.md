@@ -52,8 +52,3 @@ from htk.utils.text.unicode import demojize, unicode_to_ascii
 text_no_emoji = demojize('Hello 👋 World 🌍')
 ascii_text = unicode_to_ascii('café')  # cafe
 ```
-
-## Related Modules
-
-- `htk.lib.slack` - Slack formatting
-- `htk.utils.i18n` - Internationalization

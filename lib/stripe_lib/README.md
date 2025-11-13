@@ -66,8 +66,3 @@ STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 from htk.lib.stripe_lib.forms import CreditCardForm
 # Render credit card form safely
 ```
-
-## Related Modules
-
-- `htk.apps.cpq` - Quoting system
-- `htk.apps.stripe_lib` - App wrapper

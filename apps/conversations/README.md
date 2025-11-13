@@ -150,9 +150,3 @@ def message_created(sender, instance, created, **kwargs):
             if participant.user != instance.sender:
                 notify(participant.user, f'New message in {instance.conversation}')
 ```
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.apps.notifications` - Send notifications for new messages
-- `htk.apps.organizations` - Org-level conversations

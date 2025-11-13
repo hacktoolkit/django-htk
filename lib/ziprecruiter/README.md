@@ -29,8 +29,3 @@ api.delete_job(job_id)
 # settings.py
 ZIPRECRUITER_API_KEY = os.environ.get('ZIPRECRUITER_API_KEY')
 ```
-
-## Related Modules
-
-- `htk.apps.customers` - Candidate management
-- `htk.lib.indeed` - Job posting integration

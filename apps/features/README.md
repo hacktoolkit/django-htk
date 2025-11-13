@@ -122,8 +122,3 @@ def test_new_feature(self):
     response = self.client.get('/dashboard/')
     self.assertContains(response, 'New feature')
 ```
-
-## Related Modules
-
-- `htk.apps.accounts` - User management
-- `htk.apps.organizations` - Org-level feature control

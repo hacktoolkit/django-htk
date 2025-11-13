@@ -55,8 +55,3 @@ verse16 = chapter3.verses.get(number=16)
 - **`AbstractBibleChapter`** - Chapters within books
 - **`AbstractBibleVerse`** - Individual verses
 - **`AbstractBiblePassage`** - Multiple verses/passages
-
-## Related Modules
-
-- `htk.lib.esv` - ESV Bible API integration
-- `htk.lib.songselect` - Worship song database

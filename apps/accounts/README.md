@@ -194,10 +194,3 @@ Automatic signal handlers:
 4. **Cache user relationships** using provided cache classes
 5. **Validate tokens** before granting access
 6. **Handle multiple emails** through UserEmail model
-
-## Related Modules
-
-- `htk.apps.organizations` - Multi-org support per user
-- `htk.apps.invitations` - Invite system
-- `htk.utils.locale` - Timezone utilities
-- `htk.lib.google` - OAuth2 providers

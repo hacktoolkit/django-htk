@@ -284,9 +284,3 @@ BLOB_STORAGE_ENABLE_VIRUS_SCAN = False  # ClamAV scan
 5. **Use S3 for large files** - Database not ideal for large files
 6. **Compress when appropriate** - Reduce storage
 7. **Track access** - Log downloads
-
-## Related Modules
-
-- `htk.apps.file_storage` - File management
-- `htk.lib.aws.s3` - S3 integration
-- `htk.apps.accounts` - User management

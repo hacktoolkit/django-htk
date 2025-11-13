@@ -158,8 +158,3 @@ Item.objects.all().order_by('-created')
 5. **Use choices** - For fields with limited values
 6. **Document fields** - Use `help_text`
 7. **Add Meta class** - Configure ordering, permissions, verbose names
-
-## Related Modules
-
-- `django.db.models` - Django ORM
-- Parent module documentation

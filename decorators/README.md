@@ -172,10 +172,3 @@ class StripePaymentGateway:
 3. **Rate limit external API calls** to prevent abuse
 4. **Provide alternatives** when deprecating
 5. **Document rate limits** in docstrings
-
-## Related Modules
-
-- `django.utils.decorators` - Django's built-in decorators
-- `functools` - Python's function decorators
-- `htk.apps.accounts` - Auth decorators
-- `htk.apps.organizations` - Permission decorators

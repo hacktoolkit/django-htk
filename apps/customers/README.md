@@ -178,9 +178,3 @@ CUSTOMER_ROLES = [
 3. **Track customer hierarchy** - Maintain parent-child relationships
 4. **Index by email** - Add database index on email for fast lookups
 5. **Audit customer changes** - Track modifications for compliance
-
-## Related Modules
-
-- `htk.apps.cpq` - Quoting system integration
-- `htk.apps.organizations` - Organization management
-- `htk.apps.accounts` - User management
