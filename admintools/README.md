@@ -1,26 +1,89 @@
-# Admintools
+# Admin Tools
 
-## Classes
-- **`HtkCompanyOfficersCache`** (admintools/cachekeys.py) - Cache management object for company employees mapping
-- **`HtkCompanyEmployeesCache`** (admintools/cachekeys.py) - Cache management object for company employees mapping
-- **`TodosConfig`** (admintools/dataclasses.py) - Todos Config
-- **`AdminToolsEntry`** (admintools/dataclasses.py) - Admin Tools Entry
-- **`AdminToolsGroup`** (admintools/dataclasses.py) - Admin Tools Group
-- **`HtkCompanyUserMixin`** (admintools/models.py) - Mixin for htk.apps.accounts.BaseAbstractUserProfile
+Advanced admin functionality including user impersonation and company user management.
 
-## Functions
-- **`company_officer_required`** (admintools/decorators.py) - Decorator for views that require access by company officer or staff user
-- **`company_employee_required`** (admintools/decorators.py) - Decorator for views that require access by company employee or staff user
-- **`process_request`** (admintools/middleware.py) - Replace the authenticated `request.user` if properly emulating
-- **`process_response`** (admintools/middleware.py) - Delete user emulation cookies if they should not be set
-- **`is_company_officer`** (admintools/models.py) - Determines whether this User is a company officer
-- **`is_company_employee`** (admintools/models.py) - Determines whether this User is a company employee
-- **`has_company_email_domain`** (admintools/models.py) - Determines whether this User has email with company domain
-- **`get_company_officers_id_email_map`** (admintools/utils.py) - Gets a mapping of company officers
-- **`get_company_employees_id_email_map`** (admintools/utils.py) - Gets a mapping of company employees
-- **`is_allowed_to_emulate_users`** (admintools/utils.py) - Determines whether `user` is allowed to emulate other users
-- **`is_allowed_to_emulate`** (admintools/utils.py) - Determines whether `original_user` is allowed to emulate `targeted_user`
-- **`request_emulate_user`** (admintools/utils.py) - If all conditions are met, will modify the request to set an emulated user
+## Quick Start
 
-## Components
-**Views** (`views.py`)
+```python
+from htk.admintools.decorators import company_officer_required, company_employee_required
+from htk.admintools.utils import is_allowed_to_emulate_users, request_emulate_user
+
+# Protect views for company officers
+@company_officer_required
+def officer_dashboard(request):
+    return render(request, 'officer_dashboard.html')
+
+# Protect views for company employees
+@company_employee_required
+def employee_portal(request):
+    return render(request, 'employee_portal.html')
+```
+
+## User Impersonation
+
+Allow admins to emulate other users for testing:
+
+```python
+from htk.admintools.utils import is_allowed_to_emulate_users, request_emulate_user
+
+# Check if user can emulate others
+if is_allowed_to_emulate_users(request.user):
+    # Allow user emulation in admin panel
+    pass
+
+# Emulate a specific user
+request_emulate_user(request, original_user, target_user)
+```
+
+## Company User Management
+
+Check company affiliation and roles:
+
+```python
+from htk.admintools.models import company_officer_required, is_company_officer, is_company_employee
+
+# Check officer status
+if is_company_officer(user):
+    # User is a company officer
+    pass
+
+# Check employee status
+if is_company_employee(user):
+    # User is a company employee
+    pass
+
+# Check email domain
+if user.has_company_email_domain():
+    # User has company email
+    pass
+```
+
+## Company Data Lookups
+
+Get mappings of company users:
+
+```python
+from htk.admintools.utils import get_company_officers_id_email_map, get_company_employees_id_email_map
+
+# Get officers mapping
+officers = get_company_officers_id_email_map()
+# Returns: {user_id: email, ...}
+
+# Get employees mapping
+employees = get_company_employees_id_email_map()
+# Returns: {user_id: email, ...}
+```
+
+## Configuration
+
+```python
+# settings.py
+# Enable company user features
+COMPANY_ADMIN_ENABLED = True
+```
+
+## Related Modules
+
+- `htk.admin` - Django admin utilities
+- `htk.apps.accounts` - User management
+- `htk.apps.organizations` - Organization management

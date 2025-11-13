@@ -1,8 +1,29 @@
-# Redfin
+# Redfin Integration
 
-## Functions
-- **`get_home_worth_url`** (redfin/api.py) - https://www.redfin.com/what-is-my-home-worth?propertyId={property_id}&listingId={listing_id}
-- **`get_property_listing_id`** (redfin/api.py) - Get property listing id
-- **`get_avm`** (redfin/api.py) - Get AVM for `property_id`
-- **`get_property_parcel_info`** (redfin/api.py) - Get Property Parcel Info
-- **`to_json`** (redfin/api.py) - Returns a JSON-encodable dictionary representation of the Redfin AVM `self.property_id`
+Real estate property valuation and market data.
+
+## Quick Start
+
+```python
+from htk.lib.redfin.api import get_avm, get_property_listing_id, get_home_worth_url
+
+# Get property valuation (Automated Valuation Model)
+avm = get_avm(property_id='12345')
+
+# Get property listing ID
+listing_id = get_property_listing_id(address)
+
+# Get home worth URL
+url = get_home_worth_url(property_id, listing_id)
+```
+
+## Configuration
+
+```python
+# settings.py
+REDFIN_API_KEY = os.environ.get('REDFIN_API_KEY')
+```
+
+## Related Modules
+
+- `htk.lib.zillow` - Real estate data

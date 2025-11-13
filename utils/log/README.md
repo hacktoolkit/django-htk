@@ -1,9 +1,46 @@
-# Log
+# Logging Utilities
 
-## Exports
-- `RollbarHandler`
-- `SlackDebugHandler`
+Exception handlers for Rollbar and Slack logging.
 
-## Classes
-- **`RollbarHandler`** (log/handlers.py) - An exception log handler that emits log entries to Rollbar
-- **`SlackDebugHandler`** (log/handlers.py) - An exception log handler that emits log entries to Slack
+## Quick Start
+
+```python
+from htk.utils.log.handlers import RollbarHandler, SlackDebugHandler
+import logging
+
+# Configure Rollbar handler
+rollbar_handler = RollbarHandler()
+logger = logging.getLogger()
+logger.addHandler(rollbar_handler)
+
+# Configure Slack handler for debugging
+slack_handler = SlackDebugHandler()
+debug_logger = logging.getLogger('debug')
+debug_logger.addHandler(slack_handler)
+```
+
+## Common Patterns
+
+```python
+# Log exceptions to multiple destinations
+logger.addHandler(RollbarHandler())  # Production monitoring
+logger.addHandler(SlackDebugHandler())  # Team notifications
+
+try:
+    dangerous_operation()
+except Exception as e:
+    logger.exception('Operation failed')
+```
+
+## Configuration
+
+```python
+# settings.py
+ROLLBAR_TOKEN = os.environ.get('ROLLBAR_TOKEN')
+SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
+```
+
+## Related Modules
+
+- `htk.lib.slack` - Slack integration
+- `htk.apps.notifications` - Notification system

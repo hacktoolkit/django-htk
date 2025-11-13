@@ -1,9 +1,26 @@
-# Qrcode
+# QR Code Integration
 
-## Functions
-- **`qrcode_image_response`** (qrcode/utils.py) - Returns a QR Code image as an HTTP response
-- **`make_qr_code_image`** (qrcode/utils.py) - Generates a QR Code image
-- **`solid_color_image`** (qrcode/utils.py) - TODO: Alpha channel is not working right now, for some reason; RGB channels work fine
+QR code generation and image creation.
 
-## Components
-**Views** (`views.py`)
+## Quick Start
+
+```python
+from htk.lib.qrcode.utils import qrcode_image_response, make_qr_code_image
+
+# Generate QR code as HTTP response
+response = qrcode_image_response('https://example.com')
+
+# Generate QR code image
+image = make_qr_code_image('https://example.com')
+```
+
+## Configuration
+
+```python
+# settings.py
+QRCODE_ENABLED = True
+```
+
+## Related Modules
+
+- `htk.lib.oembed` - Media embedding

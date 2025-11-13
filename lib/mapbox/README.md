@@ -1,6 +1,28 @@
-# Mapbox
+# Mapbox Integration
 
-## Functions
-- **`fetch_mapbox_reverse_geocode_result`** (mapbox/geocode.py) - Fetch the first Mapbox reverse geocode result for a given latitude and longitude
-- **`reverse_geocode`** (mapbox/geocode.py) - Reverse geocode a given latitude and longitude and return the address
-- **`reverse_geocode_with_context`** (mapbox/geocode.py) - Extract location context data from Mapbox reverse geocoding.
+Geocoding, reverse geocoding, and mapping.
+
+## Quick Start
+
+```python
+from htk.lib.mapbox.geocode import reverse_geocode, reverse_geocode_with_context
+
+# Reverse geocode latitude/longitude to address
+address = reverse_geocode(lat=40.7128, lon=-74.0060)
+
+# Reverse geocode with context (city, state, country)
+location = reverse_geocode_with_context(lat=40.7128, lon=-74.0060)
+```
+
+## Configuration
+
+```python
+# settings.py
+MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN')
+```
+
+## Related Modules
+
+- `htk.lib.geoip` - IP geolocation
+- `htk.apps.geolocations` - Location-based features
+- `htk.lib.google` - Maps API

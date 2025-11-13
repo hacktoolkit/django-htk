@@ -1,10 +1,35 @@
-# Openai
+# OpenAI Integration
 
-## Classes
-- **`OpenAIResult`** (openai/models/result.py) - Model to store the results of OpenAI API calls
-- **`BaseOpenAISystemPrompt`** (openai/models/system_prompt.py) - Model to store OpenAI system prompts for reuse
+Chat completions and AI capabilities.
 
-## Functions
-- **`chat_completion`** (openai/adapter.py) - Wrapper for OpenAI's chat completion API (`chat.completions.create`)
-- **`response_parameters_instructions`** (openai/models/system_prompt.py) - Instructions to set the ChatGPT model to return a response in a specific format.
-- **`rendered_content`** (openai/models/system_prompt.py) - Rendered content of the system prompt.
+## Quick Start
+
+```python
+from htk.lib.openai.adapter import chat_completion
+
+response = chat_completion([
+    {'role': 'user', 'content': 'What is Python?'}
+])
+```
+
+## System Prompts
+
+```python
+from htk.lib.openai.models.system_prompt import BaseOpenAISystemPrompt
+
+prompt = BaseOpenAISystemPrompt.objects.create(
+    name='helpful_assistant',
+    content='You are a helpful assistant...'
+)
+```
+
+## Configuration
+
+```python
+# settings.py
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+```
+
+## Related Modules
+
+- `htk.lib.google` - Alternative AI services

@@ -1,7 +1,32 @@
-# Discord
+# Discord Integration
 
-## Functions
-- **`discord_webhook_relay_view`** (discord/views.py) - Handles a Discord webhook request
+Discord webhook and event handling.
 
-## Components
-**Views** (`views.py`)
+## Quick Start
+
+```python
+from htk.lib.discord.views import discord_webhook_relay_view
+
+# Webhook endpoint for Discord events
+# POST /discord/webhook/
+```
+
+## Webhook Relay
+
+```python
+# Discord sends webhook events to your endpoint
+# Automatically handles and processes events
+```
+
+## Configuration
+
+```python
+# settings.py
+DISCORD_WEBHOOK_URL = os.environ.get('DISCORD_WEBHOOK_URL')
+DISCORD_BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
+```
+
+## Related Modules
+
+- `htk.lib.slack` - Slack webhooks
+- `htk.lib.alexa` - Webhook patterns

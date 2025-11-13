@@ -1,9 +1,45 @@
-# Indeed
+# Indeed Integration
 
-## Classes
-- **`IndeedDispositionSyncAPI`** (indeed/api/disposition_sync.py) - API to post the disposition status of applications received through Indeed
-- **`IndeedJobSyncAPI`** (indeed/api/job_sync.py) - API to CREATE/UPDATE/DELETE jobs in Indeed
+Job posting and application tracking.
 
-## Functions
-- **`generate_access_token`** (indeed/api/base.py) - Generate access token using app credentials
-- **`get_access_token`** (indeed/api/base.py) - Returns access token
+## Quick Start
+
+```python
+from htk.lib.indeed.api import IndeedJobSyncAPI, IndeedDispositionSyncAPI
+
+job_api = IndeedJobSyncAPI()
+disposition_api = IndeedDispositionSyncAPI()
+
+# Sync job
+job_data = {'title': 'Software Engineer', 'description': '...'}
+job_api.create_job(job_data)
+
+# Update application status
+disposition_api.post_disposition(applicant_id, 'hired')
+```
+
+## Operations
+
+```python
+from htk.lib.indeed.api import get_access_token, generate_access_token
+
+# Token management
+token = get_access_token()
+new_token = generate_access_token()
+
+# Job operations
+job_api.update_job(job_id, updated_data)
+job_api.delete_job(job_id)
+```
+
+## Configuration
+
+```python
+# settings.py
+INDEED_CLIENT_ID = os.environ.get('INDEED_CLIENT_ID')
+INDEED_CLIENT_SECRET = os.environ.get('INDEED_CLIENT_SECRET')
+```
+
+## Related Modules
+
+- `htk.apps.customers` - Candidate/applicant profiles

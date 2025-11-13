@@ -1,134 +1,340 @@
-# Utils
+# Utilities
 
-## Classes
-- **`memoized`** (utils/cache_descriptors.py) - Decorator. Caches a function's return value each time it is called.
-- **`CachedAttribute`** (utils/cache_descriptors.py) - Computes attribute value and caches it in instance.
-- **`CachedClassAttribute`** (utils/cache_descriptors.py) - Computes attribute value and caches it in class.
-- **`ReadAliasAttribute`** (utils/cache_descriptors.py) - If not explcitly assigned this attribute is an alias for other.
-- **`AliasAttribute`** (utils/cache_descriptors.py) - This attribute is an alias for other.
-- **`AESCipher`** (utils/crypto.py) - Class for encrypting and decrypting data using AES256
-- **`UTF8Recoder`** (utils/csv_utils.py) - Iterator that reads an encoded stream and reencodes the input to UTF-8
-- **`UnicodeReader`** (utils/csv_utils.py) - A CSV reader which will iterate over lines in the CSV file "f",
-- **`UnicodeWriter`** (utils/csv_utils.py) - A CSV writer which will write rows to CSV file "f",
-- **`HtkIntFlag`** (utils/enums.py) - HTK IntFlag
-- **`HttpErrorResponseError`** (utils/http/errors.py) - Generic Response Error exception
-- **`RollbarHandler`** (utils/log/handlers.py) - An exception log handler that emits log entries to Rollbar
-- **`SlackDebugHandler`** (utils/log/handlers.py) - An exception log handler that emits log entries to Slack
-- **`DistanceType`** (utils/measurements/distance.py) - Class that represents a distance (e.g. length, width, height).
-- **`AbstractMeasurement`** (utils/measurements/units.py) - Abstract base class for measurements.
-- **`ConversionConstants`** (utils/measurements/units.py) - Constants for converting between different units of measurement.
-- **`Distance`** (utils/measurements/units.py) - Constants for converting between different units of distance.
-- **`Weight`** (utils/measurements/units.py) - Constants for converting between different units of weight.
-- **`WeightType`** (utils/measurements/weight.py) - Class that represents weight.
-- **`AnsiColor`** (utils/xterm.py) - ANSI color/styling helpers for terminal output.
+Common helper functions and utilities for everyday tasks.
 
-## Functions
-- **`retry_until_not_none`** (utils/concurrency/race_resolvers.py) - Retries a function call `f` until its result is not None
-- **`retry_until`** (utils/concurrency/race_resolvers.py) - Retries a function call `f` until its result `until_predicate` returns True
-- **`buffered_csv_from_collection`** (utils/csv_utils.py) - Buffers CSV to the stream `f`
-- **`get_csv_response`** (utils/csv_utils.py) - Returns a CSV file response
-- **`get_csv`** (utils/csv_utils.py) - Returns a CSV string to be used in a stream, other text data source, etc
-- **`moneyfmt`** (utils/currency.py) - Convert Decimal to a money formatted string.
-- **`filter_dict`** (utils/data_structures/general.py) - Returns a subset of dictionary `d` with keys from `keys`
-- **`localized_datetime`** (utils/datetime_utils.py) - Attaches a timezone to a `naive_dt`
-- **`parse_datetime`** (utils/datetime_utils.py) - Parses a datetime-like string into a DateTime object
-- **`datetime_to_unix_time`** (utils/datetime_utils.py) - Converts a datetime to a Unix timestamp
-- **`iso_datetime_to_unix_time`** (utils/datetime_utils.py) - Converts an ISO datetime string to UNIX timestamp
-- **`iso_to_gregorian`** (utils/datetime_utils.py) - Gregorian calendar date for the given ISO year, week and day
-- **`is_within_hour_bounds_for_timezone`** (utils/datetime_utils.py) - Determine if the local time for given `timezone_name` is currently within `start_hour` and `end_hour` bounds
-- **`is_business_hours_for_timezone`** (utils/datetime_utils.py) - Determine if the local time for given `timezone_name` is currently during business hours
-- **`is_morning_hours_for_timezone`** (utils/datetime_utils.py) - Determine if the local time for given `timezone_name` is currently during morning hours
-- **`get_timezones_within_current_local_time_bounds`** (utils/datetime_utils.py) - Get a list of all timezone names whose current local time is within `start_hour` and `end_hour`
-- **`ensure_mysql_connection_usable`** (utils/db.py) - Ensure that MySQL connection is usable
-- **`attempt_mysql_reconnect`** (utils/db.py) - Attempt to reconnect to MySQL
-- **`close_connection`** (utils/db.py) - Closes the connection if we are not in an atomic block.
-- **`get_cursor`** (utils/db.py) - Returns a DB Cursor that can be used to issue raw SQL statements
-- **`raw_sql`** (utils/db.py) - Execute raw SQL `statement
-- **`disable_foreign_key_checks`** (utils/db.py) - Disable foreign key constraint checks
-- **`enable_foreign_key_checks`** (utils/db.py) - Enable foreign key constraint checks
-- **`namedtuplefetchall`** (utils/db.py) - Return all rows from a cursor as a namedtuple
-- **`show_debug_toolbar`** (utils/debug.py) - Determines whether to show Django Debug Toolbar
-- **`get_object_or_none`** (utils/django_shortcuts.py) - Uses get() to return an object, or returns None if the object does not exist.
-- **`email_permutator`** (utils/emails.py) - Generate common possible permutations of emails given company `domain` and `*_name`
-- **`find_company_emails_for_name`** (utils/emails.py) - Find a list of emails for a `domain` and `*_name` combination
-- **`extract_snowflake_handle_from_email`** (utils/emails.py) - Extracts a handle from an email address that will likely be unique
-- **`enum_to_str`** (utils/enums.py) - Converts an enum.Enum to a string
-- **`get_enum_symbolic_name`** (utils/enums.py) - Gets the symbolic name of an enum.Enum object
-- **`json_encode`** (utils/enums.py) - json_encode Generate a valid dict for JSON
-- **`choices`** (utils/enums.py) - choices Dict of enum items
-- **`display`** (utils/enums.py) - Get human-readable display names for combined flag values.
-- **`list_flags`** (utils/enums.py) - List Flags
-- **`get_module_name_parts`** (utils/general.py) - Gets the name parts of a module string
-- **`resolve_method_dynamically`** (utils/general.py) - Returns the method for a module
-- **`strtobool_safe`** (utils/general.py) - Returns a `bool` based on `value`
-- **`get_us_state_code`** (utils/geo.py) - Get a US state code for `state`, which is either a state code or state name
-- **`look_up_object_by_unique_handle`** (utils/handles.py) - Looks up an object by its unique handle across a list of models and fields.
-- **`is_unique_handle`** (utils/handles.py) - Determines whether a handle is unique across a list of models and fields.
-- **`generate_unique_handle`** (utils/handles.py) - Generates a unique handle based on a name.
-- **`is_dev_host`** (utils/hostname.py) - Determines whether `host` is a dev host
-- **`set_cache_headers`** (utils/http/response.py) - Set cache headers on a Django HttpResponse.
-- **`set_cors_headers_for_image`** (utils/http/response.py) - Set CORS headers on a Django HttpResponse.
-- **`get_country_choices`** (utils/i18n/general.py) - Builds a list of country choices
-- **`detect_image_format`** (utils/image.py) - Detect the format of an image file using PIL and file signature fallback.
-- **`chunks`** (utils/iter_utils.py) - Yield successive n-sized chunks from l.
-- **`lookahead`** (utils/iter_utils.py) - Pass through all values from the given iterable, augmented by the
-- **`find_json_value`** (utils/json_utils.py) - Returns the value at `path` (JSON dot notation) for `json_blob`, a JSON-like `dict`
-- **`find_all_json_paths`** (utils/json_utils.py) - Returns all valid JSON paths given a `json_blob`
-- **`deepcopy_with_compact`** (utils/json_utils.py) - Performs a deepcopy with `None` values removed from dictionary values and list items
-- **`luhn_checksum`** (utils/luhn.py) - Calculates the Luhn checksum of the digits in `card_number`, modulo 10
-- **`is_luhn_valid`** (utils/luhn.py) - Determines whether `card_number` is valid according to the Luhn algorithm
-- **`calculate_luhn_check_digit`** (utils/luhn.py) - Calculates the check digit for a partial number using the Luhn algorithm
-- **`quadratic`** (utils/maths/algebra.py) - Solves the quadratic equation
-- **`deg2rad`** (utils/maths/trigonometry.py) - Degrees to radians
-- **`rad2deg`** (utils/maths/trigonometry.py) - Radians to degrees
-- **`notify`** (utils/notifications.py) - Wrapper for simultaneously sending a message via:
-- **`slack_notify`** (utils/notifications.py) - Send a Slack notification message
-- **`google_chat_notify`** (utils/notifications.py) - Send a Google notification message
-- **`html_obfuscate_string`** (utils/obfuscate.py) - Obfuscates a string by converting it to HTML entities
-- **`render_to_pdf_response`** (utils/pdf_utils.py) - Renders a Django `template_name` with context `context_dict` to a PDF file
-- **`render_to_pdf_response_wkhtmltopdf`** (utils/pdf_utils.py) - Wrapper for generating PDF files from `template_name` using  wkhtmltopdf
-- **`render_to_pdf_response_pdfkit`** (utils/pdf_utils.py) - Render to a PDF response using pdfkit
-- **`render_to_pdf_response_pisa`** (utils/pdf_utils.py) - Render to a PDF response using Pisa
-- **`get_objects_by_id`** (utils/query.py) - Gets a list of Django objects by ids
-- **`extract_request_param`** (utils/request.py) - Extracts a URL parameter from the request (i.e. request.GET.get)
-- **`get_full_url_name`** (utils/request.py) - Returns the full URL name for a resolver match
-- **`build_dict_from_request`** (utils/request.py) - Build a dictionary from `request` that can be serialized to JSON
-- **`is_domain_meta_view`** (utils/request.py) - Determines whether the request is for a domain meta view
-- **`is_allowed_host`** (utils/request.py) - Determines whether this `host` is explicitly allowed
-- **`parse_authorization_header`** (utils/request.py) - Parse the authorization header from the request
-- **`get_env_s3_key_prefix`** (utils/s3.py) - Gets the common Amazon S3 key prefix for current environment
-- **`should_use_https`** (utils/security.py) - Determines whether the current context should use HTTPS
-- **`generate_html_from_template`** (utils/templates.py) - Generate HTML by using `template_name` inflated with `context_dict`
-- **`rewrite_relative_urls_as_absolute`** (utils/templates.py) - Rewrite relative URLs in `html` as absolute urls with `base_url`
-- **`levenshtein_distance`** (utils/text/algorithms.py) - The Levenshtein distance algorithm that compares two words
-- **`get_closest_dict_words`** (utils/text/algorithms.py) - Uses the Levenshtein distance for Word Autocompletion and Autocorrection
-- **`html2markdown`** (utils/text/converters.py) - Converts `html` to Markdown-formatted text
-- **`markdown2slack`** (utils/text/converters.py) - Converts Markdown-formatted text to Slack-formatted text
-- **`oxford_comma`** (utils/text/english.py) - Given a list of items, properly comma and 'and' or 'or' them together
-- **`pluralize_noun`** (utils/text/english.py) - Adds 's' to `noun` depending on `count`
-- **`pluralize_verb`** (utils/text/english.py) - Adds 's' to `verb` for singular `n_subjects`
-- **`replace_many`** (utils/text/general.py) - Allows to perform several string substitutions.
-- **`phonenumber`** (utils/text/pretty.py) - Formats a phone number for a country
-- **`sanitize_cookie_value`** (utils/text/sanitizers.py) - Sanitize Cookie Value
-- **`get_symbols`** (utils/text/transformers.py) - Returns a list of symbols from a sentence
-- **`get_sentences`** (utils/text/transformers.py) - Returns a list of sentences from a paragraph
-- **`summarize`** (utils/text/transformers.py) - Returns a summary of a paragraph
-- **`ellipsize`** (utils/text/transformers.py) - Cut `text` off at `max_len` characters, inserting an ellipsis at the appropriate point so that
-- **`seo_tokenize`** (utils/text/transformers.py) - Get SEO-tokenized version of a string, typically a name or title
-- **`snake_case_to_camel_case`** (utils/text/transformers.py) - Convert `snake_case` string to `CamelCase`
-- **`snake_case_to_lower_camel_case`** (utils/text/transformers.py) - Convert `snake_case` string to `camelCase`
-- **`pascal_case_to_snake_case`** (utils/text/transformers.py) - Convert `PascalCase` string to `snake_case`
-- **`demojize`** (utils/text/unicode.py) - Strips emojis from a string
-- **`unicode_to_ascii`** (utils/text/unicode.py) - Converts a Unicode string to ASCII equivalent if possible
-- **`start`** (utils/timer.py) - Starts timer
-- **`stop`** (utils/timer.py) - Stops timer
-- **`reverse_with_query_params`** (utils/urls.py) - Wrapper for `reverse()` that appends GET query parameters `query_params`
-- **`build_url_with_query_params`** (utils/urls.py) - Builds a URL with GET query parameters `query_params`
-- **`build_updated_url_with_query_params`** (utils/urls.py) - Split the URL into parts so that `query_params` can be merged
-- **`get_authenticated_user`** (utils/users.py) - Returns the currently authenticated user, or None
-- **`get_weather`** (utils/weather.py) - Gets weather for a `location`
-- **`code_fg`** (utils/xterm.py) - Return the ANSI code for a foreground color; unknown names -> ''.
-- **`code_bg`** (utils/xterm.py) - Return the ANSI code for a background color; unknown names -> ''.
-- **`style`** (utils/xterm.py) - Return style codes composed; omit any that are False.
-- **`colorize`** (utils/xterm.py) - Wrap `text` with ANSI codes. Unknown color names are ignored (sensible default).
-- **`c`** (utils/xterm.py) - Colorize text with ANSI codes.
+## Overview
+
+The `utils` module provides practical utilities organized by purpose:
+
+- **Text Processing** - Formatting, sanitization, translation, transformations
+- **Caching** - Memoization and cached attributes
+- **Data Structures** - Dictionaries, enums, collections
+- **DateTime** - Timezone handling, conversions, scheduling
+- **HTTP/Requests** - Response handling, CORS, caching headers
+- **JSON** - Path traversal, value extraction
+- **Database** - Raw SQL, migrations, connection management
+- **Email** - Parsing, enrichment, permutations
+- **Handles** - Unique identifiers and slugs
+- **Images** - Format detection, processing
+- **Payments** - Luhn validation, card handling
+- **PDF/CSV** - File generation and export
+- **Queries** - Bulk operations, object retrieval
+- **Security** - Encryption, HTTPS detection
+
+## Text Processing
+
+### Formatting & Display
+
+```python
+from htk.utils.text.pretty import phonenumber
+from htk.utils.text.english import pluralize_noun, oxford_comma
+
+phone = phonenumber('5551234567')
+message = oxford_comma(['Alice', 'Bob', 'Charlie'])  # Alice, Bob, and Charlie
+items_text = pluralize_noun('item', count)  # 'items' or 'item'
+```
+
+### Conversion
+
+```python
+from htk.utils.text.converters import html2markdown, markdown2slack
+
+markdown = html2markdown('<b>Bold</b> text')
+slack_msg = markdown2slack('**Bold** text')
+```
+
+### Transformations
+
+```python
+from htk.utils.text.transformers import ellipsize, seo_tokenize
+from htk.utils.text.transformers import snake_case_to_camel_case
+
+text = ellipsize('Very long text', max_len=20)  # 'Very long ...'
+tokens = seo_tokenize('my-product-name')
+camel = snake_case_to_camel_case('user_id')  # 'userId'
+```
+
+### Sanitization & Unicode
+
+```python
+from htk.utils.text.unicode import demojize, unicode_to_ascii
+
+clean = demojize('Hello 👋')  # 'Hello'
+ascii_text = unicode_to_ascii('Café')  # 'Cafe'
+```
+
+## Caching & Optimization
+
+### Decorators
+
+```python
+from htk.utils.cache_descriptors import memoized, CachedAttribute
+
+@memoized
+def expensive_function(x):
+    return x ** 2
+
+class MyClass:
+    @CachedAttribute
+    def computed_value(self):
+        return sum(range(1000))  # Computed once, cached forever
+```
+
+### Memoization
+
+```python
+from htk.utils.cache_descriptors import CachedClassAttribute
+
+class Config:
+    @CachedClassAttribute
+    def settings(cls):
+        return load_settings()
+```
+
+## Data Structures
+
+### Dictionaries
+
+```python
+from htk.utils.data_structures.general import filter_dict
+
+filtered = filter_dict({'a': 1, 'b': 2, 'c': 3}, ['a', 'c'])  # {'a': 1, 'c': 3}
+```
+
+### Enums
+
+```python
+from htk.utils.enums import enum_to_str, choices
+
+class Status(Enum):
+    ACTIVE = 1
+    INACTIVE = 2
+
+status_str = enum_to_str(Status.ACTIVE)
+status_choices = choices(Status)  # [(1, 'ACTIVE'), (2, 'INACTIVE')]
+```
+
+### Collections
+
+```python
+from htk.utils.iter_utils import chunks, lookahead
+
+for group in chunks(items, 10):
+    process_batch(group)  # Process 10 items at a time
+```
+
+## DateTime & Timezone
+
+### Timezone Handling
+
+```python
+from htk.utils.datetime_utils import localized_datetime
+from htk.utils.datetime_utils import is_within_hour_bounds_for_timezone
+
+dt = localized_datetime(naive_dt, 'America/New_York')
+is_business_hours = is_within_hour_bounds_for_timezone('America/New_York', 9, 17)
+```
+
+### Conversions
+
+```python
+from htk.utils.datetime_utils import datetime_to_unix_time, iso_to_gregorian
+
+timestamp = datetime_to_unix_time(datetime.now())
+gregorian_date = iso_to_gregorian(2024, 1, 1)  # ISO week to Gregorian
+```
+
+## HTTP & Requests
+
+### Response Headers
+
+```python
+from htk.utils.http.response import set_cache_headers, set_cors_headers_for_image
+
+response = set_cache_headers(response, max_age=3600)  # Cache for 1 hour
+response = set_cors_headers_for_image(response)
+```
+
+### Request Parsing
+
+```python
+from htk.utils.request import extract_request_param, parse_authorization_header
+
+user_id = extract_request_param(request, 'user_id', int)
+auth_type, token = parse_authorization_header(request)
+```
+
+## JSON & Data
+
+### JSON Path Traversal
+
+```python
+from htk.utils.json_utils import find_json_value, find_all_json_paths
+
+value = find_json_value(data, 'user.profile.name')  # Dot notation
+paths = find_all_json_paths(data)  # All valid paths
+```
+
+### Compression
+
+```python
+from htk.utils.json_utils import deepcopy_with_compact
+
+clean_data = deepcopy_with_compact(data)  # Removes None values
+```
+
+## Email & Contact
+
+### Email Utilities
+
+```python
+from htk.utils.emails import email_permutator, find_company_emails_for_name
+
+# Generate email variations for John Smith at acme.com
+emails = email_permutator('acme.com', 'John', 'Smith')
+# ['john.smith@acme.com', 'jsmith@acme.com', 'john@acme.com', ...]
+```
+
+## Handles & Identifiers
+
+### Unique Handles
+
+```python
+from htk.utils.handles import generate_unique_handle, is_unique_handle
+
+handle = generate_unique_handle('John Smith')  # 'john-smith', 'john-smith-2', etc.
+```
+
+## Images
+
+### Format Detection
+
+```python
+from htk.utils.image import detect_image_format
+
+format = detect_image_format(image_file)  # 'PNG', 'JPEG', etc.
+```
+
+## Validation
+
+### Payment Cards
+
+```python
+from htk.utils.luhn import is_luhn_valid, calculate_luhn_check_digit
+
+valid = is_luhn_valid('4532015112830366')
+check_digit = calculate_luhn_check_digit('453201511283036')
+```
+
+## Database
+
+### Raw SQL
+
+```python
+from htk.utils.db import raw_sql, namedtuplefetchall
+
+results = raw_sql('SELECT * FROM users WHERE active = %s', [True])
+rows = namedtuplefetchall(cursor)  # Returns named tuples
+```
+
+### Connection Management
+
+```python
+from htk.utils.db import ensure_mysql_connection_usable
+
+ensure_mysql_connection_usable()  # Reconnect if needed
+```
+
+## PDF & CSV
+
+### CSV Export
+
+```python
+from htk.utils.csv_utils import get_csv_response
+
+response = get_csv_response(filename, [['Name', 'Email'], ['John', 'john@example.com']])
+```
+
+### PDF Generation
+
+```python
+from htk.utils.pdf_utils import render_to_pdf_response
+
+response = render_to_pdf_response('template.html', context_data)
+```
+
+## Queries & Lookups
+
+### Bulk Operations
+
+```python
+from htk.utils.query import get_objects_by_id
+
+users = get_objects_by_id(User, [1, 2, 3])  # In single query
+```
+
+### Safe Retrieval
+
+```python
+from htk.utils.django_shortcuts import get_object_or_none
+
+user = get_object_or_none(User, id=999)  # Returns None instead of exception
+```
+
+## Security
+
+### Encryption
+
+```python
+from htk.utils.crypto import AESCipher
+
+cipher = AESCipher()
+encrypted = cipher.encrypt('sensitive data')
+decrypted = cipher.decrypt(encrypted)
+```
+
+### HTTPS Detection
+
+```python
+from htk.utils.security import should_use_https
+
+if should_use_https():
+    url = f'https://{host}/path'
+```
+
+## Terminal Output
+
+### ANSI Colors
+
+```python
+from htk.utils.xterm import colorize, c
+
+colored_text = colorize('Error!', fg='red', style='bold')
+msg = c('Success!', 'green')  # Shorthand
+```
+
+## Common Patterns
+
+**Processing CSV with Django models:**
+```python
+from htk.utils.csv_utils import UnicodeReader
+
+with open('data.csv') as f:
+    for row in UnicodeReader(f):
+        User.objects.create(email=row[0], name=row[1])
+```
+
+**Paginating large datasets:**
+```python
+from htk.utils.iter_utils import chunks
+
+for batch in chunks(User.objects.all(), 100):
+    process_users(batch)
+```
+
+**Building URLs with parameters:**
+```python
+from htk.utils.urls import build_url_with_query_params
+
+url = build_url_with_query_params('/search/', {'q': 'django', 'page': 2})
+```

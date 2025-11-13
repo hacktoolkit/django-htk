@@ -1,21 +1,62 @@
-# Forums
+# Forums App
 
-## Classes
-- **`Forum`** (forums/models.py) - Forum represents a message forum
-- **`ForumTag`** (forums/models.py) - ForumTag can either apply to ForumThread or ForumMessage
+Discussion forums and message threads.
 
-## Functions
-- **`recent_thread`** (forums/models.py) - Retrieves the most recent ForumThread
-- **`recent_message`** (forums/models.py) - Retrieves the most recent message in ForumThread
-- **`save`** (forums/models.py) - Any customizations,  like updating cache, etc
-- **`test_basic_addition`** (forums/tests.py) - Tests that 1 + 1 always equals 2.
+## Quick Start
 
-## Components
-**Models** (`models.py`), **Views** (`views.py`), **Forms** (`forms.py`)
+```python
+from htk.apps.forums.models import Forum, ForumThread, ForumMessage
+
+# Create forum
+forum = Forum.objects.create(
+    name='General Discussion',
+    description='Discuss anything'
+)
+
+# Create thread
+thread = ForumThread.objects.create(
+    forum=forum,
+    title='Welcome to our forum!',
+    created_by=user
+)
+
+# Add message
+message = ForumMessage.objects.create(
+    thread=thread,
+    content='Hello everyone!',
+    created_by=user
+)
+```
+
+## Models
+
+- **`Forum`** - Discussion forum
+- **`ForumThread`** - Topic/thread in forum
+- **`ForumMessage`** - Message in thread
+- **`ForumTag`** - Tag for threads
+
+## Common Patterns
+
+```python
+# Get forum stats
+forum.recent_thread()  # Last updated thread
+forum.recent_message()  # Last message
+
+# Tag threads
+thread.tags.add('announcement', 'important')
+
+# Search threads
+Forum.objects.filter(title__icontains='django')
+```
 
 ## URL Patterns
-- `forum_index`
-- `forum`
-- `forum_thread_create`
-- `forum_thread`
-- `forum_message_create`
+
+- `/forum/` - Forum index
+- `/forum/<slug>/` - Forum detail
+- `/forum/<slug>/thread/create/` - Create thread
+- `/forum/<slug>/thread/<id>/` - Thread detail
+
+## Related Modules
+
+- `htk.apps.accounts` - User tracking
+- `htk.apps.conversations` - Similar messaging

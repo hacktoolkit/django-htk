@@ -1,129 +1,203 @@
-# Accounts
+# Accounts App
 
-## Classes
-- **`HtkUserTokenAuthBackend`** (accounts/backends.py) - Custom backend that uses a securely generated token
-- **`UserFollowingCache`** (accounts/cachekeys.py) - Cache management object for user following,
-- **`UserFollowersCache`** (accounts/cachekeys.py) - Cache management object for user followers,
-- **`AccountActivationReminderEmailCooldown`** (accounts/cachekeys.py) - Cache management object for not sending out AccountActivationReminderEmails to the same user more than once every two days
-- **`UpdatePasswordForm`** (accounts/forms/auth.py) - A subclass of Django's SetPasswordForm
-- **`PasswordResetFormHtmlEmail`** (accounts/forms/auth.py) - Modeled after django.contrib.auth.forms.PasswordResetForm
-- **`UsernameEmailAuthenticationForm`** (accounts/forms/auth.py) - Based on django.contrib.auth.forms.AuthenticationForm
-- **`UserEmailRegistrationLock`** (accounts/locks.py) - Lock to prevent race condition of simultaneous regsitration attempts
-- **`HtkBasicAuthMiddleware`** (accounts/middleware.py) - Custom Authenication Middleware to allow logging in using
-- **`HtkUserTokenAuthMiddleware`** (accounts/middleware.py) - Custom Authentication Middleware to attempt logging in with
-- **`BaseAbstractUserProfile`** (accounts/models.py) - django.contrib.auth.models.User does not have a unique email
-- **`UserEmail`** (accounts/models.py) - A User can have multiple email addresses using this table
-- **`WithingsOAuth2`** (accounts/social_backends.py) - Withings OAuth2 authentication backend
+User authentication, registration, and profile management.
 
-## Functions
-- **`suggest`** (accounts/api/views.py) - This API endpoint supports User autocomplete
-- **`update`** (accounts/api/views.py) - Updates a User or UserProfile
-- **`username`** (accounts/api/views.py) - Update a User's username
-- **`password`** (accounts/api/views.py) - Update a User's password
-- **`avatar`** (accounts/api/views.py) - Update a User's avatar to the specified type
-- **`follow`** (accounts/api/views.py) - Follow another user
-- **`unfollow`** (accounts/api/views.py) - Unfollow another user
-- **`create_user_profile`** (accounts/apps.py) - signal handler for User post-save
-- **`process_user_email_association`** (accounts/apps.py) - signal handler for UserEmail post-save
-- **`activation_email`** (accounts/emails.py) - Sends an activation/confirmation email for user to confirm email address
-- **`send_email`** (accounts/emails.py) - Sends an activation reminder email to `recipient`, a Django User
-- **`users_currently_at_local_time`** (accounts/filters.py) - Filters a QuerySet of `users` whose current local time is within a time range
-- **`users_logged_in_within_period`** (accounts/filters.py) - Filter the queryset of users who logged in within the last `window` number of hours.
-- **`users_registered_within_period`** (accounts/filters.py) - Filter the queryset of users who registered within the last `window` number of hours.
-- **`format_suggest_username`** (accounts/formatters.py) - Returns only the username
-- **`clean`** (accounts/forms/auth.py) - We are using cascaded_errors to bubble up any field-level errors to form-wide
-- **`save`** (accounts/forms/auth.py) - Handles a possible race condition and performs save
-- **`save`** (accounts/forms/auth.py) - Generates a one-use only link for resetting password and sends to the user
-- **`clean`** (accounts/forms/auth.py) - Clean the form and try to get user
-- **`clean`** (accounts/forms/auth.py) - We are using cascaded_errors to bubble up any field-level errors to form-wide
-- **`has_username_field`** (accounts/forms/update.py) - Determines whether username is a field in this form instance
-- **`clean_username`** (accounts/forms/update.py) - If username is a field in this form instance, ensure that it satisfies the regular expression
-- **`process_response`** (accounts/middleware.py) - Checks whether in an explicit authorization flow
-- **`get_redirect_uri`** (accounts/middleware.py) - Redirect to LOGIN_ERROR_URL by default
-- **`get_token_auth_token`** (accounts/models.py) - Returns a token for token authentication.
-- **`get_nav_display_name`** (accounts/models.py) - Gets the name to be displayed to the user in app navigation context
-- **`get_org_display_name`** (accounts/models.py) - Gets the name to be displayed to other users in Organization context
-- **`has_completed_account_setup`** (accounts/models.py) - Determines whether this User has completed the minimum account setup:
-- **`has_email`** (accounts/models.py) - Determine whether this User owns `email`
-- **`set_primary_email`** (accounts/models.py) - Set the primary email address for `self.user`
-- **`has_primary_email`** (accounts/models.py) - Determines whether this `User` has a primary email set
-- **`get_primary_email`** (accounts/models.py) - Retrieve this `User`'s primary email
-- **`get_primary_email_unverified`** (accounts/models.py) - Retrieve this `User`'s primary email, even if it has not been verified
-- **`get_nonprimary_emails`** (accounts/models.py) - Returns a list of UserEmail objects associated with `self.user`, besides the primary email
-- **`confirmed_email`** (accounts/models.py) - Returns one confirmed email
-- **`send_welcome_email`** (accounts/models.py) - Sends a welcome email to the user
-- **`get_social_auths`** (accounts/models.py) - Gets all associated UserSocialAuth objects
-- **`get_fb_social_user`** (accounts/models.py) - Gets a Facebook UserSocialAuth
-- **`get_fbid`** (accounts/models.py) - Gets a user's Facebook id
-- **`get_tw_social_user`** (accounts/models.py) - Gets a Twitter UserSocialAuth
-- **`get_twid`** (accounts/models.py) - Gets a user's Twitter id
-- **`can_disconnect_social_auth`** (accounts/models.py) - Returns whether the user can disconnect at least one social auth
-- **`get_user_token_auth_token`** (accounts/models.py) - Returns the token to auth/log in the `user`
-- **`activate`** (accounts/models.py) - Activate the User if not already activated
-- **`get_local_time`** (accounts/models.py) - Gets the current local time for User
-- **`next_iso_week_date`** (accounts/models.py) - The first day of the next ISO week
-- **`update_locale_info_by_ip_from_request`** (accounts/models.py) - Update user info by IP Address
-- **`get_following`** (accounts/models.py) - Gets User following
-- **`get_followers`** (accounts/models.py) - Gets User followers
-- **`has_follower`** (accounts/models.py) - Check if the currently logged-in user is following self.user
-- **`is_primary`** (accounts/models.py) - Determines whether this UserEmail is the primary email address of `self.user`
-- **`set_primary_email`** (accounts/models.py) - Sets the primary email address of `self.user` to `self.email`
-- **`delete`** (accounts/models.py) - Deletes this associated email address
-- **`delete_replaced_email`** (accounts/models.py) - Deletes an email that was replaced
-- **`send_activation_email`** (accounts/models.py) - Sends an activation email
-- **`send_activation_reminder_email`** (accounts/models.py) - Sends an account activation reminder email
-- **`confirm_and_activate_account`** (accounts/models.py) - Confirms the email address, and activates the associated account if not already activated
-- **`combined_user_search`** (accounts/search.py) - Combines result sets from multiple `search_functions` into one resultant QuerySet
-- **`search_by_username_name`** (accounts/search.py) - Searchs for Users by username and name
-- **`search_by_username`** (accounts/search.py) - Searches for Users by username
-- **`search_by_name`** (accounts/search.py) - Search for Users by name (first name, last name)
-- **`search_by_email`** (accounts/search.py) - Search for Users by email address
-- **`python_social_auth_shim`** (accounts/social_auth_pipeline.py) - Shim layer decorator for django-social-auth to python-social auth migration
-- **`reset_session_keys`** (accounts/social_auth_pipeline.py) - Reset a bunch of keys used as part of the social auth flow
-- **`check_email`** (accounts/social_auth_pipeline.py) - Ask the user to enter the email if we don't have one yet
-- **`check_terms_agreement`** (accounts/social_auth_pipeline.py) - Ask the user to agree to Privacy Policy and Terms of Service
-- **`check_incomplete_signup`** (accounts/social_auth_pipeline.py) - Checks for an incomplete signup, and sets that User instead
-- **`set_username`** (accounts/social_auth_pipeline.py) - This pipeline function can be used to set UserProfile.has_username_set = True
-- **`associate_email`** (accounts/social_auth_pipeline.py) - Associate email with the user
-- **`handle_new_user`** (accounts/social_auth_pipeline.py) - Do stuff if the account was newly created
-- **`login_authenticated_user`** (accounts/utils/auth.py) - Logs in an authenticated user and performs related updates
-- **`get_user_token_auth_token`** (accounts/utils/auth.py) - Returns the token to auth/log in the `user`
-- **`get_user_token_auth_hash`** (accounts/utils/auth.py) - Generates the hash portion of a user token-auth token
-- **`validate_user_token_auth_token`** (accounts/utils/auth.py) - Validates a user token-auth token
-- **`validate_reset_password_token`** (accounts/utils/auth.py) - Determines whether a valid reset password token exists
-- **`reset_user_password`** (accounts/utils/auth.py) - Resets the password for a user
-- **`get_duplicate_emails`** (accounts/utils/debug.py) - Sanity check to make sure no users in database have the same email address
-- **`create_user`** (accounts/utils/general.py) - Creates a new user
-- **`set_random_password`** (accounts/utils/general.py) - Sets a random password for `user`
-- **`email_to_username_hash`** (accounts/utils/general.py) - Convert emails to hashed versions where we store them in the username field
-- **`email_to_username_pretty_unique`** (accounts/utils/general.py) - Converts `email` to a pretty and unique username based on the email
-- **`get_user_by_username`** (accounts/utils/general.py) - Gets a user by `username`
-- **`get_user_by_email`** (accounts/utils/general.py) - Gets a User by `email`
-- **`get_user_by_email_with_retries`** (accounts/utils/general.py) - Gets a User by `email`
-- **`get_incomplete_signup_user_by_email`** (accounts/utils/general.py) - Gets an incomplete signup User by `email`
-- **`associate_user_email`** (accounts/utils/general.py) - Associates `email` with `user`
-- **`extract_user_email`** (accounts/utils/general.py) - Gets the user for `username_email`
-- **`get_user_by_id`** (accounts/utils/general.py) - Gets a User by user id
-- **`get_users_by_id`** (accounts/utils/general.py) - Gets a list of Users by user ids
-- **`get_user_emails_by_id`** (accounts/utils/general.py) - Gets a list of UserEmails by ids
-- **`encrypt_uid`** (accounts/utils/general.py) - Encrypts the User id for transfer in plaintext
-- **`resolve_encrypted_uid`** (accounts/utils/general.py) - Returns the User for this `encrypted_uid`
-- **`get_local_time`** (accounts/utils/locale.py) - Converts a datetime `dt` to the local timezone of `user`
-- **`localized_time_for_user`** (accounts/utils/locale.py) - Attaches a timezone for `user` to `naive_dt`
-- **`get_all_users`** (accounts/utils/lookup.py) - Returns all users
-- **`get_inactive_users`** (accounts/utils/lookup.py) - Returns all inactive users
-- **`get_users_currently_at_local_time`** (accounts/utils/lookup.py) - Returns a Queryset of Users whose current local time is within a time range
-- **`create_missing_user_profiles`** (accounts/utils/profile.py) - Create missing user profiles
-- **`get_social_auth_for_user`** (accounts/utils/social_utils.py) - Get one UserSocialAuth for given `user` and `provider`
-- **`get_social_auths_for_user`** (accounts/utils/social_utils.py) - Get UserSocialAuths for given `user`
-- **`get_social_auth_providers`** (accounts/view_helpers.py) - Return a list of social auth providers.
-- **`get_social_auth_login_providers`** (accounts/view_helpers.py) - Return a list of social auth providers.
-- **`get_social_auths_statuses`** (accounts/view_helpers.py) - Get the statuses of all social auths for a user
-- **`redirect_to_social_auth_complete`** (accounts/view_helpers.py) - Return an HTTP Redirect response to social:complete to continue the pipeline
-- **`register_social_login`** (accounts/views.py) - For when a user is already associated with this email and has a usable password set
-- **`register_social_already_linked`** (accounts/views.py) - For when a user is already associated with this email only through social auth and no password set
-- **`forgot_password`** (accounts/views.py) - Modeled after django.contrib.auth.views.password_reset
-- **`reset_password`** (accounts/views.py) - View that checks the hash in a password reset link and presents a
+## Overview
 
-## Components
-**Models** (`models.py`), **Views** (`views.py`)
+The `accounts` app provides:
+
+- User registration and email verification
+- Email management (multiple emails per user)
+- Social authentication (OAuth, OAuth2)
+- Token-based API authentication
+- User profiles with timezone and locale
+- Password reset and recovery
+- User search by email, username, or name
+- User following/follower system
+
+## Quick Start
+
+### Create Users
+
+```python
+from htk.apps.accounts.utils.general import create_user, get_user_by_email
+
+# Create a new user
+user = create_user('user@example.com', password='secure_password')
+
+# Get user by email
+user = get_user_by_email('user@example.com')
+
+# Get user by username
+from htk.apps.accounts.utils.general import get_user_by_username
+user = get_user_by_username('john_doe')
+```
+
+### Email Management
+
+```python
+from htk.apps.accounts.models import UserEmail
+
+# Add additional email to user
+user_email = UserEmail.objects.create(
+    user=user,
+    email='alternate@example.com',
+    verified=False
+)
+
+# Set primary email
+user.profile.set_primary_email('alternate@example.com')
+
+# Get all emails for user
+emails = user.profile.get_nonprimary_emails()
+```
+
+### Token Authentication
+
+```python
+from htk.apps.accounts.utils.auth import get_user_token_auth_token
+
+# Generate token for API authentication
+token = get_user_token_auth_token(user)
+
+# Validate token
+from htk.apps.accounts.utils.auth import validate_user_token_auth_token
+is_valid = validate_user_token_auth_token(user, token)
+```
+
+### Social Authentication
+
+```python
+# Configure in settings.py
+AUTHENTICATION_BACKENDS = [
+    'htk.apps.accounts.backends.HtkUserTokenAuthBackend',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+]
+
+# Use in views via python-social-auth
+# /login/facebook/
+# /login/google-oauth2/
+```
+
+### User Search
+
+```python
+from htk.apps.accounts.search import (
+    search_by_username,
+    search_by_email,
+    search_by_name,
+    combined_user_search
+)
+
+# Search by username
+users = search_by_username('john')
+
+# Search by email
+user = search_by_email('user@example.com').first()
+
+# Combined search across username and name
+users = combined_user_search('john', [search_by_username, search_by_name])
+```
+
+### Following System
+
+```python
+# Add follower
+user.profile.add_follower(other_user)
+
+# Get followers
+followers = user.profile.get_followers()
+
+# Get following
+following = user.profile.get_following()
+
+# Check if user is followed
+is_followed = user.profile.has_follower(other_user)
+```
+
+## Models
+
+- **`BaseAbstractUserProfile`** - Extend to add custom user profile fields
+- **`UserEmail`** - Stores multiple emails per user
+
+## Key Features
+
+### Password Reset
+```python
+from htk.apps.accounts.utils.auth import validate_reset_password_token
+
+# Reset password
+is_valid = validate_reset_password_token(user, token)
+if is_valid:
+    from htk.apps.accounts.utils.auth import reset_user_password
+    reset_user_password(user, new_password)
+```
+
+### User Profile
+
+Inherit from `BaseAbstractUserProfile` to add custom fields:
+
+```python
+from htk.apps.accounts.models import BaseAbstractUserProfile
+
+class CustomUserProfile(BaseAbstractUserProfile):
+    department = models.CharField(max_length=100)
+    company = models.CharField(max_length=100)
+    bio = models.TextField(blank=True)
+```
+
+### Timezone & Locale
+
+```python
+from htk.apps.accounts.utils.locale import get_local_time
+
+# Get user's local time
+local_time = get_local_time(user, aware_datetime)
+
+# Check if user is online during specific hours
+from htk.apps.accounts.filters import users_currently_at_local_time
+users = users_currently_at_local_time(User.objects.all(), 9, 17)
+```
+
+### Caching
+
+The app automatically caches:
+- User followers (`UserFollowersCache`)
+- User following (`UserFollowingCache`)
+- Account activation reminders
+
+## Installation
+
+```python
+# settings.py
+INSTALLED_APPS = [
+    'htk.apps.accounts',
+    # ...
+]
+
+# Add custom user profile
+AUTH_USER_PROFILE_MODEL = 'myapp.CustomUserProfile'
+```
+
+## Signals
+
+Automatic signal handlers:
+- `create_user_profile` - Creates profile when User is created
+- `process_user_email_association` - Handles email verification
+
+## Best Practices
+
+1. **Extend BaseAbstractUserProfile** for custom user data
+2. **Use search functions** for user lookups
+3. **Enable social auth** for multi-provider login
+4. **Cache user relationships** using provided cache classes
+5. **Validate tokens** before granting access
+6. **Handle multiple emails** through UserEmail model
+
+## Related Modules
+
+- `htk.apps.organizations` - Multi-org support per user
+- `htk.apps.invitations` - Invite system
+- `htk.utils.locale` - Timezone utilities
+- `htk.lib.google` - OAuth2 providers

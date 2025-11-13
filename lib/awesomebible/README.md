@@ -1,20 +1,13 @@
 # Awesomebible Integration
 
-> Awesomebible API integration and utilities.
-
-## Purpose
-
-The awesomebible module provides integration with Awesomebible for seamless API communication and data synchronization.
+Bible content and scripture data.
 
 ## Quick Start
 
 ```python
 from htk.lib.awesomebible import Client
 
-# Initialize client with API credentials
 client = Client(api_key='your_api_key')
-
-# Make API calls
 result = client.get_data()
 ```
 
@@ -22,69 +15,11 @@ result = client.get_data()
 
 ```python
 # settings.py
-HTK_AWESOMEBIBLE_API_KEY = 'your_api_key'
-HTK_AWESOMEBIBLE_ENABLED = True
+AWESOMEBIBLE_API_KEY = os.environ.get('AWESOMEBIBLE_API_KEY')
 ```
 
-## Common Patterns
+## Related Modules
 
-### Authentication
-
-```python
-from htk.lib.awesomebible import Client
-
-client = Client(api_key='key', api_secret='secret')
-```
-
-### Error Handling
-
-```python
-from htk.lib.awesomebible import Client, AwesomebibleError
-
-try:
-    result = client.api_call()
-except AwesomebibleError as e:
-    # Handle API errors
-    pass
-```
-
-## Best Practices
-
-- Use environment variables for API credentials
-- Implement exponential backoff for retries
-- Cache responses when appropriate
-- Log API interactions for debugging
-- Handle rate limiting gracefully
-
-## Testing
-
-```python
-from django.test import TestCase
-from unittest.mock import patch, Mock
-from htk.lib.awesomebible import Client
-
-class AwesomebibleTestCase(TestCase):
-    def setUp(self):
-        self.client = Client(api_key='test_key')
-
-    @patch('htk.lib.awesomebible.requests.get')
-    def test_api_call(self, mock_get):
-        mock_get.return_value = Mock(status_code=200, json=lambda: {'data': 'test'})
-        result = self.client.get_data()
-        self.assertEqual(result['data'], 'test')
-```
-
-## Related Integrations
-
-- Other `htk.lib.*` integrations
-
-## References
-
-- [Awesomebible API Documentation](https://www.awesomebible.com/docs/)
-- HTK Integration Guide
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+- `htk.apps.bible` - Scripture models
+- `htk.lib.esv` - Bible translations
+- `htk.lib.literalword` - Bible content

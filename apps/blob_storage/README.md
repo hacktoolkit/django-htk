@@ -1,117 +1,44 @@
 # Blob Storage App
 
-> Large binary data storage and retrieval.
-
-## Purpose
-
-The blob_storage app provides efficient storage of large binary objects (files, images, videos) with access control.
+Large binary data storage and retrieval.
 
 ## Quick Start
 
 ```python
-from htk.apps.blob_storage.models import *
+from htk.apps.blob_storage.models import Blob
 
-# Create and use models
-# See models.py for available classes
-instance = YourModel.objects.create(field='value')
+# Store binary data
+blob = Blob.objects.create(
+    name='document.pdf',
+    data=pdf_bytes,
+    content_type='application/pdf'
+)
+
+# Retrieve
+blob = Blob.objects.get(name='document.pdf')
+binary_data = blob.data
 ```
 
-## Key Components
+## Models
 
-| Component | Purpose |
-|-----------|---------|
-| **Models** | BlobStorage model for managing large file uploads |
-| **Views** | Provide web interface and API endpoints |
-| **Forms** | Handle data validation and user input |
-| **Serializers** | API serialization and deserialization |
+- **`Blob`** - Binary large object storage
 
 ## Common Patterns
 
-### Basic Model Operations
-
 ```python
-from htk.apps.blob_storage.models import *
+# Store with access control
+blob = Blob.objects.create(
+    name='private.zip',
+    data=file_bytes,
+    user=request.user,
+    is_private=True
+)
 
-# Create
-obj = YourModel.objects.create(name='Example')
-
-# Read
-obj = YourModel.objects.get(id=1)
-
-# Update
-obj.name = 'Updated'
-obj.save()
-
-# Delete
-obj.delete()
+# Get blob by ID
+blob = Blob.objects.get(id=blob_id)
 ```
 
-### Filtering and Querying
+## Related Modules
 
-```python
-# Filter by attributes
-results = YourModel.objects.filter(status='active')
-
-# Order by field
-ordered = YourModel.objects.all().order_by('-created_at')
-
-# Count results
-count = YourModel.objects.filter(status='active').count()
-```
-
-## API Endpoints
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/blob_storage/` | GET | List items |
-| `/api/blob_storage/` | POST | Create item |
-| `/api/blob_storage/{id}/` | GET | Get item details |
-| `/api/blob_storage/{id}/` | PATCH | Update item |
-| `/api/blob_storage/{id}/` | DELETE | Delete item |
-
-## Configuration
-
-```python
-# settings.py
-HTK_BLOB_STORAGE_ENABLED = True
-# Additional settings in constants/defaults.py
-```
-
-## Best Practices
-
-- **Use ORM** - Leverage Django ORM for database queries
-- **Validate input** - Use forms and serializers for validation
-- **Check permissions** - Verify user has required permissions
-- **Cache results** - Cache expensive queries and operations
-- **Write tests** - Test models, views, forms, and API endpoints
-
-## Testing
-
-```python
-from django.test import TestCase
-from htk.apps.blob_storage.models import *
-
-class Blob_StorageTestCase(TestCase):
-    def setUp(self):
-        """Create test fixtures"""
-        self.obj = YourModel.objects.create(field='value')
-
-    def test_model_creation(self):
-        """Test creating an object"""
-        self.assertIsNotNone(self.obj.id)
-```
-
-## Related Apps
-
-- `htk.apps.accounts` - User accounts
-
-## References
-
-- [Django Models](https://docs.djangoproject.com/en/stable/topics/db/models/)
-- [Django Forms](https://docs.djangoproject.com/en/stable/topics/forms/)
-
-## Notes
-
-- **Status:** Production-Ready
-- **Last Updated:** November 2025
-- **Maintained by:** HTK Contributors
+- `htk.apps.file_storage` - File management
+- `htk.lib.aws.s3` - S3 integration

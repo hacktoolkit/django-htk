@@ -1,303 +1,301 @@
-# Lib
+# Third-Party Integrations
 
-## Classes
-- **`AirtableAPI`** (lib/airtable/api.py) - Airtable API
-- **`S3UrlCache`** (lib/aws/s3/cachekeys.py) - Cache management object for url of object stored in Amazon S3
-- **`S3Manager`** (lib/aws/s3/utils.py) - S3Manager is an interface/wrapper for boto to Amazon S3
-- **`Htk321FormsAPI`** (lib/dynamic_screening_solutions/api.py) - 321Forms - Dynamic Screening Solutions
-- **`FitbitAPI`** (lib/fitbit/api.py) - https://dev.fitbit.com/docs/
-- **`FullContactAPIV3`** (lib/fullcontact/api.py) - https://www.fullcontact.com/developer/docs/
-- **`FullContactAPIV2`** (lib/fullcontact/api.py) - https://www.fullcontact.com/developer/docs/
-- **`GitHubReminderBot`** (lib/github/bots.py) - GitHub Reminder bot
-- **`GitHubReminderCooldown`** (lib/github/cachekeys.py) - Cache management object for not performing GitHub reminders for the same user too frequently
-- **`BaseRelease`** (lib/github/models/release.py) - Base model for GitHub releases.
-- **`GmailAPI`** (lib/google/gmail/api.py) - Interface to Gmail API
-- **`IndeedDispositionSyncAPI`** (lib/indeed/api/disposition_sync.py) - API to post the disposition status of applications received through Indeed
-- **`IndeedJobSyncAPI`** (lib/indeed/api/job_sync.py) - API to CREATE/UPDATE/DELETE jobs in Indeed
-- **`IterableAPIClient`** (lib/iterable/api.py) - https://api.iterable.com/api/docs
-- **`HtkIterableAPIClient`** (lib/iterable/api.py) - HTK-flavored Iterable API client
-- **`OpenAIResult`** (lib/openai/models/result.py) - Model to store the results of OpenAI API calls
-- **`BaseOpenAISystemPrompt`** (lib/openai/models/system_prompt.py) - Model to store OpenAI system prompts for reuse
-- **`ShopifyProduct`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/product
-- **`ShopifyProductImage`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/product_image
-- **`ShopifyProductVariant`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/product_variant
-- **`ShopifyCustomer`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/customer
-- **`ShopifyCustomerAddress`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/customeraddress
-- **`ShopifyOrder`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/order
-- **`ShopifyFulFillment`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/fulfillment
-- **`ShopifyRefund`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/refund
-- **`ShopifyTransaction`** (lib/shopify_lib/models.py) - https://help.shopify.com/api/reference/transaction
-- **`SlackBeaconCache`** (lib/slack/beacon/cachekeys.py) - Cache management object for Slack beacon
-- **`CreditCardForm`** (lib/stripe_lib/forms.py) - A basic form for entering credit card numbers
-- **`BaseStripeCustomer`** (lib/stripe_lib/models.py) - Django model for Stripe Customer
-- **`BaseStripeSubscription`** (lib/stripe_lib/models.py) - Django model for Stripe Subscription
-- **`BaseStripeProduct`** (lib/stripe_lib/models.py) - Django model for Stripe Product
-- **`BaseStripePrice`** (lib/stripe_lib/models.py) - Django model for Stripe Price
-- **`BaseStripePlan`** (lib/stripe_lib/models.py) - Django model for Stripe Plan
-- **`YahooGroupsMessage`** (lib/yahoo/groups/message.py) - Represents a Yahoo Groups message
-- **`ZestyMeals`** (lib/zesty/classes.py) - Represents a collection of Zesty meals
-- **`ZestyMeal`** (lib/zesty/classes.py) - Represents one Zesty meal for a specific day
-- **`ZipRecruiterAPI`** (lib/ziprecruiter/api.py) - The Job API is used to create/update/delete jobs in ZipRecruiter
+Ready-to-use connectors for 45+ external services and APIs.
 
-## Functions
-- **`fetch_records`** (lib/airtable/api.py) - Fetch records from
-- **`get_records`** (lib/airtable/api.py) - Deprecated - use `self.fetch_records()` instead
-- **`launch`** (lib/alexa/event_handlers.py) - Launch event handler for Alexa webhook events
-- **`default`** (lib/alexa/event_handlers.py) - A Hacktoolkit-flavored default event handler for Alexa webhook events
-- **`zesty`** (lib/alexa/event_handlers.py) - Zesty event handler for Alexa skill webhook events
-- **`default_event_type_resolver`** (lib/alexa/event_resolvers.py) - The Hacktoolkit-flavored default event type resolver for Alexa webhook events
-- **`is_valid_alexa_skill_webhook_event`** (lib/alexa/utils.py) - Determines whether the Alexa skill webhook event is valid
-- **`get_event_type`** (lib/alexa/utils.py) - Get event type from Alexa skill webhook `event`
-- **`get_event_handlers`** (lib/alexa/utils.py) - Gets all the event handlers available for `event`
-- **`get_event_handler_for_type`** (lib/alexa/utils.py) - Gets the event handler for `event_type`
-- **`get_event_handler`** (lib/alexa/utils.py) - Gets the event handler for an Amazon Alexa skill webhook event, if available
-- **`handle_event`** (lib/alexa/utils.py) - Processes a validated skill request from Amazon Alexa
-- **`alexa_skill_webhook_view`** (lib/alexa/views.py) - Handles an Amazon Alexa skill webhook request
-- **`build_amazon_media_image_url`** (lib/amazon/utils.py) - Constructs a static Amazon product image URL based on the ASIN and desired image size.
-- **`get_s3_key`** (lib/aws/s3/models.py) - Computes the S3 Key for this object
-- **`store_file`** (lib/aws/s3/models.py) - Stores file `f`
-- **`store_uploaded_file`** (lib/aws/s3/models.py) - Store the uploaded file
-- **`copy_stored_file_to`** (lib/aws/s3/models.py) - Copies the stored file on S3 into the `dest_obj`'s bucket/key
-- **`delete_thumbnail`** (lib/aws/s3/models.py) - Convenience wrapper around `self.delete_stored_file()` to delete a thumbnail, if one exists
-- **`clone`** (lib/aws/s3/models.py) - Makes a clone of this S3MediaAsset with a copied file on S3
-- **`put_file`** (lib/aws/s3/utils.py) - Stores a file
-- **`copy_file`** (lib/aws/s3/utils.py) - Copies a file
-- **`delete_file`** (lib/aws/s3/utils.py) - Deletes a file
-- **`get_url`** (lib/aws/s3/utils.py) - Generates the URL for a file
-- **`convert_weather_icon_to_emoji`** (lib/darksky/utils.py) - https://darksky.net/dev/docs/response
-- **`generate_weather_report`** (lib/darksky/utils.py) - Generates a weather report from Dark Sky (formerly ForecastIO) API `weather_data` formatted as Markdown
-- **`discord_webhook_relay_view`** (lib/discord/views.py) - Handles a Discord webhook request
-- **`make_request_headers`** (lib/dynamic_screening_solutions/api.py) - Creates a header to pass in for GET/POST request
-- **`get_users_by_company`** (lib/dynamic_screening_solutions/api.py) - Returns a list of users in a company based on `user_type` provided.
-- **`get_onboarded_employee_users_by_company`** (lib/dynamic_screening_solutions/api.py) - Returns a list of 100% onboarded users in the provided company.
-- **`get_companies`** (lib/dynamic_screening_solutions/api.py) - Returns a JSON response of companies that the user can access
-- **`get_divisions_by_company`** (lib/dynamic_screening_solutions/api.py) - Returns a JSON response with two elements. The companyID provided and an array of divisions
-- **`get_forms_by_company`** (lib/dynamic_screening_solutions/api.py) - Returns an array of the company's forms.
-- **`get_form_by_company`** (lib/dynamic_screening_solutions/api.py) - Returns an array of form questions and an object with the basic details of the form itself
-- **`get_form_by_user`** (lib/dynamic_screening_solutions/api.py) - Receives response information of a user's latest form of a particular status
-- **`get_responses_by_user`** (lib/dynamic_screening_solutions/api.py) - Receives response information to questions asked of a user
-- **`validate_webhook_request`** (lib/dynamic_screening_solutions/utils.py) - Validates a 321Forms webhook request
-- **`get_long_lived_user_access_token`** (lib/facebook/utils.py) - Get a long-lived User access token generated from a short-lived User access token
-- **`get_resource_url`** (lib/fitbit/api.py) - Returns the resource URL for `resource_type`
-- **`make_headers`** (lib/fitbit/api.py) - Make headers for Fitbit API request
-- **`get`** (lib/fitbit/api.py) - Performs a Fitbit API GET request
-- **`post`** (lib/fitbit/api.py) - Performs a Fitbit API POST request
-- **`get_activity_steps_for_period`** (lib/fitbit/api.py) - Get Steps for a given period
-- **`get_activity_steps_past_month`** (lib/fitbit/api.py) - Get Steps for past month
-- **`get_activity_steps_past_year`** (lib/fitbit/api.py) - Get Steps for past year
-- **`get_body_fat_logs`** (lib/fitbit/api.py) - Get Body Fat logs for a given date
-- **`get_weight_logs`** (lib/fitbit/api.py) - Get Weight logs for a given date
-- **`get_devices`** (lib/fitbit/api.py) - Get a list of Devices
-- **`get_resource_url`** (lib/fullcontact/api.py) - Returns the resource URL for `resource_type`
-- **`post`** (lib/fullcontact/api.py) - Performs a FullContact API POST request
-- **`get_person`** (lib/fullcontact/api.py) - https://www.fullcontact.com/developer/docs/person/
-- **`get_persons`** (lib/fullcontact/api.py) - Retrieves a batch of Person objects based on `emails`
-- **`get_resource_url`** (lib/fullcontact/api.py) - Returns the resource URL for `resource_type`
-- **`get`** (lib/fullcontact/api.py) - Performs a FullContact API GET request
-- **`post`** (lib/fullcontact/api.py) - Performs a FullContact API POST request
-- **`get_person`** (lib/fullcontact/api.py) - https://www.fullcontact.com/developer/docs/person/
-- **`get_persons`** (lib/fullcontact/api.py) - Retrieves a batch of Person objects based on `emails`
-- **`as_slack_v3`** (lib/fullcontact/classes.py) - Formats this person's FullContact V3 data as a Slack string
-- **`as_slack_v2`** (lib/fullcontact/classes.py) - Formats this person's FullContact V2 data as a Slack string
-- **`get_full_contact_api_v3_key`** (lib/fullcontact/utils.py) - Retrieves a FullContact API key
-- **`get_full_contact_api_v2_key`** (lib/fullcontact/utils.py) - Retrieves a FullContact API key
-- **`find_person_by_email`** (lib/fullcontact/utils.py) - Retrieve a person object by `email`
-- **`find_valid_emails`** (lib/fullcontact/utils.py) - Returns a subset of `emails` that are valid
-- **`test_get_geoip_city`** (lib/geoip/tests.py) - Test that the client instantiates
-- **`test_get_geoip_country`** (lib/geoip/tests.py) - Test that the client instantiates
-- **`get_country_code_by_ip`** (lib/geoip/utils.py) - Returns the country code from `ip`
-- **`get_timezone_by_ip`** (lib/geoip/utils.py) - Returns the timezone from `ip`
-- **`get_record_by_ip`** (lib/geoip/utils.py) - Returns dictionary with city data containing country_code, country_name, region, city, postal_code, latitude, longitude, dma_code, metro_code, area_code, region_code and time_zone.
-- **`pull_request_reminder`** (lib/github/bots.py) - Returns a Markdown-formatted message for this organization's pull requests
-- **`github_url`** (lib/github/models/release.py) - Return the URL of the release.
-- **`get_github_client`** (lib/github/utils.py) - Get an authenticated GitHub client.
-- **`get_repository`** (lib/github/utils.py) - Get a GitHub repository by its full name.
-- **`sync_release`** (lib/github/utils.py) - Sync a single GitHub release to our database.
-- **`sync_repository_releases`** (lib/github/utils.py) - Sync all releases from a GitHub repository.
-- **`get_company_info`** (lib/glassdoor/utils.py) - Gets company info from Glassdoor API
-- **`labels_list`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/labels/list
-- **`messages_list`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/list
-- **`message_get`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/get
-- **`message_modify`** (lib/google/gmail/api.py) - Adds or removes labels to a message
-- **`message_trash`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/trash
-- **`message_untrash`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/messages/untrash
-- **`threads_list`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/list
-- **`thread_get`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/get
-- **`thread_modify`** (lib/google/gmail/api.py) - Adds or removes labels to a thread
-- **`thread_trash`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/trash
-- **`thread_untrash`** (lib/google/gmail/api.py) - https://developers.google.com/gmail/api/v1/reference/users/threads/untrash
-- **`get_html`** (lib/google/gmail/api.py) - Returns the HTML part of a message from the API
-- **`get_text`** (lib/google/gmail/api.py) - Returns the text part of the message from the API
-- **`get_map_url_for_geolocation`** (lib/google/maps/utils.py) - Returns a Google Maps url for `latitude`, `longitude`
-- **`google_recaptcha_site_verification`** (lib/google/recaptcha/utils.py) - Gets verification data on a Google Recaptcha response token
-- **`spreadsheets_values_append`** (lib/google/sheets/api.py) - https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append
-- **`translate`** (lib/google/translate/utils.py) - Translates `term` from `origin` language into `target` language
-- **`get_num_server_api_keys`** (lib/google/utils.py) - Returns the number of Google server API keys configured
-- **`get_server_api_key`** (lib/google/utils.py) - Retrieves the Google Server API key
-- **`get_browser_api_key`** (lib/google/utils.py) - Retrieves the Google Browser API key
-- **`get_gravatar_hash`** (lib/gravatar/utils.py) - Creates a Gravatar hash
-- **`get_gravatar_for_email`** (lib/gravatar/utils.py) - https://en.gravatar.com/site/implement/images/
-- **`generate_access_token`** (lib/indeed/api/base.py) - Generate access token using app credentials
-- **`get_access_token`** (lib/indeed/api/base.py) - Returns access token
-- **`get_resource_url`** (lib/iterable/api.py) - Returns the resource URL for `resource_type`
-- **`get`** (lib/iterable/api.py) - Performs an Iterable API GET request
-- **`post`** (lib/iterable/api.py) - Performs an Iterable API POST request
-- **`delete`** (lib/iterable/api.py) - Performs an Iterable API POST request
-- **`track_event`** (lib/iterable/api.py) - Track an event
-- **`update_user_email`** (lib/iterable/api.py) - Updates a user's email address
-- **`delete_user`** (lib/iterable/api.py) - Delete a user from Iterable
-- **`trigger_workflow`** (lib/iterable/api.py) - Trigger a workflow
-- **`notify_sign_up`** (lib/iterable/api.py) - Notify Iterable of a `user` sign up event
-- **`notify_account_activation`** (lib/iterable/api.py) - Notify Iterable of a `user` activation event
-- **`notify_login`** (lib/iterable/api.py) - Notify Iterable of a `user` login event
-- **`get_iterable_api_client`** (lib/iterable/utils.py) - Returns an initialized Iterable API client
-- **`get_campaign_id`** (lib/iterable/utils.py) - Get a campaign id by `key`
-- **`get_list_id`** (lib/iterable/utils.py) - Get a list id by `key`
-- **`get_workflow_id`** (lib/iterable/utils.py) - Get a workflow id by `key`
-- **`get_bible_passages`** (lib/literalword/utils.py) - Wrapper for get_bible_passage
-- **`get_api_data_center`** (lib/mailchimp/utils.py) - Determine the Mailchimp API Data Center for `api_key`
-- **`get_api_url`** (lib/mailchimp/utils.py) - Determine the Mailchimp API Url for `api_key`
-- **`fetch_mapbox_reverse_geocode_result`** (lib/mapbox/geocode.py) - Fetch the first Mapbox reverse geocode result for a given latitude and longitude
-- **`reverse_geocode`** (lib/mapbox/geocode.py) - Reverse geocode a given latitude and longitude and return the address
-- **`reverse_geocode_with_context`** (lib/mapbox/geocode.py) - Extract location context data from Mapbox reverse geocoding.
-- **`get_oembed_html`** (lib/oembed/utils.py) - Gets the oEmbed HTML for a URL, if it is an oEmbed type
-- **`get_oembed_html_for_service`** (lib/oembed/utils.py) - Returns the oEmbed HTML for `service` (YouTube, Vimeo, etc)
-- **`get_oembed_type`** (lib/oembed/utils.py) - Determines the type of oEmbed this URL is, if it exists
-- **`chat_completion`** (lib/openai/adapter.py) - Wrapper for OpenAI's chat completion API (`chat.completions.create`)
-- **`response_parameters_instructions`** (lib/openai/models/system_prompt.py) - Instructions to set the ChatGPT model to return a response in a specific format.
-- **`rendered_content`** (lib/openai/models/system_prompt.py) - Rendered content of the system prompt.
-- **`get_plivo_number_owner`** (lib/plivo/utils.py) - Retrieves the User that owns `number`
-- **`handle_message_event`** (lib/plivo/utils.py) - Handles a Plivo message event
-- **`plivo_message_webhook_view`** (lib/plivo/views.py) - Handles a Plivo webhook request
-- **`qrcode_image_response`** (lib/qrcode/utils.py) - Returns a QR Code image as an HTTP response
-- **`make_qr_code_image`** (lib/qrcode/utils.py) - Generates a QR Code image
-- **`solid_color_image`** (lib/qrcode/utils.py) - TODO: Alpha channel is not working right now, for some reason; RGB channels work fine
-- **`get_home_worth_url`** (lib/redfin/api.py) - https://www.redfin.com/what-is-my-home-worth?propertyId={property_id}&listingId={listing_id}
-- **`get_property_listing_id`** (lib/redfin/api.py) - Get property listing id
-- **`get_avm`** (lib/redfin/api.py) - Get AVM for `property_id`
-- **`get_property_parcel_info`** (lib/redfin/api.py) - Get Property Parcel Info
-- **`to_json`** (lib/redfin/api.py) - Returns a JSON-encodable dictionary representation of the Redfin AVM `self.property_id`
-- **`make_api_request`** (lib/sfbart/api.py) - Makes an API request to BART API
-- **`get_schedule_arrive`** (lib/sfbart/api.py) - Get arrive schedule information
-- **`resource_iterator`** (lib/shopify_lib/api.py) - Returns an iterator/generator over the ActiveResource `resource`
-- **`iter_products`** (lib/shopify_lib/api.py) - Returns an iterator/generator over all Products
-- **`iter_orders`** (lib/shopify_lib/api.py) - Returns an iterator/generator over all Orders
-- **`iter_customers`** (lib/shopify_lib/api.py) - Returns an iterator/generator over all Customers
-- **`already_cached`** (lib/shopify_lib/archivers.py) - Check whether an `item` of `item_type` was already cached
-- **`archive_all`** (lib/shopify_lib/archivers.py) - Archives everything
-- **`archive_item_type`** (lib/shopify_lib/archivers.py) - Archives a collection of Shopify.Resource of `item_type` using `iterator`
-- **`archive_item`** (lib/shopify_lib/archivers.py) - Archives a single Shopify.Resource `item` into some database using `archiver`
-- **`create_slack_beacon_url`** (lib/slack/beacon/utils.py) - Creates an in-cache homing beacon URL for the user good for 5 minutes
-- **`slack_beacon_view`** (lib/slack/beacon/views.py) - Receiver for Slack homing beacon
-- **`default`** (lib/slack/event_handlers.py) - A Hacktoolkit-flavored default event handler for Slack webhook events
-- **`bart`** (lib/slack/event_handlers.py) - BART event handler for Slack webhook events
-- **`beacon`** (lib/slack/event_handlers.py) - Beacon geo-ip location handler for Slack webhook events
-- **`bible`** (lib/slack/event_handlers.py) - Bible event handler for Slack webhook events
-- **`emaildig`** (lib/slack/event_handlers.py) - Email dig event handler for Slack webhook events
-- **`findemail`** (lib/slack/event_handlers.py) - Find email event handler for Slack webhook events
-- **`geoip`** (lib/slack/event_handlers.py) - GeoIP event handler for Slack webhook events
-- **`github_prs`** (lib/slack/event_handlers.py) - Github PR status event handler for Slack webhook events
-- **`ohmygreen`** (lib/slack/event_handlers.py) - OhMyGreen event handler for Slack webhook events
-- **`stock`** (lib/slack/event_handlers.py) - Stock event handler for Slack webhook events
-- **`utcnow_slack`** (lib/slack/event_handlers.py) - utcnow event handler for Slack webhook events
-- **`weather`** (lib/slack/event_handlers.py) - Weather event handler for Slack webhook events
-- **`zesty`** (lib/slack/event_handlers.py) - Zesty event handler for Slack webhook events
-- **`default_event_type_resolver`** (lib/slack/event_resolvers.py) - The Hacktoolkit-flavored default event type resolver for Slack webhook events
-- **`webhook_call`** (lib/slack/utils.py) - Performs a webhook call to Slack
-- **`handle_webhook_error_response`** (lib/slack/utils.py) - Handles a Slack webhook call error response
-- **`is_valid_webhook_event`** (lib/slack/utils.py) - Determines whether the Slack webhook event has a valid token
-- **`get_webhook_settings`** (lib/slack/utils.py) - Retrieves the webhook settings from KV storage
-- **`get_event_type`** (lib/slack/utils.py) - Get event type from Slack webhook `event`
-- **`get_event_handlers`** (lib/slack/utils.py) - Gets all the event handlers available for `event`
-- **`is_available_command`** (lib/slack/utils.py) - Determines whether `command` is available for the `event`
-- **`get_event_handler_for_type`** (lib/slack/utils.py) - Gets the event handler for `event_type`
-- **`get_event_handler`** (lib/slack/utils.py) - Gets the event handler for a Slack webhook event, if available
-- **`handle_event`** (lib/slack/utils.py) - Processes a validated webhook request from Slack
-- **`parse_event_text`** (lib/slack/utils.py) - Helper function to parse Slack webhook `event` text
-- **`slack_webhook_view`** (lib/slack/views.py) - Handles a Slack webhook request
-- **`get_stripe_card_dict_from_post_data`** (lib/stripe_lib/form_utils.py) - Gets a Stripe card dict from `post_data` if possible
-- **`extract_credit_card_params`** (lib/stripe_lib/form_utils.py) - Extract credit card form params from `post_data`
-- **`get_stripe_card_dict`** (lib/stripe_lib/forms.py) - Get a dictionary representing this card compatible with Stripe's format
-- **`retrieve`** (lib/stripe_lib/models.py) - Retrieves a Stripe object via API
-- **`modify`** (lib/stripe_lib/models.py) - Updates the customer
-- **`update_email`** (lib/stripe_lib/models.py) - Updates the email for this Customer
-- **`charge`** (lib/stripe_lib/models.py) - Charges a Customer
-- **`get_charges`** (lib/stripe_lib/models.py) - List charges for a customer
-- **`add_invoice_item`** (lib/stripe_lib/models.py) - Create an `InvoiceItem` for the `Customer`
-- **`create_invoice`** (lib/stripe_lib/models.py) - Create an Invoice for this Customer to pay any outstanding invoice items such as when upgrading plans
-- **`list_invoice_items`** (lib/stripe_lib/models.py) - Lists the invoice items
-- **`delete_pending_invoice_items`** (lib/stripe_lib/models.py) - Delete invoices with status `pending`
-- **`list_pending_invoice_items`** (lib/stripe_lib/models.py) - Lists pending invoice items
-- **`list_invoices`** (lib/stripe_lib/models.py) - Lists all invoices
-- **`create_invoice_and_pay`** (lib/stripe_lib/models.py) - After creating the Invoice, have the Customer immediately pay it
-- **`add_card`** (lib/stripe_lib/models.py) - Add an additional credit card to the customer
-- **`retrieve_card`** (lib/stripe_lib/models.py) - Retrieves a card
-- **`replace_card`** (lib/stripe_lib/models.py) - Adds a new credit card and sets it as this Customer's default source
-- **`get_card`** (lib/stripe_lib/models.py) - Gets the customer's default card
-- **`has_card`** (lib/stripe_lib/models.py) - Determines whether this StripeCustomer has a card
-- **`make_subscription_obj`** (lib/stripe_lib/models.py) - Creates a subscription object to make it easier to handle this
-- **`create_subscription`** (lib/stripe_lib/models.py) - Creates a new Subscription for this Customer
-- **`retrieve_subscription`** (lib/stripe_lib/models.py) - Retrieves a Subscription for this Customer
-- **`change_subscription_plan`** (lib/stripe_lib/models.py) - Changes the plan on a Subscription for this Customer
-- **`free_upgrade_or_downgrade`** (lib/stripe_lib/models.py) - Updates the plan on a Subscription for this Customer
-- **`cancel_subscription`** (lib/stripe_lib/models.py) - Cancels a Subscription for this Customer
-- **`delete`** (lib/stripe_lib/models.py) - Deletes a customer
-- **`create`** (lib/stripe_lib/models.py) - Creates a new Subscription
-- **`modify`** (lib/stripe_lib/models.py) - Modifies a Subscription plan
-- **`cancel`** (lib/stripe_lib/models.py) - Cancels a Subscription for this Customer
-- **`create`** (lib/stripe_lib/models.py) - Tries to create a product
-- **`create`** (lib/stripe_lib/models.py) - Tries to create a price
-- **`create`** (lib/stripe_lib/models.py) - Tries to create a plan
-- **`create_stripe_customer`** (lib/stripe_lib/models.py) - Creates a new StripeCustomer object for this User if one does not exist
-- **`add_or_replace_credit_card`** (lib/stripe_lib/models.py) - Add or replace the credit card on file for this User
-- **`test_charge_card`** (lib/stripe_lib/tests.py) - Actually, charge a customer
-- **`get_stripe_customer_model_instance`** (lib/stripe_lib/utils.py) - Gets the StripeCustomerModel object for `customer_id` if available
-- **`safe_stripe_call`** (lib/stripe_lib/utils.py) - Wrapper function for calling Stripe API
-- **`charge_card`** (lib/stripe_lib/utils.py) - Charges a card, one time
-- **`create_customer`** (lib/stripe_lib/utils.py) - Create a Customer
-- **`retrieve_event`** (lib/stripe_lib/utils.py) - Retrieve the Stripe event by `event_id`
-- **`get_event_type`** (lib/stripe_lib/utils.py) - Gets the event type
-- **`get_event_handler`** (lib/stripe_lib/utils.py) - Gets the event handler for a Stripe webhook event, if available
-- **`handle_event`** (lib/stripe_lib/utils.py) - Handles a Stripe webhook event
-- **`log_event`** (lib/stripe_lib/utils.py) - Log the Stripe event `event`
-- **`stripe_webhook_view`** (lib/stripe_lib/views.py) - https://stripe.com/docs/webhooks
-- **`test_basic_addition`** (lib/tests.py) - Tests that 1 + 1 always equals 2.
-- **`lookup_users_by_id`** (lib/twitter/utils.py) - https://dev.twitter.com/rest/reference/get/users/lookup
-- **`get_friends`** (lib/twitter/utils.py) - https://dev.twitter.com/rest/reference/get/friends/list
-- **`get_followers`** (lib/twitter/utils.py) - https://dev.twitter.com/rest/reference/get/followers/list
-- **`get_followers_ids`** (lib/twitter/utils.py) - https://dev.twitter.com/rest/reference/get/followers/ids
-- **`search_tweets`** (lib/twitter/utils.py) - Get Tweet search results for `keyword`
-- **`get_stock_info_and_historical_data`** (lib/yahoo/finance/utils.py) - Retrieve stock info and historical data for `symbol`
-- **`get_stock_price`** (lib/yahoo/finance/utils.py) - Retrieve the latest price for `symbol` representing stock
-- **`message`** (lib/yahoo/groups/message.py) - Returns the main message text
-- **`yahoo_groups_message_parser`** (lib/yahoo/groups/utils.py) - Extracts the main message from a Yahoo Groups message
-- **`refresh_token_if_needed`** (lib/yahoo/oauth.py) - Decorator to make sure we refresh the token if needed before every query
-- **`refresh`** (lib/yahoo/oauth.py) - `self` is an instance of YahooOAuthClient
-- **`get`** (lib/yahoo/sports/fantasy/client.py) - Extracts data from a JSON collection using path-based tree traversal
-- **`perform_api_query`** (lib/yahoo/sports/fantasy/client.py) - Wrapper for making a query to the Yahoo Fantasy Sports API
-- **`get_user`** (lib/yahoo/sports/fantasy/client.py) - Get Users collection along with any specified subresources
-- **`get_user_leagues`** (lib/yahoo/sports/fantasy/client.py) - `game_keys` - comma-separated list of game codes,
-- **`get_user_leagues_keys`** (lib/yahoo/sports/fantasy/client.py) - Get the league keys for every league this user has
-- **`get_user_leagues_players`** (lib/yahoo/sports/fantasy/client.py) - Get all of the players in all of the leagues this user has
-- **`get_user_leagues_rosters`** (lib/yahoo/sports/fantasy/client.py) - Get the rosters for every league this user has
-- **`get_yahoo_fantasy_sports_client_for_user`** (lib/yahoo/sports/fantasy/utils.py) - Gets a YahooFantasySportsAPIClient instance for `user`
-- **`business_lookup`** (lib/yelp/api.py) - Get detailed business content
-- **`get_url`** (lib/zesty/classes.py) - Returns the resource URL for `resource_type`
-- **`get_meal_today`** (lib/zesty/classes.py) - Retrieves today's meal from Zesty API
-- **`get_meals`** (lib/zesty/classes.py) - Retrieves meals from Zesty API
-- **`get_meal`** (lib/zesty/classes.py) - Retrieves one meal from Zesty API by `meal_id`
-- **`get_dish`** (lib/zesty/classes.py) - Retrieves a dish from Zesty API by `dish_id`
-- **`get_pretty_menu`** (lib/zesty/classes.py) - Returns a pretty Slack-compatible string representing menu for a meal on `dt`
-- **`get_menu_ssml`** (lib/zesty/classes.py) - Returns an SSML string representing menu for a meal on `dt`
-- **`get_pretty_dishes`** (lib/zesty/classes.py) - Makes API calls to fetch individual dish data
-- **`get_menu_ssml`** (lib/zesty/classes.py) - Get menu for this meal as SSML (speech synthesis markup language)
-- **`get_zesty_lunch_menu`** (lib/zesty/utils.py) - Get Zesty lunch menu for account `zesty_id` on `dt`
-- **`get_zesty_lunch_menu_ssml`** (lib/zesty/utils.py) - Get Zesty lunch menu for account `zesty_id` on `dt` formatted as SSML
-- **`get_zestimate`** (lib/zillow/utils.py) - Get the Zestimate for `zpid`
-- **`to_json`** (lib/zillow/utils.py) - Returns a JSON-encodable dictionary representation of the Zestimate for `self.zpid`
-- **`quote_xml`** (lib/zillow/zestimate.py) - Escape markup chars, but do not modify CDATA sections.
-- **`quote_xml`** (lib/zillow/zillow_types.py) - Escape markup chars, but do not modify CDATA sections.
-- **`build_request_headers`** (lib/ziprecruiter/api.py) - Creates a header to pass in for GET/POST/PUT/DELETE request
-- **`get_subscription`** (lib/zuora/api.py) - Get subscription
-- **`update_subscription`** (lib/zuora/api.py) - Updates a subscription
-- **`cancel_subscription`** (lib/zuora/api.py) - Cancels a subscription
+## Overview
+
+The `lib` module provides integration adapters for:
+
+- **Cloud Services** - AWS, Google Cloud, Azure
+- **Payment & Billing** - Stripe, Zuora, PayPal
+- **Communication** - Slack, Discord, Twilio, Gmail
+- **Data & CRM** - Airtable, Salesforce, Hubspot
+- **Commerce** - Shopify, Stripe
+- **Maps & Location** - Google Maps, Mapbox, Zillow
+- **Analytics & Events** - Iterable, Mixpanel
+- **Business Services** - Indeed, ZipRecruiter, Yelp
+
+## Payment & Billing
+
+### Stripe
+Full Stripe integration for payments, subscriptions, and invoicing:
+
+```python
+from htk.lib.stripe_lib.models import BaseStripeCustomer
+from htk.lib.stripe_lib.utils import charge_card
+
+# Create customer
+customer = charge_card(user, amount, stripe_token)
+
+# Handle subscriptions
+subscription = customer.create_subscription(plan_id)
+customer.change_subscription_plan(subscription_id, new_plan)
+```
+
+**Classes:** `BaseStripeCustomer`, `BaseStripeSubscription`, `BaseStripePlan`
+
+### Zuora
+Subscription and billing management:
+
+```python
+from htk.lib.zuora.api import get_subscription, update_subscription
+
+subscription = get_subscription(subscription_id)
+update_subscription(subscription_id, new_params)
+```
+
+## Communication
+
+### Slack
+Send messages, handle webhooks, and integrate with Slack:
+
+```python
+from htk.lib.slack.utils import webhook_call
+
+webhook_call({'text': 'Hello from HTK!', 'channel': '#notifications'})
+```
+
+**Features:**
+- Webhook event handling
+- Message posting
+- Event handlers for various Slack events
+- Beacon/location tracking
+
+### Discord
+Discord webhook integration:
+
+```python
+from htk.lib.discord.views import discord_webhook_relay_view
+```
+
+### Gmail
+Interact with Gmail API:
+
+```python
+from htk.lib.google.gmail.api import GmailAPI
+
+gmail = GmailAPI()
+messages = gmail.messages_list()
+```
+
+### Twilio / Plivo
+SMS and messaging:
+
+```python
+from htk.lib.plivo.utils import handle_message_event
+```
+
+## Cloud Storage
+
+### AWS S3
+Store and retrieve files from S3:
+
+```python
+from htk.lib.aws.s3.utils import S3Manager
+
+s3 = S3Manager()
+s3.put_file('bucket', 'key', file_obj)
+s3.get_url('bucket', 'key')
+```
+
+**Classes:** `S3Manager`, `S3MediaAsset`
+
+### Google Cloud
+Cloud services via Google APIs:
+
+```python
+from htk.lib.google.sheets.api import spreadsheets_values_append
+from htk.lib.google.translate.utils import translate
+
+translate('Hello', 'en', 'es')
+```
+
+## Maps & Location
+
+### Google Maps
+Google Maps API utilities:
+
+```python
+from htk.lib.google.maps.utils import get_map_url_for_geolocation
+from htk.lib.google.geocode.api import geocode
+
+map_url = get_map_url_for_geolocation(latitude, longitude)
+```
+
+### Mapbox
+Mapbox geolocation and mapping:
+
+```python
+from htk.lib.mapbox.geocode import reverse_geocode
+
+address = reverse_geocode(latitude, longitude)
+```
+
+### Zillow / Redfin
+Real estate data:
+
+```python
+from htk.lib.zillow.utils import get_zestimate
+from htk.lib.redfin.api import get_avm
+
+zestimate = get_zestimate(zpid)
+avm = get_avm(property_id)
+```
+
+## E-commerce & Payments
+
+### Shopify
+Shopify API integration:
+
+```python
+from htk.lib.shopify_lib.api import iter_products, iter_orders
+
+for product in iter_products():
+    print(product.name)
+```
+
+**Classes:** `ShopifyProduct`, `ShopifyOrder`, `ShopifyCustomer`
+
+### Airtable
+Airtable API for spreadsheet-like data:
+
+```python
+from htk.lib.airtable.api import AirtableAPI
+
+api = AirtableAPI()
+records = api.fetch_records('table_name')
+```
+
+## Data & CRM
+
+### Full Contact
+Person lookup and data enrichment:
+
+```python
+from htk.lib.fullcontact.utils import find_person_by_email
+
+person = find_person_by_email('user@example.com')
+```
+
+### Indeed
+Job posting and applicant tracking:
+
+```python
+from htk.lib.indeed.api.job_sync import IndeedJobSyncAPI
+
+api = IndeedJobSyncAPI()
+api.create_job(job_data)
+```
+
+### ZipRecruiter
+Job posting platform:
+
+```python
+from htk.lib.ziprecruiter.api import ZipRecruiterAPI
+
+api = ZipRecruiterAPI()
+```
+
+## Analytics & Events
+
+### Iterable
+Email and SMS marketing automation:
+
+```python
+from htk.lib.iterable.utils import get_iterable_api_client
+
+client = get_iterable_api_client()
+client.track_event(user_id, event_name, data)
+```
+
+## Search & Enrichment
+
+### Yelp
+Business search and reviews:
+
+```python
+from htk.lib.yelp.api import business_lookup
+
+business = business_lookup('business_name', location)
+```
+
+### GitHub
+GitHub API integration:
+
+```python
+from htk.lib.github.utils import get_repository, sync_repository_releases
+
+repo = get_repository('owner/repo')
+sync_repository_releases(repo)
+```
+
+## Utilities & Helpers
+
+### QR Codes
+Generate QR codes:
+
+```python
+from htk.lib.qrcode.utils import qrcode_image_response
+
+return qrcode_image_response('https://example.com')
+```
+
+### Weather
+Weather data:
+
+```python
+from htk.lib.darksky.utils import generate_weather_report
+```
+
+### Geolocation
+IP-based location lookup:
+
+```python
+from htk.lib.geoip.utils import get_country_code_by_ip, get_timezone_by_ip
+
+country = get_country_code_by_ip('8.8.8.8')
+```
+
+### OpenAI
+Chat completions and AI:
+
+```python
+from htk.lib.openai.adapter import chat_completion
+
+response = chat_completion(messages)
+```
+
+## Integration Patterns
+
+### Authentication
+Most integrations require API keys in settings:
+
+```python
+# settings.py
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
+SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+```
+
+### Error Handling
+Use safe wrappers for API calls:
+
+```python
+from htk.lib.stripe_lib.utils import safe_stripe_call
+
+try:
+    result = safe_stripe_call(lambda: stripe.Charge.create(...))
+except Exception as e:
+    log.error(f"Stripe error: {e}")
+```
+
+## Quick Reference by Use Case
+
+**Need to charge a card?** → Stripe
+**Building a marketplace?** → Stripe + Airtable
+**Real-time notifications?** → Slack
+**Location features?** → Google Maps + Mapbox
+**Email marketing?** → Iterable
+**Job postings?** → Indeed + ZipRecruiter
+**Data enrichment?** → FullContact
+**E-commerce?** → Shopify
