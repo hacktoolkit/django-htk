@@ -4,7 +4,7 @@ Third-party API integration and utilities.
 
 ## Overview
 
-This module provides integration with an external service API, including:
+This integration provides integration with an external service API, including:
 - Authentication and credential management
 - API client utilities and helpers
 - Data serialization and transformation

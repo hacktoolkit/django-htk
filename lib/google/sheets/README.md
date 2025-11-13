@@ -4,7 +4,7 @@ Third-party service integration and utilities.
 
 ## Overview
 
-This module integrates with an external service, providing a Python client and utilities for common operations.
+This integration integrates with an external service, providing a Python client and utilities for common operations.
 
 ## Quick Start
 
