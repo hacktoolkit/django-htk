@@ -1,21 +1,145 @@
-# Fantasy
+# Integration
 
-## Functions
-- **`get`** (fantasy/client.py) - Extracts data from a JSON collection using path-based tree traversal
-- **`perform_api_query`** (fantasy/client.py) - Wrapper for making a query to the Yahoo Fantasy Sports API
-- **`get_user`** (fantasy/client.py) - Get Users collection along with any specified subresources
-- **`get_user_leagues`** (fantasy/client.py) - `game_keys` - comma-separated list of game codes,
-- **`get_user_leagues_keys`** (fantasy/client.py) - Get the league keys for every league this user has
-- **`get_user_leagues_players`** (fantasy/client.py) - Get all of the players in all of the leagues this user has
-- **`get_user_leagues_rosters`** (fantasy/client.py) - Get the rosters for every league this user has
-- **`get_yahoo_fantasy_sports_client_for_user`** (fantasy/utils.py) - Gets a YahooFantasySportsAPIClient instance for `user`
+Third-party service integration and utilities.
 
-## Components
-**Views** (`views.py`)
+## Overview
 
-## URL Patterns
-- `index`
-- `lib_yahoo_sports_fantasy_get_user`
-- `lib_yahoo_sports_fantasy_get_user_leagues`
-- `lib_yahoo_sports_fantasy_get_user_leagues_players`
-- `lib_yahoo_sports_fantasy_get_user_leagues_rosters`
+This module integrates with an external service, providing a Python client and utilities for common operations.
+
+## Quick Start
+
+### Initialize Client
+
+```python
+from htk.lib.lib.yahoo.sports.fantasy.utils import Client
+
+# Create client with credentials
+client = Client(api_key='your_api_key')
+
+# Or use from settings
+client = Client()  # Uses HTK_FANTASY_API_KEY from settings
+```
+
+### Basic Operation
+
+```python
+# Get resource
+resource = client.get_resource(id='resource_id')
+
+# List resources
+resources = client.list_resources(limit=10)
+
+# Create resource
+new_resource = client.create_resource(name='My Resource')
+```
+
+## Operations
+
+### Read Operations
+
+```python
+# Get single resource
+resource = client.get(id='123')
+
+# List resources
+resources = client.list(limit=10, offset=0)
+
+# Search
+results = client.search(query='search term')
+
+# Count
+count = client.count()
+```
+
+### Write Operations
+
+```python
+# Create resource
+new = client.create(name='test')
+
+# Update resource
+updated = client.update(id='123', name='new name')
+
+# Delete resource
+client.delete(id='123')
+```
+
+## Authentication
+
+Configure credentials:
+
+```python
+# settings.py
+HTK_FANTASY_API_KEY = 'your_api_key'
+HTK_FANTASY_API_SECRET = 'your_secret'
+HTK_FANTASY_API_URL = 'https://api.service.com'
+```
+
+## Response Format
+
+API responses are returned as Python dictionaries or objects:
+
+```python
+result = client.get(id='123')
+print(result['name'])
+print(result['created_at'])
+```
+
+## Pagination
+
+Handle paginated responses:
+
+```python
+# Get paginated results
+items = client.list(limit=100, offset=0)
+
+# Or use iterator
+for item in client.list_all():
+    process(item)
+```
+
+## Caching
+
+Cache responses when appropriate:
+
+```python
+from django.core.cache import cache
+
+def get_resource(id):
+    cache_key = f'resource_{id}'
+    resource = cache.get(cache_key)
+
+    if resource is None:
+        resource = client.get(id=id)
+        cache.set(cache_key, resource, 3600)
+
+    return resource
+```
+
+## Configuration
+
+Configure in Django settings:
+
+```python
+# settings.py
+HTK_FANTASY_ENABLED = True
+HTK_FANTASY_API_KEY = 'your_key'
+HTK_FANTASY_TIMEOUT = 30
+HTK_FANTASY_RETRIES = 3
+```
+
+## Best Practices
+
+1. **Handle errors** - Always handle API errors gracefully
+2. **Respect rate limits** - Dont exceed API rate limits
+3. **Cache responses** - Cache data when appropriate
+4. **Use retries** - Implement exponential backoff
+5. **Validate input** - Validate data before sending to API
+6. **Log operations** - Log API calls for debugging
+7. **Test with sandbox** - Test in sandbox before production
+
+## Related Modules
+
+- `requests` - HTTP library
+- `django.core.cache` - Django caching
+- Service API documentation
