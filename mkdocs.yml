@@ -1,0 +1,103 @@
+site_name: Django HTK (Hacktoolkit)
+site_description: Production-ready Django toolkit with 29 apps, 47+ integrations, and 24 utility categories
+site_author: Jonathan Tsai & HTK Contributors
+site_url: https://hacktoolkit.github.io/django-htk/
+repo_url: https://github.com/hacktoolkit/django-htk
+repo_name: django-htk
+copyright: Copyright &copy; 2025 HTK Contributors. MIT License.
+
+theme:
+  name: material
+  logo: logo.png
+  palette:
+    - scheme: default
+      primary: custom
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+extra_css:
+  - extra.css
+
+plugins:
+  - search
+  - offline
+  - include-markdown
+
+markdown_extensions:
+  - admonition
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - codehilite
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+
+docs_dir: docs
+site_dir: site
+exclude_docs: |
+  *.py
+  __pycache__/
+  venv/
+  site/
+  .git/
+  .github/
+  .claude/
+  .venv/
+  south_migrations/
+  migrations/
+  static/
+  templates/
+  __init__.py
+
+nav:
+  - Home: index.md
+  - Admin: admin.md
+  - Admin Tools: admintools.md
+  - API: api.md
+  - Cache: cache.md
+  - Constants: constants.md
+  - Decorators: decorators.md
+  - Extensions: extensions.md
+  - Forms: forms.md
+  - Middleware: middleware.md
+  - Models: models.md
+  - Utils: utils.md
+  - Validators: validators.md
+  - Django Apps: apps.md
+  - Libraries: lib.md
+  - Test Scaffold: test_scaffold.md
+  - Scripts: scripts.md
+  - Template Tags: templatetags.md
