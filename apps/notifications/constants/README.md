@@ -1,107 +1,46 @@
-# Constants
+# Notifications Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module defines configuration for notification system behavior, including predicates for dismissible alerts and key generation strategies.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Alert Configuration
 
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
-
-```python
-from htk.apps.notifications.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
-
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.notifications.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.notifications.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`HTK_NOTIFICATIONS_DISMISSIBLE_ALERT_DISPLAY_PREDICATES`** - Default: `{}` - Dict mapping alert types to display predicate functions
+- **`HTK_NOTIFICATIONS_DISMISSIBLE_ALERT_KEY_GENERATORS`** - Default: `{}` - Dict mapping alert types to key generator functions
 
 ## Usage Examples
 
-### Import Constants
+### Configure Alert Predicates
 
 ```python
-# Import from constants module
-from htk.apps.notifications.constants import CONSTANT_NAME
+# In Django settings.py
+def should_show_upgrade_alert(request):
+    return not request.user.is_premium
 
-# Or import directly from sub-module
-from htk.apps.notifications.constants.general import CONSTANT_NAME
+def should_show_verification_alert(request):
+    return not request.user.email_verified
+
+HTK_NOTIFICATIONS_DISMISSIBLE_ALERT_DISPLAY_PREDICATES = {
+    'upgrade': should_show_upgrade_alert,
+    'verify_email': should_show_verification_alert,
+}
 ```
 
-### Access Enum Values
+### Configure Alert Key Generators
 
 ```python
-from htk.apps.notifications.constants import StatusEnum
+# In Django settings.py
+def generate_upgrade_key(request):
+    return f"upgrade_alert_{request.user.id}"
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
+def generate_verification_key(request):
+    return f"verify_alert_{request.user.id}"
 
-### Use Lookup Tables
-
-```python
-from htk.apps.notifications.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+HTK_NOTIFICATIONS_DISMISSIBLE_ALERT_KEY_GENERATORS = {
+    'upgrade': generate_upgrade_key,
+    'verify_email': generate_verification_key,
+}
 ```

@@ -1,107 +1,51 @@
-# Constants
+# Conversations Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module defines configuration for conversation and messaging systems, including model references and message length constraints.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Model References
 
-## Types of Constants
+- **`HTK_CONVERSATION_MODEL`** - Default: `None` - Conversation model (app_label.ModelName)
+- **`HTK_CONVERSATION_PARTICIPANT_MODEL`** - Default: `None` - Participant model
+- **`HTK_CONVERSATION_MESSAGE_MODEL`** - Default: `None` - Message model
+- **`HTK_CONVERSATION_MESSAGE_REACTION_MODEL`** - Default: `None` - Message reaction model
 
-### Configuration Settings (HTK_ Prefix)
+### Message Configuration
 
-Settings that can be overridden in Django settings:
-
-```python
-from htk.apps.conversations.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
-
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.conversations.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.conversations.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`HTK_CONVERSATION_MESSAGE_MAX_LENGTH`** - Default: `2048` - Maximum message length in characters
 
 ## Usage Examples
 
-### Import Constants
+### Configure Models
 
 ```python
-# Import from constants module
-from htk.apps.conversations.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.apps.conversations.constants.general import CONSTANT_NAME
+# In Django settings.py
+HTK_CONVERSATION_MODEL = 'myapp.Conversation'
+HTK_CONVERSATION_PARTICIPANT_MODEL = 'myapp.Participant'
+HTK_CONVERSATION_MESSAGE_MODEL = 'myapp.Message'
+HTK_CONVERSATION_MESSAGE_REACTION_MODEL = 'myapp.MessageReaction'
 ```
 
-### Access Enum Values
+### Validate Message Length
 
 ```python
-from htk.apps.conversations.constants import StatusEnum
+from htk.apps.conversations.constants import HTK_CONVERSATION_MESSAGE_MAX_LENGTH
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+message = "Hello, world!"
+if len(message) > HTK_CONVERSATION_MESSAGE_MAX_LENGTH:
+    raise ValueError(f'Message exceeds {HTK_CONVERSATION_MESSAGE_MAX_LENGTH} characters')
 ```
 
-### Use Lookup Tables
+### Use Model References
 
 ```python
-from htk.apps.conversations.constants import LOOKUP_DATA
+from django.apps import apps
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
+from htk.apps.conversations.constants import HTK_CONVERSATION_MODEL
 
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+Conversation = apps.get_model(HTK_CONVERSATION_MODEL)
+conversations = Conversation.objects.all()
 ```

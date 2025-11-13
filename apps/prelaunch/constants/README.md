@@ -1,107 +1,86 @@
-# Constants
+# Prelaunch Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides configuration for prelaunch/beta mode, including feature toggles, URL settings, email templates, and exception lists for views that bypass prelaunch restrictions.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Feature Toggle
 
-## Types of Constants
+- **`HTK_PRELAUNCH_MODE`** - Default: `False` - Enable prelaunch mode to restrict access
 
-### Configuration Settings (HTK_ Prefix)
+### Model and Form Configuration
 
-Settings that can be overridden in Django settings:
+- **`HTK_PRELAUNCH_MODEL`** - Default: `'htk.PrelaunchSignup'` - Prelaunch signup model
+- **`HTK_PRELAUNCH_FORM_CLASS`** - Default: `'htk.apps.prelaunch.forms.PrelaunchSignupForm'` - Signup form class
 
-```python
-from htk.apps.prelaunch.constants import HTK_SETTING_NAME
+### URL Configuration
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
+- **`HTK_PRELAUNCH_URL_NAME`** - Default: `'htk_prelaunch'` - URL name for prelaunch page
+- **`HTK_PRELAUNCH_HOST_REGEXPS`** - Default: `[]` - Regex patterns for hosts to apply prelaunch
 
-### Enumerations
+### Exception Lists
 
-Enum classes for status values, roles, and choices:
+- **`HTK_PRELAUNCH_EXCEPTION_VIEWS`** - Views exempt from prelaunch redirect (URL names)
+- **`HTK_PRELAUNCH_EXCEPTION_URLS`** - URL patterns exempt from prelaunch redirect (regex)
 
-```python
-from htk.apps.prelaunch.constants import SomeEnum
+### Template Configuration
 
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
+- **`HTK_PRELAUNCH_TEMPLATE`** - Default: `'htk/prelaunch.html'` - Prelaunch signup page template
+- **`HTK_PRELAUNCH_SUCCESS_TEMPLATE`** - Default: `None` - Template shown after signup
 
-### Lookup Tables
+### Email Configuration
 
-Dictionaries and data collections for reference:
+- **`HTK_PRELAUNCH_EMAIL_TEMPLATE`** - Default: `'htk/prelaunch'` - Confirmation email template
+- **`HTK_PRELAUNCH_EMAIL_SUBJECT`** - Default: `'Thanks for signing up'` - Email subject
+- **`HTK_PRELAUNCH_EMAIL_BCC`** - Default: `[]` - BCC email addresses
+- **`HTK_PRELAUNCH_EARLY_ACCESS_EMAIL_TEMPLATE`** - Default: `'htk/prelaunch_early_access'` - Early access template
+- **`HTK_PRELAUNCH_EARLY_ACCESS_EMAIL_SUBJECT`** - Default: `'Early Access Granted'` - Early access subject
 
-```python
-from htk.apps.prelaunch.constants import LOOKUP_TABLE
+### Admin Tools
 
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`HTK_PRELAUNCH_ADMINTOOLS_TOGGLE_URL_NAME`** - Default: `'admintools_api_prelaunch_toggle'` - URL for admin toggle
 
 ## Usage Examples
 
-### Import Constants
+### Enable Prelaunch Mode
 
 ```python
-# Import from constants module
-from htk.apps.prelaunch.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.apps.prelaunch.constants.general import CONSTANT_NAME
+# In Django settings.py
+HTK_PRELAUNCH_MODE = True
+HTK_PRELAUNCH_TEMPLATE = 'myapp/prelaunch.html'
 ```
 
-### Access Enum Values
+### Configure Host Restrictions
 
 ```python
-from htk.apps.prelaunch.constants import StatusEnum
+# In Django settings.py
+import re
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+HTK_PRELAUNCH_HOST_REGEXPS = [
+    r'(dev|qa|alpha)\.example\.com',
+    r'demo\.example\.com',
+]
 ```
 
-### Use Lookup Tables
+### Add View Exceptions
 
 ```python
-from htk.apps.prelaunch.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
+# In Django settings.py
+HTK_PRELAUNCH_EXCEPTION_VIEWS = (
+    'htk_prelaunch',
+    'htk_feedback_submit',
+    'robots',
+    'django.contrib.sitemaps.views.sitemap',
+)
 ```
 
-## Configuration
-
-Settings can be overridden in Django settings.py:
+### Configure Custom Emails
 
 ```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+# In Django settings.py
+HTK_PRELAUNCH_EMAIL_TEMPLATE = 'myapp/emails/prelaunch_confirmation.txt'
+HTK_PRELAUNCH_EMAIL_SUBJECT = 'Welcome! You are now on the waiting list'
+HTK_PRELAUNCH_EARLY_ACCESS_EMAIL_TEMPLATE = 'myapp/emails/early_access.txt'
 ```

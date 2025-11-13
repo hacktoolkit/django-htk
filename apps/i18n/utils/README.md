@@ -1,112 +1,96 @@
-# Utils
+# HTK i18n Utils
 
-## Overview
+Utilities for internationalization including language data management, string retrieval, and localization lookups.
 
-This utils module provides utility functions for common operations including lookups, transformations, validation, and calculations.
+## Functions by Category
 
-## Quick Start
+### Data Functions (4 functions)
 
-### Import Utilities
+**look_up_supported_languages()**
+- Gets all language codes with translations (cached with lru_cache)
+- Returns list of language codes ordered alphabetically
+- Example: ['en-US', 'es-ES', 'zh-CN']
 
-```python
-from htk.apps.i18n.utils.utils import function_name
+**retrieve_all_strings(by_language=False, language_codes=None, namespaces=None)**
+- Retrieves all translated strings with flexible organization
+- When by_language=False: Returns dict keyed by string key with language translations
+- When by_language=True: Returns dict keyed by language code with string translations
+- Optional language_codes and namespaces filtering
+- Returns nested dict structure with full translation data
 
-result = function_name(arg1, arg2)
+**dump_strings(file_path, indent=4, by_language=False, language_codes=None)**
+- Exports all strings to JSON file
+- Creates directory structure if needed
+- Returns count of strings dumped
+
+**load_strings(data, overwrite=False)**
+- Imports strings from dict into LocalizableString and LocalizedString
+- When overwrite=False: Only adds new translations
+- When overwrite=True: Updates existing translations
+- Returns tuple: (num_strings, num_translations)
+
+### Utility Functions (2 functions)
+
+**get_language_code_choices()**
+- Gets language code choices for forms
+- Returns list of (code, code) tuples from HTK_LOCALIZABLE_STRING_LANGUAGE_CODES
+- Example: [('en-US', 'en-US'), ('es-ES', 'es-ES')]
+
+**lookup_localization(key=None, locale='en-US')**
+- Looks up a localized string by key and language
+- Returns localized value or fallback error string if not found
+- Fallback format: '???[key]-[locale]???'
+
+## Data Structure Examples
+
+### retrieve_all_strings(by_language=False)
+```json
+{
+  "welcome_title": {
+    "en-US": "Welcome",
+    "es-ES": "Bienvenido"
+  },
+  "goodbye_title": {
+    "en-US": "Goodbye",
+    "es-ES": "Adiós"
+  }
+}
 ```
 
-### Common Patterns
-
-```python
-# Lookup by identifier
-item = get_item_by_id(id)
-
-# Get or None
-item = get_item_by_email(email)  # Returns None if not found
-
-# Create with defaults
-item = create_item(name='test')
-
-# Query collection
-items = get_active_items()
-
-# Transform/convert
-converted = convert_format(data)
+### retrieve_all_strings(by_language=True)
+```json
+{
+  "en-US": {
+    "welcome_title": "Welcome",
+    "goodbye_title": "Goodbye"
+  },
+  "es-ES": {
+    "welcome_title": "Bienvenido",
+    "goodbye_title": "Adiós"
+  }
+}
 ```
 
-## Utility Functions
-
-### Lookup Functions
-
-Functions that retrieve objects from the database:
-
-- `get_*_by_id()` - Get by primary key
-- `get_*_by_field()` - Get by specific field
-- `get_*_with_retries()` - With retry logic
-- `get_all_*()` - Get all objects
-- `get_inactive_*()` - Get filtered subset
-
-**Behavior:**
-- Return `None` if object not found (not exception)
-- Raise exception on database errors
-- Support optional filtering parameters
-
-### Creation Functions
-
-Functions that create new objects:
-
-- `create_*()` - Create new object
-- `set_*()` - Update single field
-
-**Behavior:**
-- Return created object
-- May have side effects (logging, signals)
-- Validate input before creation
-
-### Validation Functions
-
-Functions that validate data:
-
-- `validate_*()` - Validate and return boolean
-- `is_*()` - Check condition
-
-**Behavior:**
-- Return `True`/`False` for simple checks
-- Return object or tuple for complex validation
-- May raise exception on invalid data
-
-### Transformation Functions
-
-Functions that convert or transform data:
-
-- `convert_*()` - Convert between formats
-- `extract_*()` - Extract data from object
-- `generate_*()` - Generate new data
-
-## Function Conventions
-
-- **Return values:** `None` when object not found, exception on error
-- **Naming:** `get_*()` for retrieval, `create_*()` for creation
-- **Parameters:** Use keyword arguments for optional parameters
-- **Side effects:** Document any side effects in docstring
-- **Retry logic:** Use `*_with_retries()` variant for reliability
-
-## Configuration
-
-Configure behavior in Django settings:
+## Example Usage
 
 ```python
-# settings.py
-HTK_SETTING_NAME = 'value'
-HTK_TIMEOUT = 30
-HTK_MAX_RETRIES = 3
+from htk.apps.i18n.utils import (
+    look_up_supported_languages,
+    lookup_localization,
+    retrieve_all_strings,
+    dump_strings,
+)
+
+# Get supported languages
+langs = look_up_supported_languages()
+
+# Lookup a string
+welcome = lookup_localization('welcome_title', locale='es-ES')
+
+# Export strings
+dump_strings('/tmp/translations.json')
+
+# Import strings
+data = retrieve_all_strings(by_language=False)
+count = load_strings(data)
 ```
-
-## Best Practices
-
-1. **Check for None** - Always check return values for None
-2. **Handle exceptions** - Catch and handle domain exceptions
-3. **Use appropriate function** - Choose most specific function available
-4. **Understand side effects** - Read docstrings for side effects
-5. **Batch operations** - Use bulk_* variants when processing multiple items
-6. **Cache results** - Cache expensive lookups when appropriate
-7. **Test edge cases** - Test with missing data, invalid input, etc.

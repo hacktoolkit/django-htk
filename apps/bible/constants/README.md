@@ -1,107 +1,61 @@
-# Constants
+# Bible Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides constants for Bible book metadata, aliases, and translation models. It includes comprehensive lists of all 66 canonical Bible books with chapter counts and common abbreviation mappings.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Books and Metadata
 
-## Types of Constants
+- **`BIBLE_BOOKS`** - List of all 66 canonical Bible book names
+- **`BIBLE_BOOKS_DATA`** - List of dicts with book metadata: `name` and `chapters` count
+- **`BIBLE_BOOKS_ALIASES`** - Dict mapping book names to lists of common abbreviations (e.g., 'Gen', 'Matt')
+- **`BIBLE_BOOKS_ALIAS_MAPPINGS`** - Dict mapping all aliases and case variants to canonical book names
 
-### Configuration Settings (HTK_ Prefix)
+### Model References
 
-Settings that can be overridden in Django settings:
-
-```python
-from htk.apps.bible.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
-
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.bible.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.bible.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`HTK_BIBLE_BOOK_MODEL`** - Default: `'bible.BibleBook'`
+- **`HTK_BIBLE_CHAPTER_MODEL`** - Default: `'bible.BibleChapter'`
+- **`HTK_BIBLE_VERSE_MODEL`** - Default: `'bible.BibleVerse'`
+- **`HTK_BIBLE_PASSAGE_MODEL`** - Default: `'bible.BiblePassage'`
+- **`HTK_BIBLE_NASB_VERSE_MODEL`** - Default: `'bible.NASBVerse'`
+- **`HTK_BIBLE_TRANSLATIONS_MAP`** - Dict mapping translation codes to model strings
 
 ## Usage Examples
 
-### Import Constants
+### Access Book Information
 
 ```python
-# Import from constants module
-from htk.apps.bible.constants import CONSTANT_NAME
+from htk.apps.bible.constants import BIBLE_BOOKS, BIBLE_BOOKS_DATA
 
-# Or import directly from sub-module
-from htk.apps.bible.constants.general import CONSTANT_NAME
+# Get list of all book names
+for book_name in BIBLE_BOOKS:
+    print(book_name)  # Genesis, Exodus, ...
+
+# Get book with chapter count
+genesis = BIBLE_BOOKS_DATA[0]
+print(f"{genesis['name']}: {genesis['chapters']} chapters")
 ```
 
-### Access Enum Values
+### Resolve Book Aliases
 
 ```python
-from htk.apps.bible.constants import StatusEnum
+from htk.apps.bible.constants import BIBLE_BOOKS_ALIAS_MAPPINGS
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+# Find canonical name from abbreviation
+canonical = BIBLE_BOOKS_ALIAS_MAPPINGS['Matt']  # Returns 'Matthew'
+canonical = BIBLE_BOOKS_ALIAS_MAPPINGS['matt']  # Case-insensitive
 ```
 
-### Use Lookup Tables
+### Configure Models
 
 ```python
-from htk.apps.bible.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+# In Django settings.py
+HTK_BIBLE_BOOK_MODEL = 'myapp.CustomBibleBook'
+HTK_BIBLE_VERSE_MODEL = 'myapp.CustomVerse'
+HTK_BIBLE_TRANSLATIONS_MAP = {
+    'NASB': 'myapp.NASBVersion',
+    'ESV': 'myapp.ESVVersion',
+}
 ```

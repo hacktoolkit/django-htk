@@ -1,107 +1,67 @@
-# Constants
+# Organizations Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module defines configuration for the organizations system, including model references, naming conventions, sorting preferences, and invitation settings.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Model References
 
-## Types of Constants
+- **`HTK_ORGANIZATION_MODEL`** - Default: `'organizations.Organization'`
+- **`HTK_ORGANIZATION_ATTRIBUTE_MODEL`** - Default: `'organizations.OrganizationAttribute'`
+- **`HTK_ORGANIZATION_MEMBER_MODEL`** - Default: `'organizations.OrganizationMember'`
+- **`HTK_ORGANIZATION_INVITATION_MODEL`** - Default: `'organizations.OrganizationInvitation'`
+- **`HTK_ORGANIZATION_JOIN_REQUEST_MODEL`** - Default: `'organizations.OrganizationJoinRequest'`
+- **`HTK_ORGANIZATION_TEAM_MODEL`** - Default: `'organizations.OrganizationTeam'`
+- **`HTK_ORGANIZATION_TEAM_MEMBER_MODEL`** - Default: `'organizations.OrganizationTeamMember'`
+- **`HTK_ORGANIZATION_TEAM_POSITION_MODEL`** - Default: `'organizations.OrganizationTeamPosition'`
+- **`HTK_ORGANIZATION_TEAM_MEMBER_POSITION_MODEL`** - Default: `'organizations.OrganizationTeamMemberPosition'`
 
-### Configuration Settings (HTK_ Prefix)
+### Display Configuration
 
-Settings that can be overridden in Django settings:
+- **`HTK_ORGANIZATION_READBLE_NAME`** - Default: `'Organization'` - Human-readable singular name
+- **`HTK_ORGANIZATION_SYMBOL`** - Default: `'org'` - Short symbol for URLs/codes
+- **`HTK_ORGANIZATION_URL_PK_KEY`** - Default: `'org_id'` - URL parameter name for organization ID
 
-```python
-from htk.apps.organizations.constants import HTK_SETTING_NAME
+### Sorting Configuration
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
+- **`HTK_ORGANIZATION_MEMBERS_SORT_ORDER`** - Default: `('user__first_name', 'user__last_name', 'user__username')`
+- **`HTK_ORGANIZATION_TEAM_MEMBERS_SORT_ORDER`** - Default: `('user__first_name', 'user__last_name', 'user__username')`
 
-### Enumerations
+### Invitation Configuration
 
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.organizations.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.organizations.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`HTK_ORGANIZATION_INVITATION_RESPONSE_URL_NAME`** - Default: `''` - URL name for invitation response view
+- **`HTK_ORGANIZATION_MOBILE_INVITATION_RESPONSE_URL_FORMAT`** - Default: `''` - Mobile invitation response URL format
+- **`HTK_ORGANIZATION_INVITATION_EMAIL_TEMPLATE_NAME`** - Default: `''` - Email template for invitations
+- **`HTK_ORGANIZATION_INVITATION_EMAIL_SUBJECT`** - Default: `'You have been invited to join {}'` - Email subject line
 
 ## Usage Examples
 
-### Import Constants
+### Configure Custom Models
 
 ```python
-# Import from constants module
-from htk.apps.organizations.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.apps.organizations.constants.general import CONSTANT_NAME
+# In Django settings.py
+HTK_ORGANIZATION_MODEL = 'myapp.Organization'
+HTK_ORGANIZATION_TEAM_MODEL = 'myapp.Team'
+HTK_ORGANIZATION_MEMBER_MODEL = 'myapp.Member'
 ```
 
-### Access Enum Values
+### Load Models Dynamically
 
 ```python
-from htk.apps.organizations.constants import StatusEnum
+from django.apps import apps
+from htk.apps.organizations.constants import HTK_ORGANIZATION_MODEL
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+Organization = apps.get_model(HTK_ORGANIZATION_MODEL)
+orgs = Organization.objects.all()
 ```
 
-### Use Lookup Tables
+### Configure Invitations
 
 ```python
-from htk.apps.organizations.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+# In Django settings.py
+HTK_ORGANIZATION_INVITATION_RESPONSE_URL_NAME = 'org_invite_response'
+HTK_ORGANIZATION_INVITATION_EMAIL_TEMPLATE_NAME = 'emails/org_invitation.html'
+HTK_ORGANIZATION_INVITATION_EMAIL_SUBJECT = 'You are invited to {}'
 ```

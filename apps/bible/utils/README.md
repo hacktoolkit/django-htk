@@ -1,112 +1,116 @@
-# Utils
+# HTK Bible Utils
 
-## Overview
+Utilities for Bible data management including scripture lookups, references, seeding, and translations.
 
-This utils module provides utility functions for common operations including lookups, transformations, validation, and calculations.
+## Functions by Category
 
-## Quick Start
+### Model Getters (4 functions)
 
-### Import Utilities
+**get_bible_book_model()**
+- Resolves HTK_BIBLE_BOOK_MODEL setting
+- Returns BibleBook model class
+
+**get_bible_chapter_model()**
+- Resolves HTK_BIBLE_CHAPTER_MODEL setting
+- Returns BibleChapter model class
+
+**get_bible_verse_model()**
+- Resolves HTK_BIBLE_VERSE_MODEL setting
+- Returns BibleVerse model class
+
+**get_bible_passage_model()**
+- Resolves HTK_BIBLE_PASSAGE_MODEL setting
+- Returns BiblePassage model class
+
+### Lookup Functions (5 functions)
+
+**lookup_bible_verse(book, chapter, verse)**
+- Looks up a specific verse by book name, chapter number, and verse number
+- Returns BibleVerse object or None if not found
+
+**resolve_bible_passage_reference(reference)**
+- Resolves string reference to BiblePassage object
+- Calls BiblePassage.from_reference() for parsing
+- Returns BiblePassage or None
+
+**resolve_bible_verse_reference(reference)**
+- Parses reference string format: "Book Chapter:Verse"
+- Uses regex pattern matching
+- Returns BibleVerse or None
+
+**get_bible_chapter_data(book, chapter)**
+- Gets chapter metadata for book and chapter number
+- Returns dict with 'num_verses' key
+
+**get_all_chapters()**
+- Gets all Bible chapters as formatted strings
+- Format: "BookName ChapterNumber"
+- Returns list based on BIBLE_BOOKS_DATA constant
+
+### Reference Functions (4 functions)
+
+**get_scripture_references_list(bible_passages)**
+- Converts BiblePassage objects to string list
+- Returns list of formatted scripture references
+
+**get_scripture_references_str(bible_passages)**
+- Joins scripture references with semicolon separator
+- Returns formatted string: "Psalm 119:9; John 3:16"
+
+**get_scripture_references_compact(bible_passages)**
+- Converts passages to nested structure (implementation in progress)
+- Organizes by book, then chapter, then verses
+- Returns list of dicts with book/chapter/verses structure
+
+**get_scripture_references_str_compact(bible_passages)**
+- Joins compact scripture references (implementation in progress)
+- Returns semicolon-joined string
+
+### Seeding Functions (3 functions)
+
+**seed_bible()**
+- Seeds complete Bible data
+- Calls seed_bible_books() then seed_bible_chapters()
+
+**seed_bible_books()**
+- Creates BibleBook objects for all 66 books
+- Automatically assigns Old Testament (OT) vs New Testament (NT)
+- Uses BIBLE_BOOKS constant for all book names
+
+**seed_bible_chapters()**
+- Creates BibleChapter objects for all chapters
+- Creates appropriate number of chapters per book
+- Uses BIBLE_BOOKS_DATA constant for chapter counts
+
+### Translation Functions (1 function)
+
+**get_translation_model(translation)**
+- Looks up translation model from HTK_BIBLE_TRANSLATIONS_MAP setting
+- Translation name is uppercased for lookup
+- Returns model class or None if not found
+
+### Choice Functions (1 function)
+
+**get_bible_book_choices()**
+- Gets enum choices from BibleTestament enum
+- Returns list of (value, name) tuples for form choices
+
+## Example Usage
 
 ```python
-from htk.apps.bible.utils.utils import function_name
+from htk.apps.bible.utils import (
+    lookup_bible_verse,
+    get_scripture_references_str,
+    seed_bible,
+)
 
-result = function_name(arg1, arg2)
+# Lookup a verse
+verse = lookup_bible_verse('John', 3, 16)
+
+# Format multiple passages
+passages = [...]  # BiblePassage objects
+ref_str = get_scripture_references_str(passages)
+
+# Seed Bible data
+seed_bible()
 ```
-
-### Common Patterns
-
-```python
-# Lookup by identifier
-item = get_item_by_id(id)
-
-# Get or None
-item = get_item_by_email(email)  # Returns None if not found
-
-# Create with defaults
-item = create_item(name='test')
-
-# Query collection
-items = get_active_items()
-
-# Transform/convert
-converted = convert_format(data)
-```
-
-## Utility Functions
-
-### Lookup Functions
-
-Functions that retrieve objects from the database:
-
-- `get_*_by_id()` - Get by primary key
-- `get_*_by_field()` - Get by specific field
-- `get_*_with_retries()` - With retry logic
-- `get_all_*()` - Get all objects
-- `get_inactive_*()` - Get filtered subset
-
-**Behavior:**
-- Return `None` if object not found (not exception)
-- Raise exception on database errors
-- Support optional filtering parameters
-
-### Creation Functions
-
-Functions that create new objects:
-
-- `create_*()` - Create new object
-- `set_*()` - Update single field
-
-**Behavior:**
-- Return created object
-- May have side effects (logging, signals)
-- Validate input before creation
-
-### Validation Functions
-
-Functions that validate data:
-
-- `validate_*()` - Validate and return boolean
-- `is_*()` - Check condition
-
-**Behavior:**
-- Return `True`/`False` for simple checks
-- Return object or tuple for complex validation
-- May raise exception on invalid data
-
-### Transformation Functions
-
-Functions that convert or transform data:
-
-- `convert_*()` - Convert between formats
-- `extract_*()` - Extract data from object
-- `generate_*()` - Generate new data
-
-## Function Conventions
-
-- **Return values:** `None` when object not found, exception on error
-- **Naming:** `get_*()` for retrieval, `create_*()` for creation
-- **Parameters:** Use keyword arguments for optional parameters
-- **Side effects:** Document any side effects in docstring
-- **Retry logic:** Use `*_with_retries()` variant for reliability
-
-## Configuration
-
-Configure behavior in Django settings:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'value'
-HTK_TIMEOUT = 30
-HTK_MAX_RETRIES = 3
-```
-
-## Best Practices
-
-1. **Check for None** - Always check return values for None
-2. **Handle exceptions** - Catch and handle domain exceptions
-3. **Use appropriate function** - Choose most specific function available
-4. **Understand side effects** - Read docstrings for side effects
-5. **Batch operations** - Use bulk_* variants when processing multiple items
-6. **Cache results** - Cache expensive lookups when appropriate
-7. **Test edge cases** - Test with missing data, invalid input, etc.

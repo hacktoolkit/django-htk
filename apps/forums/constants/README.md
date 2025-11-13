@@ -1,107 +1,49 @@
-# Constants
+# Forums Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module defines configuration for forum functionality, including model references and content display settings.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Model References
 
-## Types of Constants
+- **`HTK_FORUM_MODEL`** - Default: `None` - Forum model (app_label.ModelName)
+- **`HTK_FORUM_THREAD_MODEL`** - Default: `None` - Forum thread model
+- **`HTK_FORUM_MESSAGE_MODEL`** - Default: `None` - Forum message model
+- **`HTK_FORUM_TAG_MODEL`** - Default: `None` - Forum tag model
 
-### Configuration Settings (HTK_ Prefix)
+### Content Configuration
 
-Settings that can be overridden in Django settings:
-
-```python
-from htk.apps.forums.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
-
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.forums.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.forums.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`FORUM_SNIPPET_LENGTH`** - Default: `100` - Maximum characters to display in forum snippets/previews
 
 ## Usage Examples
 
-### Import Constants
+### Configure Forum Models
 
 ```python
-# Import from constants module
-from htk.apps.forums.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.apps.forums.constants.general import CONSTANT_NAME
+# In Django settings.py
+HTK_FORUM_MODEL = 'forums.Forum'
+HTK_FORUM_THREAD_MODEL = 'forums.Thread'
+HTK_FORUM_MESSAGE_MODEL = 'forums.Message'
+HTK_FORUM_TAG_MODEL = 'forums.Tag'
 ```
 
-### Access Enum Values
+### Generate Thread Snippet
 
 ```python
-from htk.apps.forums.constants import StatusEnum
+from htk.apps.forums.constants import FORUM_SNIPPET_LENGTH
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+message = "This is a very long forum message..."
+snippet = message[:FORUM_SNIPPET_LENGTH] + '...'
 ```
 
-### Use Lookup Tables
+### Load Forum Models Dynamically
 
 ```python
-from htk.apps.forums.constants import LOOKUP_DATA
+from django.apps import apps
+from htk.apps.forums.constants import HTK_FORUM_MODEL, HTK_FORUM_THREAD_MODEL
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+Forum = apps.get_model(HTK_FORUM_MODEL)
+Thread = apps.get_model(HTK_FORUM_THREAD_MODEL)
 ```

@@ -1,126 +1,148 @@
 # Classes
 
-## Overview
+Classes for parsing, storing, and formatting git changelog entries and release information.
 
-This classes module provides utility classes that encapsulate related functionality. Classes provide structure and state management for complex operations.
-
-## Quick Start
-
-### Create Instance
+## Imports
 
 ```python
-from htk.apps.changelog.classes.classes import HelperClass
-
-helper = HelperClass(param1='value1')
-result = helper.process()
+from htk.apps.changelog.classes import (
+    ChangeLog,
+    LogEntry,
+    ReleaseVersion,
+)
 ```
 
-### Use with Context Manager
+## ChangeLog
+
+Container for a git repository changelog with a list of log entries.
 
 ```python
-from htk.apps.changelog.classes.classes import ManagedClass
-
-with ManagedClass() as manager:
-    manager.perform_operation()
-    # Cleanup happens automatically
+changelog = ChangeLog(
+    origin_url='https://github.com/owner/repo',
+    log_entries=[log_entry1, log_entry2, ...]
+)
 ```
 
-## Class Types
+### Fields
 
-### Data Classes
+- `origin_url` - GitHub repository URL (e.g., `https://github.com/owner/repo`)
+- `log_entries` - List of `LogEntry` objects
 
-Classes that hold and organize data:
+### Methods
+
+#### write_changelog(changelog_file_name, slack_announce=False, slack_channel=None, slack_webhook_url=None, web_url=None)
+
+Writes changelog to a markdown file and optionally announces to Slack.
 
 ```python
-container = DataContainer(field1='value1', field2='value2')
-print(container.field1)
+changelog.write_changelog(
+    'CHANGELOG.md',
+    slack_announce=True,
+    slack_channel='#releases',
+    slack_webhook_url='https://hooks.slack.com/...',
+    web_url='https://example.com/changelog'
+)
 ```
 
-### Service Classes
+Parameters:
+- `changelog_file_name` - Path to output markdown file
+- `slack_announce` - Boolean to announce to Slack (default: False)
+- `slack_channel` - Slack channel name (required if slack_announce=True)
+- `slack_webhook_url` - Slack webhook URL for posting
+- `web_url` - URL to changelog on the web (included in Slack message)
 
-Classes that provide operations:
+## LogEntry
+
+Represents a single git commit log entry parsed from formatted git output.
 
 ```python
-service = Service(config={})
-result = service.execute(input_data)
+log_entry = LogEntry(
+    origin_url='https://github.com/owner/repo',
+    commit_hash='abc1234567...',
+    date_iso='2024-01-15T10:30:00',
+    author='john.doe',
+    refs_raw='tag: v1.2.3, branch: main',
+    subject='feat: add new feature (#123)'
+)
 ```
 
-### Factory Classes
+### Fields
 
-Classes that create objects:
+- `origin_url` - GitHub repository URL
+- `commit_hash` - Full commit SHA-1 hash
+- `date_iso` - ISO format date string
+- `author` - Commit author username
+- `refs_raw` - Raw git refs (tags, branches)
+- `subject` - Commit message subject
+
+### Factory Methods
+
+#### from_line(origin_url, line)
+
+Parse a LogEntry from a formatted git log line (fields separated by `SEPARATOR`).
 
 ```python
-factory = ObjectFactory()
-obj1 = factory.create(type='type1')
-obj2 = factory.create(type='type2')
+log_entry = LogEntry.from_line(
+    'https://github.com/owner/repo',
+    'abc1234567|john.doe|2024-01-15T10:30:00|tag: v1.2.3|feat: add feature (#123)'
+)
 ```
 
-### Manager Classes
+### Properties
 
-Classes that manage collections:
+- `simple_subject` - Subject with GitHub issue references removed
+- `issue_links` - Markdown-formatted GitHub issue links (e.g., `[#123](url)`)
+- `issue_links_slack` - Slack-formatted issue links (e.g., `<url|#123>`)
+- `author_github_url` - GitHub profile URL for the author
+- `refs` - List of parsed git refs
+- `release_version` - `ReleaseVersion` object if this is a release commit, None otherwise
+- `is_release` - Boolean indicating if this commit is a release
+- `url` - GitHub commit URL
+- `short_date` - Formatted date as YYYY.MM.DD
+- `html` - Markdown-formatted log entry (used in changelog files)
+- `slack_message` - Slack-formatted log entry
+
+### Methods
+
+#### build_issue_links(fmt='markdown')
+
+Build formatted issue links from GitHub issue references in the subject.
 
 ```python
-manager = Manager()
-manager.add(item1)
-manager.add(item2)
+# Markdown format
+md_links = log_entry.build_issue_links(fmt='markdown')  # "[#123](url), [#124](url)"
 
-for item in manager.all():
-    print(item)
+# Slack format
+slack_links = log_entry.build_issue_links(fmt='slack')  # "<url|#123>, <url|#124>"
 ```
 
-## Common Patterns
+Parameters:
+- `fmt` - Format type: `'markdown'` or `'slack'`
 
-### Initialization
+## ReleaseVersion
+
+Represents a release version parsed from a git tag reference.
 
 ```python
-class MyClass:
-    def __init__(self, param1=None, param2=None):
-        self.param1 = param1
-        self.param2 = param2
+release = ReleaseVersion(
+    origin_url='https://github.com/owner/repo',
+    ref='tag: v1.2.3',
+    date='20240115103000',
+    sha='abc1234567',
+    branch='main'
+)
 ```
 
-### State Management
+### Fields
 
-```python
-class StatefulClass:
-    def __init__(self):
-        self.state = 'initial'
+- `origin_url` - GitHub repository URL
+- `ref` - Git ref string (e.g., `tag: v1.2.3`)
+- `date` - Release date in YYYYMMDDHHMMSS format
+- `sha` - Commit SHA-1 hash
+- `branch` - Git branch name
 
-    def start(self):
-        self.state = 'running'
+### Properties
 
-    def is_running(self):
-        return self.state == 'running'
-```
-
-### Context Manager
-
-```python
-class ResourceManager:
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-with ResourceManager() as rm:
-    pass
-```
-
-## Methods
-
-### Common Methods
-
-- `__init__()` - Constructor
-- `__str__()` - String representation
-- `__repr__()` - Developer representation
-- `__enter__()` / `__exit__()` - Context manager
-
-## Best Practices
-
-1. **Single responsibility** - Each class should have one purpose
-2. **Clear interface** - Public methods should be well documented
-3. **Encapsulation** - Use private methods for internal operations
-4. **Error handling** - Handle errors gracefully
-5. **Type hints** - Add type hints for clarity
-6. **Document behavior** - Document what the class does
+- `readable_date` - Human-readable date format (e.g., `Mon Jan 15 10:30:00 2024`)
+- `tag` - Extracted tag name (e.g., `v1.2.3`)
+- `url` - GitHub release URL

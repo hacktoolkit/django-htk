@@ -1,112 +1,81 @@
-# Utils
+# HTK CPQ Utils
 
-## Overview
+Utilities for Quote and Invoice management including URL generation, crypto encoding, and accounting.
 
-This utils module provides utility functions for common operations including lookups, transformations, validation, and calculations.
+## Functions by Category
 
-## Quick Start
+### Admin/Reporting Functions (4 functions)
 
-### Import Utilities
+**get_admin_urls()**
+- Generates Django admin URLs for all CPQ models
+- Returns list of dicts with 'url', 'add_url', and 'name' keys
+- Uses CPQ_APP_MODEL_NAMES constant for model list
 
-```python
-from htk.apps.cpq.utils.utils import function_name
+**get_reporting_urls()**
+- Generates reporting view URLs for CPQ
+- Returns list of dicts with 'url' and 'name' keys
+- Uses CPQ_REPORTING_URL_NAMES constant
 
-result = function_name(arg1, arg2)
-```
+**get_tools_urls()**
+- Generates tools view URLs for CPQ
+- Returns list of dicts with 'url' and 'name' keys
+- Uses CPQ_TOOLS_URL_NAMES constant
 
-### Common Patterns
+**get_invoice_payment_terms_choices()**
+- Gets payment term choices from InvoicePaymentTerm enum
+- Returns list of (value, symbolic_name) tuples for form dropdowns
 
-```python
-# Lookup by identifier
-item = get_item_by_id(id)
+### Crypto Functions (4 functions)
 
-# Get or None
-item = get_item_by_email(email)  # Returns None if not found
+**compute_cpq_code(cpq)**
+- Encodes CPQ object ID into checksum-protected code
+- Process: XOR with key > add Luhn check digit > base36 encode > prepend MD5 hash
+- Returns obfuscated string code for Quote/Invoice display
 
-# Create with defaults
-item = create_item(name='test')
+**compute_cpq_code_check_hash(cpq_code)**
+- Generates MD5 hash prefix for CPQ code validation
+- Hash length from HTK_CPQ_CHECK_HASH_LENGTH setting
+- Used to detect code tampering
 
-# Query collection
-items = get_active_items()
+**is_valid_cpq_code_check_hash(cpq_code, check_hash)**
+- Validates check hash matches code
+- Verifies code hasn't been altered
+- Returns boolean
 
-# Transform/convert
-converted = convert_format(data)
-```
+**resolve_cpq_code(cpq_code, cpq_type=CPQType.INVOICE)**
+- Decodes CPQ code back to object
+- Validates check hash and Luhn digit
+- Supports INVOICE, QUOTE, and GROUP_QUOTE types
+- Returns CPQ object or None if invalid
 
-## Utility Functions
+### Accounting Functions (2 functions)
 
-### Lookup Functions
+**get_invoice_years()**
+- Gets list of all years with invoices
+- Returns list of year integers, ordered chronologically
 
-Functions that retrieve objects from the database:
+**get_receivables_by_year(year)**
+- Gets paid invoices for specified year
+- Filters by invoice_type=INVOICE and paid=True
+- Returns QuerySet ordered by date
 
-- `get_*_by_id()` - Get by primary key
-- `get_*_by_field()` - Get by specific field
-- `get_*_with_retries()` - With retry logic
-- `get_all_*()` - Get all objects
-- `get_inactive_*()` - Get filtered subset
-
-**Behavior:**
-- Return `None` if object not found (not exception)
-- Raise exception on database errors
-- Support optional filtering parameters
-
-### Creation Functions
-
-Functions that create new objects:
-
-- `create_*()` - Create new object
-- `set_*()` - Update single field
-
-**Behavior:**
-- Return created object
-- May have side effects (logging, signals)
-- Validate input before creation
-
-### Validation Functions
-
-Functions that validate data:
-
-- `validate_*()` - Validate and return boolean
-- `is_*()` - Check condition
-
-**Behavior:**
-- Return `True`/`False` for simple checks
-- Return object or tuple for complex validation
-- May raise exception on invalid data
-
-### Transformation Functions
-
-Functions that convert or transform data:
-
-- `convert_*()` - Convert between formats
-- `extract_*()` - Extract data from object
-- `generate_*()` - Generate new data
-
-## Function Conventions
-
-- **Return values:** `None` when object not found, exception on error
-- **Naming:** `get_*()` for retrieval, `create_*()` for creation
-- **Parameters:** Use keyword arguments for optional parameters
-- **Side effects:** Document any side effects in docstring
-- **Retry logic:** Use `*_with_retries()` variant for reliability
-
-## Configuration
-
-Configure behavior in Django settings:
+## Example Usage
 
 ```python
-# settings.py
-HTK_SETTING_NAME = 'value'
-HTK_TIMEOUT = 30
-HTK_MAX_RETRIES = 3
+from htk.apps.cpq.utils import (
+    compute_cpq_code,
+    resolve_cpq_code,
+    get_invoice_years,
+)
+
+# Encode an invoice
+invoice = Invoice.objects.get(id=123)
+code = compute_cpq_code(invoice)  # Returns: "abc123def456"
+
+# Decode a code
+decoded = resolve_cpq_code(code)  # Returns: Invoice object or None
+
+# Get accounting data
+years = get_invoice_years()
+paid_2024 = get_receivables_by_year(2024)
 ```
-
-## Best Practices
-
-1. **Check for None** - Always check return values for None
-2. **Handle exceptions** - Catch and handle domain exceptions
-3. **Use appropriate function** - Choose most specific function available
-4. **Understand side effects** - Read docstrings for side effects
-5. **Batch operations** - Use bulk_* variants when processing multiple items
-6. **Cache results** - Cache expensive lookups when appropriate
-7. **Test edge cases** - Test with missing data, invalid input, etc.

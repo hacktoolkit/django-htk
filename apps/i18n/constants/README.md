@@ -1,107 +1,55 @@
-# Constants
+# Internationalization (i18n) Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides configuration for localization and internationalization, including model references and language settings.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Model References
 
-## Types of Constants
+- **`HTK_LOCALIZABLE_STRING_MODEL`** - Default: `None` - Localizable string model (app_label.ModelName)
+- **`HTK_LOCALIZED_STRING_MODEL`** - Default: `None` - Localized string model (app_label.ModelName)
 
-### Configuration Settings (HTK_ Prefix)
+### Language Configuration
 
-Settings that can be overridden in Django settings:
+- **`HTK_LOCALIZABLE_STRING_LANGUAGE_CODES`** - Default: `['en-US']` - List of supported language codes
 
-```python
-from htk.apps.i18n.constants import HTK_SETTING_NAME
+### Admin Tools
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
-
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.i18n.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.i18n.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`HTK_ADMINTOOLS_LOCALIZATION_USAGE_CHECKS`** - Default: `[]` - List of localization usage checks
 
 ## Usage Examples
 
-### Import Constants
+### Configure Language Support
 
 ```python
-# Import from constants module
-from htk.apps.i18n.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.apps.i18n.constants.general import CONSTANT_NAME
+# In Django settings.py
+HTK_LOCALIZABLE_STRING_LANGUAGE_CODES = [
+    'en-US',
+    'es-ES',
+    'fr-FR',
+    'de-DE',
+]
 ```
 
-### Access Enum Values
+### Set Custom Models
 
 ```python
-from htk.apps.i18n.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+# In Django settings.py
+HTK_LOCALIZABLE_STRING_MODEL = 'myapp.LocalizableString'
+HTK_LOCALIZED_STRING_MODEL = 'myapp.LocalizedString'
 ```
 
-### Use Lookup Tables
+### Load Model References
 
 ```python
-from htk.apps.i18n.constants import LOOKUP_DATA
+from django.apps import apps
+from htk.apps.i18n.constants import (
+    HTK_LOCALIZABLE_STRING_MODEL,
+    HTK_LOCALIZED_STRING_MODEL,
+)
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+LocalizableString = apps.get_model(HTK_LOCALIZABLE_STRING_MODEL)
+LocalizedString = apps.get_model(HTK_LOCALIZED_STRING_MODEL)
 ```

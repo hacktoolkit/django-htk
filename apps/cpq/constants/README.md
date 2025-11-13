@@ -1,107 +1,49 @@
-# Constants
+# CPQ (Configure, Price, Quote) Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module defines configuration for the CPQ system, including payment settings, encryption keys, and template paths for quotes and invoices.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Payment Configuration
 
-## Types of Constants
+- **`HTK_CPQ_PAY_ONLINE`** - Default: `False` - Enable online payment processing
+- **`HTK_CPQ_XOR_KEY`** - Default: `1234567890123` - XOR encryption key for quote IDs
+- **`HTK_CPQ_CRYPT_SECRET`** - Default: `'Zu7ooqu8'` - Encryption secret for sensitive data
+- **`HTK_CPQ_CHECK_HASH_LENGTH`** - Default: `5` - Length of hash for validation checks
 
-### Configuration Settings (HTK_ Prefix)
+### Template Configuration
 
-Settings that can be overridden in Django settings:
+- **`HTK_CPQ_TEMPLATE_NAME_DASHBOARD`** - Default: `'htk/fragments/cpq/invoice.html'`
+- **`HTK_CPQ_TEMPLATE_NAME_INVOICE`** - Default: `'htk/fragments/cpq/invoice.html'`
+- **`HTK_CPQ_TEMPLATE_NAME_QUOTE`** - Default: `'htk/fragments/cpq/quote.html'`
+- **`HTK_CPQ_TEMPLATE_NAME_GROUP_QUOTE`** - Default: `'htk/fragments/cpq/group_quote.html'`
+- **`HTK_CPQ_TEMPLATE_NAME_GROUP_QUOTE_ALL`** - Default: `'htk/fragments/cpq/group_quote_all.html'`
+- **`HTK_CPQ_TEMPLATE_NAME_RECEIVABLES`** - Default: `'htk/fragments/cpq/receivables.html'`
+- **`HTK_CPQ_TEMPLATE_NAME_IMPORT_CUSTOMERS`** - Default: `'htk/fragments/cpq/import_customers.html'`
 
-```python
-from htk.apps.cpq.constants import HTK_SETTING_NAME
+### URL Configuration
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
-
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.cpq.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.cpq.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`CPQ_APP_MODEL_NAMES`** - List of models in CPQ app for admin urls
+- **`CPQ_REPORTING_URL_NAMES`** - List of reporting view URL names
+- **`CPQ_TOOLS_URL_NAMES`** - List of tools/utility view URL names
 
 ## Usage Examples
 
-### Import Constants
+### Configure Payment Settings
 
 ```python
-# Import from constants module
-from htk.apps.cpq.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.apps.cpq.constants.general import CONSTANT_NAME
+# In Django settings.py
+HTK_CPQ_PAY_ONLINE = True
+HTK_CPQ_XOR_KEY = 9876543210987  # Use strong random value
+HTK_CPQ_CRYPT_SECRET = 'your-secret-key-here'
 ```
 
-### Access Enum Values
+### Use Custom Templates
 
 ```python
-from htk.apps.cpq.constants import StatusEnum
-
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
-```
-
-### Use Lookup Tables
-
-```python
-from htk.apps.cpq.constants import LOOKUP_DATA
-
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+# In Django settings.py
+HTK_CPQ_TEMPLATE_NAME_INVOICE = 'myapp/cpq/invoice_custom.html'
+HTK_CPQ_TEMPLATE_NAME_QUOTE = 'myapp/cpq/quote_custom.html'
 ```

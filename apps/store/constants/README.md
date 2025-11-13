@@ -1,107 +1,48 @@
-# Constants
+# Store Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module defines configuration for the e-commerce store system, including product and collection model references.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Model References
 
-## Types of Constants
-
-### Configuration Settings (HTK_ Prefix)
-
-Settings that can be overridden in Django settings:
-
-```python
-from htk.apps.store.constants import HTK_SETTING_NAME
-
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
-
-### Enumerations
-
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.store.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.store.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`HTK_STORE_PRODUCT_MODEL`** - Default: `None` - Product model (app_label.ModelName)
+- **`HTK_STORE_PRODUCT_COLLECTION_MODEL`** - Default: `None` - Product collection/category model
 
 ## Usage Examples
 
-### Import Constants
+### Configure Store Models
 
 ```python
-# Import from constants module
-from htk.apps.store.constants import CONSTANT_NAME
-
-# Or import directly from sub-module
-from htk.apps.store.constants.general import CONSTANT_NAME
+# In Django settings.py
+HTK_STORE_PRODUCT_MODEL = 'store.Product'
+HTK_STORE_PRODUCT_COLLECTION_MODEL = 'store.Collection'
 ```
 
-### Access Enum Values
+### Load Models Dynamically
 
 ```python
-from htk.apps.store.constants import StatusEnum
+from django.apps import apps
+from htk.apps.store.constants import (
+    HTK_STORE_PRODUCT_MODEL,
+    HTK_STORE_PRODUCT_COLLECTION_MODEL,
+)
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+Product = apps.get_model(HTK_STORE_PRODUCT_MODEL)
+Collection = apps.get_model(HTK_STORE_PRODUCT_COLLECTION_MODEL)
+
+products = Product.objects.all()
+collections = Collection.objects.all()
 ```
 
-### Use Lookup Tables
+### Use in Queries
 
 ```python
-from htk.apps.store.constants import LOOKUP_DATA
+from django.apps import apps
+from htk.apps.store.constants import HTK_STORE_PRODUCT_MODEL
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+Product = apps.get_model(HTK_STORE_PRODUCT_MODEL)
+featured = Product.objects.filter(featured=True)
 ```

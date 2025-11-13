@@ -1,107 +1,65 @@
-# Constants
+# Geolocations Constants
 
 ## Overview
 
-This constants module defines configuration values, enumerations, lookup tables, and other constant data used throughout the module. Constants are organized into sub-modules by category.
+This module provides geolocation constants for location searches, distance conversions, and WGS-84 geodetic reference parameters.
 
-## Module Structure
+## Constants
 
-```
-constants/
-├── __init__.py          # Re-exports all constants
-├── general.py           # General purpose constants
-├── defaults.py          # Configuration defaults (HTK_ prefixed settings)
-└── domain_specific.py          # Domain-specific constants
-```
+### Mapbox Configuration
 
-## Types of Constants
+- **`HTK_GEOLOCATIONS_MAPBOX_MIN_RELEVANCE_THRESHOLD`** - Default: `1` - Minimum relevance score for Mapbox results
 
-### Configuration Settings (HTK_ Prefix)
+### Location Configuration
 
-Settings that can be overridden in Django settings:
+- **`LOCATION_MAP_URL_FORMAT`** - Google Maps URL template: `'https://maps.google.com/?q=%s'`
+- **`DEFAULT_SEARCH_RADIUS`** - Default: `10` - Default search radius (in default distance unit)
+- **`DEFAULT_DISTANCE_UNIT`** - Default: `DistanceUnit.MILE` - Default unit for distances
 
-```python
-from htk.apps.geolocations.constants import HTK_SETTING_NAME
+### Distance Conversions
 
-# Configure in settings.py
-HTK_SETTING_NAME = 'custom_value'
-```
+- **`FEET_PER_MILE`** - `5280.0`
+- **`KM_PER_MILE`** - `1.609344`
+- **`METERS_PER_KM`** - `1000.0`
+- **`MILES_PER_KM`** - `0.62137119`
+- **`METERS_PER_MILE`** - Calculated: `1609.344`
+- **`METERS_PER_FEET`** - Calculated: `0.3048`
 
-### Enumerations
+### WGS-84 Reference Parameters
 
-Enum classes for status values, roles, and choices:
-
-```python
-from htk.apps.geolocations.constants import SomeEnum
-
-status = SomeEnum.ACTIVE
-value = status.value
-name = status.name
-```
-
-### Lookup Tables
-
-Dictionaries and data collections for reference:
-
-```python
-from htk.apps.geolocations.constants import LOOKUP_TABLE
-
-data = LOOKUP_TABLE['key']
-for key, value in LOOKUP_TABLE.items():
-    # Process each entry
-```
-
-### Conversion Factors
-
-Numeric constants for unit conversions and calculations:
-
-```python
-from htk.constants import TIME_1_HOUR_SECONDS
-
-delay = 2 * TIME_1_HOUR_SECONDS  # 2 hours in seconds
-```
+- **`WGS84_a`** - Major semiaxis: `6378137.0` meters
+- **`WGS84_b`** - Minor semiaxis: `6356752.3142` meters
 
 ## Usage Examples
 
-### Import Constants
+### Convert Distances
 
 ```python
-# Import from constants module
-from htk.apps.geolocations.constants import CONSTANT_NAME
+from htk.apps.geolocations.constants import (
+    KM_PER_MILE, METERS_PER_KM, FEET_PER_MILE
+)
 
-# Or import directly from sub-module
-from htk.apps.geolocations.constants.general import CONSTANT_NAME
+miles = 5
+km = miles * KM_PER_MILE
+meters = km * METERS_PER_KM
+feet = miles * FEET_PER_MILE
 ```
 
-### Access Enum Values
+### Create Location Map URL
 
 ```python
-from htk.apps.geolocations.constants import StatusEnum
+from htk.apps.geolocations.constants import LOCATION_MAP_URL_FORMAT
 
-if status == StatusEnum.ACTIVE:
-    print(f"Status is {status.name}")
+location = "1600 Pennsylvania Avenue, Washington DC"
+map_url = LOCATION_MAP_URL_FORMAT % location
 ```
 
-### Use Lookup Tables
+### Configure Search Radius
 
 ```python
-from htk.apps.geolocations.constants import LOOKUP_DATA
+# In Django settings.py
+from htk.apps.geolocations.enums import DistanceUnit
 
-# Get value by key
-value = LOOKUP_DATA.get('key')
-
-# Iterate over entries
-for key, value in LOOKUP_DATA.items():
-    process(key, value)
-```
-
-## Configuration
-
-Settings can be overridden in Django settings.py:
-
-```python
-# settings.py
-HTK_SETTING_NAME = 'custom_value'
-HTK_TIMEOUT_SECONDS = 300
-HTK_ENABLED = True
+DEFAULT_SEARCH_RADIUS = 25  # 25 miles
+DEFAULT_DISTANCE_UNIT = DistanceUnit.KILOMETER
 ```

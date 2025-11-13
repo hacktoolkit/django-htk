@@ -1,77 +1,64 @@
 # Management
 
-## Overview
-
-This management module provides Django management commands for administrative tasks, background jobs, data maintenance, and system operations.
-
-## Management Commands
-
-Management commands are executed using `python manage.py [command_name]`:
-
-```bash
-# List all management commands for this module
-python manage.py help
-
-# Run a specific command
-python manage.py [command_name] [options]
-```
+Django management commands for changelog operations.
 
 ## Available Commands
 
-Check the `commands/` subdirectory for available management commands. Each command typically provides:
+### changelog
 
-- **Command name** - Identifier for execution
-- **Arguments** - Required positional parameters
-- **Options** - Optional flags (--flag, -f)
-- **Help text** - Run with `--help` for details
+Updates or generates a `CHANGELOG.md` file from git commit history.
 
 ```bash
-python manage.py [command_name] --help
+python manage.py changelog
 ```
 
-## Running Commands
+#### Options
 
-### Execute Command
+- `--slack-announce` - Announce release notes to Slack channel (default: False)
+- `--silent` - Suppress command output (default: False)
+- `--help` - Show this help message and exit
 
+#### Usage Examples
+
+Generate changelog and write to file:
 ```bash
-python manage.py [command_name]
+python manage.py changelog
 ```
 
-### With Arguments
-
+Generate and announce to Slack:
 ```bash
-python manage.py [command_name] arg1 arg2
+python manage.py changelog --slack-announce
 ```
 
-### With Options
-
+Run silently without output:
 ```bash
-python manage.py [command_name] --option value
+python manage.py changelog --silent
 ```
 
-### Scheduled Execution
+#### Configuration
 
-Commands can be scheduled via cron or task queue:
+The `changelog` command requires these Django settings:
 
-```python
-# Using celery beat
-from celery.schedules import crontab
+- `HTK_CHANGELOG_FILE_PATH` - Path to output `CHANGELOG.md` file (required)
+- `HTK_CHANGELOG_SLACK_CHANNEL_RELEASES` - Slack channel for announcements (e.g., `#releases`)
+- `HTK_CHANGELOG_VIEW_IN_WEB_URL_NAME` - URL name for web changelog view (optional)
+- `HTK_CHANGELOG_VIEW_IN_WEB_URL` - Direct URL to web changelog (optional, overridden by URL name)
 
-app.conf.beat_schedule = {
-    'command-name': {
-        'task': 'module.tasks.run_management_command',
-        'schedule': crontab(hour=2, minute=0),
-        'args': ('command_name',)
-    },
-}
-```
+#### Process
 
-## Best Practices
+1. Fetches git commit logs from the repository
+2. Parses commits into `LogEntry` objects
+3. Identifies release commits based on git tags
+4. Generates markdown-formatted changelog
+5. Writes to file specified by `HTK_CHANGELOG_FILE_PATH`
+6. If `--slack-announce` is set:
+   - Sends formatted message to Slack channel
+   - Includes link to full changelog if `HTK_CHANGELOG_VIEW_IN_WEB_URL` is configured
 
-1. **Keep commands focused** - One responsibility per command
-2. **Provide helpful output** - Use `self.stdout.write()` for user feedback
-3. **Handle errors gracefully** - Use proper exception handling
-4. **Add --dry-run option** - For commands that modify data
-5. **Document parameters** - Clear help text and argument descriptions
-6. **Make commands idempotent** - Safe to run multiple times
-7. **Use verbosity flags** - Support --verbosity for different output levels
+#### Example Output
+
+The generated `CHANGELOG.md` includes:
+- Release headers with dates and GitHub release links
+- Commit entries with author, date, commit hash
+- GitHub issue references linked to pull requests
+- Formatted for both markdown and Slack presentation
