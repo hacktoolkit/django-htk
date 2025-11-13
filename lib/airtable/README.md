@@ -9,7 +9,7 @@ This integration integrates with an external service, providing a Python client 
 ### Initialize Client
 
 ```python
-from htk.lib.lib.airtable.utils import Client
+from htk.lib.airtable.utils import Client
 
 # Create client with credentials
 client = Client(api_key='your_api_key')
