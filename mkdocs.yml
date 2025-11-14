@@ -32,7 +32,7 @@ theme:
     - content.code.copy
 
 extra_css:
-  - ../extra.css
+  - static/css/mkdocs.css
 
 plugins:
   - search
@@ -80,6 +80,5 @@ exclude_docs: |
   .venv/
   south_migrations/
   migrations/
-  static/
   templates/
   __init__.py
