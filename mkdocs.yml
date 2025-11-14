@@ -32,7 +32,7 @@ theme:
     - content.code.copy
 
 extra_css:
-  - extra.css
+  - ../extra.css
 
 plugins:
   - search
