@@ -1,24 +1,28 @@
-# GitHub Reminder Bot and Utilities
+# GitHub Integration
 
-## Basic Usage
+Repository management and release tracking.
 
-The main script, which can be run as a standalone, is `bots.py`.
+## Quick Start
 
-Usage: `python bots.py -t YOURTOKEN -o YOURORGANIZATION`
+```python
+from htk.lib.github.utils import get_repository, sync_repository_releases
 
-## Scheduling
+repo = get_repository('owner/repo')
+sync_repository_releases(repo)
+```
 
-If you would like to run the GitHub reminder bot on a recurring basis, you have a couple of options:
+## Bots & Reminders
 
-1. Use the out of the box scheduler script and Hacktoolkit's scheduling system, `tasks.py`:
-   Create a Python script that will execute in a loop, optionally using [Supervisor](http://supervisord.org/)
+```python
+from htk.lib.github.bots import GitHubReminderBot
 
-   ```
-   import time
-   
-   while True:
-       GitHubReminderTask().execute_batch()
-       time.sleep(60 * 60)
-   ```
+bot = GitHubReminderBot()
+reminder = bot.pull_request_reminder(org)
+```
 
-2. Write a wrapper shell script that invokes `bots.py` with the correct arguments, schedule it with something like `crontab`
+## Configuration
+
+```python
+# settings.py
+GITHUB_API_TOKEN = os.environ.get('GITHUB_API_TOKEN')
+```

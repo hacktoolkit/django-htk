@@ -1,71 +1,45 @@
-# Changelog
+# Changelog App
 
-This app helps to create CHANGELOG.md file containing Release Notes
+Automatic changelog generation from Git history.
 
-
-## Installation
-
-### PyPI Packages
-Install the PyPI packages in `requirements.txt`
-
-### Adding to Installed Apps
-Add `htk.apps.changelog` to `INSTALLED_APPS` in `settings.py`
-
-### Setting up options
-There are 3 constants can be set in `settings.py` file.
-
-- `HTK_CHANGELOG_FILE_PATH`: File path for CHANGELOG.md file.
-  Default: `CHANGELOG.md`
-- `HTK_CHANGELOG_SLACK_CHANNEL`: Slack channel name to announce.
-  Default: `#release-notes`
-- `HTK_CHANGELOG_SLACK_FULL_LOG_MESSAGE`: The message that will show at the end of the thread.
-  Default: `The full change log can be found at CHANGELOG.md`
-
-### Views
-Not necessary but app allows to list release notes as a page.
-Create a view function and pass the necessary content to app's view function:
+## Quick Start
 
 ```python
-def changelog(request):
-    from htk.apps.changelog.views import changelog_view
-    response = changelog_view(request, 'app/changelog.html', {}, render)
-    return response
+from htk.apps.changelog.utils import fetch_git_logs, fetch_origin_url
+
+# Fetch git logs
+logs = fetch_git_logs()
+
+# Get repository origin
+origin = fetch_origin_url()
 ```
 
-In template file predefined template fragment can be used:
+## Common Patterns
 
+```python
+from htk.apps.changelog.classes.change_log import ChangeLog
+
+# Write changelog
+log = ChangeLog()
+log.write_changelog('CHANGELOG.md')
+
+# Build GitHub issue links
+from htk.apps.changelog.classes.log_entry import LogEntry
+entry = LogEntry('Fix: resolve bug #123')
+links = entry.build_issue_links()  # ['https://github.com/owner/repo/issues/123']
 ```
-{% include 'htk/fragments/changelog/view.html' with changelog=changelog %}
-```
 
-
-## Usage
-This app adds a new command to `manage.py`. It can be used with following command:
+## CLI
 
 ```bash
-venv/bin/python manage.py changelog
+# Generate changelog from command line
+python manage.py update_changelog
 ```
 
-### Options
+## Configuration
 
-#### --slack-announce
-If Slack announcement wanted `--slack-announce` can be passed to command:
-
-```bash
-venv/bin/python manage.py changelog --slack-announce
+```python
+# settings.py
+CHANGELOG_FILE = 'CHANGELOG.md'
+CHANGELOG_INCLUDE_TAGS = True
 ```
-
-#### --silent
-The command prints messages upon successful execution. if `--silent` option
-is present, the output will be none.
-
-```bash
-venv/bin/python manage.py changelog --silent
-# or
-venv/bin/python manage.py changelog --silent --slack-announce
-```
-
-
-## Standalone CLI command
-If Django management command is not wanted, it is also possible to create a
-standalone CLI command tool. An example can be found in `commands.py` file.
