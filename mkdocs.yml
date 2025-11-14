@@ -38,6 +38,9 @@ plugins:
   - search
   - offline
 
+hooks:
+  - .claude/mkdocs_hooks.py
+
 markdown_extensions:
   - admonition
   - pymdownx.arithmatex
@@ -88,6 +91,7 @@ nav:
   - API: api.md
   - Cache: cache.md
   - Constants: constants.md
+  - Data: data.md
   - Decorators: decorators.md
   - Extensions: extensions.md
   - Forms: forms.md
@@ -95,8 +99,83 @@ nav:
   - Models: models.md
   - Utils: utils.md
   - Validators: validators.md
-  - Django Apps: apps.md
-  - Libraries: lib.md
   - Test Scaffold: test_scaffold.md
   - Scripts: scripts.md
   - Template Tags: templatetags.md
+  - Django Apps:
+      - Overview: apps.md
+      - Accounts: apps/accounts.md
+      - Addresses: apps/addresses.md
+      - Assessments: apps/assessments.md
+      - Async Tasks: apps/async_task.md
+      - Bible: apps/bible.md
+      - Blob Storage: apps/blob_storage.md
+      - Changelog: apps/changelog.md
+      - Conversations: apps/conversations.md
+      - CPQ: apps/cpq.md
+      - Customers: apps/customers.md
+      - Features: apps/features.md
+      - Feedback: apps/feedback.md
+      - File Storage: apps/file_storage.md
+      - Forums: apps/forums.md
+      - Geolocations: apps/geolocations.md
+      - i18n: apps/i18n.md
+      - Invitations: apps/invitations.md
+      - KV Storage: apps/kv_storage.md
+      - Maintenance Mode: apps/maintenance_mode.md
+      - Mobile: apps/mobile.md
+      - MP: apps/mp.md
+      - Notifications: apps/notifications.md
+      - Organizations: apps/organizations.md
+      - Prelaunch: apps/prelaunch.md
+      - Sites: apps/sites.md
+      - Store: apps/store.md
+      - Tokens: apps/tokens.md
+      - URL Shortener: apps/url_shortener.md
+  - Libraries:
+      - Overview: lib.md
+      - Airtable: lib/airtable.md
+      - Alexa: lib/alexa.md
+      - Amazon: lib/amazon.md
+      - AwesomeBible: lib/awesomebible.md
+      - AWS: lib/aws.md
+      - Dark Sky: lib/darksky.md
+      - Discord: lib/discord.md
+      - Dynamic Screening Solutions: lib/dynamic_screening_solutions.md
+      - eGauge: lib/egauge.md
+      - ESV: lib/esv.md
+      - Facebook: lib/facebook.md
+      - Fitbit: lib/fitbit.md
+      - ForecastIO: lib/forecastio.md
+      - FullContact: lib/fullcontact.md
+      - GeoIP: lib/geoip.md
+      - GitHub: lib/github.md
+      - Glassdoor: lib/glassdoor.md
+      - Google: lib/google.md
+      - Gravatar: lib/gravatar.md
+      - Indeed: lib/indeed.md
+      - Iterable: lib/iterable.md
+      - LinkedIn: lib/linkedin.md
+      - LiteralWord: lib/literalword.md
+      - Mailchimp: lib/mailchimp.md
+      - Mapbox: lib/mapbox.md
+      - MongoDB: lib/mongodb.md
+      - oEmbed: lib/oembed.md
+      - OhMyGreen: lib/ohmygreen.md
+      - OpenAI: lib/openai.md
+      - Plivo: lib/plivo.md
+      - QR Code: lib/qrcode.md
+      - RabbitMQ: lib/rabbitmq.md
+      - Redfin: lib/redfin.md
+      - SFBART: lib/sfbart.md
+      - Shopify: lib/shopify_lib.md
+      - Slack: lib/slack.md
+      - SongSelect: lib/songselect.md
+      - Stripe: lib/stripe_lib.md
+      - Twitter: lib/twitter.md
+      - Yahoo: lib/yahoo.md
+      - Yelp: lib/yelp.md
+      - Zesty: lib/zesty.md
+      - Zillow: lib/zillow.md
+      - ZipRecruiter: lib/ziprecruiter.md
+      - Zuora: lib/zuora.md

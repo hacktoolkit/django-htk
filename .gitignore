@@ -1,1 +1,5 @@
 *.pyc
+
+# MkDocs dynamically generated symlinks
+docs/apps/
+docs/lib/
