@@ -36,7 +36,6 @@ extra_css:
 
 plugins:
   - search
-  - offline
 
 hooks:
   - .claude/mkdocs_hooks.py

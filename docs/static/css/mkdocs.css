@@ -38,3 +38,29 @@ body {
   animation: none !important;
   transition: none !important;
 }
+
+/* Hide offline plugin messages and skip links that appear below footer */
+.md-skip,
+.md-announce,
+[data-md-component="announce"] {
+  display: none !important;
+}
+
+/* Ensure page doesn't have overflow issues */
+html {
+  overflow-x: hidden;
+}
+
+/* Ensure footer is the last visible element */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.md-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
