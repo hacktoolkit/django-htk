@@ -229,7 +229,7 @@ Pre-launch signup and early access management.
 ## API & Documentation
 
 ### API (`api`)
-REST API utilities and tools. See [API Documentation](api.md).
+REST API utilities and tools. See [api/README.md](../api/README.md).
 
 ### Documentation (`documentation`)
 Automatic README generation for modules.
