@@ -8,7 +8,7 @@ copyright: Copyright &copy; 2025 HTK Contributors. MIT License.
 
 theme:
   name: material
-  logo: logo.png
+  logo: https://www.hacktoolkit.com/logo.png
   palette:
     - scheme: default
       primary: custom
