@@ -1,8 +1,8 @@
 /* Custom color scheme */
 :root {
-  --md-primary-fg-color: #0101fe;
+  --md-primary-fg-color: #0000e6;
   --md-primary-fg-color-light: #1a1aff;
-  --md-primary-fg-color-dark: #0000cc;
+  --md-primary-fg-color-dark: #0000b3;
 }
 
 /* Disable bounce/rubber band effect on entire page while allowing scroll */

@@ -1,6 +1,7 @@
 *.pyc
 
-# MkDocs dynamically generated files and symlinks
+# MkDocs generated files
 # The docs/ folder is generated at build time by the hook
-# and should not be committed to git
 docs/
+# The site/ folder is the HTML build output
+site/
