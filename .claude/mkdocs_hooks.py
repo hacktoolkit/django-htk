@@ -39,7 +39,7 @@ def generate_nav_config(htk_base: Path) -> list:
 
     # Top-level modules (direct children of htk/)
     top_level_modules = [
-        'admin', 'admintools', 'api', 'cache', 'constants', 'data',
+        'admin', 'admintools', 'api', 'cache', 'constants',
         'decorators', 'extensions', 'forms', 'middleware', 'models',
         'scripts', 'test_scaffold', 'templatetags', 'utils', 'validators'
     ]
@@ -103,7 +103,7 @@ def create_symlinks(docs_dir: Path, htk_base: Path):
     # Map of top-level directory names to documentation file names
     # This creates symlinks like: admin.md -> ../admin/README.md
     top_level_dirs = [
-        'admin', 'admintools', 'api', 'cache', 'constants', 'data', 'decorators',
+        'admin', 'admintools', 'api', 'cache', 'constants', 'decorators',
         'extensions', 'forms', 'middleware', 'models', 'utils', 'validators',
         'test_scaffold', 'scripts', 'templatetags'
     ]
