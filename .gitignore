@@ -1,5 +1,11 @@
 *.pyc
 
-# MkDocs dynamically generated symlinks
+# MkDocs dynamically generated symlinks and files
+# Hook creates symlinks for all top-level modules
+docs/*.md
+docs/*.png
+# And subdirectories for apps and libs
 docs/apps/
 docs/lib/
+# Keep extra.css which is static styling
+!docs/extra.css
