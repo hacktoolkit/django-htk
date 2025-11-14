@@ -1,0 +1,66 @@
+/* Custom color scheme */
+:root {
+  --md-primary-fg-color: #0000e6;
+  --md-primary-fg-color-light: #1a1aff;
+  --md-primary-fg-color-dark: #0000b3;
+}
+
+/* Disable bounce/rubber band effect on entire page while allowing scroll */
+html,
+body {
+  overscroll-behavior: none;
+}
+
+/* Disable pull-to-refresh and overscroll bounce on mobile */
+* {
+  overscroll-behavior: none;
+}
+
+/* Disable footer bounce/animation on scroll */
+.md-footer {
+  position: relative !important;
+  animation: none !important;
+}
+
+/* Ensure footer stays fixed and doesn't bounce */
+.md-footer__inner {
+  animation: none !important;
+}
+
+/* Remove any transition animations on footer */
+.md-footer,
+.md-footer__inner {
+  transition: none !important;
+}
+
+/* Disable header bounce */
+.md-header {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Hide offline plugin messages and skip links that appear below footer */
+.md-skip,
+.md-announce,
+[data-md-component="announce"] {
+  display: none !important;
+}
+
+/* Ensure page doesn't have overflow issues */
+html {
+  overflow-x: hidden;
+}
+
+/* Ensure footer is the last visible element */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.md-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
