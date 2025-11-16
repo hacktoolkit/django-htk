@@ -1,9 +1,0 @@
-{% extends 'emails/base.txt' %}
-
-{% block content %}
-{% include 'emails/htk/fragments/prelaunch/greeting.txt' %}
-
-Thanks for signing up at {{ site_name|default:'Hacktoolkit Site' }}!
-
-We look forward to sending you an update soon!
-{% endblock %}

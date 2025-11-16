@@ -1,2 +1,0 @@
-class NonUniqueEmail(Exception):
-    pass

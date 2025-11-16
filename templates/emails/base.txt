@@ -1,2 +1,0 @@
-{% include 'emails/fragments/header.txt' %}{% block content %}{% endblock %}{% include 'emails/fragments/closing.txt' %}
-{% include 'emails/fragments/footer.txt' %}

@@ -1,1 +1,0 @@
-TESTSERVER = 'testserver'

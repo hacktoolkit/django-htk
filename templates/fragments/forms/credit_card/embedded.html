@@ -1,8 +1,0 @@
-{% for field in form %}
-{% if field_template %}
-{% include 'bfdg/fragments/forms/credit_card_field.html' %}
-{% else %}
-{{ field.label_tag }}
-{{ field }}
-{% endif %}
-{% endfor %}

@@ -1,2 +1,0 @@
-class IterableAPIException(Exception):
-    pass

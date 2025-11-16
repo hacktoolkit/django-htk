@@ -1,7 +1,0 @@
-{% extends 'emails/base.txt' %}
-
-{% block content %}
-Hello {{ user.email }},
-
-Welcome to {{ site_name }}!
-{% endblock %}

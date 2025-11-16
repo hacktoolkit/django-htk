@@ -1,7 +1,0 @@
-*.pyc
-
-# MkDocs generated files
-# The docs/ folder is generated at build time by the hook
-docs/
-# The site/ folder is the HTML build output
-site/
