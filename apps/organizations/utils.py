@@ -48,7 +48,7 @@ def get_organization_team_member_role_choices():
 
 
 def get_user_organizations_with_attribute(user, key):
-    organizations = user.organizations.filter(
+    organizations = user.members.filter(
         active=True, organization__attributes__key=key
     ).exclude(organization__attributes__value=None)
     return organizations
