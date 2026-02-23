@@ -7,13 +7,18 @@ from django.contrib import messages
 from django.shortcuts import redirect
 
 # HTK Imports
+from htk.admintools.decorators import company_employee_required
 from htk.admintools.utils import retrieve_migrations
 from htk.utils import (
     htk_setting,
     resolve_method_dynamically,
     resolve_model_dynamically,
 )
-from htk.view_helpers import render_custom as _r
+from htk.view_helpers import (
+    add_page_title,
+    get_view_context,
+    render_custom as _r,
+)
 
 
 # isort: off
@@ -149,4 +154,40 @@ def todos_view(
     ]
 
     response = _r(request, template, data=data)
+    return response
+
+
+@company_employee_required
+def prelaunch_signups_view(
+    request,
+    template='htk/admintools/prelaunch_signups.html',
+    data=None,
+    renderer=_r,
+    base_template=None,
+):
+    """View for managing prelaunch signups in the admin interface.
+
+    This view displays all prelaunch signups and allows for basic management.
+
+    Args:
+        request: The HTTP request
+        template: The template to use for rendering (default: 'htk/admintools/prelaunch_signups.html')
+        data: Additional context data (default: None)
+        renderer: The template renderer to use (default: _r)
+        base_template: The base template to extend (default: None)
+    """
+    if data is None:
+        data = get_view_context(request)
+    add_page_title(
+        'Prelaunch Signups', data, 'htk_admintools:prelaunch_signups'
+    )
+
+    from htk.apps.prelaunch.loading import PrelaunchSignup
+
+    data['prelaunch_signups'] = PrelaunchSignup.objects.all().order_by(
+        '-created_at'
+    )
+    if base_template:
+        data['base_template'] = base_template
+    response = renderer(request, template, data=data)
     return response
