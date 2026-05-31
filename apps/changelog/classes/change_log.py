@@ -22,6 +22,7 @@ class ChangeLog(
         changelog_file_name,
         slack_announce=False,
         slack_channel=None,
+        slack_username=None,
         slack_webhook_url=None,
         web_url=None,
     ):
@@ -93,6 +94,7 @@ class ChangeLog(
             slack_webhook_call(
                 webhook_url=slack_webhook_url,
                 channel=slack_channel,
+                username=slack_username,
                 text=slack_message,
                 unfurl_links=False,
             )
