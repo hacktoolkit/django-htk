@@ -59,6 +59,7 @@ class Command(BaseCommand):
         silent = kwargs.get('silent', False)
         changelog_file_name = htk_setting('HTK_CHANGELOG_FILE_PATH')
         slack_channel = htk_setting('HTK_CHANGELOG_SLACK_CHANNEL_RELEASES')
+        slack_username = htk_setting('HTK_CHANGELOG_SLACK_USERNAME')
         web_url_name = htk_setting('HTK_CHANGELOG_VIEW_IN_WEB_URL_NAME')
         web_url = htk_setting('HTK_CHANGELOG_VIEW_IN_WEB_URL')
 
@@ -79,6 +80,7 @@ class Command(BaseCommand):
             changelog_file_name=changelog_file_name,
             slack_announce=slack_announce,
             slack_channel=slack_channel,
+            slack_username=slack_username,
             web_url=web_url,
         )
 
