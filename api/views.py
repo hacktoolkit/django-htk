@@ -1,4 +1,5 @@
 # Python Standard Library Imports
+import json
 import operator
 import typing as T
 from dataclasses import dataclass
@@ -12,9 +13,13 @@ from django.http import (
     HttpRequest,
     HttpResponse,
 )
+from django.views import View
 
 # HTK Imports
-from htk.api.utils import json_response
+from htk.api.utils import (
+    json_response,
+    json_response_error,
+)
 from htk.utils import strtobool_safe
 
 # isort: off
@@ -312,3 +317,140 @@ def model_datatables_api_get_view(
         },
     )
     return response
+
+
+class OrderedItemReorderError(ValueError):
+    """Raised when an ordered-item reorder payload is invalid."""
+
+
+def normalize_model_order(
+    queryset: models.QuerySet,
+    order_field: str = 'order',
+    start: int = 0,
+) -> None:
+    """Normalize a queryset's integer order field to contiguous values.
+
+    The queryset should already be scoped to the parent object or owner that is
+    allowed to reorder the items.
+    """
+    ordering = (order_field, 'id')
+    for index, obj in enumerate(queryset.order_by(*ordering), start=start):
+        if getattr(obj, order_field) != index:
+            setattr(obj, order_field, index)
+            obj.save(update_fields=[order_field])
+
+
+def reorder_model_instances(
+    queryset: models.QuerySet,
+    ordered_ids: T.Iterable[T.Union[int, str]],
+    order_field: str = 'order',
+    id_field: str = 'id',
+    start: int = 0,
+) -> list[models.Model]:
+    """Apply a complete explicit ordering to a scoped queryset.
+
+    Raises OrderedItemReorderError unless the payload contains every queryset
+    object exactly once. Callers are expected to pass a queryset already scoped
+    by ownership/parent constraints.
+    """
+    objects_by_id = {getattr(obj, id_field): obj for obj in queryset.all()}
+
+    try:
+        normalized_ids = [int(item_id) for item_id in ordered_ids]
+    except (TypeError, ValueError):
+        raise OrderedItemReorderError('Item IDs must be numbers')
+
+    if len(normalized_ids) != len(set(normalized_ids)):
+        raise OrderedItemReorderError(
+            'Reorder payload must not contain duplicate items'
+        )
+
+    if set(normalized_ids) != set(objects_by_id.keys()):
+        raise OrderedItemReorderError(
+            'Reorder payload must include every item exactly once'
+        )
+
+    reordered_objects = []
+    for index, item_id in enumerate(normalized_ids, start=start):
+        obj = objects_by_id[item_id]
+        setattr(obj, order_field, index)
+        obj.save(update_fields=[order_field])
+        reordered_objects.append(obj)
+
+    return reordered_objects
+
+
+class OrderedItemsReorderViewMixin(View):
+    """Reusable POST handler for reordering scoped ordered child objects.
+
+    Subclasses must implement get_reorder_queryset(). The queryset should be
+    scoped to the current parent object and requester before this mixin sees it.
+    """
+
+    item_ids_body_key = 'item_ids'
+    order_field = 'order'
+    id_field = 'id'
+    order_start = 0
+
+    def get_json_body(self, request: HttpRequest) -> dict:
+        if not request.body:
+            return {}
+
+        try:
+            body = json.loads(request.body.decode('utf-8'))
+        except ValueError:
+            body = None
+        return body
+
+    def get_reorder_queryset(
+        self,
+        request: HttpRequest,
+        *args,
+        **kwargs,
+    ) -> models.QuerySet:
+        raise NotImplementedError(
+            'Subclasses must implement get_reorder_queryset()'
+        )
+
+    def serialize_reorder_response(
+        self,
+        request: HttpRequest,
+        reordered_objects,
+        *args,
+        **kwargs,
+    ):
+        return {'reordered': True}
+
+    def reorder_error_response(
+        self,
+        message: str,
+        status: int = 400,
+    ) -> HttpResponse:
+        return json_response_error({'error': message}, status=status)
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        body = self.get_json_body(request)
+        if body is None:
+            return self.reorder_error_response('Invalid JSON body')
+
+        item_ids = body.get(self.item_ids_body_key) or []
+        queryset = self.get_reorder_queryset(request, *args, **kwargs)
+
+        try:
+            reordered_objects = reorder_model_instances(
+                queryset,
+                item_ids,
+                order_field=self.order_field,
+                id_field=self.id_field,
+                start=self.order_start,
+            )
+        except OrderedItemReorderError as exc:
+            return self.reorder_error_response(str(exc))
+
+        payload = self.serialize_reorder_response(
+            request,
+            reordered_objects,
+            *args,
+            **kwargs,
+        )
+        return json_response(payload)
