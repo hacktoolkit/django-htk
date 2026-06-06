@@ -6,6 +6,7 @@ import sys
 from user_agents import parse as parse_user_agent
 
 # Django Imports
+from django.conf import settings
 from django.core.exceptions import RequestDataTooBig
 from django.shortcuts import redirect
 from django.utils import timezone
@@ -170,6 +171,37 @@ class HttpErrorResponseMiddleware:
         else:
             response = None
 
+        return response
+
+
+class RobotsTagHeaderMiddleware:
+    """Add HTTP-level robots directives for duplicate/stale URLs.
+
+    Non-production responses should not be indexed, even when crawlers find
+    demo/dev URLs outside the sitemap. Production 404/410 responses should
+    also send a noindex signal so stale URLs can drop from search results.
+    """
+
+    NON_PRODUCTION_ROBOTS_TAG = 'noindex, nofollow, noarchive'
+    NOT_FOUND_ROBOTS_TAG = 'noindex, nofollow'
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if not getattr(settings, 'ENV_PROD', True):
+            response['X-Robots-Tag'] = getattr(
+                settings,
+                'HTK_NON_PRODUCTION_X_ROBOTS_TAG',
+                self.NON_PRODUCTION_ROBOTS_TAG,
+            )
+        elif response.status_code in (404, 410):
+            response['X-Robots-Tag'] = getattr(
+                settings,
+                'HTK_NOT_FOUND_X_ROBOTS_TAG',
+                self.NOT_FOUND_ROBOTS_TAG,
+            )
         return response
 
 

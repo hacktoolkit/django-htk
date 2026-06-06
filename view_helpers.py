@@ -457,6 +457,17 @@ def set_meta_canonical_url(canonical_url, data=None):
     )
 
 
+def set_meta_robots(robots, data=None):
+    """Sets the META robots directive."""
+    if data is not None:
+        data.setdefault('meta', {})['robots'] = robots
+
+
+def add_noindex_page_meta(data=None, robots='noindex,follow'):
+    """Mark a public utility/duplicate page as crawlable but not indexable."""
+    set_meta_robots(robots, data=data)
+
+
 def add_breadcrumb_mapping(url_name, title, data):
     url_names_to_breadcrumbs = (
         data.get('meta', {})
