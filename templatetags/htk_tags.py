@@ -494,7 +494,7 @@ def distance_from(obj, lat, lng, unit='mile'):
 
 
 @register.simple_tag()
-def qrcode_image_url(qr_data):
+def qrcode_image_url(qr_data, image_format='png'):
     """Returns the URL to the QR Code image of `qr_data`"""
     if qr_data:
         from htk.lib.qrcode.utils import generate_qr_key
@@ -506,6 +506,7 @@ def qrcode_image_url(qr_data):
                 {
                     'key': generate_qr_key(qr_data),
                     'data': qr_data,
+                    'format': image_format,
                 }
             )
             image_url = '%s?%s' % (

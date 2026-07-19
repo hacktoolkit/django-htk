@@ -3,6 +3,7 @@ import hashlib
 
 # Third Party (PyPI) Imports
 import qrcode
+import qrcode.image.svg
 from PIL import Image
 
 # Django Imports
@@ -13,7 +14,7 @@ from django.http import HttpResponseForbidden
 from htk.utils import htk_setting
 
 
-def qrcode_image_response(data=''):
+def qrcode_image_response(data='', image_format='png'):
     """Returns a QR Code image as an HTTP response
 
     This method is unrestricted (i.e. you wouldn't want anyone on the web generating QR codes automatically)
@@ -21,15 +22,25 @@ def qrcode_image_response(data=''):
 
     TODO: Possible improvements: Cache (for a short period) requests for the same QR Code data-payload?
     """
-    img = make_qr_code_image(data)
+    image_format = normalize_qr_image_format(image_format)
+    img = make_qr_code_image(data, image_format=image_format)
     #img = solid_color_image(width=200, height=200)
 
-    response = HttpResponse(content_type='image/png')
-    img.save(response, 'png')
+    if image_format == 'svg':
+        response = HttpResponse(content_type='image/svg+xml')
+        img.save(response)
+    else:
+        response = HttpResponse(content_type='image/png')
+        img.save(response, 'png')
     return response
 
 
-def restricted_qrcode_image_response(data='', key=None, require_key=True):
+def restricted_qrcode_image_response(
+    data='',
+    key=None,
+    require_key=True,
+    image_format='png'
+):
     is_valid = False
 
     if require_key and key:
@@ -42,7 +53,7 @@ def restricted_qrcode_image_response(data='', key=None, require_key=True):
         is_valid = True
 
     if is_valid:
-        response = qrcode_image_response(data)
+        response = qrcode_image_response(data, image_format=image_format)
     else:
         response = HttpResponseForbidden()
 
@@ -54,7 +65,8 @@ def make_qr_code_image(
     version=1,
     error_correction=qrcode.constants.ERROR_CORRECT_M,
     box_size=10,
-    border=4
+    border=4,
+    image_format='png'
 ):
     """Generates a QR Code image
 
@@ -80,16 +92,29 @@ def make_qr_code_image(
     A shorthand with all of the defaults is possible:
     qrcode.make(data)
     """
+    image_format = normalize_qr_image_format(image_format)
+    image_factory = None
+    if image_format == 'svg':
+        image_factory = qrcode.image.svg.SvgPathImage
+
     qr = qrcode.QRCode(
         version=version,
         error_correction=error_correction,
         box_size=box_size,
-        border=border
+        border=border,
+        image_factory=image_factory
     )
     qr.add_data(data)
     qr.make(fit=True)
     img = qr.make_image()
     return img
+
+
+def normalize_qr_image_format(image_format):
+    image_format = (image_format or 'png').lower()
+    if image_format not in ('png', 'svg'):
+        image_format = 'png'
+    return image_format
 
 
 def solid_color_image(width=1, height=1, r=0, g=0, b=0, a=0):

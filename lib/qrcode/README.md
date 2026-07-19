@@ -1,137 +1,50 @@
-# Integration
+# QR Code Helpers
 
-## Overview
+Utilities for generating QR code images from text or URLs.
 
-This integration integrates with an external service, providing a Python client and utilities for common operations.
-
-## Quick Start
-
-### Initialize Client
+## Image generation
 
 ```python
-from htk.lib.qrcode.utils import Client
+from htk.lib.qrcode.utils import make_qr_code_image
 
-# Create client with credentials
-client = Client(api_key='your_api_key')
-
-# Or use from settings
-client = Client()  # Uses HTK_QRCODE_API_KEY from settings
+png_image = make_qr_code_image('https://example.com')
+svg_image = make_qr_code_image('https://example.com', image_format='svg')
 ```
 
-### Basic Operation
+Supported `image_format` values:
+
+- `png` — default, returns a Pillow-backed image suitable for `image/png` responses.
+- `svg` — returns a `qrcode.image.svg.SvgPathImage` suitable for `image/svg+xml` responses.
+
+Unknown formats fall back to `png` for backwards compatibility.
+
+## Django responses
 
 ```python
-# Get resource
-resource = client.get_resource(id='resource_id')
+from htk.lib.qrcode.utils import qrcode_image_response
 
-# List resources
-resources = client.list_resources(limit=10)
-
-# Create resource
-new_resource = client.create_resource(name='My Resource')
+response = qrcode_image_response('https://example.com')
+svg_response = qrcode_image_response('https://example.com', image_format='svg')
 ```
 
-## Operations
-
-### Read Operations
+Restricted responses validate the generated key before serving the image:
 
 ```python
-# Get single resource
-resource = client.get(id='123')
+from htk.lib.qrcode.utils import generate_qr_key
+from htk.lib.qrcode.utils import restricted_qrcode_image_response
 
-# List resources
-resources = client.list(limit=10, offset=0)
-
-# Search
-results = client.search(query='search term')
-
-# Count
-count = client.count()
+url = 'https://example.com'
+key = generate_qr_key(url)
+response = restricted_qrcode_image_response(url, key=key, image_format='svg')
 ```
 
-### Write Operations
+## Template tag
 
-```python
-# Create resource
-new = client.create(name='test')
+The `qrcode_image_url` tag accepts an optional format argument:
 
-# Update resource
-updated = client.update(id='123', name='new name')
-
-# Delete resource
-client.delete(id='123')
+```django
+{% load htk_tags %}
+<img src="{% qrcode_image_url cpq_url 'svg' %}" alt="QR code" />
 ```
 
-## Authentication
-
-Configure credentials:
-
-```python
-# settings.py
-HTK_QRCODE_API_KEY = 'your_api_key'
-HTK_QRCODE_API_SECRET = 'your_secret'
-HTK_QRCODE_API_URL = 'https://api.service.com'
-```
-
-## Response Format
-
-API responses are returned as Python dictionaries or objects:
-
-```python
-result = client.get(id='123')
-print(result['name'])
-print(result['created_at'])
-```
-
-## Pagination
-
-Handle paginated responses:
-
-```python
-# Get paginated results
-items = client.list(limit=100, offset=0)
-
-# Or use iterator
-for item in client.list_all():
-    process(item)
-```
-
-## Caching
-
-Cache responses when appropriate:
-
-```python
-from django.core.cache import cache
-
-def get_resource(id):
-    cache_key = f'resource_{id}'
-    resource = cache.get(cache_key)
-
-    if resource is None:
-        resource = client.get(id=id)
-        cache.set(cache_key, resource, 3600)
-
-    return resource
-```
-
-## Configuration
-
-Configure in Django settings:
-
-```python
-# settings.py
-HTK_QRCODE_ENABLED = True
-HTK_QRCODE_API_KEY = 'your_key'
-HTK_QRCODE_TIMEOUT = 30
-HTK_QRCODE_RETRIES = 3
-```
-
-## Best Practices
-
-1. **Handle errors** - Always handle API errors gracefully
-2. **Respect rate limits** - Don't exceed API rate limits
-3. **Cache responses** - Cache data when appropriate
-4. **Use retries** - Implement exponential backoff
-5. **Validate input** - Validate data before sending to API
-6. **Log operations** - Log API calls for debugging
-7. **Test with sandbox** - Test in sandbox before production
+The endpoint still requires `HTK_QR_IMAGE_URL_NAME` and `HTK_QR_SECRET` settings for signed QR image URLs.
