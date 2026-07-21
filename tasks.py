@@ -55,7 +55,7 @@ class BaseTask(object):
     def execute(self, user):
         """Workhorse function called by `self.execute_batch`
 
-        Can be overriden
+        Can be overridden
         """
         pass
 
