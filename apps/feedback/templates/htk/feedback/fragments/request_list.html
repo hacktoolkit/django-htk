@@ -1,0 +1,61 @@
+<div class="feedback-request-list">
+  {% for feedback_request in feedback_requests %}
+  <article id="request-{{ feedback_request.id }}" class="feedback-request-card">
+    <div class="feedback-vote-control{% if feedback_request.user_has_voted %} is-voted{% endif %}{% if feedback_request.user_has_upvoted %} is-upvoted{% endif %}{% if feedback_request.user_has_downvoted %} is-downvoted{% endif %}{% if feedback_request.user_vote_locked %} is-locked{% endif %}" aria-label="{{ feedback_request.votes_count }} vote score">
+      {% if feedback_user_is_authenticated %}
+        <form method="post" action="{% url feedback_upvote_url_name feedback_request.id %}">
+          {% csrf_token %}
+          <button class="feedback-vote-arrow feedback-vote-arrow--up" type="submit" aria-label="Upvote {{ feedback_request.title }}" {% if feedback_request.user_has_upvoted %}disabled{% endif %}>▲</button>
+        </form>
+      {% else %}
+        <a class="feedback-vote-arrow feedback-vote-arrow--up" href="{{ account_login_url }}" aria-label="Log in to upvote {{ feedback_request.title }}">▲</a>
+      {% endif %}
+      <strong>{{ feedback_request.votes_count }}</strong>
+      <span>score</span>
+      {% if feedback_user_is_authenticated %}
+        <form method="post" action="{% url feedback_downvote_url_name feedback_request.id %}">
+          {% csrf_token %}
+          <button class="feedback-vote-arrow feedback-vote-arrow--down" type="submit" aria-label="Downvote {{ feedback_request.title }}" {% if feedback_request.user_has_downvoted or feedback_request.user_vote_locked %}disabled{% endif %}>▼</button>
+        </form>
+        {% if feedback_request.user_vote_locked %}
+        <small>Your request keeps your upvote.</small>
+        {% elif feedback_request.user_has_upvoted %}
+        <small>You upvoted this.</small>
+        {% elif feedback_request.user_has_downvoted %}
+        <small>You downvoted this.</small>
+        {% endif %}
+      {% else %}
+        <a class="feedback-vote-arrow feedback-vote-arrow--down" href="{{ account_login_url }}" aria-label="Log in to downvote {{ feedback_request.title }}">▼</a>
+      {% endif %}
+      {% if feedback_request.upvotes_count or feedback_request.downvotes_count %}
+      <small>{{ feedback_request.upvotes_count }} up · {{ feedback_request.downvotes_count }} down</small>
+      {% endif %}
+    </div>
+    <div class="feedback-request-body">
+      <div class="feedback-request-meta">
+        <span class="feedback-pill">{{ feedback_request.get_request_type_display }}</span>
+        <span class="feedback-pill feedback-pill-status">{{ feedback_request.get_status_display }}</span>
+        <span class="feedback-pill feedback-pill-visibility feedback-pill-visibility--{{ feedback_request.visibility }}">{{ feedback_request.get_visibility_display }}</span>
+        {% if feedback_request.user_created_request %}<span class="feedback-pill feedback-pill-owner">Your submission</span>{% endif %}
+      </div>
+      <h3>{{ feedback_request.title }}</h3>
+      {% if feedback_request.description %}
+      <p>{{ feedback_request.description|linebreaksbr }}</p>
+      {% endif %}
+      <p class="feedback-muted small">
+        Added {{ feedback_request.created_on|date:"M j, Y" }}{% if feedback_request.display_name %} by {{ feedback_request.display_name }}{% endif %}
+        {% if feedback_request.comments_count %} · {{ feedback_request.comments_count }} comment{{ feedback_request.comments_count|pluralize }}{% endif %}
+      </p>
+    </div>
+  </article>
+  {% empty %}
+  <div class="feedback-empty-state">
+    <h3>No matching feedback yet.</h3>
+    {% if feedback_user_is_authenticated %}
+    <p>Start the conversation with the feedback form. We’ll review new submissions before adding them to the public roadmap.</p>
+    {% else %}
+    <p>Log in or create an account to send feedback. We’ll review new submissions before adding them to the public roadmap.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>

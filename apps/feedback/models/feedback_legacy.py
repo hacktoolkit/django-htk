@@ -1,12 +1,10 @@
 # Django Imports
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db import models
 
 # HTK Imports
 from htk.models import HtkBaseModel
-from htk.utils import utcnow
 
 
 class Feedback(HtkBaseModel):
@@ -31,6 +29,6 @@ class Feedback(HtkBaseModel):
         s = '%s, %s, [%s]' % (
             self.created_on.strftime('%Y-%m-%d %H:%M:%S'),
             self.uri,
-            self.comment[:50] + '...' if len(self.comment) > 50 else self.comment
+            self.comment[:50] + '...' if self.comment and len(self.comment) > 50 else self.comment
         )
         return s

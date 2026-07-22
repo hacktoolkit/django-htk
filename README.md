@@ -93,6 +93,12 @@ See [lib/README.md](./lib/README.md) for details on 45+ integrations including:
 - Location: Google Maps, Mapbox, Zillow
 - Search: Elasticsearch integration patterns
 
+## Code Organization
+
+For new Django apps/modules, prefer a `models/` package with explicit model files when there is more than one model or the model set is likely to grow. Keep `models/__init__.py` explicit so Django discovers every model and downstream apps can continue importing from `htk.apps.<app>.models`. Tiny one-model apps may remain as `models.py` when a package would add noise.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full model organization convention.
+
 ## Project Structure
 
 ```

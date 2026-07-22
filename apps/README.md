@@ -15,6 +15,10 @@ HTK provides 29 pre-built apps organized by feature:
 - **Data Management** - Files, storage, key-value storage
 - **Utilities** - Async tasks, features, changelog, documentation
 
+## App Code Organization
+
+New multi-model Django apps should prefer a `models/` package with one focused model file per model, an explicit `models/__init__.py` that re-exports public models, and a short `models/README.md`. This keeps reusable apps reviewable while preserving imports such as `from htk.apps.example.models import Thing`.
+
 ## User Management
 
 ### Accounts (`accounts`)

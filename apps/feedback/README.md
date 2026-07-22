@@ -1,228 +1,206 @@
 # Feedback App
 
-User feedback and review collection system.
+Reusable feedback collection and lightweight feature-request infrastructure.
 
-## Quick Start
+The app keeps the legacy `Feedback` contact-form model working, while adding a
+small product-feedback layer for reviewable requests, votes, and comments.
+
+## Core Concepts
+
+### Legacy `Feedback`
+
+`Feedback` remains a simple contact-form submission model:
 
 ```python
 from htk.apps.feedback.models import Feedback
 
-# Submit feedback
 feedback = Feedback.objects.create(
-    user=request.user,
-    message='Great product!',
-    rating=5,
-    category='general'
-)
-
-# Get user's feedback
-user_feedback = Feedback.objects.filter(user=request.user)
-
-# Query by category
-feature_requests = Feedback.objects.filter(category='feature_request')
-```
-
-## Submitting Feedback
-
-### Basic Feedback
-
-```python
-from htk.apps.feedback.models import Feedback
-
-# Simple feedback
-feedback = Feedback.objects.create(
+    site=site,
     user=user,
-    message='Love the new design!',
-    rating=5
-)
-
-# Or without user
-anonymous_feedback = Feedback.objects.create(
-    email='user@example.com',
-    message='Found a bug',
-    rating=2,
-    category='bug'
+    name='Jane',
+    email='jane@example.com',
+    comment='This page was confusing.',
+    uri='/dashboard',
 )
 ```
 
-### Categorized Feedback
+The legacy API endpoint remains available:
+
+```
+POST /feedback/submit
+```
+
+### `FeedbackRequest`
+
+A request is the central reviewable item: feature request, bug report, content
+issue, support question, or general feedback. New requests default to `private`
+and `needs_review=True`; publish them only after staff review.
 
 ```python
-from htk.apps.feedback.models import Feedback
+from htk.apps.feedback.constants import FEEDBACK_REQUEST_TYPE_FEATURE
+from htk.apps.feedback.models import FeedbackRequest
 
-# Categorize feedback
-categories = ['general', 'bug', 'feature_request', 'support']
-
-bug_report = Feedback.objects.create(
-    user=user,
-    message='Image upload broken',
-    category='bug',
-    rating=1
-)
-
-feature_req = Feedback.objects.create(
-    user=user,
-    message='Please add dark mode',
-    category='feature_request',
-    rating=4
+feedback = FeedbackRequest.objects.create(
+    site=site,
+    created_by=user,
+    request_type=FEEDBACK_REQUEST_TYPE_FEATURE,
+    title='Add saved searches',
+    description='I would like to save searches and return to them later.',
+    source_uri='/search',
+    context={
+        'app': 'example-app',
+        'surface': 'search-results',
+    },
 )
 ```
 
-## Common Patterns
+## Bug Reports: User/Page State
 
-### Feedback Analytics
+For bug reports, downstream apps should submit structured context that makes the
+report reproducible. Keep files/uploads in the consuming app until there is a
+clear shared storage policy.
 
-```python
-from django.db.models import Avg, Count
-from htk.apps.feedback.models import Feedback
+Suggested generic context:
 
-# Average rating
-avg_rating = Feedback.objects.aggregate(
-    avg=Avg('rating')
-)['avg']
-
-# Count by category
-feedback_by_category = Feedback.objects.values('category').annotate(
-    count=Count('id'),
-    avg_rating=Avg('rating')
-).order_by('-count')
-
-# Get top rated feedback
-top_feedback = Feedback.objects.order_by('-rating')[:10]
-
-# Recent feedback
-recent = Feedback.objects.order_by('-created')[:20]
-```
-
-### Feedback Dashboard
-
-```python
-from django.db.models import Avg, Count, Q
-from htk.apps.feedback.models import Feedback
-from django.utils import timezone
-from datetime import timedelta
-
-# Last 30 days stats
-cutoff = timezone.now() - timedelta(days=30)
-recent_feedback = Feedback.objects.filter(created__gte=cutoff)
-
-stats = {
-    'total': recent_feedback.count(),
-    'avg_rating': recent_feedback.aggregate(avg=Avg('rating'))['avg'],
-    'bugs': recent_feedback.filter(category='bug').count(),
-    'features': recent_feedback.filter(category='feature_request').count(),
+```json
+{
+  "app": "example-app",
+  "surface": "search-results",
+  "path": "/search?q=grace",
+  "query": "grace",
+  "viewport": {"width": 1440, "height": 900},
+  "app_version": "2026.07.21"
 }
 ```
 
-### Filter by Rating
+## API Endpoints
 
-```python
-from htk.apps.feedback.models import Feedback
+The app uses plain Django views and HTK JSON helpers, not DRF. Existing URL
+style omits trailing slashes.
 
-# Get positive feedback
-positive = Feedback.objects.filter(rating__gte=4)
-
-# Get negative feedback
-negative = Feedback.objects.filter(rating__lte=2)
-
-# Get critical issues
-critical = Feedback.objects.filter(
-    category='bug',
-    rating__lte=2
-)
-```
-
-### Integration with Notifications
-
-```python
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from htk.apps.feedback.models import Feedback
-from htk.apps.notifications.utils import notify
-
-@receiver(post_save, sender=Feedback)
-def notify_team_on_feedback(sender, instance, created, **kwargs):
-    if created:
-        # Notify team on new feedback
-        if instance.category == 'bug':
-            notify(
-                admin_users,
-                f'Bug report: {instance.message}',
-                channel='slack'
-            )
-        elif instance.category == 'feature_request':
-            notify(
-                product_team,
-                f'Feature request: {instance.message}',
-                channel='email'
-            )
-```
-
-## Models
-
-### Feedback
-
-```python
-class Feedback(models.Model):
-    user = ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-    email = EmailField(blank=True)
-    message = TextField()
-    rating = IntegerField(default=0)  # 1-5 stars
-    category = CharField(max_length=50, default='general')
-    created = DateTimeField(auto_now_add=True)
-    updated = DateTimeField(auto_now=True)
-    is_resolved = BooleanField(default=False)
-```
-
-## API Views
-
-### Submit Feedback
+### List requests
 
 ```
-POST /feedback/submit/
+GET /feedback/requests?q=search&type=feature_request&status=planned&order=popular
+```
+
+Response includes public, non-hidden, non-spam requests for normal users. Staff
+users may see private/hidden items.
+
+### Find likely duplicates
+
+```
+GET /feedback/requests/matches?q=saved%20searches
+```
+
+Use this while a user is typing a title/body so they can find an existing
+idea to vote on instead of creating a duplicate.
+
+### Submit a request
+
+```
+POST /feedback/requests/submit
 Content-Type: application/json
 
 {
-    "message": "Great product!",
-    "rating": 5,
-    "category": "general"
+  "type": "feature_request",
+  "title": "Add saved searches",
+  "description": "I would like to save searches and return to them later.",
+  "context": {
+    "surface": "search-results"
+  }
 }
 ```
 
-### Get Feedback History
+Form-encoded submissions are also supported. Public-facing submissions default
+to `visibility=private` and `needs_review=true`; non-staff users cannot
+self-publish by passing `visibility=public`. Staff may intentionally set
+`visibility=public` and `needs_review=false` after review.
+
+### Detail
 
 ```
-GET /feedback/my-feedback/
+GET /feedback/requests/<id>
 ```
 
-Returns user's feedback history with ratings and dates.
+Returns the request plus public comments.
 
-## Configuration
+### Vote / unvote
+
+```
+POST /feedback/requests/<id>/vote
+POST /feedback/requests/<id>/unvote
+```
+
+Authenticated users can vote once per request, with `value=1` for an upvote
+and `value=-1` for a downvote. Omitting `value` preserves legacy upvote
+behavior. Anonymous voting is intentionally not supported; require login so
+the vote row only needs a `user` FK.
+
+### Comment
+
+```
+POST /feedback/requests/<id>/comment
+```
+
+Public comments are available by default. Staff users may pass
+`is_internal=true` for staff-only comments.
+
+### Staff status update
+
+```
+POST /feedback/requests/<id>/status
+```
+
+Staff-only. Changes the request status directly.
+
+### My requests
+
+```
+GET /feedback/requests/my
+```
+
+Authenticated users can see requests they created or voted for.
+
+## Admin
+
+The feature-request models live in the Django admin under **Htk Feedback** so downstream apps can use the shared HTK feedback infrastructure without making the models look product-owned.
+
+The legacy `Feedback` contact-form model is registered in admin by default for backward compatibility. Downstream apps that only want the request/vote/comment surface can hide it with:
 
 ```python
-# settings.py
-FEEDBACK_CATEGORIES = [
-    ('general', 'General Feedback'),
-    ('bug', 'Bug Report'),
-    ('feature_request', 'Feature Request'),
-    ('support', 'Support Issue'),
-]
-
-FEEDBACK_ENABLED = True
-FEEDBACK_RATING_MIN = 1
-FEEDBACK_RATING_MAX = 5
-
-# Notification settings
-FEEDBACK_NOTIFY_ON_CRITICAL = True  # Notify team on low ratings
-FEEDBACK_CRITICAL_THRESHOLD = 2  # Rating threshold
+HTK_FEEDBACK_ENABLE_LEGACY_ADMIN = False
 ```
 
-## Best Practices
+This setting only controls admin registration for the legacy model; it does not change migrations, tables, or public imports.
 
-1. **Categorize feedback** - Use categories for organization
-2. **Track ratings** - Use 1-5 star system for quantitative data
-3. **Include timestamps** - Track when feedback was submitted
-4. **Allow anonymous feedback** - Don't require user account
-5. **Follow up on bugs** - Mark as resolved when fixed
-6. **Analyze trends** - Review feedback regularly
-7. **Notify team** - Alert relevant teams of critical issues
+## Model File Layout
+
+Feedback uses the standard multi-model app package layout:
+
+```text
+models/
+├── __init__.py
+├── feedback.py
+├── feedback_legacy.py
+├── vote.py
+└── comment.py
+```
+
+Import from `htk.apps.feedback.models` unless you specifically need an internal model file. `models/__init__.py` is the stable public surface and imports every model explicitly.
+
+## Model Shape
+
+- `FeedbackRequest` — idea/feature/bug/content/support/general request.
+- `FeedbackRequestVote` — one active upvote/downvote row per authenticated user.
+- `FeedbackRequestComment` — public or internal discussion.
+
+## Integration Notes
+
+- Keep new submissions private by default and publish only reviewed, public-safe requests.
+- Keep status lightweight; add richer workflow only when a real queue needs it.
+- Scope every request by `site`.
+- Do not duplicate authenticated identity snapshots; use the `created_by`/`user` FKs.
+- Keep anonymous request submission contact-free for now. Add app-local contact capture only when a real follow-up workflow exists.
+- Add async email/webhook delivery in consuming apps or future HTK work.
+- Use `context` JSON for app-specific page state and `metadata` JSON for staff/integration-only data.
