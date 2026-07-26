@@ -6,6 +6,7 @@ import requests
 
 # Django Imports
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
 # HTK Imports
@@ -106,3 +107,19 @@ def build_full_url(partial_url, request=None, use_secure=True):
 
     full_url = '{}://{}{}'.format(protocol, domain, partial_url)
     return full_url
+
+
+def build_model_admin_url(model_instance, full_url=False) -> str:
+    """Build the Django admin change URL for a model instance.
+
+    Returns the relative admin URL by default. Pass `full_url=True` when callers
+    need an absolute URL composed via `build_full_url()`.
+    """
+    content_type = ContentType.objects.get_for_model(model_instance.__class__)
+    url = reverse(
+        "admin:%s_%s_change" % (content_type.app_label, content_type.model),
+        args=(model_instance.id,),
+    )
+    if full_url:
+        url = build_full_url(url)
+    return url

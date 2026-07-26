@@ -195,6 +195,19 @@ Import from `htk.apps.feedback.models` unless you specifically need an internal 
 - `FeedbackRequestVote` — one active upvote/downvote row per authenticated user.
 - `FeedbackRequestComment` — public or internal discussion.
 
+## Slack Notifications
+
+New `FeedbackRequest` submissions can post to Slack through HTK's existing Slack webhook helper. Configure the downstream app with:
+
+```python
+HTK_FEEDBACK_SLACK_ENABLED = True
+HTK_FEEDBACK_SLACK_CHANNEL = '#feedback'
+HTK_FEEDBACK_SLACK_USERNAME = 'Feedback'  # optional
+HTK_FEEDBACK_SLACK_ICON_EMOJI = ':memo:'  # optional
+```
+
+Notifications include request type, status, visibility, submitter, source page, and a direct Django admin link built from HTK's shared model admin URL helpers.
+
 ## Integration Notes
 
 - Keep new submissions private by default and publish only reviewed, public-safe requests.
@@ -202,5 +215,5 @@ Import from `htk.apps.feedback.models` unless you specifically need an internal 
 - Scope every request by `site`.
 - Do not duplicate authenticated identity snapshots; use the `created_by`/`user` FKs.
 - Keep anonymous request submission contact-free for now. Add app-local contact capture only when a real follow-up workflow exists.
-- Add async email/webhook delivery in consuming apps or future HTK work.
+- Use Slack notifications for quick human triage when the consuming app has a configured Slack webhook/channel.
 - Use `context` JSON for app-specific page state and `metadata` JSON for staff/integration-only data.

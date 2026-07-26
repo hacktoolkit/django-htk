@@ -33,6 +33,12 @@ Guidelines:
 
 When adding or materially changing reusable app structure, update the app README and any relevant top-level docs in the same change. Keep examples generic unless the module is intentionally product-specific.
 
+## Reuse and Naming Style
+
+HTK should stay DRY and composable: prefer extending existing utilities in `htk.utils`, shared model/base classes, or reusable app APIs before adding one-off helpers to a feature module. Build small Lego-block functions that downstream projects can reuse.
+
+For new APIs, avoid `get_*` names unless matching Django conventions, preserving backward compatibility, or overriding an existing API. Follow the naming principles in `CONTRIBUTING.md` and Jonathan Tsai's post ["Get Is the Worst Function Prefix Ever"](https://www.jontsai.com/2022/07/14/get-is-the-worst-function-prefix-ever): use precise verbs such as `extract_*`, `build_*`, `enrich_*`, `combine_*`, `calculate_*`, `look_up_*`, `retrieve_*`, `fetch_*`, `format_*`, and `transform_*` so the name reveals what the function does and what costs/risks callers should expect.
+
 ## Safety
 
 - Do not commit secrets, tokens, private credentials, or private customer/user data.

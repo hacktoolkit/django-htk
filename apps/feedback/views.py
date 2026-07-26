@@ -18,6 +18,7 @@ from htk.apps.feedback.constants import *
 from htk.apps.feedback.forms import FeedbackForm
 from htk.apps.feedback.models import FeedbackRequest
 from htk.apps.feedback.models import FeedbackRequestComment
+from htk.apps.feedback.services import safely_notify_feedback_request_slack
 
 
 @require_POST
@@ -246,6 +247,7 @@ def request_submit(request):
     )
     if user is not None:
         feedback_request.upvote(user=user)
+    safely_notify_feedback_request_slack(feedback_request, request=request)
     return json_response_okay({'request': _serialize_request(feedback_request, include_detail=True)})
 
 

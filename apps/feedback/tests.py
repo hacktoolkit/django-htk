@@ -14,6 +14,7 @@ from django.test import override_settings
 # HTK Imports
 from htk.api.constants import HTK_API_KEY_ANTISPAM
 from htk.api.constants import HTK_API_VALUE_ANTISPAM_CHALLENGE_RESPONSE
+from htk.apps.accounts.utils.general import get_user_profile_model
 from htk.apps.feedback.constants import FEEDBACK_REQUEST_TYPE_BUG
 from htk.apps.feedback.constants import FEEDBACK_REQUEST_TYPE_FEATURE
 from htk.apps.feedback.constants import FEEDBACK_STATUS_IN_PROGRESS
@@ -26,6 +27,7 @@ from htk.apps.feedback.models import FeedbackRequest
 from htk.apps.feedback.models import FeedbackRequestComment
 from htk.apps.feedback.models import FeedbackRequestVote
 from htk.apps.feedback import views
+from htk.utils.urls import build_full_url
 
 
 @override_settings(SITE_ID=1)
@@ -49,11 +51,24 @@ class FeedbackRequestApiTestCase(TestCase):
             first_name='Feedback',
             last_name='Reader',
         )
-        self.staff = User.objects.create_user(
-            username='feedback-staff',
-            email='feedback-staff@example.com',
+        self.staff_user = User.objects.create_user(
+            username='staff-user',
+            email='staff-user@example.com',
             password='password',
             is_staff=True,
+        )
+        UserProfileModel = get_user_profile_model()
+        UserProfileModel.objects.get_or_create(
+            user=self.user,
+            defaults={
+                'has_username_set': True,
+            },
+        )
+        UserProfileModel.objects.get_or_create(
+            user=self.staff_user,
+            defaults={
+                'has_username_set': True,
+            },
         )
 
     def _json(self, response):
@@ -68,7 +83,12 @@ class FeedbackRequestApiTestCase(TestCase):
         request.user = user if user is not None else AnonymousUser()
         return request
 
-    def test_request_submit_creates_request_and_vote(self):
+    @override_settings(
+        HTK_FEEDBACK_SLACK_ENABLED=True,
+        HTK_FEEDBACK_SLACK_CHANNEL='#feedback',
+    )
+    @mock.patch('htk.apps.feedback.services.slack_webhook_call')
+    def test_request_submit_creates_request_vote_and_slack_notification(self, slack_webhook_call):
         request = self._request(
             'post',
             '/feedback/requests/submit',
@@ -99,9 +119,22 @@ class FeedbackRequestApiTestCase(TestCase):
         self.assertEqual(1, feedback_request.votes_count)
         self.assertEqual(1, feedback_request.upvotes_count)
         self.assertEqual(0, feedback_request.downvotes_count)
+        expected_full_admin_url = build_full_url(feedback_request.admin_url)
+        self.assertEqual(
+            expected_full_admin_url,
+            feedback_request.full_admin_url,
+        )
         vote = FeedbackRequestVote.objects.get()
         self.assertEqual(self.user, vote.user)
         self.assertEqual(FEEDBACK_VOTE_UP, vote.value)
+        slack_webhook_call.assert_called_once()
+        _, kwargs = slack_webhook_call.call_args
+        self.assertEqual('#feedback', kwargs['channel'])
+        self.assertEqual(':memo: New feedback submitted', kwargs['text'])
+        attachment = kwargs['attachments'][0]
+        self.assertEqual('Add reading plan support', attachment['title'])
+        self.assertIn('Open in Django admin', attachment['fields'][-1]['value'])
+        self.assertIn(expected_full_admin_url, attachment['fields'][-1]['value'])
 
     def test_request_submit_allows_anonymous_feedback_without_identity(self):
         request = self._request(
@@ -170,7 +203,7 @@ class FeedbackRequestApiTestCase(TestCase):
         request = self._request(
             'post',
             '/feedback/requests/submit',
-            user=self.staff,
+            user=self.staff_user,
             data={
                 'title': 'Reviewed public request',
                 'description': 'Staff can intentionally publish reviewed requests.',
@@ -258,7 +291,7 @@ class FeedbackRequestApiTestCase(TestCase):
         status_request = self._request(
             'post',
             '/feedback/requests/%s/status' % feedback_request.id,
-            user=self.staff,
+            user=self.staff_user,
             data={
                 'status': FEEDBACK_STATUS_IN_PROGRESS,
                 'message': 'We are checking the content import.',

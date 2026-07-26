@@ -12,6 +12,17 @@ def html2markdown(html):
     return markdown_text
 
 
+def slack_escape_text(value):
+    """Escape text for safe use inside Slack mrkdwn text fields."""
+    text = str(value or '')
+    escaped_text = (
+        text.replace('&', '&amp;')
+        .replace('<', '&lt;')
+        .replace('>', '&gt;')
+    )
+    return escaped_text
+
+
 def markdown2slack(markdown_text):
     """Converts Markdown-formatted text to Slack-formatted text
     """
