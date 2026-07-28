@@ -1,15 +1,18 @@
+# Python Standard Library Imports
+from typing import Iterable, List, Optional, Tuple
+
 # Third Party (PyPI) Imports
 import numpy
 
 
-def levenshtein_distance(w1, w2):
-    """The Levenshtein distance algorithm that compares two words
+def levenshtein_distance(w1: str, w2: str) -> int:
+    """Return the Levenshtein edit distance between two strings.
 
-    https://en.wikipedia.org/wiki/Levenshtein_distance
+    The distance is the minimum number of insertions, deletions, or
+    substitutions needed to change ``w1`` into ``w2``.
 
-    https://blog.paperspace.com/implementing-levenshtein-distance-word-autocomplete-autocorrect/
-
-    Returns an `int` representing the edit distance between two words
+    See: https://en.wikipedia.org/wiki/Levenshtein_distance
+    See: https://blog.paperspace.com/implementing-levenshtein-distance-word-autocomplete-autocorrect/
     """
     insertion_cost = 0
     deletion_cost = 0
@@ -24,7 +27,7 @@ def levenshtein_distance(w1, w2):
 
     for x in range(1, len(w1) + 1):
         for y in range(1, len(w2) + 1):
-            if (w1[x - 1] == w2[y - 1]):
+            if w1[x - 1] == w2[y - 1]:
                 edit_distance[x][y] = edit_distance[x - 1][y - 1]
             else:
                 insertion_cost = edit_distance[x][y - 1] + 1
@@ -37,18 +40,22 @@ def levenshtein_distance(w1, w2):
                     substitution_cost
                 )
 
-    result = edit_distance[len(w1)][len(w2)]
+    result = int(edit_distance[len(w1)][len(w2)])
     return result
 
 
-def get_closest_dict_words(word, dict_words, num_results=20):
+def get_closest_dict_words(
+    word: str,
+    dict_words: Iterable[str],
+    num_results: int = 20,
+) -> List[str]:
     """Uses the Levenshtein distance for Word Autocompletion and Autocorrection
 
     https://blog.paperspace.com/implementing-levenshtein-distance-word-autocomplete-autocorrect/
     """
-    dict_word_distances = []
-    distances = []
-    greatest_distance_allowed = None
+    dict_word_distances: List[Tuple[int, str]] = []
+    distances: List[int] = []
+    greatest_distance_allowed: Optional[int] = None
 
     for dict_word in dict_words:
         word_distance = levenshtein_distance(word, dict_word)

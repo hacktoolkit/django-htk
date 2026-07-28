@@ -11,7 +11,9 @@ This module provides constants for Bible book metadata, aliases, and translation
 - **`BIBLE_BOOKS`** - List of all 66 canonical Bible book names
 - **`BIBLE_BOOKS_DATA`** - List of dicts with book metadata: `name` and `chapters` count
 - **`BIBLE_BOOKS_ALIASES`** - Dict mapping book names to lists of common abbreviations (e.g., 'Gen', 'Matt')
-- **`BIBLE_BOOKS_ALIAS_MAPPINGS`** - Dict mapping all aliases and case variants to canonical book names
+- **`BIBLE_BOOKS_ALIAS_MAPPINGS`** - Legacy dict mapping aliases and case variants to canonical book names
+- **`resolve_bible_book_alias()`** - Resolves canonical book names, aliases, punctuation/spacing variants, and unambiguous prefixes to a canonical book name
+- **`match_bible_book_alias()`** - Returns match metadata for exact, prefix, or optional fuzzy alias matches when the match is unique
 
 ### Model References
 
@@ -59,11 +61,13 @@ print(f"{genesis['name']}: {genesis['chapters']} chapters")
 ### Resolve Book Aliases
 
 ```python
-from htk.apps.bible.constants import BIBLE_BOOKS_ALIAS_MAPPINGS
+from htk.apps.bible.utils.references import resolve_bible_book_alias
 
-# Find canonical name from abbreviation
-canonical = BIBLE_BOOKS_ALIAS_MAPPINGS['Matt']  # Returns 'Matthew'
-canonical = BIBLE_BOOKS_ALIAS_MAPPINGS['matt']  # Case-insensitive
+# Find canonical name from abbreviation, spacing/case variants, or safe prefix
+canonical = resolve_bible_book_alias('Matt.')  # Returns 'Matthew'
+canonical = resolve_bible_book_alias('I Jn')  # Returns '1 John'
+canonical = resolve_bible_book_alias('Deu')  # Returns 'Deuteronomy'
+ambiguous = resolve_bible_book_alias('Jo')  # Returns None
 ```
 
 ### Configure Models

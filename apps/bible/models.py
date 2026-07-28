@@ -37,9 +37,9 @@ class AbstractBibleBook(models.Model):
 
     @classmethod
     def from_reference(cls, reference):
-        from htk.apps.bible.constants.aliases import BIBLE_BOOKS_ALIAS_MAPPINGS
+        from htk.apps.bible.utils.references import resolve_bible_book_alias
 
-        book_name = BIBLE_BOOKS_ALIAS_MAPPINGS.get(reference, reference)
+        book_name = resolve_bible_book_alias(reference) or reference
         try:
             book = cls.objects.get(name=book_name)
         except cls.DoesNotExist:
