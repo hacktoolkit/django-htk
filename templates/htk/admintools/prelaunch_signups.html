@@ -1,0 +1,50 @@
+{% extends base_template|default:'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Prelaunch Signups</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Early Access</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for signup in prelaunch_signups %}
+                <tr>
+                    <td>{{ signup.id }}</td>
+                    <td>{{ signup.full_name }}</td>
+                    <td>{{ signup.email }}</td>
+                    <td>
+                        {% if signup.early_access %}
+                        <span class="badge bg-success">Yes</span>
+                        {% else %}
+                        <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ signup.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <a href="{% url 'baws_admintools:api:prelaunch_toggle' signup.id %}"
+                           class="btn btn-sm btn-primary"
+                           onclick="event.preventDefault(); if(confirm('Are you sure you want to toggle early access for this user?')) { fetch(this.href).then(() => window.location.reload()); }">
+                            Toggle Early Access
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No prelaunch signups found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
